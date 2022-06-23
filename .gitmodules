@@ -1,0 +1,19 @@
+[submodule "fpga/oc-accel"]
+	path = fpga/oc-accel
+	url = https://github.com/fleon-psi/oc-accel
+	branch = jungfraujoch
+[submodule "fpga/ocse"]
+	path = fpga/ocse
+	url = https://github.com/opencapi/ocse
+[submodule "fpga/ad9h3-bci"]
+	path = fpga/ad9h3-bci
+	url = ../../jungfraujoch/ad9h3-bci
+[submodule "compression/zstd"]
+	path = compression/zstd
+	url = https://github.com/facebook/zstd
+[submodule "indexing/xgandalf"]
+	path = indexing/xgandalf
+	url = https://github.com/fleon-psi/xgandalf
+[submodule "detector_control/slsDetectorPackage"]
+	path = detector_control/slsDetectorPackage
+	url = https://github.com/slsdetectorgroup/slsDetectorPackage

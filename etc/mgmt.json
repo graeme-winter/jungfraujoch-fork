@@ -1,0 +1,19 @@
+{
+  "ipv4_subnet": 85,
+  "writer": [
+    {
+      "addr_grpc": "mx-jungfrau-1:5234",
+      "addr_zmq":  "tcp://10.10.1.241:5001"
+    },
+    {
+      "addr_grpc": "mx-jungfrau-1:5235",
+      "addr_zmq":  "tcp://10.10.1.241:5002"
+    }
+  ],
+  "receiver_addr": "unix:jfjoch-fpga-receiver",
+  "detector_addr": "vespa-jf-ctrl:5236",
+  "indexer": {
+    "addr_grpc": "mx-jungfrau-1:5405",
+    "addr_zmq": "tcp://mx-ic922-1:5401"
+  }
+}

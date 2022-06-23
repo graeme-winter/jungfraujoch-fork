@@ -1,0 +1,302 @@
+
+#
+# Mnemonic Maps
+#
+mmap new -reuse -name {Boolean as Logic} -radix %b -contents {{%c=FALSE -edgepriority 1 -shape low}
+{%c=TRUE -edgepriority 1 -shape high}}
+mmap new -reuse -name {Example Map} -radix %x -contents {{%b=11???? -bgcolor orange -label REG:%x -linecolor yellow -shape bus}
+{%x=1F -bgcolor red -label ERROR -linecolor white -shape EVENT}
+{%x=2C -bgcolor red -label ERROR -linecolor white -shape EVENT}
+{%x=* -label %x -linecolor gray -shape bus}}
+
+array unset createdGroup
+array set createdGroup {}
+set id [waveform add -label {HOST MEMORY INTERFACE} -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -label MMIO -comment {}]
+waveform format $id -namecolor #00ff99
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.cfg_addr[11:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_arvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_araddr[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_rvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_rdata[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_awvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_awaddr[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_wvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.s_axi_ctrl_reg_wdata[31:0]}]}
+	} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {GMEM READ INTERFACE} -comment {}]
+waveform format $id -namecolor #ffff00 -bgcolor #000000
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_arvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_araddr[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_arlen[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_rvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_rdata[1023:0]}]}
+	} ]]
+waveform format $id -radix %x
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_rlast}]}
+	} ]]
+set id [waveform add -label {GMEM WRITE INTERFACE} -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_awvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_awaddr[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_awlen[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_wvalid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_wdata[1023:0]}]}
+	} ]]
+waveform format $id -radix %x
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.m_axi_host_mem_wlast}]}
+	} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {100G RX Status } -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:ethernet_100g_infrastructure:cmac_usplus_0.stat_rx_status}]}
+} ]]
+
+
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM APB Complete } -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:apb_complete_0}]}
+} ]]
+
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {UDP decode} -comment {}]
+	waveform format $id -namecolor #99ff00
+
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:data_collection_fsm_0:data_out_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:data_collection_fsm_0:data_out_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:data_collection_fsm_0:data_out_TLAST}]}} ]]
+
+
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:data_collection_fsm_0:addr_out_V_V_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:data_collection_fsm_0:addr_out_V_V_TVALID}]}} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {Load calibration} -comment {}]
+waveform format $id -namecolor #99ff00
+
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:load_calibration_0:data_in_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:load_calibration_0:data_in_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:load_calibration_0:data_in_TLAST}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:load_calibration_0:data_out_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:load_calibration_0:data_out_TVALID}]}} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {Pedestal correction} -comment {}]
+waveform format $id -namecolor #99ff00
+
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:pedestal_corr_0:data_in_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:pedestal_corr_0:data_in_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:pedestal_corr_0:data_in_TLAST}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:pedestal_corr_0:data_out_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:pedestal_corr_0:data_out_TVALID}]}} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {Gain correction} -comment {}]
+waveform format $id -namecolor #99ff00
+
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:gain_corr_0:data_in_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:gain_corr_0:data_in_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:gain_corr_0:data_in_TLAST}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:gain_corr_0:data_out_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:gain_corr_0:data_out_TVALID}]}} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {Write data} -comment {}]
+waveform format $id -namecolor #99ff00
+
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:data_in_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:data_in_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:addr_in_V_V_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:addr_in_V_V_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:m_axis_completion_V_V_TDATA}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:m_axis_completion_V_V_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:host_memory_out_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:host_memory_out_TVALID}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:datamover_out_cmd_V_data_V_TREADY}]}} ]]
+set id [waveform add -signals [subst  {{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:frame_statistics_0:datamover_out_cmd_V_data_V_TVALID}]}} ]]
+
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM0 } -comment {}]
+	waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+	{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_00_ARVALID}]}
+	} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_00_RVALID}]}
+	} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_00_AWVALID}]}
+	} ]]
+
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_00_WVALID}]}
+	} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM2 } -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_02_ARVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_02_RVALID}]}
+} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_02_AWVALID}]}
+} ]]
+
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_02_WVALID}]}
+} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM4 } -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_04_ARVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_04_RVALID}]}
+} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_04_AWVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_04_WVALID}]}
+} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM6} -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_06_ARVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_06_RVALID}]}
+} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_06_AWVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_06_WVALID}]}
+} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM8} -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_08_ARVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_08_RVALID}]}
+} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_08_AWVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_08_WVALID}]}
+} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM10} -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_10_ARVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_10_RVALID}]}
+} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_10_AWVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_10_WVALID}]}
+} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM12} -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_12_ARVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_12_RVALID}]}
+} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_12_AWVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_12_WVALID}]}
+} ]]
+
+set id [waveform add -cdivider divider]
+set id [waveform add -label {HBM14} -comment {}]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_14_ARVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_14_RVALID}]}
+} ]]
+waveform format $id -namecolor #99ff00
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_14_AWVALID}]}
+} ]]
+set id [waveform add -signals [subst  {
+{[format {top.oc_function.fw_afu.action_w.action_i:jungfraujoch:hbm_infrastructure:hbm.AXI_14_WVALID}]}
+} ]]
+waveform xview limits 0 14746.25ns

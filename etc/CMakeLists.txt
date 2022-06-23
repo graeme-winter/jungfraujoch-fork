@@ -1,0 +1,1 @@
+INSTALL(FILES mgmt.json recv.json detector.json index.json envoy.yaml DESTINATION etc)

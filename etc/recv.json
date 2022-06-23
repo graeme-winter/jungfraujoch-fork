@@ -1,0 +1,36 @@
+{
+  "compression_threads" : 52,
+  "opencapi": [
+    {
+      "pci_slot" : 4,
+      "numa_node" : 0,
+      "frame_buffer_size": 32768,
+      "direct_attach_cable": false,
+      "fpga_mac_addr": "AA:CF:AA:CF:AA:01",
+      "gain_file": [
+        "/opt/jfjoch/gainmaps/gainMaps_M352_2020-01-31.bin",
+        "/opt/jfjoch/gainmaps/gainMaps_M307_2020-01-20.bin",
+        "/opt/jfjoch/gainmaps/gainMaps_M264_2019-07-29.bin",
+        "/opt/jfjoch/gainmaps/gainMaps_M253_2019-07-29.bin"
+      ]
+    },
+    {
+      "pci_slot" : 5,
+      "numa_node" : 8,
+      "frame_buffer_size": 32768,
+      "direct_attach_cable": false,
+      "fpga_mac_addr": "AA:CF:AA:CF:AA:02",
+      "gain_file": [
+        "/opt/jfjoch/gainmaps/gainMaps_M351_2020-01-20.bin",
+        "/opt/jfjoch/gainmaps/gainMaps_M312_2020-01-20.bin",
+        "/opt/jfjoch/gainmaps/gainMaps_M261_2019-07-29.bin",
+        "/opt/jfjoch/gainmaps/gainMaps_M310_2021-01-26.bin"
+      ]
+    }
+  ],
+  "tcp_send_buffer_size": 256000000,
+  "zmq_send_high_watermark": 5000,
+  "preview_zmq_addr": "tcp://0.0.0.0:5400",
+  "spot_zmq_addr": "tcp://0.0.0.0:5401",
+  "grpc_addr": "unix:jfjoch-fpga-receiver"
+}

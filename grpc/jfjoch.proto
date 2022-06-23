@@ -1,0 +1,545 @@
+// Copyright (2019-2022) Paul Scherrer Institute
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+syntax = "proto3";
+
+package JFJochProtoBuf;
+
+message FrameCountSettings {
+  int64 images_per_trigger = 1;
+  int64 ntrigger = 2;
+  int64 pedestalG0_frames = 3;
+  int64 pedestalG1_frames = 4;
+  int64 pedestalG2_frames = 5;
+}
+
+message TimingSettings {
+  int64 frame_time_pedestalG1G2_us = 1;
+  //   uint64 frame_time_pedestalG2_us = 2; reserved
+  int64 requested_image_time_us = 3;
+  int64 count_time_us = 4;
+  int64 beamline_delay_us = 5;
+  int64 laser_start_us = 6;
+  int64 laser_stop_us = 7;
+  bool use_optimal_frame_time = 12;
+  bool time_resolved_mode = 13;
+}
+
+message DiffractionGeometrySettings {
+  double   beam_x_pxl = 1;
+  double   beam_y_pxl = 2;
+  double   detector_distance_mm = 3;
+  double   omega_start_deg = 4;
+  double   omega_angle_per_image_deg = 5;
+
+  int64 detector_size_x_pxl = 6;
+  int64 detector_size_y_pxl = 7;
+
+  int64 gap_x_pxl = 8;
+  int64 gap_y_pxl = 9;
+
+  repeated int64 data_stream_modules = 10;
+  repeated int64 first_pixel_of_module = 11;
+  // Number of modules that are stacked horizontally in a single line
+  int64 horizontal_module_stacking = 12;
+
+  Vector rotation_axis = 13;
+  Vector scattering_vector = 14;
+
+  double   photon_energy_keV = 16; // Not strictly geometry, but connected
+}
+
+// Metadata not affecting data acquisition
+message BeamlineMetadataSettings {
+  double   transmission = 1;           // 1.0 = full transmission *
+  double   total_flux = 2;             // in e/s *
+  double   beam_size_x_um = 3;            // in micron *
+  double   beam_size_y_um = 4;            // in micron *
+  double   sample_temperature_K = 5;     // in K *
+  string   detector_name = 9;
+  string   source_name_short = 10;
+  string   source_name = 11;
+  string   instrument_name = 12;
+  string   instrument_name_short = 13;
+}
+
+message CompressionSettings {
+  enum Compression {
+    BSHUF_LZ4 = 0;
+    BSHUF_ZSTD = 1;
+    NONE = 2;
+  }
+  Compression algorithm = 4;
+  int64 level = 5;
+  int64 block_size = 6;
+}
+
+message ImageSavingSettings {
+  string file_prefix = 1;
+  string tracking_id = 2;
+  int64 image_per_file = 3;
+  int64 measurement_sequence_num = 4;
+  bool error_when_overwritting = 5;
+  int64 gid = 6;
+}
+
+message DetectorSettings {
+  bool force_full_speed = 1;
+  bool internal_fpga_packet_generator = 2;
+}
+
+message PreviewSettings {
+  int64 preview_period_us = 1;
+  int64 spot_finding_period_us = 2;
+  int64 bkg_estimation_period_us = 3;
+
+  double high_resolution_bkg_limit = 4;
+  double low_resolution_bkg_limit = 5;
+}
+
+message PedestalSettings {
+  bool tracking = 1;
+  bool saved = 3;
+  bool skip_pedestal = 4; // Reuse old pedestal, e.g. for testshot
+}
+
+enum  DetectorMode {
+  CONVERSION = 0;
+  RAW = 1;
+  PEDESTAL_G0 = 2;
+  PEDESTAL_G1 = 3;
+  PEDESTAL_G2 = 4;
+};
+
+message ConversionSettings {
+  DetectorMode mode = 1;
+  bool upside_down = 2;  // Turn modules upside down
+  bool mask_module_edges = 3;
+  bool mask_chip_edges = 4;
+  bool sum_frames_in_conversion = 5;
+}
+
+message JungfraujochInternalSettings {
+  // Settings in this group should be considered fixed from user point of view
+  int64 base_ipv4_address = 6;
+  int64 base_udp_port = 7;
+  string git_sha1 = 8;
+  string git_date = 9;
+}
+
+message SampleSettings {
+  string name = 1;
+  UnitCell unit_cell = 2;
+  int64 space_group_number = 3;
+  int64 run_number = 4;
+}
+
+message JungfraujochSettings {
+  FrameCountSettings frame_count = 1;
+  TimingSettings timing = 2;
+  DiffractionGeometrySettings diffraction_geometry = 3;
+  BeamlineMetadataSettings beamline_metadata = 4;
+  ImageSavingSettings image_saving = 5;
+  DetectorSettings detector = 6;
+  PreviewSettings preview = 7;
+  PedestalSettings pedestal = 8;
+  ConversionSettings conv = 9;
+  CompressionSettings compr = 10;
+  JungfraujochInternalSettings internal = 11;
+  SampleSettings sample = 12;
+}
+
+message JFCalibration {
+  int64 nmodules = 1;
+  int64 data_stream = 2;
+  bytes pedestal_g0 = 6;
+  bytes pedestal_g1 = 7;
+  bytes pedestal_g2 = 8;
+  bytes pedestal_rms_g0 = 9;
+  bytes pedestal_rms_g1 = 10;
+  bytes pedestal_rms_g2 = 11;
+  bytes mask = 12;
+
+  repeated uint64 pedestal_time = 13;
+  repeated uint32 pedestal_frames = 14;
+
+  repeated ModuleStatistics module_statistics = 15;
+}
+
+message AcquisitionDeviceStatistics {
+  uint64 good_packets = 1;
+  uint64 packets_expected_per_image = 2;
+  repeated uint64 packets_received_per_image = 3;
+  double efficiency = 4;
+  uint64 ok_eth_packets = 5;
+  uint64 start_timestamp = 6;
+  uint64 end_timestamp = 7;
+  FPGAStatus fpga_status = 8;
+  repeated int64 trigger_sequence_frame_numbers = 9;
+  repeated uint64 packet_mask_half_module = 10;
+  uint64 packets_expected = 11;
+}
+
+message JFJochReceiverInput {
+  JungfraujochSettings jungfraujoch_settings = 1;
+  JFCalibration calibration = 2;
+  repeated string writer_zmq_address = 3;
+}
+
+message JFJochReceiverOutput {
+  repeated AcquisitionDeviceStatistics device_statistics = 1;
+  uint64 max_receive_delay = 2;
+  uint64 compressed_size = 3;
+  double compressed_ratio = 4;
+  uint64 images_sent = 5;
+  uint64 start_time_ms = 6;
+  uint64 end_time_ms = 7;
+  reserved 8;
+  double efficiency = 9;
+  uint64 max_image_number_sent = 10;
+
+  JFCalibration calibration = 14;
+  JungfraujochSettings jungfraujoch_settings = 15;
+  optional JFJochIndexerOutput indexer_output = 16;
+}
+
+message JFJochReceiverNetworkConfig {
+  repeated string fpga_mac_addr = 1;
+}
+
+message JFJochWriterInput {
+  JungfraujochSettings jungfraujoch_settings = 1;
+}
+
+message JFJochWriterOutput {
+
+}
+
+message JFJochDetectorModuleConfig {
+  uint64 udp_dest_port_1 = 1;
+  uint64 udp_dest_port_2 = 2;
+  uint64 ipv4_src_addr_1 = 3;
+  uint64 ipv4_src_addr_2 = 4;
+  uint64 ipv4_dest_addr_1 = 5;
+  uint64 ipv4_dest_addr_2 = 6;
+  string mac_addr_dest_1 = 7;
+  string mac_addr_dest_2 = 8;
+}
+
+message JFJochDetectorConfig {
+  repeated JFJochDetectorModuleConfig modules = 1;
+}
+
+message JFJochDetectorInput {
+  JungfraujochSettings jungfraujoch_settings = 1;
+}
+
+message JFJochDetectorOutput {
+
+}
+
+message Empty {
+
+}
+
+message UnitCell {
+  double a = 1;
+  double b = 2;
+  double c = 3;
+  double alpha = 4;
+  double beta = 5;
+  double gamma = 6;
+}
+
+message Vector {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message ParameterValue {
+  oneof value {
+    string text     = 1;
+    double fp_number = 2;
+    int64 number   = 3;
+    bool logical    = 4;
+    Vector vector   = 5;
+    UnitCell unit_cell = 6;
+  }
+  string unit = 11;
+  optional double fp_min = 12;
+  optional double fp_max = 13;
+  optional int64 int_min = 14;
+  optional int64 int_max = 15;
+}
+
+enum SpotFindingAlgorithm {
+  LOCAL = 0;
+  RADIAL = 1;
+  PEAKFINDER8 = 2;
+}
+
+enum FPGAFIFOStatus {
+  EMPTY = 0;
+  FULL = 1;
+  PARTIAL = 2;
+}
+
+message FPGAStatus {
+  uint64 packets_ether = 2;
+  uint64 packets_udp = 3;
+  uint64 packets_jfjoch = 4;
+  uint64 packets_icmp = 5;
+  bool fpga_idle = 6;
+  uint64 hbm_temp = 7;
+  uint64 max_hbm_temp = 8;
+  uint64 stalls_hbm = 9;
+  uint64 stalls_host = 10;
+  bool ethernet_rx_aligned = 11;
+  bool ethernet_bad_fcs = 12;
+  uint32 full_status_register = 13;
+  map<string, FPGAFIFOStatus> fifo_status = 14;
+  uint64 max_modules = 15;
+  uint32 git_sha1 = 16;
+  uint32 mailbox_err_reg = 17;
+  uint32 mailbox_status_reg = 18;
+  bool datamover_mm2s_error = 19;
+  bool datamover_s2mm_error = 20;
+  bool frame_statistics_alignment_err = 21;
+  bool frame_statistics_tlast_err = 22;
+  bool frame_statistics_work_req_err = 23;
+  uint64 slowest_head = 24;
+  bool qsfp_module_present = 25;
+
+  double fpga_temp_degC      = 26;
+  double current_edge_12V_A  = 27;
+  double voltage_edge_12V_V  = 28;
+  double current_edge_3p3V_A = 29;
+  double voltage_edge_3p3V_V = 30;
+}
+
+message ReceiverStatus {
+  double progress = 1;
+  repeated FPGAStatus fpga_status = 2;
+  bool idle = 3;
+  repeated float bkg_estimate = 4;
+}
+
+message DataProcessingSettings {
+  SpotFindingAlgorithm spot_finding_algorithm = 1;
+
+  bool enable_3d_spot_finding = 2;
+  optional double high_resolution_limit = 3;      // Resolution limit, above which spots are discarded
+  optional double low_resolution_limit = 4;       // Resolution limit, above which spots are discarded
+
+  double signal_to_noise_threshold = 5;  // STRONG_PIXEL in XDS, MinSNR in Peakfinder8
+  int64 photon_count_threshold = 6;      // Threshold in photon counts
+
+  int64 max_depth = 7;                   // Maximum images per spot
+  int64 min_pix_per_spot = 8;            // Minimum pixels per spot
+  int64 max_pix_per_spot = 9;            // Maximum pixels per spot
+
+  int64 local_bkg_size = 10;             // NBX/NBY parameter
+  optional int64 max_spots = 11;         // Maximum number of spots to take (according to resolution)
+}
+
+message PreviewFrame {
+  int64 image_number = 1;
+  int64 total_images = 2;
+  double wavelength_A = 3;
+  double beam_center_x = 4;
+  double beam_center_y = 5;
+  double detector_distance_mm = 6;
+  int64 saturation_value = 7;
+  string file_prefix = 8;
+  int64 width = 9;
+  int64 height = 10;
+  int64 pixel_depth = 11;
+  CompressionSettings compression = 12;
+  bytes data = 13;
+}
+
+message SpotFinderImageOutput {
+  int64 image_number = 1;
+  UnitCell unit_cell = 2;
+  repeated Vector coord = 3;
+}
+
+message IndexerImageOutput {
+  int64 image_number = 1;
+  int64 spot_count = 2;
+  bool indexed = 3;
+  optional UnitCell unit_cell = 4;
+}
+
+message IndexerStatus {
+  repeated double indexing_rate = 1;
+  repeated double mean_spots = 2;
+  int64 images_analyzed = 3;
+  int64 images_indexed = 4;
+}
+
+message OnlineProcessingRequest {
+  string file_name = 1;
+  int64 images = 2;
+  double beam_x_pxl = 3;
+  double beam_y_pxl = 4;
+  double detector_distance_mm = 5;
+
+}
+
+message JFJochIndexerInput {
+  JungfraujochSettings jungfraujoch_settings = 1;
+  string zmq_recv_pub_addr = 2;
+  int64 bin_size = 3;
+}
+
+message JFJochIndexerOutput {
+  repeated IndexerImageOutput image_output = 1;
+  double ms_per_image = 2;
+  int64 indexed_images = 3;
+}
+
+message BrokerStatus {
+  enum State {
+    NOT_INITIALIZED = 0;
+    IDLE = 1;
+    BUSY = 2;
+    PEDESTAL = 3;
+    DATA_COLLECTION = 4;
+    ERROR = 5;
+  }
+  State current_state = 1;
+  optional ReceiverStatus receiver_status = 2;
+  optional IndexerStatus indexer_status = 3;
+  uint64 last_measurement_images_collected = 4;
+  double last_measurement_collection_efficiency = 5;
+  double last_measurement_compression_ratio = 6;
+  int64 last_measurement_sequence_number = 7;
+  string last_measurement_name = 8;
+  repeated ModuleStatistics module_statistics = 9;
+}
+
+message ModuleStatistics {
+  double pedestal_g0_mean = 2;
+  double pedestal_g1_mean = 3;
+  double pedestal_g2_mean = 4;
+
+  double pedestal_rms_g0_mean = 5;
+  double pedestal_rms_g1_mean = 6;
+  double pedestal_rms_g2_mean = 7;
+
+  uint64 masked_pixels = 8;
+}
+
+message BrokerStatistics {
+
+}
+
+message DetectorStatus {
+  bool idle = 1;
+}
+
+message BrokerSetup {
+  int64 images_per_trigger = 1;
+  int64 image_time_us = 2;
+  double beam_center_x_pxl = 3;
+  double beam_center_y_pxl = 4;
+  double detector_distance_mm = 5;
+  double photon_energy_kev = 6;
+  string name_pattern = 7;
+  string sample_name = 8;
+
+  optional int64 ntrigger = 15;
+
+  optional int64 images_per_file = 16;
+  optional string compression = 17;
+
+  optional double omega_start_deg = 18;
+  optional double omega_increment_deg = 19;
+
+  optional bool time_resolved_mode = 20;
+
+  optional bool force_full_speed = 22;
+  optional string data_collection_mode = 23;
+  optional bool pedestal_saved = 25;
+  optional int64 preview_rate_ms = 27;
+  optional bool frame_summation = 28;
+  UnitCell unit_cell = 29;
+  optional int64 spot_finding_rate_ms = 30;
+  optional int64 bkg_estimate_rate_ms = 31;
+  optional bool skip_pedestal = 32;
+  optional int64 space_group_number = 33;
+  optional int64 run_number = 34;
+}
+
+message Image {
+  bytes data = 1;
+  int64 width = 2;
+  int64 height = 3;
+}
+
+message MaskToLoad {
+  repeated uint32 mask = 1;
+  int32 bit_to_set = 2;
+}
+
+service gRPC_JFJochBroker {
+  rpc Start (BrokerSetup) returns (Empty) {}
+  rpc Stop (Empty)        returns (Empty) {}
+  rpc Abort (Empty)       returns (Empty) {}
+  rpc Cancel (Empty)      returns (Empty) {}
+  rpc Pedestal (Empty)    returns (Empty) {}
+  rpc Initialize (Empty)  returns (Empty) {}
+  rpc Deactivate (Empty)  returns (Empty) {}
+
+  rpc GetStatus (Empty)      returns (BrokerStatus)     {}
+  rpc GetCalibration (Empty) returns (JFCalibration)    {}
+  rpc GetDetailedReceiverOutput (Empty) returns (JFJochReceiverOutput) {}
+  rpc GetDataProcessingSettings (Empty) returns (DataProcessingSettings) {}
+  rpc SetDataProcessingSettings (DataProcessingSettings) returns (Empty) {}
+  rpc LoadMask (MaskToLoad) returns (Empty) {}
+  rpc GetMask (Empty) returns (Image) {}
+  rpc GetMaskRawCoord (Empty) returns (Image) {}
+  rpc GetPedestalG0 (Empty) returns (Image) {}
+  rpc GetPedestalG1 (Empty) returns (Image) {}
+  rpc GetPedestalG2 (Empty) returns (Image) {}
+  rpc GetPreviewFrame (Empty) returns (PreviewFrame) {}
+}
+
+service gRPC_JFJochReceiver {
+  rpc Start (JFJochReceiverInput) returns (Empty) {}
+  rpc Abort (Empty) returns (Empty) {}
+  rpc Cancel (Empty) returns (Empty) {}
+  rpc Stop (Empty) returns (JFJochReceiverOutput) {}
+  rpc GetStatus (Empty) returns (ReceiverStatus) {}
+  rpc SetDataProcessingSettings(DataProcessingSettings) returns (Empty) {}
+  rpc GetPreviewFrame (Empty) returns (PreviewFrame) {}
+  rpc GetNetworkConfig (Empty) returns (JFJochReceiverNetworkConfig) {}
+}
+
+service gRPC_JFJochWriter {
+  rpc Start (JFJochWriterInput) returns (Empty) {}
+  rpc Abort (Empty) returns (Empty) {}
+  rpc Stop (Empty) returns (Empty) {}
+  rpc WriteMasterFile (JFJochReceiverOutput) returns (Empty) {}
+}
+
+service gRPC_JFJochDetector {
+  rpc Start (JFJochDetectorInput) returns (Empty) {}
+  rpc Stop (Empty) returns (Empty) {}
+  rpc Status (Empty) returns (DetectorStatus) {}
+  rpc On (JFJochDetectorConfig) returns (Empty) {}
+  rpc Off (Empty) returns (Empty) {}
+  rpc Trigger (Empty) returns (Empty) {}
+}
+
+service gRPC_JFJochTrigger {
+  rpc Trigger (Empty) returns (Empty) {}
+}
+
+service gRPC_JFJochIndexer {
+  rpc Start (JFJochIndexerInput) returns (Empty) {}
+  rpc Stop (Empty) returns (JFJochIndexerOutput) {}
+  rpc GetStatus (Empty) returns (IndexerStatus) {}
+}

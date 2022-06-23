@@ -1,0 +1,267 @@
+stages:
+  - build
+  - test
+  - synthesis
+
+build:x86:gcc:
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CC: gcc
+    CXX: g++
+  tags:
+    - gcc
+    - x86
+  needs: []
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - export PATH=$PATH:/usr/local/cuda/bin
+    - mkdir build
+    - cd build
+    - cmake3 -DCMAKE_BUILD_TYPE=Release ..
+    - make -j48 jfjoch
+
+build:x86:vitis_hls:
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  tags:
+    - x86
+  needs: []
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - fpga/hls/*
+        - fpga/hdl/*
+        - fpga/scripts/*
+        - fpga/xdc/*
+        - common/Definitions.h
+  artifacts:
+    paths:
+      - build/fpga/hls/*.zip
+    expire_in: 3 days
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - source /opt/Xilinx/Vitis_HLS/2022.1/settings64.sh
+    - mkdir build
+    - cd build
+    - cmake3 ..
+    - make hls
+
+test:x86:gcc:
+  stage: test
+  timeout: 90m
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CTEST_OUTPUT_ON_FAILURE: 1
+    CC: gcc
+    CXX: g++
+  needs: ["build:x86:gcc"]
+  dependencies: []
+  tags:
+    - gcc
+    - x86
+    - ib
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - export PATH=$PATH:/usr/local/cuda/bin
+    - mkdir -p build
+    - cd build
+    - cmake3 -DCMAKE_BUILD_TYPE=Release -DJFJOCH_COMPILE_TESTS=ON ..
+    - make -j48 CatchTest CompressionBenchmark HDF5DatasetWriteTest DataAnalysisPerfTest PedestalPerfTest
+    - cd tests
+    - ./CatchTest -r junit -o report.xml
+    - ./HDF5DatasetWriteTest ../../tests/test_data/compression_benchmark.h5
+    - numactl -m 0 -N 0 ./CompressionBenchmark ../../tests/test_data/compression_benchmark.h5
+    - numactl -m 0 -N 0 ./DataAnalysisPerfTest ../../tests/test_data/compression_benchmark.h5
+    - numactl -m 0 -N 0 ./PedestalPerfTest
+  artifacts:
+    expire_in: 1 week
+    reports:
+      junit: build/tests/report.xml
+
+test:x86:crystfel:
+  stage: test
+  timeout: 90m
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CTEST_OUTPUT_ON_FAILURE: 1
+    CC: gcc
+    CXX: g++
+  needs: ["build:x86:gcc"]
+  dependencies: []
+  tags:
+    - gcc
+    - x86
+    - crystfel
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - source /opt/grpc/grpc.sh
+    - mkdir -p build
+    - cd build
+    - cmake3 -DCMAKE_BUILD_TYPE=Release -DgRPC_FROM_SYSTEM=1 -DJFJOCH_COMPILE_TESTS=ON ..
+    - make -j8 HDF5DatasetWriteTest
+    - cd ../crystfel
+    - HDF5DATASET_TCP_PUB_PORT=0 HDF5DATASET_WRITE_TEST_SWMR=1 HDF5DATASET_WRITE_TEST_IMAGES_PER_FILE=0 ../build/tests/HDF5DatasetWriteTest ../tests/test_data/compression_benchmark.h5 10
+    - indexamajig -i writing_test.lst -g jf4m.geom -o x.stream --indexing=xgandalf
+
+test:x86:xds_durin:
+  stage: test
+  timeout: 90m
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CTEST_OUTPUT_ON_FAILURE: 1
+    CC: gcc
+    CXX: g++
+  needs: ["build:x86:gcc"]
+  dependencies: []
+  tags:
+    - gcc
+    - x86
+    - xds
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - source /opt/grpc/grpc.sh
+    - mkdir -p build
+    - cd build
+    - cmake3 -DCMAKE_BUILD_TYPE=Release -DgRPC_FROM_SYSTEM=1 -DJFJOCH_COMPILE_TESTS=ON ..
+    - make -j8 HDF5DatasetWriteTest
+    - cd ../xds_durin
+    - HDF5DATASET_TCP_PUB_PORT=0 HDF5DATASET_WRITE_TEST_IMAGES_PER_FILE=0 ../build/tests/HDF5DatasetWriteTest ../tests/test_data/compression_benchmark.h5 100
+    - xds_par |grep -a1 ISa |tail -n1
+
+test:x86:xcelium_daq:
+  stage: test
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CC: gcc
+    CXX: g++
+  needs: ["build:x86:gcc", "build:x86:vitis_hls"]
+  dependencies: ["build:x86:vitis_hls"]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+      - fpga/hls/*
+      - fpga/hdl/*
+      - fpga/scripts/*
+      - fpga/xdc/*
+      - common/Definitions.h
+  tags:
+    - xcelium
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - source /opt/grpc/grpc.sh
+    - source /opt/Xilinx/Vivado/2022.1/settings64.sh
+    - mkdir -p build/fpga
+    - cd build
+    - cmake3 ..
+    - make -j8 jfjoch_action_test
+    - cd fpga
+    - SRC_DIR=${CI_PROJECT_DIR}/fpga bash ${CI_PROJECT_DIR}/fpga/scripts/setup_action.sh
+    - cd ../../fpga/oc-accel
+    - make model
+    - cd hardware/sim
+    - time ./run_sim -quiet -app ../../../build/fpga/host/jfjoch_action_test ${CI_PROJECT_DIR} 3 1 1 action.log > sim1.out
+    - grep ActionTest sim1.out
+
+synthesis:vivado:
+  stage: synthesis
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CC: gcc
+    CXX: g++
+  allow_failure: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - fpga/hls/*
+        - fpga/hdl/*
+        - fpga/scripts/*
+        - fpga/xdc/*
+        - common/Definitions.h
+  needs: ["build:x86:gcc", "build:x86:vitis_hls", "test:x86:gcc", "test:x86:xcelium_daq"]
+  tags:
+    - vivado
+  artifacts:
+    paths:
+      - build/fpga/*.bin
+      - build/fpga/*.bit
+    expire_in: 1 week
+  dependencies: ["build:x86:vitis_hls"]
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - source /opt/grpc/grpc.sh
+    - source /opt/Xilinx/Vivado/2022.1/settings64.sh
+    - mkdir -p build
+    - cd build
+    - cmake3 ..
+    - make action_opencapi
+
+synthesis:vivado_manual:
+  stage: synthesis
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CC: gcc
+    CXX: g++
+  allow_failure: true
+  tags:
+    - vivado
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - fpga/hls/*
+        - fpga/hdl/*
+        - fpga/scripts/*
+        - fpga/xdc/*
+        - common/Definitions.h
+      when: manual
+  artifacts:
+    paths:
+      - build/fpga/*.bin
+      - build/fpga/*.bit
+    expire_in: 1 week
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - source /opt/grpc/grpc.sh
+    - source /opt/Xilinx/Vivado/2022.1/settings64.sh
+    - mkdir -p build/fpga
+    - cd build
+    - cmake3 ..
+    - make action_opencapi
+  dependencies: ["build:x86:vitis_hls"]
+  needs: ["build:x86:gcc", "build:x86:vitis_hls", "test:x86:gcc", "test:x86:xcelium_daq"]
+  parallel:
+    4
+
+synthesis:vivado_pcie:
+  stage: synthesis
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CC: gcc
+    CXX: g++
+  allow_failure: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - fpga/hls/*
+        - fpga/hdl/*
+        - fpga/scripts/*
+        - fpga/xdc/*
+        - common/Definitions.h
+  tags:
+    - vivado
+  artifacts:
+    paths:
+      - build/fpga/*.bin
+      - build/fpga/*.bit
+    expire_in: 1 week
+  script:
+    - source /opt/rh/devtoolset-10/enable
+    - source /opt/grpc/grpc.sh
+    - source /opt/Xilinx/Vivado/2022.1/settings64.sh
+    - mkdir -p build/fpga
+    - cd build
+    - cmake3 ..
+    - make action_pcie
+  dependencies: [ "build:x86:vitis_hls" ]
+  needs: ["build:x86:gcc", "build:x86:vitis_hls", "test:x86:gcc", "test:x86:xcelium_daq"]

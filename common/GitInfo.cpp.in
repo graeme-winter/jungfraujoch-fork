@@ -1,0 +1,12 @@
+// Copyright (2019-2022) Paul Scherrer Institute
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#include <string>
+
+std::string jfjoch_git_sha1() {
+    return "@GIT_SHA1@";
+}
+
+std::string jfjoch_git_date() {
+    return "@GIT_DATE@";
+}
