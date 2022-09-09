@@ -80,9 +80,7 @@ double DiffractionSpot::OmegaRad(const DiffractionExperiment &experiment) const 
 }
 
 Coord DiffractionSpot::LabCoord(const DiffractionExperiment &experiment, uint16_t data_stream) const {
-    return {(coord.x  / (double)photons - experiment.GetBeamX_pxl()) * PIXEL_SIZE_IN_MM ,
-            (coord.y  / (double)photons - experiment.GetBeamY_pxl()) * PIXEL_SIZE_IN_MM ,
-                 experiment.GetDetectorDistance_mm()};
+    return experiment.LabCoord(coord.x  / (double)photons, coord.y / (double)photons);
 }
 
 // The function moves p back into origin of rotation
@@ -112,21 +110,7 @@ Coord DiffractionSpot::ReciprocalCoord3D(const DiffractionExperiment &experiment
 }
 
 double DiffractionSpot::GetResolution(const DiffractionExperiment &experiment, uint16_t data_stream) const {
-    Coord lab = LabCoord(experiment, data_stream);
-
-    // Assumes planar detector, 90 deg towards beam
-    double beam_path = lab.Length();
-
-    // It is possible that beam center is directly on edge, so in this case a very small number (1 micron) is added to beam_path
-    // to avoid division by zero
-    if (lab.z == beam_path) return -1.0;
-
-    double cos_2theta = lab.z / beam_path; // 0.4472135955
-    // cos(2theta) = cos(theta)^2 - sin(theta)^2
-    // cos(2theta) = 1 - 2*sin(theta)^2
-    // Technically two solutions for two theta, but it makes sense only to take positive one in this case
-    double sin_theta = sqrt((1-cos_2theta)/2);
-    return experiment.GetWavelength_A() / (2 * sin_theta);
+    return experiment.PxlToRes(coord.x  / (double)photons, coord.y / (double)photons);
 }
 
 DiffractionSpot DiffractionSpot::TransformCoordinates(const DiffractionExperiment &experiment, uint16_t data_stream) {

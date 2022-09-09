@@ -3,7 +3,7 @@
 
 #include <catch2/catch.hpp>
 
-#include "../fpga/host/JFJochReceiverTest.h"
+#include "../fpga/receiver/JFJochReceiverTest.h"
 #include "../fpga/host/HLSSimulatedDevice.h"
 #include "../common/PedestalCalcCPU.h"
 
@@ -39,6 +39,8 @@ TEST_CASE("JFJochReceiverTest_Raw", "[JFJochReceiver]") {
 }
 
 TEST_CASE("JFJochReceiverTest_Conversion", "[JFJochReceiver]") {
+    Logger logger("JFJochReceiverTest_Conversion");
+
     DiffractionExperiment x;
     const uint16_t nthreads = 4;
 
@@ -51,16 +53,52 @@ TEST_CASE("JFJochReceiverTest_Conversion", "[JFJochReceiver]") {
     for (int i = 0; i < x.GetDataStreamsNum(); i++) {
         AcquisitionDevice *test;
         test = new HLSSimulatedDevice(i, 64);
+        test->EnableLogging(&logger);
         aq_devices.emplace_back(test);
     }
 
-    Logger logger("JFJochReceiverTest_Conversion");
     JFJochProtoBuf::JFJochReceiverOutput output;
     bool ret;
     REQUIRE_NOTHROW(ret = JFJochReceiverTest(output, logger, aq_devices, x, nthreads, "../../", false));
     REQUIRE(ret);
     REQUIRE(output.efficiency() == 1.0);
     REQUIRE(output.images_sent() == x.GetImageNum());
+
+    REQUIRE(output.device_statistics(0).timestamp_size() == 32 * 2);
+    REQUIRE(output.device_statistics(0).timestamp(30 * 2) == 0xABCDEF);
+}
+
+TEST_CASE("JFJochReceiverTest_Conversion_StorageCell", "[JFJochReceiver]") {
+    Logger logger("JFJochReceiverTest_Conversion_StorageCell");
+
+    DiffractionExperiment x;
+    const uint16_t nthreads = 4;
+
+    x.Mode(DetectorMode::Conversion);
+    x.DataStreamModuleSize(1, {2});
+    x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(true)
+            .ImagesPerTrigger(32).PhotonEnergy_keV(12.4).Compression(CompressionAlgorithm::BSHUF_ZSTD).StorageCells(16);
+
+    REQUIRE(x.GetImageNum() == 16);
+    REQUIRE(x.GetStorageCellNumber() == 16);
+
+    std::vector<std::unique_ptr<AcquisitionDevice>> aq_devices;
+    for (int i = 0; i < x.GetDataStreamsNum(); i++) {
+        AcquisitionDevice *test;
+        test = new HLSSimulatedDevice(i, 64);
+        test->EnableLogging(&logger);
+        aq_devices.emplace_back(test);
+    }
+
+    JFJochProtoBuf::JFJochReceiverOutput output;
+    bool ret;
+    REQUIRE_NOTHROW(ret = JFJochReceiverTest(output, logger, aq_devices, x, nthreads, "../../", false));
+    REQUIRE(ret);
+    REQUIRE(output.efficiency() == 1.0);
+    REQUIRE(output.images_sent() == x.GetImageNum());
+
+    REQUIRE(output.device_statistics(0).timestamp_size() == 16 * 2);
+    REQUIRE(output.device_statistics(0).timestamp(15 * 2) == 0xABCDEF);
 }
 
 TEST_CASE("JFJochReceiverTest_PedestalG1", "[JFJochReceiver]") {
@@ -102,8 +140,73 @@ TEST_CASE("JFJochReceiverTest_PedestalG1", "[JFJochReceiver]") {
     for (int i = 0; i < nframes; i++)
         pc.AnalyzeImage(pedestal_in.data() + i * RAW_MODULE_SIZE);
 
-    JungfrauCalibration calib(x);
-    pc.Export(calib, 0);
+    Logger logger("JFJochReceiverTest_PedestalG1");
+
+    JFJochProtoBuf::JFJochReceiverOutput output;
+    bool ret;
+    REQUIRE_NOTHROW(ret = JFJochReceiverTest(output, logger, aq_devices, x, nthreads, "../../", false));
+    REQUIRE(ret);
+    REQUIRE(output.images_sent() == x.GetImageNum());
+    REQUIRE(output.efficiency() == 1.0);
+
+    JFPedestal ref_pedestal;
+    pc.Export(ref_pedestal, 0);
+    JFPedestal out_pedestal = output.pedestal_result(0);
+    REQUIRE(abs(ref_pedestal.Mean() - out_pedestal.Mean()) < 0.1);
+    REQUIRE(abs(ref_pedestal.MeanRMS() - out_pedestal.MeanRMS()) < 0.1);
+    REQUIRE(out_pedestal.CountMaskedPixels() == 0);
+}
+
+TEST_CASE("JFJochReceiverTest_PedestalG2_storage_cell", "[JFJochReceiver]") {
+    DiffractionExperiment x;
+    const uint16_t nthreads = 4;
+    size_t nframes = 150;
+
+    std::vector<uint16_t> pedestal_in(RAW_MODULE_SIZE*nframes), pedestal_in2(RAW_MODULE_SIZE*nframes);;
+
+    // Predictable random number generator
+    std::mt19937 g2(1900);
+    std::normal_distribution<double> distribution1(13000, 100);
+    std::normal_distribution<double> distribution2(12000, 100);
+
+    for (auto &i: pedestal_in) {
+        uint16_t number = distribution1(g2);
+        if (number < 20) number = 20;
+        if (number > 16300) number = 16300;
+        i = 32768 | 16384 | number;
+    }
+
+    for (auto &i: pedestal_in2) {
+        uint16_t number = distribution2(g2);
+        if (number < 20) number = 20;
+        if (number > 16300) number = 16300;
+        i = 32768 | 16384 | number;
+    }
+
+    x.DataStreamModuleSize(1, {1}).Mode(DetectorMode::PedestalG2).PedestalG0Frames(0)
+            .PedestalG2Frames(nframes).NumTriggers(0).UseInternalPacketGenerator(false)
+            .ImagesPerTrigger(0).PhotonEnergy_keV(12.4).StorageCells(16);
+
+    REQUIRE(x.GetStorageCellNumber() == 2);
+    REQUIRE(x.GetFrameNum() == nframes * 2);
+
+    std::vector<std::unique_ptr<AcquisitionDevice>>  aq_devices;
+    for (int i = 0; i < x.GetDataStreamsNum(); i++) {
+        HLSSimulatedDevice *test;
+        test = new HLSSimulatedDevice(i, 64);
+        for (int j = 0; j < nframes; j++) {
+            test->CreatePackets(x, 2 * j + 1, 1, 0,
+                                pedestal_in2.data() + j * RAW_MODULE_SIZE, false);
+            test->CreatePackets(x, 2 * j + 2, 1, 0,
+                                pedestal_in.data() + j * RAW_MODULE_SIZE, false);
+        }
+        test->CreateFinalPacket(x);
+        aq_devices.emplace_back(test);
+    }
+
+    PedestalCalcCPU pc(x, -1);
+    for (int i = 0; i < nframes; i++)
+        pc.AnalyzeImage(pedestal_in.data() + i * RAW_MODULE_SIZE);
 
     Logger logger("JFJochReceiverTest_PedestalG1");
 
@@ -114,13 +217,13 @@ TEST_CASE("JFJochReceiverTest_PedestalG1", "[JFJochReceiver]") {
     REQUIRE(output.images_sent() == x.GetImageNum());
     REQUIRE(output.efficiency() == 1.0);
 
-    JungfrauCalibration out_calib = output.calibration();
-    REQUIRE(abs(output.calibration().module_statistics(0).pedestal_g1_mean() - calib.MeanPedestal(1,0)) < 0.1);
-    REQUIRE(abs(output.calibration().module_statistics(0).pedestal_rms_g1_mean() - calib.MeanPedestalRMS(1,0)) < 0.1);
-    REQUIRE(output.calibration().module_statistics(0).masked_pixels() == 0);
-
+    JFPedestal ref_pedestal;
+    pc.Export(ref_pedestal, 0);
+    JFPedestal out_pedestal = output.pedestal_result(0);
+    REQUIRE(abs(ref_pedestal.Mean() - out_pedestal.Mean()) < 0.1);
+    REQUIRE(abs(ref_pedestal.MeanRMS() - out_pedestal.MeanRMS()) < 0.1);
+    REQUIRE(out_pedestal.CountMaskedPixels() == 0);
 }
-
 
 TEST_CASE("JFJochReceiverTest_PedestalG0", "[JFJochReceiver]") {
     DiffractionExperiment x;
@@ -160,9 +263,6 @@ TEST_CASE("JFJochReceiverTest_PedestalG0", "[JFJochReceiver]") {
     for (int i = 0; i < nframes; i++)
         pc.AnalyzeImage(pedestal_in.data() + i * RAW_MODULE_SIZE);
 
-    JungfrauCalibration calib(x);
-    pc.Export(calib, 0);
-
     Logger logger("JFJochReceiverTest_PedestalG0");
     JFJochProtoBuf::JFJochReceiverOutput output;
     bool ret;
@@ -171,12 +271,64 @@ TEST_CASE("JFJochReceiverTest_PedestalG0", "[JFJochReceiver]") {
     REQUIRE(output.images_sent() == x.GetImageNum());
     REQUIRE(output.efficiency() == 1.0);
 
-    JungfrauCalibration out_calib = output.calibration();
+    JFPedestal ref_pedestal;
+    pc.Export(ref_pedestal, 0);
+    JFPedestal out_pedestal = output.pedestal_result(0);
+    REQUIRE(abs(ref_pedestal.Mean() - out_pedestal.Mean()) < 0.1);
+    REQUIRE(abs(ref_pedestal.MeanRMS() - out_pedestal.MeanRMS()) < 0.1);
+    REQUIRE(out_pedestal.CountMaskedPixels() == 0);
+}
 
-    REQUIRE(output.calibration().module_statistics(0).pedestal_g0_mean() == Approx(calib.MeanPedestal(0,0)));
-    REQUIRE(output.calibration().module_statistics(0).pedestal_rms_g0_mean() == Approx(calib.MeanPedestalRMS(0,0)));
-    REQUIRE(output.calibration().module_statistics(0).masked_pixels() == 0);
+TEST_CASE("JFJochReceiverTest_PedestalG0_StorageCell", "[JFJochReceiver]") {
+    DiffractionExperiment x;
+    const uint16_t nthreads = 4;
+    size_t nframes = 140;
 
+    std::vector<uint16_t> pedestal_in_0(RAW_MODULE_SIZE);
+    std::vector<uint16_t> pedestal_in_1(RAW_MODULE_SIZE);
+    std::vector<uint16_t> pedestal_in_2(RAW_MODULE_SIZE);
+    std::vector<uint16_t> pedestal_in_3(RAW_MODULE_SIZE);
+
+    for (auto &i: pedestal_in_0) i = 5670;
+    for (auto &i: pedestal_in_1) i = 4560;
+    for (auto &i: pedestal_in_2) i = 3450;
+    for (auto &i: pedestal_in_3) i = 2000;
+
+    x.Mode(DetectorMode::PedestalG0).StorageCells(4);
+    x.DataStreamModuleSize(1, {1}).PedestalG0Frames(nframes)
+            .NumTriggers(0).UseInternalPacketGenerator(false)
+            .ImagesPerTrigger(0).PhotonEnergy_keV(12.4);
+
+    std::vector<std::unique_ptr<AcquisitionDevice>>  aq_devices;
+    HLSSimulatedDevice *test;
+    test = new HLSSimulatedDevice(0, 64);
+    for (int i = 0; i < nframes; i++) {
+        test->CreatePackets(x, i*4+1, 1, 0, pedestal_in_0.data(), false);
+        test->CreatePackets(x, i*4+2, 1, 0, pedestal_in_1.data(), false);
+        test->CreatePackets(x, i*4+3, 1, 0, pedestal_in_2.data(), false);
+        test->CreatePackets(x, i*4+4, 1, 0, pedestal_in_3.data(), false);
+    }
+    test->CreateFinalPacket(x);
+    aq_devices.emplace_back(test);
+
+    Logger logger("JFJochReceiverTest_PedestalG0_StorageCell");
+    JFJochProtoBuf::JFJochReceiverOutput output;
+    bool ret;
+    REQUIRE_NOTHROW(ret = JFJochReceiverTest(output, logger, aq_devices, x, nthreads, "../../", false));
+    REQUIRE(ret);
+    REQUIRE(output.images_sent() == x.GetImageNum());
+    REQUIRE(output.efficiency() == 1.0);
+    REQUIRE(output.device_statistics(0).good_packets() == nframes * 4 * 128);
+    REQUIRE(output.pedestal_result_size() == 4);
+    JFPedestal out_pedestal_0 = output.pedestal_result(0);
+    JFPedestal out_pedestal_1 = output.pedestal_result(1);
+    JFPedestal out_pedestal_2 = output.pedestal_result(2);
+    JFPedestal out_pedestal_3 = output.pedestal_result(3);
+
+    REQUIRE(out_pedestal_0.Mean() == Approx(5670));
+    REQUIRE(out_pedestal_1.Mean() == Approx(4560));
+    REQUIRE(out_pedestal_2.Mean() == Approx(3450));
+    REQUIRE(out_pedestal_3.Mean() == Approx(2000));
 }
 
 TEST_CASE("JFJochReceiverTest_PedestalG1_NoFrames", "[JFJochReceiver]") {
@@ -210,7 +362,8 @@ TEST_CASE("JFJochReceiverTest_PedestalG1_NoFrames", "[JFJochReceiver]") {
     REQUIRE(output.images_sent() == 0);
     REQUIRE(output.efficiency() < 1.0);
 
-    REQUIRE(output.calibration().module_statistics(0).masked_pixels() == RAW_MODULE_SIZE);
+    JFPedestal out_pedestal = output.pedestal_result(0);
+    REQUIRE(out_pedestal.CountMaskedPixels() == RAW_MODULE_SIZE);
 }
 
 TEST_CASE("JFJochReceiverTest_PacketLost_Raw", "[JFJochReceiver]") {
@@ -247,7 +400,8 @@ TEST_CASE("JFJochReceiverTest_PacketLost_Raw", "[JFJochReceiver]") {
     }
     Logger logger("JFJochReceiverTest_PacketLost_Raw");
     CommunicationBuffer buffer(256*1024*1024);
-    JungfrauCalibration calib(x);
+
+    JFCalibration calib(x);
 
     size_t nframes = 0;
     std::vector<uint8_t> image;
@@ -305,7 +459,8 @@ TEST_CASE("JFJochReceiverTest_Raw_TimeResolved", "[JFJochReceiver]") {
     }
     Logger logger("JFJochReceiverTest_Raw_TimeResolved");
     CommunicationBuffer buffer(256*1024*1024);
-    JungfrauCalibration calib(x);
+
+    JFCalibration calib(x);
 
     size_t nframes = 0;
     std::vector<uint8_t> image;

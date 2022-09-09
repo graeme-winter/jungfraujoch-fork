@@ -60,8 +60,7 @@ int main(int argc, char **argv) {
     ZMQImagePusher pusher(context);
     pusher.Connect(zmq_addr, x);
 
-    JungfrauCalibration calibration(x);
-    FrameTransformation transformation(x, calibration);
+    FrameTransformation transformation(x);
 
     std::vector<std::vector<char> > output(nimages_in_file);
     std::vector<int64_t> output_size(nimages_in_file);

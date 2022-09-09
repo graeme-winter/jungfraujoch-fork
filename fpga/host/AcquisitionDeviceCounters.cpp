@@ -28,6 +28,7 @@ void AcquisitionDeviceCounters::Reset(const DiffractionExperiment &experiment, u
     handle_for_frame = std::vector<uint64_t>((expected_frames+1) * nmodules, HandleNotFound);
     packet_mask_half = std::vector<uint64_t>(expected_frames * nmodules * 2, 0);
     trigger = std::vector<bool>(expected_frames * nmodules, false);
+    timestamp = std::vector<uint32_t>(expected_frames * nmodules, false);
 }
 
 void AcquisitionDeviceCounters::UpdateCounters(const Completion *c) {
@@ -46,6 +47,7 @@ void AcquisitionDeviceCounters::UpdateCounters(const Completion *c) {
 
         handle_for_frame[c->frame_number * nmodules + c->module] = c->handle;
         trigger[c->frame_number * nmodules + c->module] = c->trigger;
+        timestamp[c->frame_number * nmodules + c->module] = c->timestamp;
         packet_mask_half[2*(c->frame_number * nmodules + c->module)]    =  c->packet_mask[0];
         packet_mask_half[2*(c->frame_number * nmodules + c->module) + 1] = c->packet_mask[1];
     }
@@ -148,6 +150,10 @@ bool AcquisitionDeviceCounters::GetAcqusitionFinished() const {
 
 const std::vector<uint64_t> &AcquisitionDeviceCounters::PacketMaskHalfModule() const {
     return packet_mask_half;
+}
+
+const std::vector<uint32_t> &AcquisitionDeviceCounters::Timestamps() const {
+    return timestamp;
 }
 
 bool AcquisitionDeviceCounters::IsPacketCollected(size_t frame, uint16_t module, uint16_t packet_number) const {

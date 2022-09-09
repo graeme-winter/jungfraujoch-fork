@@ -9,10 +9,8 @@ ZMQPreviewPublisher::ZMQPreviewPublisher(ZMQContext& context, const std::string&
     socket.Bind(addr);
 }
 
-void ZMQPreviewPublisher::Start(const DiffractionExperiment &experiment, const JungfrauCalibration &calibration) {
-    std::vector<uint32_t> mask;
-    mask.resize(experiment.GetPixelsNum());
-    calibration.GetMaskTransformed(experiment, mask);
+void ZMQPreviewPublisher::Start(const DiffractionExperiment &experiment, const JFCalibration &calibration) {
+    auto mask = calibration.CalculateNexusMask(experiment);
     JFJochProtoBuf::PreviewFrame frame;
     frame.set_image_number(-1);
     frame.set_width(experiment.GetXPixelsNum());
@@ -27,7 +25,7 @@ void ZMQPreviewPublisher::Stop(const DiffractionExperiment& experiment) {}
 void ZMQPreviewPublisher::Publish(const DiffractionExperiment& experiment, const int16_t* image_data, uint32_t image_number) {
     JFJochProtoBuf::PreviewFrame frame;
     frame.set_image_number(image_number);
-    frame.set_total_images(experiment.GetImageNumForPreview());
+    frame.set_total_images(experiment.GetImageNum());
     frame.set_wavelength_a(experiment.GetWavelength_A());
     frame.set_beam_center_x(experiment.GetBeamX_pxl());
     frame.set_beam_center_y(experiment.GetBeamY_pxl());

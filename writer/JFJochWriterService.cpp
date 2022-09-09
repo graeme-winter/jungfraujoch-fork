@@ -4,15 +4,18 @@
 #include "JFJochWriterService.h"
 
 #include <utility>
+#include <filesystem>
 
 JFJochWriterService::JFJochWriterService(ZMQContext &in_context, std::string in_zmq_addr, Logger &in_logger) :
 logger(in_logger), zmq_context(in_context), zmq_addr(std::move(in_zmq_addr)) {}
 
 grpc::Status
-JFJochWriterService::WriteMasterFile(grpc::ServerContext *context, const JFJochProtoBuf::JFJochReceiverOutput *request,
+JFJochWriterService::WriteMasterFile(grpc::ServerContext *context, const JFJochProtoBuf::JFJochWriterMetadataInput *request,
                               JFJochProtoBuf::Empty *response) {
     try {
         logger.Info("Writing master file");
+        if (request->has_calibration())
+            logger.Info("   ... request has calibration info");
         WriteHDF5MasterFile(*request);
         logger.Info("   ... done.");
         return grpc::Status::OK;
@@ -63,4 +66,17 @@ grpc::Status JFJochWriterService::Abort(grpc::ServerContext *context, const JFJo
     std::shared_lock<std::shared_mutex> ul(m);
     writer->Abort();
     return grpc::Status::OK;
+}
+
+
+JFJochWriterService &JFJochWriterService::BaseDirectory(const std::string &input) {
+    logger.Info("Setting base directory to " + input);
+    try {
+        std::filesystem::current_path(input);
+    } catch (const std::filesystem::filesystem_error& err) {
+        logger.Error("Cannot set base directory: " + std::string(err.what()));
+        throw JFJochException(JFJochExceptionCategory::FileWriteError,
+                              "Cannot set base directory " + std::string(err.what()));
+    }
+    return *this;
 }

@@ -26,8 +26,7 @@
 #define MODULES_INTERNAL_PACKET_GEN 1
 
 #define ADDR_STREAM_WIDTH 256
-#define LOAD_CALIBRATION_BRAM_SIZE 128
-
+#define LOAD_CALIBRATION_BRAM_SIZE 1024
 
 typedef ap_ufixed<16,14> pedeG1G2_t;
 
@@ -69,9 +68,10 @@ typedef hls::stream<packet_512_t> STREAM_512;
 
 #define ACT_REG_MODE(x)                   ((x)(63,0))    // 64 bit
 #define ACT_REG_MODE_SHORT(x)             ((x)(7,0))     // only first 8 bits of mode
-#define ACT_REG_ONE_OVER_ENERGY(x)        ((x)(383,352)) // 32 bit
-#define ACT_REG_FRAMES_PER_TRIGGER(x)     ((x)(447,384)) // 32 bit
-#define ACT_REG_NMODULES(x)               ((x)(495,480)) // 16 bit
+#define ACT_REG_ONE_OVER_ENERGY(x)        ((x)(95,64))   // 32 bit
+#define ACT_REG_FRAMES_PER_TRIGGER(x)     ((x)(127,96))  // 32 bit
+#define ACT_REG_NMODULES(x)               ((x)(132,128)) // 5 bit (0..31)
+#define ACT_REG_NSTORAGE_CELLS(x)         ((x)(148,144)) // 5 bit
 
 typedef struct {
     ap_uint<40+64> data;
@@ -122,7 +122,8 @@ void data_collection_fsm(AXI_STREAM &eth_in,
                          ap_uint<32> mode,
                          ap_uint<32> one_over_energy,
                          ap_uint<32> frames_per_trigger,
-                         ap_uint<8>  nmodules);
+                         ap_uint<8>  nmodules,
+                         ap_uint<4>  nstorage_cells);
 
 void load_calibration(STREAM_512 &data_in, STREAM_512 &data_out,
                       hls::stream<axis_datamover_ctrl> &datamover_in_cmd,
@@ -153,7 +154,8 @@ void timer_host(STREAM_512 &data_in, STREAM_512 &data_out, uint64_t &counter);
 
 void internal_packet_generator(STREAM_512 &data_in, STREAM_512 &data_out,
                                hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_in,
-                               hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_out);
+                               hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_out,
+                               volatile ap_uint<1> &in_cancel);
 
 void bitshuffle(STREAM_512 &data_in, STREAM_512 &out);
 

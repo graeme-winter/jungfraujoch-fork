@@ -14,7 +14,8 @@ void data_collection_fsm(AXI_STREAM &eth_in,
                 ap_uint<32> mode,
                 ap_uint<32> one_over_energy,
                 ap_uint<32> frames_per_trigger,
-                ap_uint<8>  nmodules) {
+                ap_uint<8>  nmodules,
+                ap_uint<4>  nstorage_cells) {
 #pragma HLS INTERFACE ap_ctrl_none port=return
 
 #pragma HLS INTERFACE axis register both port=eth_in
@@ -29,8 +30,9 @@ void data_collection_fsm(AXI_STREAM &eth_in,
 #pragma HLS INTERFACE ap_none register port=one_over_energy
 #pragma HLS INTERFACE ap_none register port=frames_per_trigger
 #pragma HLS INTERFACE ap_none register port=nmodules
+#pragma HLS INTERFACE ap_none register port=nstorage_cells
 
-#pragma HLS PIPELINE II=1 enable_flush
+#pragma HLS PIPELINE II=1 style=flp
 
     packet_512_t packet_in;
     packet_512_t packet_out;
@@ -39,6 +41,9 @@ void data_collection_fsm(AXI_STREAM &eth_in,
     enum rcv_state_t {RCV_WAIT_FOR_START = 0, RCV_WAIT_FOR_START_LOW = 1, RCV_START = 2, RCV_INIT = 3, RCV_GOOD = 4, RCV_FLUSH = 5, RCV_LAST = 6, RCV_FLUSH_IDLE = 7};
     static rcv_state_t rcv_state = RCV_WAIT_FOR_START;
     static ap_uint<8> axis_packet = 0; // used in for loops, so need one extra bit to allow loop termination
+
+#pragma HLS RESET variable=rcv_state
+
     ap_uint<1> run;
 
     switch (rcv_state) {
@@ -74,6 +79,7 @@ void data_collection_fsm(AXI_STREAM &eth_in,
             ACT_REG_ONE_OVER_ENERGY(packet_out.data) = one_over_energy;
             ACT_REG_FRAMES_PER_TRIGGER(packet_out.data) = frames_per_trigger;
             ACT_REG_NMODULES(packet_out.data) = nmodules;
+            ACT_REG_NSTORAGE_CELLS(packet_out.data) = nstorage_cells + 1;
             packet_out.user = 0;
             packet_out.last = 0;
             packet_out.dest = 0;

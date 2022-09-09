@@ -8,7 +8,6 @@
 #include <jfjoch.grpc.pb.h>
 
 #include "../common/DiffractionExperiment.h"
-#include "../common/JungfrauCalibration.h"
 
 class JFJochWriterClient {
     std::unique_ptr<JFJochProtoBuf::gRPC_JFJochWriter::Stub> _stub;
@@ -16,7 +15,8 @@ public:
     void Connect(const std::string &addr);
     void Start(const DiffractionExperiment &experiment);
     void Stop();
-    void WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request);
+    void WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request,
+                         const JFJochProtoBuf::JFCalibration &calibration);
     void Abort();
 };
 

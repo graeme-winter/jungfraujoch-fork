@@ -49,7 +49,7 @@
 // For FPGA
 /* This number is unique and is declared in ~snap/ActionTypes.md */
 #define ACTION_TYPE   0x52324158
-#define RELEASE_LEVEL 0x0020
+#define RELEASE_LEVEL 0x0021
 
 #define MODE_RAW                    0
 #define MODE_CONV                   1
@@ -104,7 +104,7 @@
 #define ADDR_DATA_COL_MODE       0x0070
 #define ADDR_ONE_OVER_ENERGY     0x0074
 #define ADDR_FRAMES_PER_TRIG     0x0078
-
+#define ADDR_NSTORAGE_CELLS      0x007C
 
 #define ADDR_MAILBOX_WRDATA      0x00
 #define ADDR_MAILBOX_RDDATA      0x08

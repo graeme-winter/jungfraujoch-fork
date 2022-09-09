@@ -7,13 +7,12 @@ add_executable(CatchTest
         FPGAUnitTest.h
         FPGAIntegrationTest.cpp
         SpotFinderIntegration.cpp
-        DataStreamCalibrationTest.cpp
         SpotAnalyzeUnitTest.cpp
         CommunicationBufferTest.cpp
         ZSTDCompressorTest.cpp
         FrameTransformationTest.cpp
         HDF5WritingTest.cpp PedestalCalcTest.cpp
-        ZMQImagePusherTest.cpp ImageWriterTest.cpp
+        ZMQImagePusherTest.cpp JFJochWriterTest.cpp
         CoordTest.cpp JFJochBrokerTest.cpp gRPCServerTest.cpp
         JFJochReceiverIntegrationTest.cpp
         AcquisitionDeviceFilterTest.cpp AcquisitionDeviceCountersTest.cpp
@@ -21,9 +20,16 @@ add_executable(CatchTest
         XgandalfUnitTest.cpp
         MockAcquisitionDeviceTest.cpp ThreadSafeFIFOSetTest.cpp
         FPGANetworkTest.cpp
-        ZMQPreviewPublisherTest.cpp BackgroundEstimationTest.cpp HLSBitshuffleTest.cpp FrameTransformationPreviewTest.cpp ActionConfigTest.cpp)
+        ZMQPreviewPublisherTest.cpp
+        HLSBitshuffleTest.cpp
+        ActionConfigTest.cpp
+        JFPedestalTest.cpp
+        JFCalibrationTest.cpp
+        RadialIntegrationTest.cpp
+        StatusVectorTest.cpp)
 
 target_link_libraries(CatchTest JFJochBroker JFJochReceiver JFJochWriter DataProcessing CommonFunctions HLSSimulation -pthread -ldl -lz)
+target_include_directories(CatchTest PRIVATE .)
 
 add_executable(CompressionBenchmark CompressionBenchmark.cpp)
 target_link_libraries(CompressionBenchmark JFJochWriter CommonFunctions -pthread -ldl -lz)

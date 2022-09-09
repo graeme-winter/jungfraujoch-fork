@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
             std::cout << "MAC address                 " << test.GetMACAddress() << std::endl;
             std::cout << "Mode                        " << std::hex << cfg.mode << std::dec << std::endl;
             std::cout << "Modules                     " << std::dec << cfg.nmodules  << std::endl;
-            std::cout << "Frames per trigger          " << std::dec << cfg.frames_per_trigger  << std::endl;
+            std::cout << "Frames int. pkt. gen.       " << std::dec << cfg.frames_internal_packet_gen  << std::endl;
             std::cout << std::endl;
             std::cout << "FPGA FIFO status:           " << std::endl;
             for (const auto &[x,y]: status.fifo_status()) {

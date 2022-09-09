@@ -35,11 +35,19 @@ Instructions see [here](fpga/README.md)
 4. ZeroMQ library
 5. Google Remote Procedure Call (gRPC) - see notes below
 
-Additional dependencies: Pistache REST for C++, SLS Detector Package, OC-Accel and Zstandard are provided as GIT submodules. 
-JSON class from N. Lohmann is provided as a single header file in the main repository - see [github.com/nlohmann/json](https://github.com/nlohmann/json).
-Catch testing library is also provided directly in the main repository - see [github.com/catchorg/Catch2](https://github.com/catchorg/Catch2).
-Xilinx arbitrary precision arithmetic headers are also directly included - see [github.com/Xilinx/HLS_arbitrary_Precision_Types](https://github.com/Xilinx/HLS_arbitrary_Precision_Types)
-Bitshuffle filter from K. Masui (see [github.com/kiyo-masui/bitshuffle](https://github.com/kiyo-masui/bitshuffle)) with modifications by F. Leonarski and LZ4 compression by Y.Collet (see [github.com/lz4/lz4](https://github.com/lz4/lz4)) are also directly incorporated into main repository. 
+Additional dependencies: SLS Detector Package, OC-Accel and Zstandard are provided as GIT submodules. 
+
+Directly included in the repository:
+* JSON parser/writer from N. Lohmann - see [github.com/nlohmann/json](https://github.com/nlohmann/json).
+* Catch testing library - see [github.com/catchorg/Catch2](https://github.com/catchorg/Catch2).
+* Xilinx arbitrary precision arithmetic headers - see [github.com/Xilinx/HLS_arbitrary_Precision_Types](https://github.com/Xilinx/HLS_arbitrary_Precision_Types)
+* Bitshuffle filter from K. Masui - see [github.com/kiyo-masui/bitshuffle](https://github.com/kiyo-masui/bitshuffle)
+* LZ4 compression by Y.Collet - see [github.com/lz4/lz4](https://github.com/lz4/lz4)
+* Libserial library - see [github.com/crayzeewulf/libserial](https://github.com/crayzeewulf/libserial)
+* Xgandalf indexer - see [stash.desy.de/users/gevorkov/repos/xgandalf](https://stash.desy.de/users/gevorkov/repos/xgandalf/browse)
+* GEMMI library to handle space group naming / numbering - see [github.com/project-gemmi/gemmi](https://github.com/project-gemmi/gemmi)
+
+For license check LICENSE file in respective directory
 
 ### Software components
 

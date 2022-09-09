@@ -16,12 +16,13 @@ void JFJochReceiverClient::Connect(const std::string& addr)
     }
 };
 
-void JFJochReceiverClient::Start(const DiffractionExperiment &experiment, const JungfrauCalibration &calibration,
+void JFJochReceiverClient::Start(const DiffractionExperiment &experiment, const JFCalibration *calibration,
                                  const std::vector<std::string> &writer_zmq_addr) {
     JFJochProtoBuf::JFJochReceiverInput receiver_input;
 
     *receiver_input.mutable_jungfraujoch_settings() = experiment;
-    *receiver_input.mutable_calibration() = calibration;
+    if (calibration != nullptr)
+        *receiver_input.mutable_calibration() = *calibration;
     for (const auto& i: writer_zmq_addr)
         receiver_input.add_writer_zmq_address(i);
 

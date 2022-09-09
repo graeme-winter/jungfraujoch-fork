@@ -12,9 +12,8 @@
 std::string CheckCompression(const DiffractionExperiment &x, size_t nimages, const std::vector<int16_t> &image) {
 
     double original_size = nimages * x.GetModulesNum() * RAW_MODULE_SIZE * x.GetPixelDepth();
-    JungfrauCalibration calibration(x);
 
-    FrameTransformation transformation(x, calibration);
+    FrameTransformation transformation(x);
     std::vector<uint16_t> output(nimages * x.GetMaxCompressedSize());
 
     double compressed_size = 0;
@@ -40,8 +39,7 @@ std::string CheckCompression(const DiffractionExperiment &x, size_t nimages, con
 std::string CheckDecompression(const DiffractionExperiment &x, size_t nimages, const std::vector<int16_t> &image) {
     double original_size = nimages * x.GetModulesNum() * RAW_MODULE_SIZE * x.GetPixelDepth();
 
-    JungfrauCalibration calibration(x);
-    FrameTransformation transformation(x, calibration);
+    FrameTransformation transformation(x);
     std::vector<char> output[nimages];
     for (auto &v: output)
         v.resize(x.GetMaxCompressedSize());

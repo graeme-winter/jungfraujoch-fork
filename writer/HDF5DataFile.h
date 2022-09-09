@@ -24,6 +24,7 @@ public:
     HDF5DataFile(const DiffractionExperiment &in_experiment, uint32_t file_id);
     ~HDF5DataFile();
     void Write(const void *data, size_t data_size, size_t image_number);
+    size_t GetMaxImageNumber() const;
 };
 
 #endif //HDF5DATAFILE_H

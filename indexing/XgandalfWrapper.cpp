@@ -18,13 +18,15 @@ XgandalfWrapper::~XgandalfWrapper() {
 }
 
 void XgandalfWrapper::Setup(const IndexingSettings &in_settings) {
-    unit_cell = in_settings.unit_cell;
-
-    if (!in_settings.unit_cell.empty()) {
-        CrystalLattice lattice(unit_cell);
-        CrystalLattice rl = lattice.ReciprocalLattice();
+    if (in_settings.has_unit_cell) {
+        CrystalLattice lattice(in_settings.unit_cell);
+        auto ucl = lattice.Uncenter(in_settings.centering);
+        auto rl = ucl.ReciprocalLattice();
         Eigen::Matrix3f eigen_lattice;
-        eigen_lattice << rl.vec_a.x, rl.vec_b.x, rl.vec_c.x, rl.vec_a.y, rl.vec_b.y, rl.vec_c.y, rl.vec_a.z, rl.vec_b.z, rl.vec_c.z;
+        eigen_lattice <<
+                rl.vec[0].x, rl.vec[1].x, rl.vec[2].x,
+                rl.vec[0].y, rl.vec[1].y, rl.vec[2].y,
+                rl.vec[0].z, rl.vec[1].z, rl.vec[2].z;
 
         xgandalf::ExperimentSettings settings(12400,
                                               0.1,
@@ -32,7 +34,6 @@ void XgandalfWrapper::Setup(const IndexingSettings &in_settings) {
                                               eigen_lattice, tolerance, 0.1f);
         indexer = std::make_unique<xgandalf::IndexerPlain>(settings);
     } else {
-        unit_cell = UnitCell();
         xgandalf::ExperimentSettings settings(12400,
                                               0.1,
                                               0.1, 0.05, 0.005,
@@ -58,9 +59,9 @@ void XgandalfWrapper::Setup(const IndexingSettings &in_settings) {
         indexer->setMaxPeaksToUseForIndexing(in_settings.max_indexing_spots);
 }
 
-std::vector<UnitCell> XgandalfWrapper::Run(const IndexingSettings &settings,
+std::vector<JFJochProtoBuf::UnitCell> XgandalfWrapper::Run(const IndexingSettings &settings,
                                            const std::vector<Coord> &coord) {
-    std::vector<UnitCell> ret;
+    std::vector<JFJochProtoBuf::UnitCell> ret;
 
     if (coord.size() < 4)
         return ret;
@@ -89,9 +90,14 @@ std::vector<UnitCell> XgandalfWrapper::Run(const IndexingSettings &settings,
         Coord b_orig(assembledLattices[0].bx, assembledLattices[0].by, assembledLattices[0].bz);
         Coord c_orig(assembledLattices[0].cx, assembledLattices[0].cy, assembledLattices[0].cz);
 
-        ret.emplace_back(a_orig.Length(), b_orig.Length(), c_orig.Length(),
-                         angle_deg(b_orig, c_orig),angle_deg(a_orig, c_orig),
-                         angle_deg(a_orig, b_orig));
+        JFJochProtoBuf::UnitCell cell;
+        cell.set_a(a_orig.Length());
+        cell.set_b(b_orig.Length());
+        cell.set_c(c_orig.Length());
+        cell.set_alpha(angle_deg(b_orig, c_orig));
+        cell.set_beta(angle_deg(a_orig, c_orig));
+        cell.set_gamma(angle_deg(a_orig, b_orig));
+        ret.emplace_back(cell);
     }
     return ret;
 }

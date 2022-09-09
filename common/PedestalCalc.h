@@ -6,7 +6,9 @@
 
 #include <cmath>
 #include "DiffractionExperiment.h"
-#include "JungfrauCalibration.h"
+#include "JFPedestal.h"
+
+#define PEDESTAL_RMS_MULTIPLIER (2)
 
 class PedestalCalc {
 protected:
@@ -25,8 +27,7 @@ public:
     void Export(std::vector<uint32_t> &mean, std::vector<uint32_t> &rms,
                 std::vector<uint32_t> &wrong_count, size_t offset = 0);
 
-    void Export(JungfrauCalibration& calibration, size_t offset = 0,
-                size_t allowed_wrong_gains = 0, double rms_mask = INFINITY);
+    void Export(JFPedestal& calibration, size_t allowed_wrong_gains = 0, double rms_mask = INFINITY);
 };
 
 std::unique_ptr<PedestalCalc> MakePedestalCalc(const DiffractionExperiment& experiment, int64_t lines = -1, int32_t thread_id = -1);

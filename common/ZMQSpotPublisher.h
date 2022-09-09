@@ -6,7 +6,6 @@
 
 #include "ZMQWrappers.h"
 #include "DiffractionExperiment.h"
-#include "JungfrauCalibration.h"
 #include "DiffractionSpot.h"
 
 class ZMQSpotPublisher {

@@ -6,7 +6,7 @@
 
 #include "ZMQWrappers.h"
 #include "DiffractionExperiment.h"
-#include "JungfrauCalibration.h"
+#include "JFCalibration.h"
 #include "jfjoch.pb.h"
 
 class ZMQPreviewPublisher  {
@@ -17,7 +17,7 @@ class ZMQPreviewPublisher  {
     void SetPreviewImage(const JFJochProtoBuf::PreviewFrame &frame);
 public:
     ZMQPreviewPublisher(ZMQContext& context, const std::string& addr);
-    void Start(const DiffractionExperiment& experiment, const JungfrauCalibration &calibration);
+    void Start(const DiffractionExperiment& experiment, const JFCalibration &calibration);
     void Publish(const DiffractionExperiment& experiment, const int16_t* image_data, uint32_t image_number);
     void Stop(const DiffractionExperiment& experiment);
     JFJochProtoBuf::PreviewFrame GetPreviewImage() const;

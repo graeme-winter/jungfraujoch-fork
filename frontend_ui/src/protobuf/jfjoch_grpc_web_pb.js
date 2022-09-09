@@ -317,16 +317,16 @@ proto.JFJochProtoBuf.gRPC_JFJochBrokerPromiseClient.prototype.cancel =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.JFJochProtoBuf.Empty,
+ *   !proto.JFJochProtoBuf.BrokerSetup,
  *   !proto.JFJochProtoBuf.Empty>}
  */
 const methodDescriptor_gRPC_JFJochBroker_Pedestal = new grpc.web.MethodDescriptor(
   '/JFJochProtoBuf.gRPC_JFJochBroker/Pedestal',
   grpc.web.MethodType.UNARY,
-  proto.JFJochProtoBuf.Empty,
+  proto.JFJochProtoBuf.BrokerSetup,
   proto.JFJochProtoBuf.Empty,
   /**
-   * @param {!proto.JFJochProtoBuf.Empty} request
+   * @param {!proto.JFJochProtoBuf.BrokerSetup} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -337,7 +337,7 @@ const methodDescriptor_gRPC_JFJochBroker_Pedestal = new grpc.web.MethodDescripto
 
 
 /**
- * @param {!proto.JFJochProtoBuf.Empty} request The
+ * @param {!proto.JFJochProtoBuf.BrokerSetup} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -358,7 +358,7 @@ proto.JFJochProtoBuf.gRPC_JFJochBrokerClient.prototype.pedestal =
 
 
 /**
- * @param {!proto.JFJochProtoBuf.Empty} request The
+ * @param {!proto.JFJochProtoBuf.BrokerSetup} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
@@ -494,6 +494,67 @@ proto.JFJochProtoBuf.gRPC_JFJochBrokerPromiseClient.prototype.deactivate =
       request,
       metadata || {},
       methodDescriptor_gRPC_JFJochBroker_Deactivate);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.JFJochProtoBuf.BrokerPersistentSettings,
+ *   !proto.JFJochProtoBuf.Empty>}
+ */
+const methodDescriptor_gRPC_JFJochBroker_Setup = new grpc.web.MethodDescriptor(
+  '/JFJochProtoBuf.gRPC_JFJochBroker/Setup',
+  grpc.web.MethodType.UNARY,
+  proto.JFJochProtoBuf.BrokerPersistentSettings,
+  proto.JFJochProtoBuf.Empty,
+  /**
+   * @param {!proto.JFJochProtoBuf.BrokerPersistentSettings} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.JFJochProtoBuf.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.BrokerPersistentSettings} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.JFJochProtoBuf.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.JFJochProtoBuf.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.JFJochProtoBuf.gRPC_JFJochBrokerClient.prototype.setup =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/JFJochProtoBuf.gRPC_JFJochBroker/Setup',
+      request,
+      metadata || {},
+      methodDescriptor_gRPC_JFJochBroker_Setup,
+      callback);
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.BrokerPersistentSettings} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.JFJochProtoBuf.Empty>}
+ *     Promise that resolves to the response
+ */
+proto.JFJochProtoBuf.gRPC_JFJochBrokerPromiseClient.prototype.setup =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/JFJochProtoBuf.gRPC_JFJochBroker/Setup',
+      request,
+      metadata || {},
+      methodDescriptor_gRPC_JFJochBroker_Setup);
 };
 
 
@@ -2007,16 +2068,16 @@ proto.JFJochProtoBuf.gRPC_JFJochWriterPromiseClient.prototype.stop =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.JFJochProtoBuf.JFJochReceiverOutput,
+ *   !proto.JFJochProtoBuf.JFJochWriterMetadataInput,
  *   !proto.JFJochProtoBuf.Empty>}
  */
 const methodDescriptor_gRPC_JFJochWriter_WriteMasterFile = new grpc.web.MethodDescriptor(
   '/JFJochProtoBuf.gRPC_JFJochWriter/WriteMasterFile',
   grpc.web.MethodType.UNARY,
-  proto.JFJochProtoBuf.JFJochReceiverOutput,
+  proto.JFJochProtoBuf.JFJochWriterMetadataInput,
   proto.JFJochProtoBuf.Empty,
   /**
-   * @param {!proto.JFJochProtoBuf.JFJochReceiverOutput} request
+   * @param {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -2027,7 +2088,7 @@ const methodDescriptor_gRPC_JFJochWriter_WriteMasterFile = new grpc.web.MethodDe
 
 
 /**
- * @param {!proto.JFJochProtoBuf.JFJochReceiverOutput} request The
+ * @param {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -2048,7 +2109,7 @@ proto.JFJochProtoBuf.gRPC_JFJochWriterClient.prototype.writeMasterFile =
 
 
 /**
- * @param {!proto.JFJochProtoBuf.JFJochReceiverOutput} request The
+ * @param {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata

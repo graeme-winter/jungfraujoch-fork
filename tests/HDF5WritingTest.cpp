@@ -119,16 +119,15 @@ TEST_CASE("HDF5MasterFile", "[HDF5][Full]") {
         RegisterHDF5Filter();
         DiffractionExperiment x;
         x.DataStreamModuleSize(2, {4,4}, 8, 36);
-        JungfrauCalibration calib(x);
         x.FilePrefix("test01").ImagesPerTrigger(950).ImagesPerFile(100);
 
-        JFJochProtoBuf::JFJochReceiverOutput output;
-        *output.mutable_calibration() = calib;
+        JFJochProtoBuf::JFJochWriterMetadataInput request;
+        auto &output = *request.mutable_receiver_output();
         *output.mutable_jungfraujoch_settings() = x;
-        REQUIRE_NOTHROW(WriteHDF5MasterFile(output));
+        REQUIRE_NOTHROW(WriteHDF5MasterFile(request));
 
         x.FilePrefix("test02");
-        REQUIRE_NOTHROW(WriteHDF5MasterFile(output));
+        REQUIRE_NOTHROW(WriteHDF5MasterFile(request));
     }
     remove("test01_master.h5");
     remove("test02_master.h5");
@@ -152,17 +151,15 @@ TEST_CASE("HDF5Writer_Overwrite", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
         DiffractionExperiment x;
-        JungfrauCalibration calib(x);
 
         x.DataStreamModuleSize(2, {4,4}, 8, 36);
         x.FilePrefix("test03").ImagesPerTrigger(5).ImagesPerFile(2).Compression(CompressionAlgorithm::None);
         std::unique_ptr<HDF5Writer> file_set;
 
-        JFJochProtoBuf::JFJochReceiverOutput output;
-        *output.mutable_calibration() = calib;
+        JFJochProtoBuf::JFJochWriterMetadataInput request;
+        auto &output = *request.mutable_receiver_output();
         *output.mutable_jungfraujoch_settings() = x;
-
-        WriteHDF5MasterFile(output);
+        REQUIRE_NOTHROW(WriteHDF5MasterFile(request));
         REQUIRE_NOTHROW(file_set = std::make_unique<HDF5Writer>(x));
 
         x.ErrorWhenOverwriting(true);
@@ -181,8 +178,6 @@ TEST_CASE("HDF5Writer", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
         DiffractionExperiment x;
-
-        JungfrauCalibration calib(x);
 
         x.DataStreamModuleSize(2, {4,4}, 8, 36);
         x.FilePrefix("test02_1p10").ImagesPerTrigger(5).ImagesPerFile(2).Compression(CompressionAlgorithm::None);
@@ -215,8 +210,6 @@ TEST_CASE("HDF5Writer_VDS", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
 
-        JungfrauCalibration calib(x);
-
         HDF5Writer writer(x);
         std::vector<uint16_t> image(x.GetPixelsNum());
 
@@ -225,10 +218,12 @@ TEST_CASE("HDF5Writer_VDS", "[HDF5][Full]") {
                 j = i;
             REQUIRE_NOTHROW(writer.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(), i));
         }
-        JFJochProtoBuf::JFJochReceiverOutput output;
+
+        JFJochProtoBuf::JFJochWriterMetadataInput request;
+        auto &output = *request.mutable_receiver_output();
         output.set_max_image_number_sent(x.GetImageNum()-1);
         *output.mutable_jungfraujoch_settings() = x;
-        WriteHDF5MasterFile(output);
+        REQUIRE_NOTHROW(WriteHDF5MasterFile(request));
     }
     {
         HDF5File file("vds_master.h5", false, true, false);
@@ -262,8 +257,6 @@ TEST_CASE("HDF5Writer_VDS_missing", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
 
-        JungfrauCalibration calib(x);
-
         HDF5Writer writer(x);
         std::vector<uint16_t> image(x.GetPixelsNum());
 
@@ -272,10 +265,12 @@ TEST_CASE("HDF5Writer_VDS_missing", "[HDF5][Full]") {
                 j = i;
             REQUIRE_NOTHROW(writer.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(), i));
         }
-        JFJochProtoBuf::JFJochReceiverOutput output;
+
+        JFJochProtoBuf::JFJochWriterMetadataInput request;
+        auto &output = *request.mutable_receiver_output();
         output.set_max_image_number_sent(x.GetImageNum()-2);
         *output.mutable_jungfraujoch_settings() = x;
-        WriteHDF5MasterFile(output);
+        REQUIRE_NOTHROW(WriteHDF5MasterFile(request));
     }
     {
         HDF5File file("vds_missing_master.h5", false, true, false);
@@ -308,8 +303,6 @@ TEST_CASE("HDF5Writer_Time_Resolved", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
 
-        JungfrauCalibration calib(x);
-
         HDF5Writer writer(x);
         std::vector<uint16_t> image(x.GetPixelsNum());
 
@@ -318,10 +311,11 @@ TEST_CASE("HDF5Writer_Time_Resolved", "[HDF5][Full]") {
                 j = i;
             REQUIRE_NOTHROW(writer.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(), i));
         }
-        JFJochProtoBuf::JFJochReceiverOutput output;
+        JFJochProtoBuf::JFJochWriterMetadataInput request;
+        auto &output = *request.mutable_receiver_output();
         output.set_max_image_number_sent(x.GetImageNum()-1);
         *output.mutable_jungfraujoch_settings() = x;
-        WriteHDF5MasterFile(output);
+        REQUIRE_NOTHROW(WriteHDF5MasterFile(request));
     }
     {
         HDF5File file("test_time_resolved_master.h5", false, true, false);
@@ -352,7 +346,9 @@ TEST_CASE("HDF5NXmx_LinkToData", "[HDF5]") {
 
     JFJochProtoBuf::JFJochReceiverOutput output;
     output.set_max_image_number_sent(10000-1);
-    HDF5Metadata::NXmx(&file, x, output);
+    JFJochProtoBuf::JFJochWriterMetadataInput request;
+    *request.mutable_receiver_output() = output;
+    HDF5Metadata::NXmx(&file, x, request);
 
     HDF5DataSet data_dataset(file,"/entry/data/data");
     HDF5DataSpace file_space(data_dataset);
@@ -370,7 +366,9 @@ TEST_CASE("HDF5NXmx_LinkToData_ActualImages", "[HDF5]") {
 
     JFJochProtoBuf::JFJochReceiverOutput output;
     output.set_max_image_number_sent(5034-1);
-    HDF5Metadata::NXmx(&file, x, output);
+    JFJochProtoBuf::JFJochWriterMetadataInput request;
+    *request.mutable_receiver_output() = output;
+    HDF5Metadata::NXmx(&file, x, request);
 
     HDF5DataSet data_dataset(file,"/entry/data/data");
     HDF5DataSpace file_space(data_dataset);
@@ -388,7 +386,9 @@ TEST_CASE("HDF5NXmx_LinkToData_ZeroActualImages", "[HDF5]") {
 
     JFJochProtoBuf::JFJochReceiverOutput output;
     output.set_max_image_number_sent(0);
-    HDF5Metadata::NXmx(&file, x, output);
+    JFJochProtoBuf::JFJochWriterMetadataInput request;
+    *request.mutable_receiver_output() = output;
+    HDF5Metadata::NXmx(&file, x, request);
     std::unique_ptr<HDF5DataSet> dataset;
 
     // "data" Datasets should not be created at all

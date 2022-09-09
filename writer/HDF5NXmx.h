@@ -6,11 +6,11 @@
 
 #include "HDF5Objects.h"
 #include "../common/DiffractionExperiment.h"
-#include "../common/JungfrauCalibration.h"
+#include "../common/JFCalibration.h"
 
 namespace HDF5Metadata {
     void NXmx(HDF5File *hdf5_file, const DiffractionExperiment& experiment,
-              const JFJochProtoBuf::JFJochReceiverOutput &output);
+              const JFJochProtoBuf::JFJochWriterMetadataInput &output);
     void Time(HDF5File *hdf5_file, const DiffractionExperiment& experiment, const JFJochProtoBuf::JFJochReceiverOutput &output);
     void Detector(HDF5File *hdf5_file, const DiffractionExperiment& experiment);
     void DetectorGroup(HDF5File *hdf5_file, const DiffractionExperiment& experiment);
@@ -21,10 +21,10 @@ namespace HDF5Metadata {
     void Attenuator(HDF5File *hdf5_file, const DiffractionExperiment& experiment);
     void Metrology(HDF5File *hdf5_file, const DiffractionExperiment& experiment);
     void Sample(HDF5File *hdf5_file, const DiffractionExperiment& experiment);
-    void Mask(HDF5File *hdf5_file, const DiffractionExperiment& experiment, const JungfrauCalibration& calib);
-    void Calibration(HDF5File *hdf5_file, const JungfrauCalibration& calib);
+    void Mask(HDF5File *hdf5_file, const DiffractionExperiment& experiment, const JFCalibration& calib);
+    void Calibration(HDF5File *hdf5_file, const JFCalibration& calib);
     void FinalSettings(HDF5File *hdf5_file, const JFJochProtoBuf::JFJochReceiverOutput &output);
-    void Processing(HDF5File *hdf5_file, const JFJochProtoBuf::JFJochIndexerOutput &output);
+    void Processing(HDF5File *hdf5_file, const DiffractionExperiment& experiment, const JFJochProtoBuf::JFJochIndexerOutput &output);
 }
 
 namespace HDF5Data {

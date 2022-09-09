@@ -2,13 +2,13 @@
 set_false_path -from [get_ports pcie_perstn]
 
 # Reset synchronizers
-set_false_path -to [get_pins jfjoch_pcie_i/*/resetn_sync_0/U0/q?_reg/CLR]
+set_false_path -to [get_pins jfjoch_pcie_i/*/resetn_sync_0/*/q?_reg/CLR]
 
 set_false_path -from [get_pins jfjoch_pcie_i/*/cmac_usplus_0/*/i_jfjoch_pcie_cmac_usplus_0_0_top/*/RX_CLK] -to [get_pins jfjoch_pcie_i/*/action_config_0/*/reg_eth_stat_rx_*_1_reg/D]
 set_false_path -from [get_pins jfjoch_pcie_i/*/check_eth_busy_0/*/eth_busy_reg/C] -to [get_pins jfjoch_pcie_i/*/action_config_0/*/reg_eth_busy_1_reg/D]
 
 # This affects HBM Temperature & HBM status + 100G status/align (anyway readout from host is very slow in comparison to FPGA clock)
-set_false_path -to [get_pins jfjoch_pcie_i/*/action_config_0/U0/*/D]
+set_false_path -to [get_pins jfjoch_pcie_i/*/action_config_0/*/*/D]
 
 # From 100G example design
 set_false_path -to [get_pins -leaf -of_objects [get_cells -hier *cdc_to* -filter {is_sequential}] -filter {NAME=~*cmac_cdc*/*/D}]

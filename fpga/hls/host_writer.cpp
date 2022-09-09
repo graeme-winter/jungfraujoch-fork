@@ -127,6 +127,13 @@ void host_writer(STREAM_512 &data_in,
     packets_processed = 0;
     addr_in >> addr;
 
+    ap_axiu<512,1,1,1> packet_out;
+    packet_out.keep = UINT64_MAX;
+    packet_out.strb = UINT64_MAX;
+    packet_out.dest = 0;
+    packet_out.id = 0;
+    packet_out.user = 0;
+
     Loop_good_packet:
     while (!addr_last_flag(addr)) {
         // Process one UDP packet per iteration
@@ -138,8 +145,9 @@ void host_writer(STREAM_512 &data_in,
 
         for (int i = 0; i < 128; i++) {
             data_in >> packet_in;
-            packet_in.keep = UINT64_MAX;
-            host_memory_out << packet_in;
+            packet_out.data = packet_in.data;
+            packet_out.last = packet_in.last;
+            host_memory_out << packet_out;
         }
 
         if (packet_in.last != 1)

@@ -89,6 +89,7 @@ public:
     HDF5Object& Attr(const std::string& name, const std::string& val);
     HDF5Object& Attr(const std::string& name, int32_t val);
     HDF5Object& Attr(const std::string& name, uint32_t val);
+    HDF5Object& Attr(const std::string& name, int64_t val);
     HDF5Object& Attr(const std::string& name, uint64_t val);
     HDF5Object& Attr(const std::string& name, const std::vector<double> &val);
     HDF5Object& Attr(const std::string& name, const Coord &val);

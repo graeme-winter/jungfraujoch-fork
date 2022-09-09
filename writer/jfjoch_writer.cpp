@@ -1,6 +1,9 @@
 // Copyright (2019-2022) Paul Scherrer Institute
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <fstream>
+#include <nlohmann/json.hpp>
+
 #include "../grpc/gRPCServer_Template.h"
 #include "../common/Logger.h"
 #include "JFJochWriterService.h"
@@ -10,14 +13,30 @@ int main(int argc, char **argv) {
 
     Logger logger("jfjoch_writer");
 
+    nlohmann::json input;
+    if (argc > 1) {
+        std::ifstream file(argv[1]);
+        try {
+            input = nlohmann::json::parse(file);
+        } catch (const nlohmann::json::exception &e) {
+            logger.Error("JSON Parsing exception: " + std::string(e.what()));
+            exit(EXIT_FAILURE);
+        }
+    }
+
     uint16_t tcp_port = 5234;
-    if (argc >= 2) tcp_port = atoi(argv[1]);
+    if (argc >= 3) tcp_port = atoi(argv[2]);
 
     uint16_t zmq_tcp_port = 5235;
-    if (argc >= 3) zmq_tcp_port = atoi(argv[2]);
+    if (argc >= 4) zmq_tcp_port = atoi(argv[3]);
 
-    uint16_t zmq_threads = 4;
-    if (argc >= 4) zmq_threads = atoi(argv[3]);
+    int32_t zmq_threads = 4;
+    if (input.contains("zmq_threads"))
+        zmq_threads = input["zmq_threads"].get<int32_t>();
+    if ((zmq_threads < 1) || (zmq_threads > 128)) {
+        logger.Error("ZMQ thread number non-sense");
+        exit(EXIT_FAILURE);
+    }
 
     std::string zmq_addr = "tcp://0.0.0.0:" + std::to_string(zmq_tcp_port);
     std::string grpc_addr = "0.0.0.0:" + std::to_string(tcp_port);
@@ -26,6 +45,10 @@ int main(int argc, char **argv) {
     context.NumThreads(zmq_threads); // Use 4 threads (up to 4 GB/s)
 
     JFJochWriterService service(context, zmq_addr, logger);
+
+    if (input.contains("base_directory"))
+        service.BaseDirectory(input["base_directory"]);
+
     logger.Info("ZeroMQ pull image socket listening on address " + zmq_addr);
     auto server = gRPCServer(grpc_addr, service);
     logger.Info("gRPC configuration listening on address " + grpc_addr);

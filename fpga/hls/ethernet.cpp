@@ -22,6 +22,9 @@ void ethernet(AXI_STREAM &eth_in,
     static eth_dest dest;
     static uint64_t internal_counter = 0;
 
+#pragma HLS RESET variable=state
+#pragma HLS RESET variable=internal_counter
+
     counter = internal_counter;
 
     packet_512_t packet_in = eth_in.read();

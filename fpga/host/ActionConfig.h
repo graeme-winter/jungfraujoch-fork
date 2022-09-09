@@ -19,7 +19,8 @@ struct ActionConfig {
     uint32_t nmodules;
     uint32_t mode;
     uint32_t one_over_energy;
-    uint32_t frames_per_trigger;
+    uint32_t frames_internal_packet_gen;
+    uint32_t nstorage_cells;
 };
 
 struct ActionStatus {

@@ -29,14 +29,14 @@ OpenCAPIDevice::OpenCAPIDevice(std::string in_device_name, uint16_t data_stream,
     max_modules_internal_packet_generator = ReadMMIORegister(MMIORegion::HLS, ADDR_MODS_INT_PKT_GEN);
 
     MapBuffersStandard(in_frame_buffer_size_modules,
-                       6 * max_modules + max_modules_internal_packet_generator,
+                       (3+3*16) * max_modules + max_modules_internal_packet_generator,
                        numa_node);
 
-    for (int i = 0; i < max_modules * 6 + max_modules_internal_packet_generator; i++)
+    for (int i = 0; i < max_modules * (3 + 3 * 16) + max_modules_internal_packet_generator; i++)
         SetCalibrationInputLocation(i, (uint64_t) buffer_h2c[i]);
 
     for (int module = 0; module < max_modules_internal_packet_generator; module++)
-        SetDefaultInternalGeneratorFrame(6 * max_modules + module);
+        SetDefaultInternalGeneratorFrame((3+3*16) * max_modules + module);
 
     // Set Mailbox FIFOs, so interrupt threshold is 4 messages
     WriteMMIORegister(MMIORegion::MAILBOX, ADDR_MAILBOX_SIT, 251);
@@ -44,7 +44,9 @@ OpenCAPIDevice::OpenCAPIDevice(std::string in_device_name, uint16_t data_stream,
 }
 
 OpenCAPIDevice::~OpenCAPIDevice() {
-    if (!HW_IsIdle()) ActionAbort(); // ensure action is off
+    // ensure action is off
+    WriteMMIORegister(MMIORegion::HLS, ADDR_CTRL_REGISTER, (1 << 2u));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     snap_detach_action(action);
     snap_card_free(card);
 }
@@ -117,18 +119,6 @@ void OpenCAPIDevice::CheckVersion() {
 }
 
 void OpenCAPIDevice::HW_StartAction() {
-    if (!HW_IsIdle()) {
-        ActionAbort(); // ensure action is off
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-        if (logger)
-            logger->Warning("Action not idle on HW_StartAction for device " + device_name);
-
-        if (!HW_IsIdle())
-            throw JFJochException(JFJochExceptionCategory::OpenCAPIError,
-                                  "FPGA action still running and cannot be stopped for device " + device_name);
-    }
-
     // Ensure Ethernet is running
     if (!internal_packet_gen) {
         if (!IsOpticalModulePresent())

@@ -9,33 +9,20 @@
 #include "RawToConvertedGeometry.h"
 #include "JFJochException.h"
 
-FrameTransformation::FrameTransformation(const DiffractionExperiment &in_experiment, const JungfrauCalibration &calibration,
-                                         size_t in_summation, CompressionAlgorithm algorithm) :
-        experiment(in_experiment), summation(in_summation),
-        pixel_depth(in_summation > 1 ? sizeof(int32_t) : sizeof(int16_t)), compressor(in_experiment),
-        compression_algorithm(algorithm) {
+FrameTransformation::FrameTransformation(const DiffractionExperiment &in_experiment) :
+        experiment(in_experiment), summation(experiment.GetSummation()),
+        pixel_depth(experiment.GetPixelDepth()), compressor(in_experiment),
+        compression_algorithm(in_experiment.GetCompressionAlgorithm()) {
 
     if ((experiment.GetDetectorMode() == DetectorMode::Conversion) && (summation > 1)) {
         for (int i = 0; i < experiment.GetModulesNum(); i++)
             summation_buffer.emplace_back(RAW_MODULE_SIZE);
     }
 
-    if (compression_algorithm != CompressionAlgorithm::None) {
-        if (compression_algorithm != experiment.GetCompressionAlgorithm())
-            throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
-                                  "Combination of compression algorithms not supported by FrameTransformation");
-        precompression_buffer.resize(experiment.GetPixelsNum() * pixel_depth);
-    }
+    precompression_buffer.resize(experiment.GetPixelsNum() * pixel_depth);
+    if (pixel_depth == 4)
+        image16bit.resize(experiment.GetPixelsNum(), 0);
 }
-
-FrameTransformation::FrameTransformation(const DiffractionExperiment &in_experiment,
-                                         const JungfrauCalibration &calibration, size_t in_summation) :
-        FrameTransformation(in_experiment, calibration, in_summation, in_experiment.GetCompressionAlgorithm()) {}
-
-FrameTransformation::FrameTransformation(const DiffractionExperiment &in_experiment,
-                                         const JungfrauCalibration &calibration) :
-        FrameTransformation(in_experiment, calibration, in_experiment.GetSummation(),
-                            in_experiment.GetCompressionAlgorithm()) {}
 
 FrameTransformation& FrameTransformation::SetOutput(void *output) {
     standard_output = (char *) output;
@@ -56,7 +43,7 @@ template <class T> void AddToFramesSum(T *destination, const int16_t *source, si
 void FrameTransformation::PackUncompressed() {
     if (summation > 1) {
         for (int m = 0; m < experiment.GetModulesNum(); m++) {
-            TransferModuleAdjustMultipixels<int32_t, int32_t>(((int32_t *) GetUncompressedImage()) + experiment.GetPixel0OfModule(m),
+            TransferModuleAdjustMultipixels<int32_t, int32_t>(((int32_t *) precompression_buffer.data()) + experiment.GetPixel0OfModule(m),
                                                               summation_buffer[m].data(),
                                                               (experiment.IsUpsideDown() ? -1 : 1) *
                                                               experiment.GetXPixelsNum(),
@@ -64,6 +51,20 @@ void FrameTransformation::PackUncompressed() {
                                                               DiffractionExperiment::GetOverflow(summation) - 1);
             for (auto &i: summation_buffer[m])
                 i = 0;
+        }
+
+        if (pixel_depth == 4) {
+            // Generate 16-bit preview image
+            auto arr = (int32_t *) precompression_buffer.data();
+
+            for (int pxl = 0; pxl < experiment.GetPixelsNum(); pxl++) {
+                if (arr[pxl] >= INT16_MAX)
+                    image16bit[pxl] = INT16_MAX;
+                else if (arr[pxl] <= INT16_MIN)
+                    image16bit[pxl] = INT16_MIN;
+                else
+                    image16bit[pxl] = static_cast<int16_t>(arr[pxl]);
+            }
         }
     }
 }
@@ -80,6 +81,7 @@ size_t FrameTransformation::PackStandardOutput() {
                                        experiment.GetPixelsNum(), pixel_depth) + 12;
 
         case CompressionAlgorithm::None:
+            memcpy(standard_output, precompression_buffer.data(), experiment.GetPixelsNum() * pixel_depth);
             return experiment.GetPixelsNum() * pixel_depth;
         default:
             throw JFJochException(JFJochExceptionCategory::Compression, "Not implemented compression algorithm");
@@ -89,11 +91,9 @@ size_t FrameTransformation::PackStandardOutput() {
 
 void FrameTransformation::ProcessPacketNoSummation(const int16_t *input, size_t frame_number,
                                                    uint16_t module_number, uint16_t packet_number, int data_stream) {
-    char *in_output = (compression_algorithm == CompressionAlgorithm::None)
-                      ? standard_output : precompression_buffer.data();
 
     size_t offset = experiment.GetPixel0OfModule(experiment.GetFirstModuleOfDataStream(data_stream)+module_number);
-    auto output = ((int16_t *) in_output) + offset;
+    auto output = ((int16_t *) precompression_buffer.data()) + offset;
 
     if (experiment.GetDetectorMode() == DetectorMode::Conversion) {
         if (experiment.GetMaskChipEdges())
@@ -151,6 +151,10 @@ void FrameTransformation::ProcessPacket(const int16_t *input, size_t frame_numbe
         ProcessPacketSummation(input, frame_number, module_number, packet_number, data_stream);
 }
 
-const char *FrameTransformation::GetUncompressedImage() const {
-    return (compression_algorithm == CompressionAlgorithm::None) ? standard_output : precompression_buffer.data();
+int16_t *FrameTransformation::GetPreview16BitImage() {
+    if (pixel_depth == 2)
+        return (int16_t *) precompression_buffer.data();
+    else
+        return image16bit.data();
 }
+

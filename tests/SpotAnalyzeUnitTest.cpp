@@ -47,7 +47,7 @@ TEST_CASE("DiffractionSpot_LabCoord","[StrongPixelSet]") {
 
 
 TEST_CASE("DiffractionSpot_ReciprocalCoord","[StrongPixelSet]") {
-    double beam_center_x = 25 + 1000 + 6;
+    double beam_center_x = 31 + 1000; // 1000
     double beam_center_y = (514 * 4 + 36 * 3) - 100;
     double detector_distance = 75.0 / sqrt(3);
 

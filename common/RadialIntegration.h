@@ -8,31 +8,22 @@
 #include <cstdint>
 #include <cmath>
 
+#include "DiffractionExperiment.h"
+#include "RadialIntegrationMapping.h"
+
 class RadialIntegration {
-    std::vector<uint32_t> bin_map;
+    const std::vector<uint16_t>& pixel_to_bin;
+    const uint16_t nbins;
     std::vector<int64_t> sum;
     std::vector<int64_t> count;
-
-    size_t xpixel, ypixel;
 public:
-    RadialIntegration(size_t xpixel, size_t ypixel);
-    void Setup(double beam_x, double beam_y, const std::vector<uint32_t> &in_mask);
-    void Clear();
-    std::vector<double> GetAverage();
-
-    template <class T>
-    void Process(const T *data, T min, T max, size_t pixel0 = 0, size_t npixels = 0) {
-        if (npixels == 0)
-            npixels = xpixel * ypixel;
-        for (int i = 0; i < npixels; i++) {
-            auto bin = bin_map[i + pixel0];
-            auto value          = data[i];
-            if ((value > min) && (value < max) && (bin < sum.size())) {
-                sum[bin]   += value;
-                count[bin] += 1;
-            }
-        }
-    }
+    RadialIntegration(const RadialIntegrationMapping& mapping);
+    RadialIntegration(const std::vector<uint16_t>& mapping, uint16_t nbins);
+    void Process(const int16_t *data, size_t npixel);
+    void GetResult(std::vector<float> &result) const;
+    [[nodiscard]] float GetRangeValue(uint16_t min_bin, uint16_t max_bin);
+    [[nodiscard]] const std::vector<int64_t>& GetSum() const;
+    [[nodiscard]] const std::vector<int64_t>& GetCount() const;
 };
 
 

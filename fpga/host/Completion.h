@@ -16,6 +16,7 @@ struct Completion {
     uint32_t handle;
     uint8_t module;
     bool trigger;
+    uint32_t timestamp;
 };
 
 #endif //JUNGFRAUJOCH_COMPLETION_H

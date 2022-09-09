@@ -56,10 +56,10 @@ int main(int argc, char **argv) {
 
     logger.Info("Images loaded");
 
-    JungfrauCalibration calibration(x);
-    calibration.Mask()[0] = 0x2;
-    calibration.Mask()[1] = 0x2;
-    calibration.Mask()[2] = 0x2;
+    JFCalibration calibration(x);
+    calibration.Mask(0) = 0x2;
+    calibration.Mask(1) = 0x2;
+    calibration.Mask(2) = 0x2;
 
     publisher.Start(x, calibration);
 

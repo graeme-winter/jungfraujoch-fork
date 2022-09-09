@@ -8,7 +8,7 @@
 #include <mutex>
 #include <future>
 #include "../common/DiffractionExperiment.h"
-#include "../common/JungfrauCalibration.h"
+#include "../common/JFCalibration.h"
 #include "JFJochServices.h"
 
 enum class JFJochState {Inactive, Idle, Measuring, Error, Busy, Pedestal};
@@ -19,17 +19,23 @@ class JFJochStateMachine {
     std::chrono::time_point<std::chrono::system_clock> start_time;
     std::future<void> measurement;
 
-    JungfrauCalibration calibration;
+    std::unique_ptr<JFCalibration> calibration;
+    mutable std::mutex statistics_mutex;
+    JFJochProtoBuf::JFCalibrationStatistics statistics;
 
     volatile JFJochState state = JFJochState::Inactive;
     JFJochServices &services;
     // Private functions assume that lock is acquired
     void WaitTillMeasurementDone();
-    void ImportPedestalAndMask(const JFJochProtoBuf::JFJochReceiverOutput &receiver_output);
+    void ImportPedestal(const JFJochProtoBuf::JFJochReceiverOutput &receiver_output, size_t gain_level, size_t storage_cell = 0);
+    void ImportPedestalG0(const DiffractionExperiment &experiment,
+                          const JFJochProtoBuf::JFJochReceiverOutput &receiver_output);
+
     void TakePedestalInternalAll(const DiffractionExperiment &experiment);
     void TakePedestalInternalG0(const DiffractionExperiment &experiment);
-    void TakePedestalInternalG1(const DiffractionExperiment &experiment);
-    void TakePedestalInternalG2(const DiffractionExperiment &experiment);
+    void TakePedestalInternalG1(const DiffractionExperiment &experiment, int32_t storage_cell = 0);
+    void TakePedestalInternalG2(const DiffractionExperiment &experiment, int32_t storage_cell = 0);
+
     mutable std::mutex last_receiver_output_mutex;
     JFJochProtoBuf::JFJochReceiverOutput last_receiver_output;
     void SetLastReceiverOutput(JFJochProtoBuf::JFJochReceiverOutput &output);
@@ -50,7 +56,9 @@ public:
     void LoadMask(const DiffractionExperiment& experiment, const std::vector<uint32_t> &vec, uint32_t bit);
     // return by value to ensure thread safety
     JFJochProtoBuf::JFJochReceiverOutput GetLastReceiverOutput() const;
-    JungfrauCalibration GetCalibration() const;
+    JFJochProtoBuf::JFCalibrationStatistics GetCalibrationStatistics() const;
+    void SetCalibrationStatistics(const JFJochProtoBuf::JFCalibrationStatistics &input);
+    JFCalibration GetCalibration() const;
 };
 
 

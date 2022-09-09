@@ -140,14 +140,14 @@ proc create_hier_cell_jungfraujoch { parentCell nameHier } {
   # Create instance: axis_data_fifo_0, and set properties
   set axis_data_fifo_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 axis_data_fifo_0 ]
   set_property -dict [ list \
-   CONFIG.FIFO_DEPTH {16} \
+   CONFIG.FIFO_DEPTH {512} \
    CONFIG.FIFO_MEMORY_TYPE {auto} \
  ] $axis_data_fifo_0
 
   # Create instance: axis_data_fifo_1, and set properties
   set axis_data_fifo_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 axis_data_fifo_1 ]
   set_property -dict [ list \
-   CONFIG.FIFO_DEPTH {16} \
+   CONFIG.FIFO_DEPTH {512} \
    CONFIG.FIFO_MEMORY_TYPE {auto} \
  ] $axis_data_fifo_1
 
@@ -385,13 +385,14 @@ proc create_hier_cell_jungfraujoch { parentCell nameHier } {
   connect_bd_intf_net -intf_net timer_host_0_data_out [get_bd_intf_pins axis_register_slice_data_1/S_AXIS] [get_bd_intf_pins timer_host_0/data_out]
 
   # Create port connections
-  connect_bd_net -net action_config_0_data_collection_cancel [get_bd_pins action_config_0/data_collection_cancel] [get_bd_pins data_collection_fsm_0/in_cancel]
+  connect_bd_net -net action_config_0_data_collection_cancel [get_bd_pins action_config_0/data_collection_cancel] [get_bd_pins data_collection_fsm_0/in_cancel] [get_bd_pins internal_packet_generator_0/in_cancel]
   connect_bd_net -net action_config_0_data_collection_fsm_start [get_bd_pins action_config_0/data_collection_start] [get_bd_pins data_collection_fsm_0/in_run] [get_bd_pins network_stack/data_collection_start]
   connect_bd_net -net action_config_0_data_collection_mode [get_bd_pins action_config_0/data_collection_mode] [get_bd_pins data_collection_fsm_0/mode]
   connect_bd_net -net action_config_0_fpga_ipv4_addr [get_bd_pins action_config_0/fpga_ipv4_addr] [get_bd_pins network_stack/fpga_ipv4_addr]
   connect_bd_net -net action_config_0_fpga_mac_addr [get_bd_pins action_config_0/fpga_mac_addr] [get_bd_pins network_stack/fpga_mac_addr]
   connect_bd_net -net action_config_0_frames_per_trigger [get_bd_pins action_config_0/frames_per_trigger] [get_bd_pins data_collection_fsm_0/frames_per_trigger]
   connect_bd_net -net action_config_0_nmodules [get_bd_pins action_config_0/nmodules] [get_bd_pins data_collection_fsm_0/nmodules]
+  connect_bd_net -net action_config_0_nstorage_cells [get_bd_pins action_config_0/nstorage_cells] [get_bd_pins data_collection_fsm_0/nstorage_cells]
   connect_bd_net -net action_config_0_one_over_energy [get_bd_pins action_config_0/one_over_energy] [get_bd_pins data_collection_fsm_0/one_over_energy]
   connect_bd_net -net ap_clk_1 [get_bd_pins axi_clk] [get_bd_pins action_config_0/clk] [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] [get_bd_pins axis_addr_fifo_0/s_axis_aclk] [get_bd_pins axis_addr_fifo_1/s_axis_aclk] [get_bd_pins axis_addr_fifo_2/s_axis_aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins axis_data_fifo_1/s_axis_aclk] [get_bd_pins axis_data_fifo_2/s_axis_aclk] [get_bd_pins axis_data_fifo_3/s_axis_aclk] [get_bd_pins axis_data_fifo_4/s_axis_aclk] [get_bd_pins axis_data_fifo_5/s_axis_aclk] [get_bd_pins axis_data_fifo_6/s_axis_aclk] [get_bd_pins axis_register_slice_addr_0/aclk] [get_bd_pins axis_register_slice_addr_1/aclk] [get_bd_pins axis_register_slice_data_0/aclk] [get_bd_pins axis_register_slice_data_1/aclk] [get_bd_pins axis_register_slice_host_mem/aclk] [get_bd_pins axis_register_slice_host_mem_cmd/aclk] [get_bd_pins axis_register_slice_udp/aclk] [get_bd_pins axis_udp_addr_fifo_0/s_axis_aclk] [get_bd_pins axis_udp_fifo_0/s_axis_aclk] [get_bd_pins axis_work_completion_fifo_0/s_axis_aclk] [get_bd_pins axis_work_request_fifo_0/s_axis_aclk] [get_bd_pins bitshuffle_0/ap_clk] [get_bd_pins data_collection_fsm_0/ap_clk] [get_bd_pins jf_conversion_0/ap_clk] [get_bd_pins host_writer_0/ap_clk] [get_bd_pins internal_packet_generator_0/ap_clk] [get_bd_pins load_calibration_0/ap_clk] [get_bd_pins mailbox_0/M1_AXIS_ACLK] [get_bd_pins mailbox_0/S0_AXI_ACLK] [get_bd_pins mailbox_0/S1_AXIS_ACLK] [get_bd_pins network_stack/axiclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins timer_hbm_0/ap_clk] [get_bd_pins timer_host_0/ap_clk]
   connect_bd_net -net apb_complete_1 [get_bd_pins apb_complete] [get_bd_pins action_config_0/apb_complete_0]

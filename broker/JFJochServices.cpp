@@ -6,7 +6,7 @@
 
 JFJochServices::JFJochServices(Logger &in_logger) : logger(in_logger) {}
 
-void JFJochServices::Start(const DiffractionExperiment& experiment, const JungfrauCalibration &calibration) {
+void JFJochServices::Start(const DiffractionExperiment& experiment, const JFCalibration &calibration) {
     logger.Info("Measurement start for: " + experiment.GetFilePrefix());
 
     if (experiment.GetDetectorMode() == DetectorMode::Conversion) {
@@ -24,7 +24,10 @@ void JFJochServices::Start(const DiffractionExperiment& experiment, const Jungfr
         writer_running = false;
 
     logger.Info("   ... receiver start");
-    receiver.Start(experiment, calibration, writer_zmq_addr);
+    if (experiment.GetDetectorMode() == DetectorMode::Conversion)
+        receiver.Start(experiment, &calibration, writer_zmq_addr);
+    else
+        receiver.Start(experiment, nullptr, writer_zmq_addr);
 
     if (!experiment.IsUsingInternalPacketGen()) {
         logger.Info("   ... detector start");
@@ -76,7 +79,7 @@ void JFJochServices::On(const DiffractionExperiment &x) {
     logger.Info("   ... done");
 }
 
-JFJochProtoBuf::JFJochReceiverOutput JFJochServices::Stop() {
+JFJochProtoBuf::JFJochReceiverOutput JFJochServices::Stop(const JFCalibration &calibration) {
     JFJochProtoBuf::JFJochReceiverOutput last_receiver_output;
     try {
         logger.Info("Wait for receiver done");
@@ -119,7 +122,7 @@ JFJochProtoBuf::JFJochReceiverOutput JFJochServices::Stop() {
         try {
             writer.Stop();
             logger.Info("   ... finished with success");
-            writer.WriteMasterFile(last_receiver_output);
+            writer.WriteMasterFile(last_receiver_output, calibration);
             logger.Info("   ... master HDF5 file written");
         } catch (JFJochException &e) {
             logger.Info("   ... writer finished with error " + std::string(e.what()));

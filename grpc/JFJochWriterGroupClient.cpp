@@ -18,9 +18,10 @@ void JFJochWriterGroupClient::Stop() {
         i.Stop();
 }
 
-void JFJochWriterGroupClient::WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request) {
+void JFJochWriterGroupClient::WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request,
+                                              const JFJochProtoBuf::JFCalibration &calibration) {
     if (!clients.empty())
-        clients[0].WriteMasterFile(request);
+        clients[0].WriteMasterFile(request, calibration);
 }
 
 void JFJochWriterGroupClient::Abort() {

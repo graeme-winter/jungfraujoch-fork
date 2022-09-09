@@ -94,6 +94,9 @@ void icmp(AXI_STREAM& eth_in, AXI_STREAM& eth_out, uint64_t& counter) {
     static uint64_t internal_counter = 0;
     counter = internal_counter;
 
+#pragma HLS reset variable=state
+#pragma HLS reset variable=internal_counter
+
     ap_uint<8> icmp_type;
     ap_uint<8> icmp_code;
     ap_uint<17> icmp_checksum;

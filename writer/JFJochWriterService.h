@@ -16,13 +16,14 @@ class JFJochWriterService final : public JFJochProtoBuf::gRPC_JFJochWriter::Serv
     std::string zmq_addr;
 public:
     JFJochWriterService(ZMQContext &in_context, std::string in_zmq_addr, Logger &in_logger);
+    JFJochWriterService &BaseDirectory(const std::string& input);
     grpc::Status Start(grpc::ServerContext *context, const JFJochProtoBuf::JFJochWriterInput *request,
                        JFJochProtoBuf::Empty *response) override;
     grpc::Status Stop(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                       JFJochProtoBuf::Empty *response) override;
     grpc::Status Abort(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                        JFJochProtoBuf::Empty *response) override;
-    grpc::Status WriteMasterFile(grpc::ServerContext *context, const JFJochProtoBuf::JFJochReceiverOutput *request,
+    grpc::Status WriteMasterFile(grpc::ServerContext *context, const JFJochProtoBuf::JFJochWriterMetadataInput *request,
                                  JFJochProtoBuf::Empty *response) override;
 };
 

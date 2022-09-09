@@ -7,6 +7,71 @@
 #include "../writer/HDF5Objects.h"
 #include "../common/ZMQSpotPublisher.h"
 
+TEST_CASE("CrystalLattice") {
+    CrystalLattice l(make_unit_cell(50,60,80, 90, 90, 90));
+    REQUIRE(l.vec[0].Length() == Approx(50));
+    REQUIRE(l.vec[1].Length() == Approx(60));
+    REQUIRE(l.vec[2].Length() == Approx(80));
+    REQUIRE(angle_deg(l.vec[0], l.vec[2]) == 90);
+    REQUIRE(angle_deg(l.vec[0], l.vec[1]) == 90);
+    REQUIRE(angle_deg(l.vec[1], l.vec[2]) == 90);
+
+    l = CrystalLattice(make_unit_cell(30, 40, 70, 90, 95, 90));
+    REQUIRE(l.vec[0].Length() == Approx(30));
+    REQUIRE(l.vec[1].Length() == Approx(40));
+    REQUIRE(l.vec[2].Length() == Approx(70));
+    REQUIRE(angle_deg(l.vec[0], l.vec[2]) == 95);
+    REQUIRE(angle_deg(l.vec[0], l.vec[1]) == 90);
+    REQUIRE(angle_deg(l.vec[1], l.vec[2]) == 90);
+
+    l = CrystalLattice(make_unit_cell(45, 45, 70, 90, 90, 120));
+    REQUIRE(l.vec[0].Length() == Approx(45));
+    REQUIRE(l.vec[1].Length() == Approx(45));
+    REQUIRE(l.vec[2].Length() == Approx(70));
+    REQUIRE(angle_deg(l.vec[0], l.vec[2]) == Approx(90));
+    REQUIRE(angle_deg(l.vec[0], l.vec[1]) == Approx(120));
+    REQUIRE(angle_deg(l.vec[1], l.vec[2]) == Approx(90));
+}
+
+TEST_CASE("CrystalLattice_Centering_P") {
+    CrystalLattice l(make_unit_cell(50,60,80, 78, 80, 120));
+    CrystalLattice ucl = l.Uncenter('P');
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            REQUIRE(l.vec[i][j] == ucl.vec[i][j]);
+        }
+    }
+}
+
+TEST_CASE("CrystalLattice_Centering_C") {
+    CrystalLattice l(make_unit_cell(39.20,179.90,139.40, 90, 90, 90));
+    CrystalLattice ucl = l.Uncenter('C');
+    CHECK(fabs(ucl.vec[0].Length() - 92.01) < 0.1);
+    CHECK(fabs(ucl.vec[1].Length() - 92.01) < 0.1);
+    CHECK(ucl.vec[2].Length() == Approx(139.4));
+    CHECK(fabs(angle_deg(ucl.vec[0], ucl.vec[1])  - 155.4) < 0.1);
+    CHECK(angle_deg(ucl.vec[1], ucl.vec[2]) == Approx(90.0));
+    CHECK(angle_deg(ucl.vec[0], ucl.vec[2]) == Approx(90.0));
+}
+
+TEST_CASE("CrystalLattice_ReciprocalLattice") {
+    CrystalLattice l(make_unit_cell(50,60,80, 78, 80, 120));
+    CrystalLattice rl = l.ReciprocalLattice();
+
+    REQUIRE(l.vec[0] * rl.vec[0] == Approx(1.0));
+    REQUIRE(l.vec[0] * rl.vec[1] < 1e-10);
+    REQUIRE(l.vec[0] * rl.vec[2] < 1e-10);
+
+    REQUIRE(l.vec[1] * rl.vec[0] < 1e-10);
+    REQUIRE(l.vec[1] * rl.vec[1] == Approx(1.0));
+    REQUIRE(l.vec[1] * rl.vec[2] < 1e-10);
+
+    REQUIRE(l.vec[2] * rl.vec[0] < 1e-10);
+    REQUIRE(l.vec[2] * rl.vec[1] < 1e-10);
+    REQUIRE(l.vec[2] * rl.vec[2] == Approx(1.0));
+}
+
 TEST_CASE("Xgandalf","[Indexing]") {
     std::vector<Coord> hkl;
     for (int i = 1; i < 7; i++)
@@ -14,10 +79,10 @@ TEST_CASE("Xgandalf","[Indexing]") {
             for (int k = 1; k < 4; k++)
                 hkl.emplace_back(i,j,k);
 
-    std::vector<UnitCell> cells;
-    cells.emplace_back(30,40,50,90,90,90);
-    cells.emplace_back(80,80,90,90,90,120);
-    cells.emplace_back(40,45,80,90,82.5,90);
+    std::vector<JFJochProtoBuf::UnitCell> cells;
+    cells.emplace_back(make_unit_cell(30,40,50,90,90,90));
+    cells.emplace_back(make_unit_cell(80,80,90,90,90,120));
+    cells.emplace_back(make_unit_cell(40,45,80,90,82.5,90));
 
     for (auto &c: cells) {
         CrystalLattice l(c);
@@ -26,13 +91,14 @@ TEST_CASE("Xgandalf","[Indexing]") {
         std::vector<Coord> recip;
         recip.reserve(hkl.size());
         for (const auto &i: hkl)
-            recip.emplace_back(i.x * recip_l.vec_a + i.y * recip_l.vec_b + i.z * recip_l.vec_c);
+            recip.emplace_back(i.x * recip_l.vec[0] + i.y * recip_l.vec[1] + i.z * recip_l.vec[2]);
 
         DiffractionExperiment experiment;
 
         XgandalfWrapper wrapper;
         IndexingSettings settings;
         settings.unit_cell = c;
+        settings.centering = 'P';
         settings.max_indexing_spots = 30;
         settings.algorithm = IndexingAlgorithm::Xgandalf_fast;
 
@@ -63,7 +129,9 @@ TEST_CASE("JFJochIndexerService_Operation","[Indexing]") {
         for (int j = 1; j<6; j++)
             for (int k = 1; k < 4; k++)
                 hkl.emplace_back(i,j,k);
-    UnitCell cell(30,40,50,90,90,90);
+    JFJochProtoBuf::UnitCell cell;
+    cell.set_a(30.0); cell.set_b(40); cell.set_c(50);
+    cell.set_alpha(90); cell.set_beta(90); cell.set_gamma(90);
 
     Logger logger("JFJochIndexerService");
     ZMQContext context;
@@ -74,7 +142,7 @@ TEST_CASE("JFJochIndexerService_Operation","[Indexing]") {
     experiment.SetUnitCell(cell);
 
     JFJochProtoBuf::JFJochIndexerInput input;
-    input.set_bin_size(10);
+    input.set_bin_size(10* experiment.GetSpotFindingStride());
     input.set_zmq_recv_pub_addr("inproc://test1");
     *input.mutable_jungfraujoch_settings() = experiment;
 
@@ -88,7 +156,7 @@ TEST_CASE("JFJochIndexerService_Operation","[Indexing]") {
     for (int image = 0; image < 20; image++) {
         std::vector<Coord> recip;
         for (const auto &i: hkl)
-            recip.emplace_back(i.x * recip_l.vec_a + i.y * recip_l.vec_b + i.z * recip_l.vec_c);
+            recip.emplace_back(i.x * recip_l.vec[0] + i.y * recip_l.vec[1] + i.z * recip_l.vec[2]);
 
         publisher.PublishReciprocal(experiment, recip, image * experiment.GetSpotFindingStride());
     }
@@ -104,9 +172,7 @@ TEST_CASE("JFJochIndexerService_Operation","[Indexing]") {
 
     JFJochProtoBuf::IndexerStatus simpl_output;
     REQUIRE(service.GetStatus(nullptr, nullptr, &simpl_output).ok());
-    REQUIRE(simpl_output.indexing_rate_size() == 2);
-    REQUIRE(simpl_output.indexing_rate(0) == 100.0);
-    REQUIRE(simpl_output.indexing_rate(1) == 100.0);
-    REQUIRE(simpl_output.mean_spots(0) == Approx(6*5*3));
-    REQUIRE(simpl_output.mean_spots(1) == Approx(6*5*3));
+    REQUIRE(simpl_output.indexing_rate().y_size() == 2);
+    REQUIRE(simpl_output.indexing_rate().y(0) == 1.0);
+    REQUIRE(simpl_output.indexing_rate().y(1) == 1.0);
 }

@@ -34,21 +34,21 @@ HLSSimulatedDevice::HLSSimulatedDevice(uint16_t data_stream, size_t in_frame_buf
           idle(true) {
 
     MapBuffersStandard(in_frame_buffer_size_modules,
-                       6 * MAX_MODULES_FPGA + MODULES_INTERNAL_PACKET_GEN, numa_node);
+                       (3 + 3 * 16)  * MAX_MODULES_FPGA + MODULES_INTERNAL_PACKET_GEN, numa_node);
 
     auto in_mem_location32 = (uint32_t *) in_mem_location;
 
-    for (int i = 0; i < MAX_MODULES_FPGA * 6 + MODULES_INTERNAL_PACKET_GEN; i++) {
+    for (int i = 0; i < MAX_MODULES_FPGA * (3 + 3 * 16) + MODULES_INTERNAL_PACKET_GEN; i++) {
         in_mem_location32[2 * i    ] = ((uint64_t) buffer_h2c[i]) & UINT32_MAX;
         in_mem_location32[2 * i + 1] = ((uint64_t) buffer_h2c[i]) >> 32;
     }
 
     for (int m = 0; m < MODULES_INTERNAL_PACKET_GEN; m++)
-        SetDefaultInternalGeneratorFrame(6 * MAX_MODULES_FPGA + m);
+        SetDefaultInternalGeneratorFrame((3+3*16) * MAX_MODULES_FPGA + m);
 
     for (auto &i: hbm_memory)
         // i.resize(SIZE_OF_HBM_BLOCK_IN_BYTES);
-        i.resize(8*1024*1024); // only 8 MiB instead of 256 MiB per HBM interface (should be more than enough for all the tests anyway)
+        i.resize(32*1024*1024); // only 32 MiB instead of 256 MiB per HBM interface (should be more than enough for all the tests anyway)
 }
 
 void HLSSimulatedDevice::CreateFinalPacket(const DiffractionExperiment& experiment) {
@@ -155,10 +155,6 @@ void HLSSimulatedDevice::HW_StartAction() {
                                                (rx100g_hbm_t *) (hbm_memory[9].data()),
                                                (rx100g_hbm_t *) (hbm_memory[10].data()),
                                                (rx100g_hbm_t *) (hbm_memory[11].data()),
-                                               (rx100g_hbm_t *) (hbm_memory[12].data()),
-                                               (rx100g_hbm_t *) (hbm_memory[13].data()),
-                                               (rx100g_hbm_t *) (hbm_memory[14].data()),
-                                               (rx100g_hbm_t *) (hbm_memory[15].data()),
                                                din_eth, dout_eth, fpga_mac_addr, cfg,
                                                work_request_stream,
                                                completion_stream,
@@ -226,8 +222,6 @@ void hls_action(hls::stream<axis_datamover_ctrl> &in_datamover_cmd_stream,
                 rx100g_hbm_t *d_hbm_p6, rx100g_hbm_t *d_hbm_p7,
                 rx100g_hbm_t *d_hbm_p8, rx100g_hbm_t *d_hbm_p9,
                 rx100g_hbm_t *d_hbm_p10, rx100g_hbm_t *d_hbm_p11,
-                rx100g_hbm_t *d_hbm_p12, rx100g_hbm_t *d_hbm_p13,
-                rx100g_hbm_t *d_hbm_p14, rx100g_hbm_t *d_hbm_p15,
                 AXI_STREAM &din_eth, AXI_STREAM &dout_eth,
                 uint64_t fpga_mac_addr,
                 const ActionConfig &act_reg,
@@ -319,8 +313,9 @@ void hls_action(hls::stream<axis_datamover_ctrl> &in_datamover_cmd_stream,
                                 idle_data_collection,
                                 act_reg.mode,
                                 act_reg.one_over_energy,
-                                act_reg.frames_per_trigger,
-                                act_reg.nmodules);
+                                act_reg.frames_internal_packet_gen,
+                                act_reg.nmodules,
+                                act_reg.nstorage_cells);
             run_data_collection = 0;
         }
     });
@@ -328,7 +323,7 @@ void hls_action(hls::stream<axis_datamover_ctrl> &in_datamover_cmd_stream,
     hls_cores.emplace_back([&] { load_calibration(raw1, raw2, in_datamover_cmd_stream, in_datamover_stream,
                                                   in_mem_location); });
 
-    hls_cores.emplace_back([&] { internal_packet_generator(raw2, raw3, addr1, addr2); });
+    hls_cores.emplace_back([&] { internal_packet_generator(raw2, raw3, addr1, addr2, cancel_data_collection); });
 
     // Timer procedure - count how many times pedestal_corr/gain_corr is not accepting input (to help track down latency issues)
     hls_cores.emplace_back([&] { timer_hbm(raw3, raw4, counter_hbm); });

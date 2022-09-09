@@ -8,9 +8,7 @@
 
 #include "jfjoch.pb.h"
 #include "HDF5Objects.h"
-#include "../common/DiffractionExperiment.h"
-#include "../common/JungfrauCalibration.h"
 
-void WriteHDF5MasterFile(const JFJochProtoBuf::JFJochReceiverOutput &output);
+void WriteHDF5MasterFile(const JFJochProtoBuf::JFJochWriterMetadataInput &output);
 
 #endif //JUNGFRAUJOCH_HDF5MASTERFILE_H

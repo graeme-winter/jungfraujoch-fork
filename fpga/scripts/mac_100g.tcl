@@ -153,6 +153,7 @@ proc create_hier_cell_eth_ctrl { parentCell nameHier } {
    CONFIG.C_MMU_ITLB_SIZE {1} \
    CONFIG.C_MMU_ZONES {2} \
    CONFIG.C_USE_BARREL {0} \
+   CONFIG.G_USE_EXCEPTIONS {1} \
    CONFIG.C_USE_HW_MUL {0} \
    CONFIG.C_USE_MSR_INSTR {1} \
    CONFIG.C_USE_PCMP_INSTR {1} \

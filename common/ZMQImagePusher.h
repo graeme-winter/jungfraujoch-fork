@@ -5,7 +5,6 @@
 #define JUNGFRAUJOCH_ZMQIMAGEPUSHER_H
 
 #include "CommunicationBuffer.h"
-#include "JungfrauCalibration.h"
 #include "ThreadSafeFIFO.h"
 #include "jfjoch.pb.h"
 #include "ZMQWrappers.h"

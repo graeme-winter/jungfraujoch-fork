@@ -1,6 +1,7 @@
 // Copyright (2019-2022) Paul Scherrer Institute
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <filesystem>
 #include "HDF5Writer.h"
 #include "HDF5MasterFile.h"
 #include <sys/stat.h>
@@ -16,13 +17,10 @@ experiment(in_experiment), images_remaining(in_experiment.GetFilesNum()), files(
         ErrorIfFileExists(experiment.GenerateDataFilename(0));
     }
 
-    MakeDirectory(experiment.GenerateMasterFilename());
-
     for (int i = 0; i < experiment.GetFilesNum(); i++)
         images_remaining[i] = experiment.GetImagesInFile(i);
 
-    images_per_file = (experiment.GetImagesPerFile() == 0) ? experiment.GetImageNum() : experiment.GetImagesPerFile();
-    total_images = experiment.GetImageNum();
+     total_images = experiment.GetImageNum();
 
     for (int i = 0; i < experiment.GetFilesNum(); i++)
         files[i] = std::make_unique<HDF5DataFile>(experiment, i);
@@ -64,30 +62,6 @@ size_t HDF5Writer::GetRemainingImageCount() const {
 }
 
 void HDF5Writer::ErrorIfFileExists(const std::string &path) {
-    std::ifstream file(path);
-    if (file)
+    if (std::filesystem::exists(path))
         throw JFJochException(JFJochExceptionCategory::FileWriteError, "File already exists");
-}
-
-void HDF5Writer::MakeDirectory(const std::string &path) {
-    // If first character is /, then it makes no sense to attempt to create root directory anyway
-    size_t pos = path.find('/' , 1);
-
-    while (pos != std::string::npos) {
-        std::string dir_name = path.substr(0, pos);
-
-        struct stat info{};
-
-        if( stat( dir_name.c_str(), &info ) == 0) {
-            // Something exists in the filesystem, need to check if this is directory or file
-            if ( (info.st_mode & S_IFDIR) == 0)
-                throw JFJochException(JFJochExceptionCategory::FileWriteError,
-                                      "Cannot create directory - file with this name exists");
-        } else {
-            int ret = mkdir(dir_name.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-            if (ret == -1)
-                throw JFJochException(JFJochExceptionCategory::FileWriteError, "Cannot create directory");
-        }
-        pos = path.find('/', pos + 1);
-    }
 }

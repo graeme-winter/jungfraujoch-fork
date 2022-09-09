@@ -24,7 +24,7 @@ socket(context, ZMQSocketType::Sub), bin_size(input.bin_size()), logger(in_logge
     image_stride = experiment.GetSpotFindingStride();
     if (image_stride <= 0)
         image_stride = 1;
-    output.reserve(experiment.GetImageNumForPreview() / image_stride);
+    output.reserve(experiment.GetImageNum() / image_stride);
 }
 
 JFJochIndexer::~JFJochIndexer() {
@@ -77,22 +77,7 @@ JFJochProtoBuf::IndexerStatus JFJochIndexer::GetStatus() {
     ret.set_images_analyzed(output.size());
     ret.set_images_indexed(images_indexed);
 
-    int64_t bins = output.size() / bin_size;
-
-    for (int i = 0; i < bins; i++) {
-        int64_t indexed = 0;
-        int64_t spots = 0;
-
-        for (int j = 0; j < bin_size; j++) {
-            spots += output[i * bin_size + j].spot_count();
-            if (output[i * bin_size + j].indexed())
-                indexed++;
-        }
-
-        ret.add_indexing_rate((indexed * 100)/ static_cast<double>(bin_size));
-        ret.add_mean_spots(spots / static_cast<double>(bin_size));
-    }
-
+    indexed_result.GetPlot(*ret.mutable_indexing_rate(), bin_size);
     return ret;
 }
 
@@ -106,6 +91,13 @@ int64_t JFJochIndexer::Run(const DiffractionExperiment &in_settings) {
     settings.algorithm = IndexingAlgorithm::Xgandalf_fast;
     settings.max_indexing_spots = 0;
 
+    if (in_settings.HasUnitCell()) {
+        settings.has_unit_cell = true;
+        settings.unit_cell = in_settings.GetUnitCell();
+        settings.centering = in_settings.GetCentering();
+    } else
+        settings.has_unit_cell = false;
+
     while (true) {
         if (socket.Receive(s, false) >= 0) {
             JFJochProtoBuf::SpotFinderImageOutput list;
@@ -116,26 +108,31 @@ int64_t JFJochIndexer::Run(const DiffractionExperiment &in_settings) {
             for (const auto &i: list.coord())
                 coord.emplace_back(i);
 
-            settings.unit_cell = list.unit_cell();
+            if (coord.size() >= MIN_SPOTS_TO_INDEX) {
+                auto start_time = std::chrono::system_clock::now();
+                auto indexing_result = wrapper.Run(settings, coord);
+                auto end_time = std::chrono::system_clock::now();
+                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 
-            std::vector<UnitCell> indexing_result;
-            auto start_time = std::chrono::system_clock::now();
-            if (coord.size() >= MIN_SPOTS_TO_INDEX)
-                indexing_result = wrapper.Run(settings, coord);
-            auto end_time = std::chrono::system_clock::now();
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+                total_time_ms += elapsed.count();
 
-            total_time_ms += elapsed.count();
-
-            {
                 JFJochProtoBuf::IndexerImageOutput image_output;
                 image_output.set_indexed(!indexing_result.empty());
                 image_output.set_image_number(list.image_number());
                 image_output.set_spot_count(list.coord_size());
                 if (!indexing_result.empty())
-                    *image_output.mutable_unit_cell() = indexing_result[0];
+                    *image_output.mutable_unit_cell() = JFJochProtoBuf::UnitCell(indexing_result[0]);
                 AddIndexerImageOutput(image_output);
+                indexed_result.AddElement(list.image_number(), 1);
+            } else {
+                JFJochProtoBuf::IndexerImageOutput image_output;
+                image_output.set_indexed(false);
+                image_output.set_image_number(list.image_number());
+                image_output.set_spot_count(list.coord_size());
+                AddIndexerImageOutput(image_output);
+                indexed_result.AddElement(list.image_number(), 0);
             }
+
         } else {
             if (abort) break;
             std::this_thread::sleep_for(std::chrono::milliseconds(10));

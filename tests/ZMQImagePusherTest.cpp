@@ -18,8 +18,6 @@ TEST_CASE("ZMQImageCommTest_1Writer","[ZeroMQ]") {
 
     REQUIRE(x.GetImageNum() == nframes);
 
-    JungfrauCalibration calib(x);
-
     std::mt19937 g1(1387);
     std::uniform_int_distribution<uint16_t> dist;
 
@@ -86,8 +84,6 @@ TEST_CASE("ZMQImageCommTest_2Writers","[ZeroMQ]") {
 
 
     REQUIRE(x.GetImageNum() == nframes);
-
-    JungfrauCalibration calib(x);
 
     std::mt19937 g1(1387);
     std::uniform_int_distribution<uint16_t> dist;
@@ -184,8 +180,6 @@ TEST_CASE("ZMQImageCommTest_4Writers","[ZeroMQ]") {
 
 
     REQUIRE(x.GetImageNum() == nframes);
-
-    JungfrauCalibration calib(x);
 
     std::mt19937 g1(1387);
     std::uniform_int_distribution<uint16_t> dist;

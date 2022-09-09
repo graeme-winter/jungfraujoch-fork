@@ -25,7 +25,6 @@ ADD_LIBRARY( CommonFunctions STATIC
         Logger.cpp Logger.h
         Coord.cpp Coord.h
         DiffractionExperiment.cpp DiffractionExperiment.h
-        JungfrauCalibration.cpp JungfrauCalibration.h
         RawToConvertedGeometry.h
         JFJochException.cpp JFJochException.h
         CommunicationBuffer.cpp CommunicationBuffer.h
@@ -36,7 +35,6 @@ ADD_LIBRARY( CommonFunctions STATIC
         PedestalCalc.cpp PedestalCalc.h
         ZMQWrappers.cpp ZMQWrappers.h
         ThreadSafeFIFO.h
-        CrystalLattice.cpp CrystalLattice.h
         ZMQPreviewPublisher.cpp ZMQPreviewPublisher.h
         ZMQImagePuller.h ZMQImagePuller.cpp
         ZMQImagePusher.cpp ZMQImagePusher.h
@@ -46,8 +44,9 @@ ADD_LIBRARY( CommonFunctions STATIC
         ZMQSpotPublisher.cpp ZMQSpotPublisher.h
         PedestalCalcCPU.cpp PedestalCalcCPU.h
         ImageMetadata.h
-        UnitCell.cpp UnitCell.h BackgroundEstimation.cpp BackgroundEstimation.h
-        Latch.cpp Latch.h FrameTransformationPreview.cpp FrameTransformationPreview.h)
+        Latch.cpp Latch.h
+        JFPedestal.cpp JFPedestal.h
+        JFCalibration.cpp JFCalibration.h RadialIntegrationMapping.cpp RadialIntegrationMapping.h StatusVector.h)
 
 IF (CMAKE_CUDA_COMPILER)
     TARGET_SOURCES(CommonFunctions PUBLIC SpotFinder.h PedestalCalcGPU.h)

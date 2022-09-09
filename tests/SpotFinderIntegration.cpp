@@ -75,6 +75,8 @@ TEST_CASE("SpotFinder_GPU", "[SpotFinder]") {
 
     SpotFinder spot_finder(1024, 512);
 
+    spot_finder.SetInputBuffer(image.data());
+
     for (const auto& threshold: threshold_vals) {
         std::cout << "I/sigma threshold value: " << threshold << std::endl;
 
@@ -94,7 +96,6 @@ TEST_CASE("SpotFinder_GPU", "[SpotFinder]") {
         settings.set_signal_to_noise_threshold(threshold);
 
         StrongPixelSet colspot_gpu;
-        memcpy(spot_finder.GetInputBuffer(), image.data(), 512*1024*sizeof(uint16_t));
         spot_finder.RunSpotFinder(settings);
         spot_finder.GetResults(colspot_gpu, 0);
 
@@ -105,6 +106,63 @@ TEST_CASE("SpotFinder_GPU", "[SpotFinder]") {
         REQUIRE(naive_cpu.Common(colspot_gpu) >= 0.90 * colspot_gpu.Count());
 
         std::cout << "Common: " << naive_cpu.Common(colspot_gpu) << " fast impl: " << colspot_gpu.Count() << " ref. impl: " << naive_cpu.Count() << std::endl;
+    }
+}
+
+TEST_CASE("SpotFinder_GPU_Mask", "[SpotFinder]") {
+
+    const uint16_t nbx = 5;
+
+    const double mean = 30;
+
+    std::vector<int16_t> image(512*1024);
+
+    // Predictable random number generator, so test always gives the same result
+    std::mt19937 g1(2023);
+    // Poissonian distribution, with mean == variance
+    std::normal_distribution<double> distribution(mean, sqrt(mean));
+
+    for (auto &i: image)
+        i = static_cast<int16_t>(distribution(g1));
+
+    image[2000] = static_cast<int16_t>(mean + 15 * sqrt(mean));
+    image[8000] = static_cast<int16_t>(mean + 15 * sqrt(mean));
+    image[14000] = static_cast<int16_t>(mean + 15 * sqrt(mean));
+    image[20000] = static_cast<int16_t>(mean + 15 * sqrt(mean));
+    image[25000] = static_cast<int16_t>(mean + 15 * sqrt(mean));
+    image[60000] = static_cast<int16_t>(mean + 15 * sqrt(mean));
+
+    SpotFinder spot_finder(1024, 512);
+
+    spot_finder.SetInputBuffer(image.data());
+
+    JFJochProtoBuf::DataProcessingSettings settings;
+    settings.set_local_bkg_size(nbx);
+    settings.set_photon_count_threshold(1);
+    settings.set_signal_to_noise_threshold(10);
+
+    {
+        // Without mask
+        StrongPixelSet colspot_gpu;
+        spot_finder.RunSpotFinder(settings);
+        spot_finder.GetResults(colspot_gpu, 0);
+
+        REQUIRE(colspot_gpu.Count() == 6);
+    }
+    {
+        // With pixel mask
+        std::vector<uint8_t> one_byte_mask(1024 * 512, 1);
+        one_byte_mask[2000] = 0;
+        one_byte_mask[25000] = 0;
+        one_byte_mask[60000] = 0;
+        spot_finder.LoadMask(one_byte_mask);
+
+
+        StrongPixelSet colspot_gpu;
+        spot_finder.RunSpotFinder(settings);
+        spot_finder.GetResults(colspot_gpu, 0);
+
+        REQUIRE(colspot_gpu.Count() == 3);
     }
 }
 #endif

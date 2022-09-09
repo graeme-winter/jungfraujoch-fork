@@ -32,6 +32,10 @@ public:
 
     Coord operator%(const Coord &in) const; // Cross product
     double operator*(const Coord &in) const; // Dot product
+
+    const double& operator[](int64_t val) const;
+    double& operator[](int64_t val);
+
     double Length() const;
     Coord Normalize() const;
 

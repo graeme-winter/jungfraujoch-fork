@@ -1,12 +1,12 @@
 
 import React, {Component} from 'react';
 
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import Paper from '@material-ui/core/Paper';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import Paper from '@mui/material/Paper';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
 
 class DataTable extends Component {
   render() {

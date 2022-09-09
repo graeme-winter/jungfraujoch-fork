@@ -8,9 +8,6 @@ package JFJochProtoBuf;
 message FrameCountSettings {
   int64 images_per_trigger = 1;
   int64 ntrigger = 2;
-  int64 pedestalG0_frames = 3;
-  int64 pedestalG1_frames = 4;
-  int64 pedestalG2_frames = 5;
 }
 
 message TimingSettings {
@@ -18,7 +15,6 @@ message TimingSettings {
   //   uint64 frame_time_pedestalG2_us = 2; reserved
   int64 requested_image_time_us = 3;
   int64 count_time_us = 4;
-  int64 beamline_delay_us = 5;
   int64 laser_start_us = 6;
   int64 laser_stop_us = 7;
   bool use_optimal_frame_time = 12;
@@ -80,27 +76,27 @@ message ImageSavingSettings {
   int64 image_per_file = 3;
   int64 measurement_sequence_num = 4;
   bool error_when_overwritting = 5;
-  int64 gid = 6;
 }
 
 message DetectorSettings {
   bool force_full_speed = 1;
   bool internal_fpga_packet_generator = 2;
+  int64 storage_cells = 3;
+  int64 storage_cell_start = 4;
+  int64 delay_after_trigger_us = 5;
 }
 
 message PreviewSettings {
   int64 preview_period_us = 1;
   int64 spot_finding_period_us = 2;
   int64 bkg_estimation_period_us = 3;
-
-  double high_resolution_bkg_limit = 4;
-  double low_resolution_bkg_limit = 5;
 }
 
 message PedestalSettings {
-  bool tracking = 1;
-  bool saved = 3;
-  bool skip_pedestal = 4; // Reuse old pedestal, e.g. for testshot
+  int64 g0_frames = 1;
+  int64 g1_frames = 2;
+  int64 g2_frames = 3;
+  bool saved = 4;
 }
 
 enum  DetectorMode {
@@ -116,7 +112,6 @@ message ConversionSettings {
   bool upside_down = 2;  // Turn modules upside down
   bool mask_module_edges = 3;
   bool mask_chip_edges = 4;
-  bool sum_frames_in_conversion = 5;
 }
 
 message JungfraujochInternalSettings {
@@ -129,9 +124,17 @@ message JungfraujochInternalSettings {
 
 message SampleSettings {
   string name = 1;
-  UnitCell unit_cell = 2;
+  optional UnitCell unit_cell = 2;
   int64 space_group_number = 3;
   int64 run_number = 4;
+}
+
+message RadialIntegrationSettings {
+  double low_q = 1;
+  double high_q = 2;
+  double q_spacing = 3;
+  double bkg_estimate_low_q = 4;
+  double bkg_estimate_high_q = 5;
 }
 
 message JungfraujochSettings {
@@ -147,23 +150,26 @@ message JungfraujochSettings {
   CompressionSettings compr = 10;
   JungfraujochInternalSettings internal = 11;
   SampleSettings sample = 12;
+  RadialIntegrationSettings radial_int = 13;
+}
+
+message JFPedestal {
+  bytes pedestal = 1;
+  bytes rms = 2;
+  bytes mask = 3;
+  int64 time_unix = 4;
+  uint64 frames = 5;
 }
 
 message JFCalibration {
-  int64 nmodules = 1;
-  int64 data_stream = 2;
-  bytes pedestal_g0 = 6;
-  bytes pedestal_g1 = 7;
-  bytes pedestal_g2 = 8;
-  bytes pedestal_rms_g0 = 9;
-  bytes pedestal_rms_g1 = 10;
-  bytes pedestal_rms_g2 = 11;
-  bytes mask = 12;
+  uint64 nmodules = 1;
+  uint64 nstorage_cells = 2;
+  repeated JFPedestal pedestal = 3;
+  bytes mask = 4;
+}
 
-  repeated uint64 pedestal_time = 13;
-  repeated uint32 pedestal_frames = 14;
-
-  repeated ModuleStatistics module_statistics = 15;
+message JFCalibrationStatistics {
+    repeated ModuleStatistics module_statistics = 1;
 }
 
 message AcquisitionDeviceStatistics {
@@ -178,6 +184,7 @@ message AcquisitionDeviceStatistics {
   repeated int64 trigger_sequence_frame_numbers = 9;
   repeated uint64 packet_mask_half_module = 10;
   uint64 packets_expected = 11;
+  repeated uint32 timestamp = 12;
 }
 
 message JFJochReceiverInput {
@@ -197,10 +204,17 @@ message JFJochReceiverOutput {
   reserved 8;
   double efficiency = 9;
   uint64 max_image_number_sent = 10;
+  reserved 14;
 
-  JFCalibration calibration = 14;
   JungfraujochSettings jungfraujoch_settings = 15;
   optional JFJochIndexerOutput indexer_output = 16;
+  repeated JFPedestal pedestal_result = 17;
+  string master_file_name = 18;
+}
+
+message JFJochWriterMetadataInput {
+  JFJochReceiverOutput receiver_output = 1;
+  JFCalibration calibration = 2;
 }
 
 message JFJochReceiverNetworkConfig {
@@ -318,11 +332,19 @@ message FPGAStatus {
   double voltage_edge_3p3V_V = 30;
 }
 
+message Plot {
+  repeated float x = 1;
+  repeated float y = 2;
+}
+
 message ReceiverStatus {
   double progress = 1;
   repeated FPGAStatus fpga_status = 2;
   bool idle = 3;
-  repeated float bkg_estimate = 4;
+  Plot bkg_estimate = 4;
+  Plot radial_int_profile = 5;
+  Plot spot_count = 6;
+  string master_file_name = 7;
 }
 
 message DataProcessingSettings {
@@ -361,7 +383,6 @@ message PreviewFrame {
 
 message SpotFinderImageOutput {
   int64 image_number = 1;
-  UnitCell unit_cell = 2;
   repeated Vector coord = 3;
 }
 
@@ -373,8 +394,7 @@ message IndexerImageOutput {
 }
 
 message IndexerStatus {
-  repeated double indexing_rate = 1;
-  repeated double mean_spots = 2;
+  Plot indexing_rate = 1;
   int64 images_analyzed = 3;
   int64 images_indexed = 4;
 }
@@ -417,19 +437,23 @@ message BrokerStatus {
   double last_measurement_compression_ratio = 6;
   int64 last_measurement_sequence_number = 7;
   string last_measurement_name = 8;
-  repeated ModuleStatistics module_statistics = 9;
+
+  JFCalibrationStatistics calibration_statistics = 10;
 }
 
 message ModuleStatistics {
-  double pedestal_g0_mean = 2;
-  double pedestal_g1_mean = 3;
-  double pedestal_g2_mean = 4;
+  int64 module_number = 1;
+  int64 storage_cell_number = 2;
 
-  double pedestal_rms_g0_mean = 5;
-  double pedestal_rms_g1_mean = 6;
-  double pedestal_rms_g2_mean = 7;
+  double pedestal_g0_mean = 3;
+  double pedestal_g1_mean = 4;
+  double pedestal_g2_mean = 5;
 
-  uint64 masked_pixels = 8;
+  double pedestal_rms_g0_mean = 6;
+  double pedestal_rms_g1_mean = 7;
+  double pedestal_rms_g2_mean = 8;
+
+  uint64 masked_pixels = 9;
 }
 
 message BrokerStatistics {
@@ -464,13 +488,12 @@ message BrokerSetup {
   optional string data_collection_mode = 23;
   optional bool pedestal_saved = 25;
   optional int64 preview_rate_ms = 27;
-  optional bool frame_summation = 28;
   UnitCell unit_cell = 29;
   optional int64 spot_finding_rate_ms = 30;
   optional int64 bkg_estimate_rate_ms = 31;
-  optional bool skip_pedestal = 32;
   optional int64 space_group_number = 33;
   optional int64 run_number = 34;
+  optional int64 detector_delay_after_trigger_us = 35;
 }
 
 message Image {
@@ -484,14 +507,23 @@ message MaskToLoad {
   int32 bit_to_set = 2;
 }
 
+message BrokerPersistentSettings {
+  optional bool use_storage_cells = 1;
+  optional int64 count_time_us = 2;
+  optional int64 pedestal_g0_frames = 3;
+  optional int64 pedestal_g1_frames = 4;
+  optional int64 pedestal_g2_frames = 5;
+}
+
 service gRPC_JFJochBroker {
   rpc Start (BrokerSetup) returns (Empty) {}
   rpc Stop (Empty)        returns (Empty) {}
   rpc Abort (Empty)       returns (Empty) {}
   rpc Cancel (Empty)      returns (Empty) {}
-  rpc Pedestal (Empty)    returns (Empty) {}
+  rpc Pedestal (BrokerSetup) returns (Empty) {}
   rpc Initialize (Empty)  returns (Empty) {}
   rpc Deactivate (Empty)  returns (Empty) {}
+  rpc Setup(BrokerPersistentSettings) returns (Empty) {}
 
   rpc GetStatus (Empty)      returns (BrokerStatus)     {}
   rpc GetCalibration (Empty) returns (JFCalibration)    {}
@@ -522,7 +554,7 @@ service gRPC_JFJochWriter {
   rpc Start (JFJochWriterInput) returns (Empty) {}
   rpc Abort (Empty) returns (Empty) {}
   rpc Stop (Empty) returns (Empty) {}
-  rpc WriteMasterFile (JFJochReceiverOutput) returns (Empty) {}
+  rpc WriteMasterFile (JFJochWriterMetadataInput) returns (Empty) {}
 }
 
 service gRPC_JFJochDetector {

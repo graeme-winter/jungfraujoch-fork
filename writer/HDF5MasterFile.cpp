@@ -9,8 +9,8 @@
 #include "../common/RawToConvertedGeometry.h"
 #include "HDF5NXmx.h"
 
-void WriteHDF5MasterFile(const JFJochProtoBuf::JFJochReceiverOutput &output) {
-    DiffractionExperiment experiment(output.jungfraujoch_settings());
+void WriteHDF5MasterFile(const JFJochProtoBuf::JFJochWriterMetadataInput &output) {
+    DiffractionExperiment experiment(output.receiver_output().jungfraujoch_settings());
     std::string filename = experiment.GenerateMasterFilename();
 
     HDF5File hdf5_file(filename, true, true, false);

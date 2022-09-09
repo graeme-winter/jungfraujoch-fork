@@ -21,7 +21,6 @@ void ZMQSpotPublisher::PublishReciprocal(const DiffractionExperiment& experiment
                                          int64_t image_number) {
     JFJochProtoBuf::SpotFinderImageOutput list;
     list.set_image_number(image_number);
-    *list.mutable_unit_cell() = experiment.GetUnitCell();
     *list.mutable_coord() = {vec.begin(), vec.end()};
     socket.Send(list.SerializeAsString());
 }

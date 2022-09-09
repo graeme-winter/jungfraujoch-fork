@@ -342,7 +342,7 @@ assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [ge
 assign_bd_address -offset 0x00040000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_reg] [get_bd_addr_segs mac_100g/cmac_usplus_0/s_axi/Reg] -force
 assign_bd_address -offset 0x00030000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_reg] [get_bd_addr_segs jungfraujoch/mailbox_0/S0_AXI/Reg] -force
 assign_bd_address -offset 0x00010000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_reg] [get_bd_addr_segs bci_admpcie9h3_0/axil/reg0] -force
-assign_bd_address -offset 0x00060000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_reg] [get_bd_addr_segs jungfraujoch/axi_bram_ctrl_0/S_AXI/Mem0] -force
+assign_bd_address -offset 0x00060000 -range 0x00002000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_reg] [get_bd_addr_segs jungfraujoch/axi_bram_ctrl_0/S_AXI/Mem0] -force
 assign_bd_address -offset 0x00000000 -range 0x00008000 -target_address_space [get_bd_addr_spaces mac_100g/eth_ctrl/microblaze_0/Data] [get_bd_addr_segs mac_100g/eth_ctrl/microblaze_0_local_memory/dlmb_bram_if_cntlr/SLMB/Mem] -force
 assign_bd_address -offset 0x00040000 -range 0x00010000 -target_address_space [get_bd_addr_spaces mac_100g/eth_ctrl/microblaze_0/Data] [get_bd_addr_segs mac_100g/cmac_usplus_0/s_axi/Reg] -force
 assign_bd_address -offset 0x00080000 -range 0x00010000 -target_address_space [get_bd_addr_spaces mac_100g/eth_ctrl/microblaze_0/Data] [get_bd_addr_segs mac_100g/eth_ctrl/axi_intc_0/S_AXI/Reg] -force
@@ -353,6 +353,14 @@ set_property -dict [ list \
          CONFIG.CMAC_CORE_SELECT {CMACE4_X0Y1} \
          CONFIG.GT_GROUP_SELECT {X0Y8~X0Y11} \
 ] [get_bd_cells mac_100g/cmac_usplus_0]
+
+set start_eth_elf_file [file normalize "${src_dir}/microblaze/start_eth.elf"]
+add_files -norecurse $start_eth_elf_file
+add_files -fileset sim_1 -norecurse [file normalize $start_eth_elf_file]
+set_property SCOPED_TO_REF action [get_files -all -of_objects [get_fileset sources_1] $start_eth_elf_file]
+set_property SCOPED_TO_CELLS { mac_100g/eth_ctrl/microblaze_0 } [get_files -all -of_objects [get_fileset sources_1] $start_eth_elf_file]
+set_property SCOPED_TO_REF action [get_files -all -of_objects [get_fileset sim_1] $start_eth_elf_file]
+set_property SCOPED_TO_CELLS { mac_100g/eth_ctrl/microblaze_0 } [get_files -all -of_objects [get_fileset sim_1] $start_eth_elf_file]
 
 save_bd_design
 validate_bd_design
@@ -369,13 +377,7 @@ generate_target all                     [get_files ${src_dir}/oc-accel/hardware/
 
 add_files -fileset constrs_1 -norecurse ${src_dir}/xdc/oc_9h3.xdc
 
-set start_eth_elf_file [file normalize "$src_dir/microblaze/start_eth.elf"]
-add_files -norecurse $start_eth_elf_file
-add_files -fileset sim_1 -norecurse [file normalize $start_eth_elf_file]
-set_property SCOPED_TO_REF jfjoch_pcie [get_files -all -of_objects [get_fileset sources_1] $start_eth_elf_file]
-set_property SCOPED_TO_CELLS { mac_100g/eth_ctrl/microblaze_0 } [get_files -all -of_objects [get_fileset sources_1] $start_eth_elf_file]
-set_property SCOPED_TO_REF jfjoch_pcie [get_files -all -of_objects [get_fileset sim_1] $start_eth_elf_file]
-set_property SCOPED_TO_CELLS { mac_100g/eth_ctrl/microblaze_0 } [get_files -all -of_objects [get_fileset sim_1] $start_eth_elf_file]
+write_hw_platform -fixed -force -file jfjoch_opencapi.xsa
 
 set_property -name {ies.simulate.ncsim.more_options} -value {+notimingchecks} -objects [get_filesets sim_1]
 set_property -name {ies.elaborate.ncelab.more_options} -value {-access +rwc -notimingchecks} -objects [get_filesets sim_1]

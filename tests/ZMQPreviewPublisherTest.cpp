@@ -15,7 +15,7 @@ TEST_CASE("ZMQPreviewPublisher","[ZSTD]") {
     DiffractionExperiment experiment(1,{1});
     experiment.UpsideDown(false);
 
-    JungfrauCalibration calibration(experiment);
+    JFCalibration calibration(experiment);
     publisher.Start(experiment, calibration);
 
     std::vector<int16_t> image(experiment.GetPixelsNum());
@@ -57,7 +57,7 @@ TEST_CASE("ZMQPreviewPublisher_GetPreviewImage","[ZSTD]") {
     DiffractionExperiment experiment(1,{1});
     experiment.UpsideDown(false);
 
-    JungfrauCalibration calibration(experiment);
+    JFCalibration calibration(experiment);
     publisher.Start(experiment, calibration);
 
     std::vector<int16_t> image(experiment.GetPixelsNum());

@@ -45,6 +45,7 @@
 `define ADDR_DATA_COL_MODE       16'h0070
 `define ADDR_ONE_OVER_ENERGY     16'h0074
 `define ADDR_FRAMES_PER_TRIG     16'h0078
+`define ADDR_NSTORAGE_CELLS      16'h007C
 
 module action_config
 #(parameter
@@ -82,6 +83,7 @@ module action_config
     output reg [31:0]                      one_over_energy          ,
     output reg [31:0]                      frames_per_trigger       ,
     output reg [7:0]                       nmodules                 ,
+    output reg [3:0]                       nstorage_cells           ,
 
     output reg                             data_collection_start    ,
     output reg                             data_collection_cancel   ,
@@ -318,6 +320,9 @@ always @(posedge clk) begin
             `ADDR_NMODULES: begin
                 rdata <= nmodules;
             end
+            `ADDR_NSTORAGE_CELLS: begin
+                rdata <= nstorage_cells;
+            end
             `ADDR_ACTION_TYPE: begin
                 rdata <= `ACTION_TYPE;
             end
@@ -475,6 +480,15 @@ always @(posedge clk) begin
     end
 end
 
+always @(posedge clk) begin
+    if (!resetn)
+        nstorage_cells <= 0;
+    else if (reg_data_collection_idle) begin
+        if (w_hs && waddr == `ADDR_NSTORAGE_CELLS)
+            nstorage_cells <= (s_axi_WDATA[3:0] & wmask[3:0]) | (nstorage_cells & !wmask[3:0]);
+    end
+end
+
 always @ (posedge clk) begin
     reg_eth_stat_rx_status_1  <= eth_stat_rx_status;
     reg_eth_stat_rx_status_2  <= reg_eth_stat_rx_status_1;
@@ -493,20 +507,33 @@ always @ (posedge clk) begin
 end
 
 always @ (posedge clk) begin
-    if (stalls_hbm_valid)
-        reg_stalls_hbm <= stalls_hbm;
-    if (stalls_host_valid)
-        reg_stalls_host <= stalls_host;
-    if (packets_processed_valid)
-        reg_packets_processed <= packets_processed;
-    if (packets_eth_valid)
-        reg_packets_eth <= packets_eth;
-    if (packets_udp_valid)
-        reg_packets_udp <= packets_udp;
-    if (packets_icmp_valid)
-        reg_packets_icmp <= packets_icmp;
-    if (host_writer_err_valid)
-        reg_host_writer_err <= host_writer_err;
+    if (!resetn)
+        begin
+            reg_stalls_hbm        <= 0;
+            reg_stalls_host       <= 0;
+            reg_packets_processed <= 0;
+            reg_packets_eth       <= 0;
+            reg_packets_udp       <= 0;
+            reg_packets_icmp      <= 0;
+            reg_host_writer_err   <= 0;
+        end
+    else
+        begin
+            if (stalls_hbm_valid)
+                reg_stalls_hbm <= stalls_hbm;
+            if (stalls_host_valid)
+                reg_stalls_host <= stalls_host;
+            if (packets_processed_valid)
+                reg_packets_processed <= packets_processed;
+            if (packets_eth_valid)
+                reg_packets_eth <= packets_eth;
+            if (packets_udp_valid)
+                reg_packets_udp <= packets_udp;
+            if (packets_icmp_valid)
+                reg_packets_icmp <= packets_icmp;
+            if (host_writer_err_valid)
+                reg_host_writer_err <= host_writer_err;
+        end
 end
 
 // HBM temperature trip is only cleared on card restart to protect the card

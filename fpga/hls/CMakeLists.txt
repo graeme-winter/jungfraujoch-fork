@@ -15,6 +15,7 @@ ADD_LIBRARY( HLSSimulation STATIC
         sls_detector.cpp
         hls_bitshuffle.cpp)
 
+TARGET_INCLUDE_DIRECTORIES(HLSSimulation PUBLIC ../include)
 TARGET_LINK_LIBRARIES(HLSSimulation CommonFunctions)
 TARGET_COMPILE_DEFINITIONS(HLSSimulation PRIVATE -DNO_SYNTH)
 

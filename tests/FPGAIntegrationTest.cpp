@@ -9,7 +9,6 @@
 #include "../fpga/host/HLSSimulatedDevice.h"
 #include "FPGAUnitTest.h"
 #include "../fpga/host/GenerateOpenCAPIDeviceName.h"
-#include "../common/FrameTransformation.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -109,7 +108,7 @@ TEST_CASE("HLS_C_Simulation_check_raw", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(5).BeamlineDelay(1995ms).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(0);
 
     HLSSimulatedDevice test(0, 64);
     test.CreatePackets(x, 1, 5, 0, raw_frames.data(), true);
@@ -158,7 +157,7 @@ TEST_CASE("HLS_C_Simulation_check_cancel", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(5).BeamlineDelay(1995ms).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(0);
 
     HLSSimulatedDevice test(0, 64);
 
@@ -183,7 +182,7 @@ TEST_CASE("HLS_C_Simulation_check_delay", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).BeamlineDelay(1995ms).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
 
     HLSSimulatedDevice test(0, 64);
 
@@ -226,7 +225,7 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_raw", "[FPGA][Full]") {
 
     for (int i = 0; i < 4096; i++) data[i] = i;
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).BeamlineDelay(1995ms).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
 
     HLSSimulatedDevice test(0, 64);
 
@@ -258,7 +257,7 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_conversion", "[FPGA][Full]") {
 
     for (int i = 0; i < 4096; i++) data[i] = i;
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).BeamlineDelay(1995ms).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
 
     HLSSimulatedDevice test(0, 64);
 
@@ -291,7 +290,7 @@ TEST_CASE("HLS_C_Simulation_check_single_packet", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).BeamlineDelay(1995ms).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
     HLSSimulatedDevice test(0, 64);
 
     test.CreatePacket(x, 1, 0, 0, data, false);
@@ -361,17 +360,19 @@ TEST_CASE("HLS_C_Simulation_check_single_packet", "[FPGA][Full]") {
     REQUIRE(device_statistics.good_packets() == 15);
     REQUIRE(device_statistics.ok_eth_packets() == 16);
     REQUIRE(device_statistics.packets_expected_per_image() == 4*128);
+    REQUIRE(device_statistics.timestamp().size() == 3*4);
+    REQUIRE(device_statistics.timestamp(0) == 0x00FEDCBAL );
 }
 
 TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
     std::vector<uint16_t> data(65536);
-    std::vector<double> pedestal(3 * RAW_MODULE_SIZE);
     std::vector<double> gain(3 * RAW_MODULE_SIZE);
 
+    JFPedestal pedestal_g0, pedestal_g1, pedestal_g2;
     for (int i = 0; i < RAW_MODULE_SIZE; i++) {
-        pedestal[i] = 0;
-        pedestal[i + RAW_MODULE_SIZE] = 14500;
-        pedestal[i + 2 * RAW_MODULE_SIZE] = 14500;
+        pedestal_g0[i] = 0;
+        pedestal_g1[i] = 14500;
+        pedestal_g2[i] = 14500;
     }
 
     for (int i = 0; i < 65536; i++) {
@@ -391,10 +392,10 @@ TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
 
         REQUIRE(x.GetPhotonEnergy_keV() == Approx(energy));
 
-        JungfrauCalibration c_in(x, 0);
-        JungfrauCalibration c_out(x, 0);
-
-        REQUIRE_NOTHROW(c_in.LoadModulePedestal(pedestal, 0));
+        JFCalibration c_in(x);
+        c_in.Pedestal(0,0) = pedestal_g0;
+        c_in.Pedestal(0,1) = pedestal_g1;
+        c_in.Pedestal(0,2) = pedestal_g2;
 
         test.InitializeCalibration(x, c_in);
 
@@ -424,13 +425,13 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
 
     DiffractionExperiment x;
     std::vector<uint16_t> data(RAW_MODULE_SIZE);
-    std::vector<double> pedestal(3 * RAW_MODULE_SIZE);
+    JFPedestal pedestal_g0, pedestal_g1, pedestal_g2;
     std::vector<double> gain(3 * RAW_MODULE_SIZE);
 
     for (int i = 0; i < RAW_MODULE_SIZE; i++) {
-        pedestal[i] = 0 + (i / 65536) * 1000 + 100 * (i % 5);
-        pedestal[i + RAW_MODULE_SIZE] = 14500 - (i / 65536) * 1000 + 100 * (i % 3);
-        pedestal[i + 2 * RAW_MODULE_SIZE] = 14500 - + (i / 65536) * 1000;
+        pedestal_g0[i] = 0 + (i / 65536) * 1000 + 100 * (i % 5);
+        pedestal_g1[i] = 14500 - (i / 65536) * 1000 + 100 * (i % 3);
+        pedestal_g2[i] = 14500 - + (i / 65536) * 1000;
     }
 
     for (int i = 0; i < RAW_MODULE_SIZE; i++) {
@@ -441,8 +442,6 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
     x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(1).UseInternalPacketGenerator(true).PhotonEnergy_keV(energy);
     REQUIRE(x.GetPhotonEnergy_keV() == Approx(energy));
 
-    JungfrauCalibration c(x, 0);
-
     std::fstream file("../../tests/test_data/gainMaps_M049.bin", std::fstream::in | std::fstream::binary);
     REQUIRE(file.is_open());
 
@@ -452,7 +451,10 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
         if (gain[i] == 0) gain[i] = 1.0;
     }
 
-    REQUIRE_NOTHROW(c.LoadModulePedestal(pedestal, 0));
+    JFCalibration c(x);
+    c.Pedestal(0,0) = pedestal_g0;
+    c.Pedestal(0,1) = pedestal_g1;
+    c.Pedestal(0,2) = pedestal_g2;
 
     HLSSimulatedDevice test(0, 64);
 
@@ -475,10 +477,11 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
 }
 
 TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
-    std::vector<float> pedestal(3*RAW_MODULE_SIZE);
-    LoadBinaryFile("../../tests/test_data/mod5_pedeG0.bin", pedestal.data(), RAW_MODULE_SIZE);
-    LoadBinaryFile("../../tests/test_data/mod5_pedeG1.bin", pedestal.data() + RAW_MODULE_SIZE, RAW_MODULE_SIZE);
-    LoadBinaryFile("../../tests/test_data/mod5_pedeG2.bin", pedestal.data() + 2 * RAW_MODULE_SIZE, RAW_MODULE_SIZE);
+    std::vector<float> pedestal_g0(RAW_MODULE_SIZE), pedestal_g1(RAW_MODULE_SIZE), pedestal_g2(RAW_MODULE_SIZE);
+
+    LoadBinaryFile("../../tests/test_data/mod5_pedeG0.bin", pedestal_g0.data(), RAW_MODULE_SIZE);
+    LoadBinaryFile("../../tests/test_data/mod5_pedeG1.bin", pedestal_g1.data(), RAW_MODULE_SIZE);
+    LoadBinaryFile("../../tests/test_data/mod5_pedeG2.bin", pedestal_g2.data(), RAW_MODULE_SIZE);
 
     std::vector<uint16_t> raw_frames(RAW_MODULE_SIZE*20);
     std::vector<float> conv_frames(RAW_MODULE_SIZE*20);
@@ -492,12 +495,14 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).NumTriggers(2).ImagesPerTrigger(5).BeamlineDelay(1995ms);
+    x.PedestalG0Frames(0).NumTriggers(2).ImagesPerTrigger(5);
 
     HLSSimulatedDevice test(0, 64);
 
-    JungfrauCalibration c(x, 0);
-    REQUIRE_NOTHROW(c.LoadModulePedestal(pedestal,0));
+    JFCalibration c(x);
+    REQUIRE_NOTHROW(c.Pedestal(0, 0).LoadPedestal(pedestal_g0));
+    REQUIRE_NOTHROW(c.Pedestal(0, 1).LoadPedestal(pedestal_g1));
+    REQUIRE_NOTHROW(c.Pedestal(0, 2).LoadPedestal(pedestal_g2));
 
     for (int i = 0; i < x.GetModulesNum(); i++)
         REQUIRE_NOTHROW(test.LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", i));
@@ -505,10 +510,7 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
     REQUIRE_NOTHROW(test.InitializeCalibration(x, c));
 
     // send some frames without trigger (to be ignored)
-    test.CreatePackets(x, 5, 1, 0, raw_frames.data(), false);
-    test.CreatePackets(x, 51, 5, 0, raw_frames.data(), true);
-    test.CreatePacket(x,  201, 0, 0, data, false);
-    test.CreatePackets(x, 251, 5, 0, raw_frames.data() + 5 * RAW_MODULE_SIZE, true);
+    test.CreatePackets(x, 1, 10, 0, raw_frames.data(), true);
     test.CreateFinalPacket(x);
 
     REQUIRE_NOTHROW(test.StartAction(x));
@@ -545,7 +547,7 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 128 * 11 + 1);
+    REQUIRE(test.GetPacketsOK() == 128 * 10);
 
     JFJochProtoBuf::AcquisitionDeviceStatistics device_statistics;
     REQUIRE_NOTHROW(test.SaveStatistics(x, device_statistics));
@@ -557,7 +559,7 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
     REQUIRE(device_statistics.efficiency() == Approx(0.25));
     REQUIRE(device_statistics.good_packets() == 128*10);
     REQUIRE(device_statistics.packets_expected_per_image() == 128*4);
-    REQUIRE(device_statistics.ok_eth_packets() == 128 * 11 + 1);
+    REQUIRE(device_statistics.ok_eth_packets() == 128 * 10);
 
     double mean_error = 0.0;
     for (int i = 0; i < 10; i++) {
@@ -579,15 +581,14 @@ TEST_CASE("HLS_C_Simulation_check_wrong_packet_size", "[FPGA][Full]") {
     uint16_t data[8192];
 
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{1});
-    x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(5).BeamlineDelay(1995ms);
+    x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(5);
 
     HLSSimulatedDevice test(0, 64);
-
-    JungfrauCalibration c(x, 0);
 
     for (int i = 0; i < x.GetModulesNum(); i++)
         REQUIRE_NOTHROW(test.LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", i));
 
+    JFCalibration c(x);
     REQUIRE_NOTHROW(test.InitializeCalibration(x, c));
 
     // send some frames with wrong size or tuser=1
@@ -647,8 +648,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
     REQUIRE(idle_data_collection == 1);
     REQUIRE(addr1.empty());
     REQUIRE(raw1.empty());
@@ -663,8 +665,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
     REQUIRE(idle_data_collection == 0);
     REQUIRE(addr1.empty());
     REQUIRE(raw1.empty());
@@ -677,8 +680,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
     REQUIRE(idle_data_collection == 0);
     REQUIRE(addr1.empty());
     REQUIRE(raw1.empty());
@@ -694,8 +698,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
     REQUIRE(idle_data_collection == 0);
     REQUIRE(addr1.empty());
     REQUIRE(raw1.empty());
@@ -708,8 +713,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
 
     REQUIRE(idle_data_collection == 0);
     REQUIRE(addr1.size() == 1);
@@ -724,8 +730,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
 
     REQUIRE(idle_data_collection == 0);
     REQUIRE(addr1.size() == 1);
@@ -742,8 +749,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
 
     REQUIRE(idle_data_collection == 0);
     REQUIRE(addr1.size() == 1);
@@ -758,8 +766,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
 
     REQUIRE(idle_data_collection == 0);
     REQUIRE(addr1.size() == 2);
@@ -774,8 +783,9 @@ TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
                         idle_data_collection,
                         act_reg.mode,
                         act_reg.one_over_energy,
-                        act_reg.frames_per_trigger,
-                        act_reg.nmodules);
+                        act_reg.frames_internal_packet_gen,
+                        act_reg.nmodules,
+                        act_reg.nstorage_cells);
 
     REQUIRE(idle_data_collection == 1);
     REQUIRE(addr1.size() == 2);
@@ -799,4 +809,92 @@ TEST_CASE("OpenCAPIDevice_GenerateOpenCAPIDevice","[OpenCAPI]") {
     REQUIRE(GenerateOpenCAPIDeviceName(5) == "/dev/ocxl/IBM,oc-snap.0005:00:00.1.0");
     REQUIRE(GenerateOpenCAPIDeviceName(6) == "/dev/ocxl/IBM,oc-snap.0006:00:00.1.0");
     REQUIRE(GenerateOpenCAPIDeviceName(7) == "/dev/ocxl/IBM,oc-snap.0007:00:00.1.0");
+}
+
+TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G0", "[FPGA][Full]") {
+    DiffractionExperiment x;
+
+    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {2});
+    x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(16).UseInternalPacketGenerator(true)
+    .PhotonEnergy_keV(10.0).StorageCells(16);
+
+    HLSSimulatedDevice test(0, 64);
+
+    std::vector<double> gain(3 * RAW_MODULE_SIZE);
+    for (auto &i: gain)
+        i = 50.0;
+    REQUIRE_NOTHROW(test.LoadModuleGain(gain, 0));
+    REQUIRE_NOTHROW(test.LoadModuleGain(gain, 1));
+
+    std::vector<uint16_t> data(RAW_MODULE_SIZE);
+    for (auto &i: data)
+        i = 16000;
+    REQUIRE_NOTHROW(test.SetCustomInternalGeneratorFrame(data));
+
+    JFCalibration c(x);
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < RAW_MODULE_SIZE; j++) {
+            c.Pedestal(0, 0, i)[j] = (15 - i) * 500 * 4;
+            c.Pedestal(1, 0, i)[j] = i * 1000 * 4;
+        }
+    }
+    REQUIRE_NOTHROW(test.InitializeCalibration(x, c));
+    REQUIRE_NOTHROW(test.StartAction(x));
+    REQUIRE_NOTHROW(test.WaitForActionComplete());
+
+    REQUIRE_NOTHROW(test.OutputStream().read());
+    REQUIRE(test.OutputStream().size() == 0);
+
+    REQUIRE(test.GetPacketsOK() == 2*16*128);
+
+    REQUIRE(test.GetPacketCount(15, 0) == 128);
+
+    for (int i = 0; i < 16; i++) {
+        REQUIRE(test.GetFrameBuffer(i,0)[511*764] == 32 - 15 + (i % 16));
+        REQUIRE(test.GetFrameBuffer(i,1)[200*145] == 32 - 2 * (i % 16));
+    }
+}
+
+TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G1", "[FPGA][Full]") {
+    DiffractionExperiment x;
+
+    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {2});
+    x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(16).UseInternalPacketGenerator(true)
+            .PhotonEnergy_keV(10.0).StorageCells(16);
+
+    HLSSimulatedDevice test(0, 64);
+
+    std::vector<double> gain(3 * RAW_MODULE_SIZE);
+    for (auto &i: gain)
+        i = -1.0;
+    REQUIRE_NOTHROW(test.LoadModuleGain(gain, 0));
+    REQUIRE_NOTHROW(test.LoadModuleGain(gain, 1));
+
+    std::vector<uint16_t> data(RAW_MODULE_SIZE);
+    for (auto &i: data)
+        i = 16384 | 10;
+    REQUIRE_NOTHROW(test.SetCustomInternalGeneratorFrame(data));
+
+    JFCalibration c(x);
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < RAW_MODULE_SIZE; j++) {
+            c.Pedestal(0, 1, i)[j] = (17 - i) * 10 * 4;
+            c.Pedestal(1, 1, i)[j] = i * 20 * 4;
+        }
+    }
+    REQUIRE_NOTHROW(test.InitializeCalibration(x, c));
+    REQUIRE_NOTHROW(test.StartAction(x));
+    REQUIRE_NOTHROW(test.WaitForActionComplete());
+
+    REQUIRE_NOTHROW(test.OutputStream().read());
+    REQUIRE(test.OutputStream().size() == 0);
+
+    REQUIRE(test.GetPacketsOK() == 32*128);
+
+    REQUIRE(test.GetPacketCount(15, 0) == 128);
+
+    for (int i = 0; i < 16; i++) {
+        REQUIRE(test.GetFrameBuffer(i,0)[511*764] == 17 - (i % 16) - 1);
+        REQUIRE(test.GetFrameBuffer(i,1)[200*145] == 2 * (i % 16) - 1);
+    }
 }

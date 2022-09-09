@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "Coord.h"
+#include "JFJochException.h"
 
 Coord::Coord() {
     x = 0.0; y = 0.0; z = 0.0;
@@ -112,6 +113,34 @@ Coord operator*(double in1, const Coord& in2) {
 
 double determinant(const Coord &in1, const Coord &in2, const Coord &in3) {
     return (in1 % in2) * in3;
+}
+
+const double& Coord::operator[](int64_t val) const {
+    switch (val) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                                  "Coord index must be in range 0-2");
+    }
+}
+
+double& Coord::operator[](int64_t val) {
+    switch (val) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                                  "Coord index must be in range 0-2");
+    }
 }
 
 std::ostream &operator<<( std::ostream &output, const Coord &in ) {

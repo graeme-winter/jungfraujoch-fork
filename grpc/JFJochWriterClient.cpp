@@ -47,10 +47,16 @@ void JFJochWriterClient::Stop() {
     }
 }
 
-void JFJochWriterClient::WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request) {
+void JFJochWriterClient::WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &input,
+                                         const JFJochProtoBuf::JFCalibration &calibration) {
     if (_stub) {
         JFJochProtoBuf::Empty empty;
         grpc::ClientContext context;
+
+        JFJochProtoBuf::JFJochWriterMetadataInput request;
+        *request.mutable_receiver_output() = input;
+        *request.mutable_calibration() = calibration;
+
         auto status = _stub->WriteMasterFile(&context, request, &empty);
         if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
                                                 "JFJochWriter: " + status.error_message());

@@ -39,7 +39,7 @@ TEST_CASE("ActionStatus") {
 
 
 TEST_CASE("ActionConfigSize") {
-    REQUIRE(sizeof(ActionConfig) == 5 * sizeof(uint32_t));
+    REQUIRE(sizeof(ActionConfig) == 6 * sizeof(uint32_t));
 }
 
 TEST_CASE("ActionConfig") {
@@ -58,6 +58,9 @@ TEST_CASE("ActionConfig") {
     config.mode = 1<<5;
     CHECK(config32[(ADDR_DATA_COL_MODE - ADDR_IPV4_ADDR)/4] == 1<<5);
 
-    config.frames_per_trigger = 1<<18;
+    config.frames_internal_packet_gen = 1<<18;
     CHECK(config32[(ADDR_FRAMES_PER_TRIG - ADDR_IPV4_ADDR)/4] == 1 << 18  );
+
+    config.nstorage_cells = 16;
+    CHECK(config32[(ADDR_NSTORAGE_CELLS - ADDR_IPV4_ADDR)/4] == 16);
 }

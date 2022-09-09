@@ -26,6 +26,9 @@ void udp(AXI_STREAM &eth_in,
     static uint64_t internal_counter = 0;
     counter = internal_counter;
 
+#pragma HLS RESET variable=state
+#pragma HLS RESET variable=internal_counter
+
     ap_uint<16> udp_dest_port, udp_len;
 
     eth_in >> packet_in;

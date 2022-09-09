@@ -26,6 +26,7 @@ class AcquisitionDeviceCounters {
     std::vector<uint64_t> packet_mask_half;
     std::vector<bool> trigger;
     std::vector<uint64_t> handle_for_frame;
+    std::vector<uint32_t> timestamp;
 
     uint64_t slowest_head;
     std::vector<uint64_t> head;
@@ -57,6 +58,7 @@ public:
 
     // This is NOT protected by mutex - use only, when data acquisition is finished!
     const std::vector<uint64_t> &PacketMaskHalfModule() const;
+    const std::vector<uint32_t> &Timestamps() const;
 };
 
 

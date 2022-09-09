@@ -16,8 +16,17 @@ ELSE()
     MESSAGE(STATUS "Xilinx HLS compiler not found")
 ENDIF()
 
+IF (VIVADO OR (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "ppc64le") OR VIVADO)
+    SET(USE_OPENCAPI ON CACHE BOOL "Include OpenCAPI routines")
+ELSE()
+    SET(USE_OPENCAPI OFF CACHE BOOL "Include OpenCAPI routines")
+ENDIF()
+
+INCLUDE_DIRECTORIES(include)
+
 ADD_SUBDIRECTORY(hls)
 ADD_SUBDIRECTORY(host)
+ADD_SUBDIRECTORY(receiver)
 ADD_SUBDIRECTORY(pcie_driver)
 
 IF(VIVADO_HLS AND VIVADO)
@@ -33,7 +42,7 @@ IF(VIVADO_HLS AND VIVADO)
             COMMAND make -f ${CMAKE_CURRENT_SOURCE_DIR}/oc-accel/Makefile -C ${CMAKE_CURRENT_SOURCE_DIR}/oc-accel model)
 
     ADD_CUSTOM_TARGET(action_sim DEPENDS action_model WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/oc-accel/hardware/sim
-            COMMAND ./run_sim -quiet -app ../../../build/fpga/host_api/jfjoch_action_test /home/filip/Jungfraujoch/tests/test_data/gainMaps_M049.bin 0 1 > sim_a.out
+            COMMAND ./run_sim -quiet -app ../../../build/fpga/receiver/jfjoch_action_test /home/filip/Jungfraujoch/tests/test_data/gainMaps_M049.bin 0 1 > sim_a.out
             )
 
     ADD_CUSTOM_TARGET(action_opencapi

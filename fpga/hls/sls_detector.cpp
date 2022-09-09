@@ -16,8 +16,8 @@ void sls_detector(AXI_STREAM &udp_payload_in,
 
 #pragma HLS pipeline II=1 enable_flush
 
-    enum   udp_state {INSPECT_HEADER, FORWARD, DISCARD};
-    static udp_state state = INSPECT_HEADER;
+    enum   sls_detector_state {INSPECT_HEADER, FORWARD, DISCARD};
+    static sls_detector_state state = INSPECT_HEADER;
 
     static ap_uint<128> reminder = 0;
     packet_512_t packet_in;
@@ -29,6 +29,8 @@ void sls_detector(AXI_STREAM &udp_payload_in,
 
     udp_payload_in >> packet_in;
     ap_uint<UDP_METADATA_STREAM_WIDTH> udp_metadata;
+
+#pragma HLS RESET variable=state
 
     switch (state) {
         case INSPECT_HEADER:

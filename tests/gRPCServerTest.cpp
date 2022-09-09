@@ -6,7 +6,7 @@
 #include "../grpc/gRPCServer_Template.h"
 
 #include "../common/Logger.h"
-#include "../fpga/host/JFJochReceiverService.h"
+#include "../fpga/receiver/JFJochReceiverService.h"
 #include "../grpc/JFJochReceiverClient.h"
 #include "../fpga/host/HLSSimulatedDevice.h"
 

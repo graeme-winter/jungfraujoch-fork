@@ -3,7 +3,8 @@ ADD_SUBDIRECTORY(xgandalf)
 ADD_LIBRARY(DataProcessing STATIC
         XgandalfWrapper.h XgandalfWrapper.cpp
         JFJochIndexerService.cpp JFJochIndexerService.h
-        JFJochIndexer.cpp JFJochIndexer.h)
+        JFJochIndexer.cpp JFJochIndexer.h
+        CrystalLattice.cpp CrystalLattice.h)
 
 TARGET_LINK_LIBRARIES(DataProcessing xgandalf CommonFunctions)
 

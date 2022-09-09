@@ -45,7 +45,7 @@ MockAcquisitionDevice::MockAcquisitionDevice(uint16_t data_stream, size_t in_fra
 : AcquisitionDevice(data_stream) {
 
     MapBuffersStandard(in_frame_buffer_size_modules,
-                       6 * max_modules + frames_int_pkt_gen, -1);
+                       (3 + 3 * 16) * max_modules + frames_int_pkt_gen, -1);
     max_handle = in_frame_buffer_size_modules;
 }
 

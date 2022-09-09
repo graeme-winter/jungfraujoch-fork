@@ -12,8 +12,6 @@
 
 #include "Coord.h"
 #include "Definitions.h"
-#include "CrystalLattice.h"
-
 
 enum class CompressionAlgorithm : int {
     None, BSHUF_LZ4, BSHUF_ZSTD
@@ -22,6 +20,17 @@ enum class CompressionAlgorithm : int {
 enum class DetectorMode : int {
     Conversion, Raw, PedestalG0, PedestalG1, PedestalG2
 };
+
+inline JFJochProtoBuf::UnitCell make_unit_cell(double a, double b, double c, double alpha, double beta, double gamma) {
+    JFJochProtoBuf::UnitCell ret;
+    ret.set_a(a);
+    ret.set_b(b);
+    ret.set_c(c);
+    ret.set_alpha(alpha);
+    ret.set_beta(beta);
+    ret.set_gamma(gamma);
+    return ret;
+}
 
 class DiffractionExperiment {
     JFJochProtoBuf::DetectorSettings detector;
@@ -36,6 +45,7 @@ class DiffractionExperiment {
     JFJochProtoBuf::CompressionSettings compr;
     JFJochProtoBuf::JungfraujochInternalSettings internal;
     JFJochProtoBuf::SampleSettings sample;
+    JFJochProtoBuf::RadialIntegrationSettings radial_int;
 
     int64_t GetFrameToReqImageRatio() const;
     std::string GenerateFilePrefix() const;
@@ -46,7 +56,6 @@ class DiffractionExperiment {
     void UpdateGeometry();
     void UpdateModulePixel0();
 public:
-    static const int64_t GroupIDNotSet = -1;
     static const int64_t RunNumberNotSet = -1;
 
     // Public methods are atomic
@@ -71,7 +80,6 @@ public:
     DiffractionExperiment& ImageTime(std::chrono::microseconds image_time);
     DiffractionExperiment& OptimizeFrameTime(bool input);
     DiffractionExperiment& CountTime(std::chrono::microseconds in_count_time);
-    DiffractionExperiment& BeamlineDelay(std::chrono::microseconds input);
     DiffractionExperiment& TimeResolvedMode(bool input);
 
     DiffractionExperiment& PedestalG1G2FrameTime(std::chrono::microseconds input);
@@ -111,21 +119,29 @@ public:
     DiffractionExperiment& BaseIPv4Address(std::string input);
     DiffractionExperiment& BaseUDPPort(int64_t input);
     DiffractionExperiment& BaseIPv4Address(int64_t input);
-    DiffractionExperiment& FrameSummationEnable(bool input);
     DiffractionExperiment& MeasurementSequenceNumber(int64_t input);
     DiffractionExperiment& IncrementMeasurementSequenceNumber();
     DiffractionExperiment& ErrorWhenOverwriting(bool input);
     DiffractionExperiment& MaskModuleEdges(bool input);
     DiffractionExperiment& MaskChipEdges(bool input);
-    DiffractionExperiment& SetUnitCell(UnitCell &cell);
     DiffractionExperiment& SetUnitCell(const JFJochProtoBuf::UnitCell &cell);
-    DiffractionExperiment& LowResForBkgEstimation(double input);
-    DiffractionExperiment& HighResForBkgEstimation(double input);
-    DiffractionExperiment& SkipPedestal(bool input);
+    DiffractionExperiment& SetUnitCell();
+
+    DiffractionExperiment& LowResForBkgEstimation_A(double input);
+    DiffractionExperiment& HighResForBkgEstimation_A(double input);
+    DiffractionExperiment& LowResForRadialInt_A(double input);
+    DiffractionExperiment& HighResForRadialInt_A(double input);
+    DiffractionExperiment& LowQForRadialInt_recipA(double input);
+    DiffractionExperiment& HighQForRadialInt_recipA(double input);
+    DiffractionExperiment& QSpacingForRadialInt_recipA(double input);
+
     DiffractionExperiment& SampleName(const std::string &input);
+    DiffractionExperiment& SpaceGroup(const std::string &name);
     DiffractionExperiment& SpaceGroupNumber(int64_t input);
-    DiffractionExperiment& GroupID(int64_t input = GroupIDNotSet);
     DiffractionExperiment& RunNumber(int64_t input = RunNumberNotSet);
+    DiffractionExperiment& StorageCells(int64_t input);
+    DiffractionExperiment& StorageCellStart(int64_t input = 15);
+    DiffractionExperiment& DetectorDelayAfterTrigger(std::chrono::microseconds input);
 
     operator JFJochProtoBuf::JungfraujochSettings() const;
 
@@ -133,16 +149,13 @@ public:
     std::string GetDetectorModeTxt() const;
 
     int64_t GetPixelDepth() const;
-    int64_t GetPixelDepthPreview() const;
     int64_t GetOverflow() const;
     int64_t GetUnderflow() const;
     static int64_t GetOverflow(int64_t summation);
     static int64_t GetUnderflow(int64_t summation);
 
     int64_t GetNumTriggers() const;
-    int64_t GetImageNum(int64_t summation) const;
     int64_t GetImageNum() const;
-    int64_t GetImageNumForPreview() const;
     int64_t GetImageNumPerTrigger() const;
 
     int64_t GetPedestalG0Frames() const;
@@ -154,17 +167,10 @@ public:
 
     std::chrono::microseconds GetFrameTime() const;
     std::chrono::microseconds GetImageTime() const;
-    std::chrono::microseconds GetImageTimeForPreview() const;
 
-    // GetSummationForPreview() MUST be multiply of GetSummation()
-    // Current implementation allows only for a more restrictive case:
-    // GetSummation() == GetSummationForPreview() or GetSummation() == 1
-    // but this can change in the future implementation
     int64_t GetSummation() const;
-    int64_t GetSummationForPreview() const; //TODO Find smarter name!
     std::chrono::microseconds GetImageCountTime() const;
     std::chrono::microseconds GetFrameCountTime() const;
-    std::chrono::microseconds GetBeamlineDelay() const;
     bool IsDetectorFullSpeed() const;
     bool IsPedestalSaved() const;
     bool IsPedestalChanging() const;
@@ -258,16 +264,31 @@ public:
 
     bool GetMaskModuleEdges() const;
     bool GetMaskChipEdges() const;
-    UnitCell GetUnitCell() const;
+    JFJochProtoBuf::UnitCell GetUnitCell() const;
+    bool HasUnitCell() const;
 
     double ResToPxl(double resolution) const;
-    double GetLowResolutionLimitForBkg_Pixel() const;
-    double GetHighResolutionLimitForBkg_Pixel() const;
+    Coord LabCoord(double detector_x, double detector_y) const;
+    double PxlToRes(double detector_x, double detector_y) const;
+
+    double GetLowQLimitForBkg_recipA() const;
+    double GetHighQLimitForBkg_recipA() const;
+
+    double GetLowQForRadialInt_recipA() const;
+    double GetHighQForRadialInt_recipA() const;
+    double GetQSpacingForRadialInt_recipA() const;
 
     std::string GetSampleName() const;
+
+    std::string GetSpaceGroupName() const;
     int64_t GetSpaceGroupNumber() const;
-    int64_t GetGroupID() const;
+    char GetCentering() const;
+
     int64_t GetRunNumber() const;
+    int64_t GetStorageCellNumber() const;
+    int64_t GetStorageCellStart() const;
+
+    std::chrono::microseconds GetDetectorDelayAfterTrigger() const;
 };
 
 inline int64_t CalculateStride(const std::chrono::microseconds &frame_time, const std::chrono::microseconds &preview_time) {

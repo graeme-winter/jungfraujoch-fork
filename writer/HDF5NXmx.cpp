@@ -5,7 +5,9 @@
 #include "../common/GitInfo.h"
 
 void HDF5Metadata::NXmx(HDF5File *hdf5_file, const DiffractionExperiment& experiment,
-                        const JFJochProtoBuf::JFJochReceiverOutput &output) {
+                        const JFJochProtoBuf::JFJochWriterMetadataInput &input) {
+    auto output = input.receiver_output();
+
     hdf5_file->Attr("HDF5_Version", hdf5_version());
 
     HDF5Group(*hdf5_file, "/entry").NXClass("NXentry").SaveScalar("definition", "NXmx");
@@ -27,13 +29,13 @@ void HDF5Metadata::NXmx(HDF5File *hdf5_file, const DiffractionExperiment& experi
     Sample(hdf5_file, experiment);
     Attenuator(hdf5_file, experiment);
 
-    if (output.has_calibration()) {
-        Mask(hdf5_file, experiment, output.calibration());
-        Calibration(hdf5_file, output.calibration());
+    if (input.has_calibration()) {
+        Mask(hdf5_file, experiment, input.calibration());
+        Calibration(hdf5_file, input.calibration());
     }
 
     if (output.has_indexer_output())
-        Processing(hdf5_file, output.indexer_output());
+        Processing(hdf5_file, experiment, output.indexer_output());
 
     FinalSettings(hdf5_file, output);
 }
@@ -212,6 +214,9 @@ void HDF5Metadata::Detector(HDF5File *hdf5_file, const DiffractionExperiment &ex
     SaveScalar(det_specific, "software_git_date", jfjoch_git_date());
     SaveScalar(det_specific, "internal_packet_generator", experiment.IsUsingInternalPacketGen());
     SaveScalar(det_specific, "detector_full_speed", experiment.IsDetectorFullSpeed());
+    SaveScalar(det_specific, "storage_cell_number", experiment.GetStorageCellNumber());
+    SaveScalar(det_specific, "storage_cell_start", experiment.GetStorageCellStart());
+    SaveScalar(det_specific, "delay_after_trigger", experiment.GetDetectorDelayAfterTrigger().count())->Units("us");
 }
 
 void HDF5Metadata::Beam(HDF5File *hdf5_file, const DiffractionExperiment &experiment) {
@@ -223,14 +228,15 @@ void HDF5Metadata::Beam(HDF5File *hdf5_file, const DiffractionExperiment &experi
     if (beam_size[0] > 0.0) SaveVector(group, "incident_beam_size", beam_size);
 }
 
-void HDF5Metadata::Mask(HDF5File *hdf5_file, const DiffractionExperiment &experiment, const JungfrauCalibration &calib) {
-    std::vector<uint32_t> mask(experiment.GetPixelsNum(), 1); // 1 = non-active gap ==> will not be replaced by GetMaskTransformed
+void HDF5Metadata::Mask(HDF5File *hdf5_file, const DiffractionExperiment &experiment, const JFCalibration &calib) {
+    for (int i = 0; i < calib.GetStorageCellNum(); i++) {
+        std::string suffix = (i == 0) ? "" : ("_sc" + std::to_string(i));
 
-    calib.GetMaskTransformed(experiment, mask);
-
-    SaveVector(*hdf5_file, "/entry/instrument/detector/pixel_mask", mask,
-               {(hsize_t) experiment.GetYPixelsNum(), (hsize_t) experiment.GetXPixelsNum()},
-               experiment.GetCompressionAlgorithm()); // use the same compression algorithm as data
+        auto mask = calib.CalculateNexusMask(experiment, i);
+        SaveVector(*hdf5_file, "/entry/instrument/detector/pixel_mask"+suffix, mask,
+                   {(hsize_t) experiment.GetYPixelsNum(), (hsize_t) experiment.GetXPixelsNum()},
+                   experiment.GetCompressionAlgorithm()); // use the same compression algorithm as data
+    }
 
     hdf5_file->HardLink("/entry/instrument/detector/pixel_mask",
                         "/entry/instrument/detector/detectorSpecific/pixel_mask");
@@ -247,7 +253,7 @@ void HDF5Metadata::Sample(HDF5File *hdf5_file, const DiffractionExperiment &expe
     if (experiment.GetSpaceGroupNumber() > 0)
         group.SaveScalar("space_group", experiment.GetSpaceGroupNumber());
 
-    if (experiment.GetUnitCell() != UnitCell()) {
+    if (experiment.HasUnitCell()) {
         auto unit_cell = experiment.GetUnitCell();
         std::vector<double> v = {unit_cell.a(), unit_cell.b(), unit_cell.c(),
                                  unit_cell.alpha(), unit_cell.beta(), unit_cell.gamma()};
@@ -334,62 +340,73 @@ void HDF5Metadata::Metrology(HDF5File *hdf5_file, const DiffractionExperiment &e
     }
 }
 
-void HDF5Metadata::Calibration(HDF5File *hdf5_file, const JungfrauCalibration &calib) {
+void HDF5Metadata::Calibration(HDF5File *hdf5_file, const JFCalibration &calib) {
+    for (int i = 0; i < calib.GetStorageCellNum(); i++) {
+        std::vector<hsize_t> detector_size = {(hsize_t) (calib.GetModulesNum() * RAW_MODULE_LINES), RAW_MODULE_COLS};
 
-    std::vector<hsize_t> detector_size = {(hsize_t) (calib.GetModulesNum() * RAW_MODULE_LINES), RAW_MODULE_COLS};
+        std::string suffix = (i == 0) ? "" : ("_sc" + std::to_string(i));
 
-    SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG0", calib.Pedestal(0), detector_size, CompressionAlgorithm::BSHUF_LZ4)
-    ->Units("0.25 ADU")
-    .Attr("timestamp", time_UTC(calib.GetPedestalTimestamp(0)))
-    .Attr("timestamp_unix", calib.GetPedestalTimestamp(0))
-    .Attr("frames", (int32_t) calib.GetPedestalFrames(0));
+        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG0"+suffix,
+                   calib.GetPedestal(0, i),
+                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
+                ->Units("ADU")
+                .Attr("timestamp", time_UTC(calib.Pedestal(0, 0).collection_time))
+                .Attr("timestamp_unix", calib.Pedestal(0, 0).collection_time)
+                .Attr("frames", calib.Pedestal(0, 0).frames);
 
-    SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG1", calib.Pedestal(1), detector_size, CompressionAlgorithm::BSHUF_LZ4)
-    ->Units("0.25 ADU")
-    .Attr("timestamp", time_UTC(calib.GetPedestalTimestamp(1)))
-    .Attr("timestamp_unix", calib.GetPedestalTimestamp(1))
-    .Attr("frames", (int32_t) calib.GetPedestalFrames(1));
+        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG1"+suffix,
+                   calib.GetPedestal(1, i),
+                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
+                ->Units("ADU")
+                .Attr("timestamp", time_UTC(calib.Pedestal(0, 1).collection_time))
+                .Attr("timestamp_unix", calib.Pedestal(0, 1).collection_time)
+                .Attr("frames", calib.Pedestal(0, 1).frames);
 
-    SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG2", calib.Pedestal(2), detector_size, CompressionAlgorithm::BSHUF_LZ4)
-    ->Units("0.25 ADU")
-    .Attr("timestamp", time_UTC(calib.GetPedestalTimestamp(2)))
-    .Attr("timestamp_unix", calib.GetPedestalTimestamp(2))
-    .Attr("frames", (int32_t) calib.GetPedestalFrames(2));
+        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG2"+suffix,
+                   calib.GetPedestal(2, i),
+                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
+                ->Units("ADU")
+                .Attr("timestamp", time_UTC(calib.Pedestal(0, 2).collection_time))
+                .Attr("timestamp_unix", calib.Pedestal(0, 2).collection_time)
+                .Attr("frames", calib.Pedestal(0, 2).frames);
 
-    SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG0_RMS", calib.PedestalRMS(0), detector_size, CompressionAlgorithm::BSHUF_LZ4)
-    ->Units("0.5 ADU")
-    .Attr("timestamp", time_UTC(calib.GetPedestalTimestamp(0)))
-    .Attr("frames", (int32_t) calib.GetPedestalFrames(0));
+        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG0_RMS"+suffix,
+                   calib.GetPedestalRMS(0, i),
+                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
+                ->Units("0.5 ADU");
 
-    SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG1_RMS", calib.PedestalRMS(1), detector_size, CompressionAlgorithm::BSHUF_LZ4)
-    ->Units("0.5 ADU")
-    .Attr("timestamp", time_UTC(calib.GetPedestalTimestamp(1)))
-    .Attr("frames", (int32_t) calib.GetPedestalFrames(1));
+        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG1_RMS"+suffix,
+                   calib.GetPedestalRMS(1, i),
+                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
+                ->Units("0.5 ADU");
 
-    SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG2_RMS", calib.PedestalRMS(2), detector_size, CompressionAlgorithm::BSHUF_LZ4)
-    ->Units("0.5 ADU")
-    .Attr("timestamp", time_UTC(calib.GetPedestalTimestamp(2)))
-    .Attr("frames", (int32_t) calib.GetPedestalFrames(2));
+        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG2_RMS"+suffix,
+                   calib.GetPedestalRMS(2, i),
+                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
+                ->Units("0.5 ADU");
+    }
 }
 
-void HDF5Metadata::Processing(HDF5File *hdf5_file, const JFJochProtoBuf::JFJochIndexerOutput &output) {
-    HDF5Group group(*hdf5_file, "/entry/processing");
-    SaveScalar(group, "time_per_image_ms", output.ms_per_image());
-    SaveScalar(group, "images_indexed", output.indexed_images());
-    SaveScalar(group, "images_analyzed", output.image_output_size());
+void HDF5Metadata::Processing(HDF5File *hdf5_file, const DiffractionExperiment& experiment, const JFJochProtoBuf::JFJochIndexerOutput &output) {
+    if (experiment.GetImageNum() > 0) {
+        HDF5Group group(*hdf5_file, "/entry/processing");
+        SaveScalar(group, "indexing_time_per_image_ms", output.ms_per_image());
+        SaveScalar(group, "images_indexed", output.indexed_images());
+        SaveScalar(group, "images_analyzed", output.image_output_size());
 
-    std::vector<uint32_t> indexed;
-    std::vector<uint32_t> spot_count;
-    std::vector<uint32_t> image_number;
+        std::vector<int16_t> indexed(experiment.GetImageNum(), -1);
+        std::vector<int16_t> spot_count(experiment.GetImageNum(), -1);
 
-    for (const auto &i: output.image_output()) {
-        indexed.push_back(i.indexed());
-        spot_count.push_back(i.spot_count());
-        image_number.push_back(i.image_number());
-    }
+        for (const auto &i: output.image_output()) {
+            indexed.at(i.image_number()) = i.indexed() ? 1 : 0;
+            if (i.spot_count() > INT16_MAX)
+                indexed.at(i.image_number()) = INT16_MAX;
+            if (i.spot_count() < 0) // unlikely...
+                indexed.at(i.image_number()) = -1;
+            else
+                indexed.at(i.image_number()) = static_cast<int16_t>(i.spot_count());
+        }
 
-    if (!indexed.empty()) {
-        SaveVector(group, "image_number", indexed);
         SaveVector(group, "spot_count", spot_count);
         SaveVector(group, "indexed", indexed);
     }
@@ -397,6 +414,7 @@ void HDF5Metadata::Processing(HDF5File *hdf5_file, const JFJochProtoBuf::JFJochI
 
 void HDF5Metadata::FinalSettings(HDF5File *hdf5_file, const JFJochProtoBuf::JFJochReceiverOutput &output) {
     SaveScalar(*hdf5_file, "/entry/instrument/detector/detectorSpecific/max_receive_delay", output.max_receive_delay());
+    SaveScalar(*hdf5_file, "/entry/instrument/detector/detectorSpecific/efficiency", output.efficiency());
 
     for (int i = 0; i < output.device_statistics_size(); i++) {
         HDF5Group group(*hdf5_file, "/entry/instrument/detector/detectorSpecific/fpga"+ std::to_string(i));
@@ -417,6 +435,12 @@ void HDF5Metadata::FinalSettings(HDF5File *hdf5_file, const JFJochProtoBuf::JFJo
                                                          output.device_statistics(i).packet_mask_half_module().end()};
         if (!packet_mask_half_module.empty())
             group.SaveVector("packet_mask_half_module", packet_mask_half_module);
+
+        std::vector<uint32_t> timestamp = {output.device_statistics(i).timestamp().begin(),
+                                           output.device_statistics(i).timestamp().end()};
+
+        if (!timestamp.empty())
+            group.SaveVector("timestamp", timestamp);
 
         if (output.device_statistics(i).has_fpga_status()) {
             group.SaveScalar("stalls_hbm", output.device_statistics(i).fpga_status().stalls_hbm());

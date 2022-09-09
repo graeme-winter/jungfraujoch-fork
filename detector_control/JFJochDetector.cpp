@@ -47,26 +47,38 @@ grpc::Status JFJochDetector::Start(grpc::ServerContext *context, const JFJochPro
 
         det->setNextFrameNumber(1);
 
-        if (x.GetTimeResolvedMode() && (
-                (x.GetDetectorMode() == DetectorMode::Conversion) ||
-                (x.GetDetectorMode() == DetectorMode::Raw))) {
-            det->setNumberOfFrames(x.GetFrameNumPerTrigger());
-            if (x.GetFrameNumPerTrigger() < DELAY_FRAMES_STOP_AND_QUIT)
-                det->setNumberOfTriggers(x.GetNumTriggers() + x.GetPedestalG0Frames()/x.GetFrameNumPerTrigger()
-                                         + DELAY_FRAMES_STOP_AND_QUIT);
-            else
-                det->setNumberOfTriggers(x.GetNumTriggers() + x.GetPedestalG0Frames()/x.GetFrameNumPerTrigger()
-                                         + 1);
-        } else {
+        if (x.GetNumTriggers() <= 1) {
+            // Trigger number is 0 or 1, detector is taking few more frames
             det->setNumberOfFrames(x.GetFrameNum() + DELAY_FRAMES_STOP_AND_QUIT);
             det->setNumberOfTriggers(1);
+        } else {
+            // More than 1 trigger - detector needs one trigger or few more trigger
+            if (x.GetStorageCellNumber() > 1)
+                det->setNumberOfFrames(1);
+            else
+                det->setNumberOfFrames(x.GetFrameNumPerTrigger());
+
+            if (x.GetFrameNumPerTrigger() < DELAY_FRAMES_STOP_AND_QUIT)
+                det->setNumberOfTriggers(x.GetNumTriggers() + DELAY_FRAMES_STOP_AND_QUIT);
+            else
+                det->setNumberOfTriggers(x.GetNumTriggers() + 1);
+
         }
+
+        det->setStorageCellStart(x.GetStorageCellStart());
+        det->setNumberOfAdditionalStorageCells(x.GetStorageCellNumber() - 1);
+        det->setStorageCellDelay(std::chrono::microseconds(5));
 
         if (x.IsDetectorFullSpeed())
             det->setReadoutSpeed(slsDetectorDefs::speedLevel::FULL_SPEED);
         else
             det->setReadoutSpeed(slsDetectorDefs::speedLevel::HALF_SPEED);
-        det->setPeriod(x.GetFrameTime());
+
+        if (x.GetStorageCellNumber() > 1)
+            det->setPeriod(((x.GetFrameTime() + std::chrono::microseconds(10)) * x.GetStorageCellNumber()));
+        else
+            det->setPeriod(x.GetFrameTime());
+
         det->setExptime(x.GetFrameCountTime());
 
         if ((x.GetDetectorMode() == DetectorMode::PedestalG0)
@@ -76,10 +88,15 @@ grpc::Status JFJochDetector::Start(grpc::ServerContext *context, const JFJochPro
         else
             det->setTimingMode(slsDetectorDefs::timingMode::TRIGGER_EXPOSURE);
 
+        det->setDelayAfterTrigger(x.GetDetectorDelayAfterTrigger());
         StartDetector();
-        logger.Info("Detector running");
 
-        Trigger();
+        if (x.GetNumTriggers() == 0) {
+            Trigger();
+            logger.Info("   ... trigger sent");
+        }
+
+        logger.Info("Detector running");
 
         return grpc::Status::OK;
     } catch (sls::RuntimeError &e) {
@@ -178,15 +195,16 @@ grpc::Status JFJochDetector::On(grpc::ServerContext *context, const JFJochProtoB
             logger.Info("   ... waiting 5 s");
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
-/*
+
         det->setTimingMode(slsDetectorDefs::timingMode::AUTO_TIMING);
         det->setNumberOfAdditionalStorageCells(15);
         det->setNumberOfFrames(1);
         det->setExptime(std::chrono::microseconds(1));
         det->startDetector();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        det->setNumberOfAdditionalStorageCells(0);
-*/
+        det->stopDetector();
+        logger.Info("   ... fixing frames-after-trigger behavior");
+
         det->setHighVoltage(HIGH_VOLTAGE);
         logger.Info("   ... set module bias voltage to " + std::to_string(HIGH_VOLTAGE) + " V");
 

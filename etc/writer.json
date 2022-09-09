@@ -1,0 +1,5 @@
+{
+  "zmq_threads": 4,
+  "base_directory": "/sls/MX/Data10/x",
+  "gid": -1
+}

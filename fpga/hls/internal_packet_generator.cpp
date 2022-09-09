@@ -5,12 +5,15 @@
 
 void internal_packet_generator(STREAM_512 &data_in, STREAM_512 &data_out,
                                hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_in,
-                               hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_out) {
+                               hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_out,
+                               volatile ap_uint<1> &in_cancel) {
 #pragma HLS INTERFACE ap_ctrl_none port=return
 #pragma HLS INTERFACE register both axis port=data_in
 #pragma HLS INTERFACE register both axis port=data_out
 #pragma HLS INTERFACE register both axis port=addr_in
 #pragma HLS INTERFACE register both axis port=addr_out
+#pragma HLS INTERFACE ap_none register port=in_cancel
+
     packet_512_t packet_in;
     packet_512_t packet_out;
 
@@ -23,17 +26,19 @@ void internal_packet_generator(STREAM_512 &data_in, STREAM_512 &data_out,
 
     // Read and forward packet #0
     data_in >> packet_in;
-    ap_uint<16> modules                  = ACT_REG_NMODULES(packet_in.data);
+    ap_uint<5> modules                   = ACT_REG_NMODULES(packet_in.data);
     ap_uint<64> mode                     = ACT_REG_MODE(packet_in.data);
     ap_uint<1> internal_packet_generator = (mode & MODE_INTERNAL_PACKET_GEN) ? 1 : 0;
     ap_uint<32> frames_per_trigger       = ACT_REG_FRAMES_PER_TRIGGER(packet_in.data);
+    ap_uint<5>  storage_cells = ACT_REG_NSTORAGE_CELLS(packet_in.data);
+
     data_out << packet_in;
     ap_uint<ADDR_STREAM_WIDTH> addr;
     addr_in >> addr;
     addr_out << addr;
 
     forward_gain:
-    for (int i = 0; i < modules * 6 * (RAW_MODULE_SIZE * 2 / 64); i++) {
+    for (int i = 0; i < modules * (3 + storage_cells * 3) * (RAW_MODULE_SIZE * 2 / 64); i++) {
 #pragma HLS PIPELINE II=1
         data_in >> packet_in;
         data_out << packet_in;
@@ -48,10 +53,13 @@ void internal_packet_generator(STREAM_512 &data_in, STREAM_512 &data_out,
     if (internal_packet_generator) {
         generate_frames:
         for (uint32_t frame_number = 1; frame_number <= frames_per_trigger; frame_number++ ) {
+            ap_uint<1> cancel = in_cancel;
+            if (cancel)
+                break;
             for (uint32_t eth_packet = 0; eth_packet < RAW_MODULE_SIZE / 4096; eth_packet++) {
                 for (uint32_t module = 0; module < modules; module++) {
                     addr_out << addr_packet(eth_packet, module, frame_number,
-                                            0, 0, 0, 0, 0);
+                                            0, 0, 0, 0xABCDEF, 0);
                     for (uint32_t axis_packet = 0; axis_packet < 128; axis_packet++) {
 #pragma HLS PIPELINE II=1
                         packet_out.user = 0;

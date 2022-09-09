@@ -36,7 +36,7 @@ class gRPC_JFJochBrokerStub(object):
                 )
         self.Pedestal = channel.unary_unary(
                 '/JFJochProtoBuf.gRPC_JFJochBroker/Pedestal',
-                request_serializer=jfjoch__pb2.Empty.SerializeToString,
+                request_serializer=jfjoch__pb2.BrokerSetup.SerializeToString,
                 response_deserializer=jfjoch__pb2.Empty.FromString,
                 )
         self.Initialize = channel.unary_unary(
@@ -47,6 +47,11 @@ class gRPC_JFJochBrokerStub(object):
         self.Deactivate = channel.unary_unary(
                 '/JFJochProtoBuf.gRPC_JFJochBroker/Deactivate',
                 request_serializer=jfjoch__pb2.Empty.SerializeToString,
+                response_deserializer=jfjoch__pb2.Empty.FromString,
+                )
+        self.Setup = channel.unary_unary(
+                '/JFJochProtoBuf.gRPC_JFJochBroker/Setup',
+                request_serializer=jfjoch__pb2.BrokerPersistentSettings.SerializeToString,
                 response_deserializer=jfjoch__pb2.Empty.FromString,
                 )
         self.GetStatus = channel.unary_unary(
@@ -156,6 +161,12 @@ class gRPC_JFJochBrokerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Setup(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GetStatus(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -253,7 +264,7 @@ def add_gRPC_JFJochBrokerServicer_to_server(servicer, server):
             ),
             'Pedestal': grpc.unary_unary_rpc_method_handler(
                     servicer.Pedestal,
-                    request_deserializer=jfjoch__pb2.Empty.FromString,
+                    request_deserializer=jfjoch__pb2.BrokerSetup.FromString,
                     response_serializer=jfjoch__pb2.Empty.SerializeToString,
             ),
             'Initialize': grpc.unary_unary_rpc_method_handler(
@@ -264,6 +275,11 @@ def add_gRPC_JFJochBrokerServicer_to_server(servicer, server):
             'Deactivate': grpc.unary_unary_rpc_method_handler(
                     servicer.Deactivate,
                     request_deserializer=jfjoch__pb2.Empty.FromString,
+                    response_serializer=jfjoch__pb2.Empty.SerializeToString,
+            ),
+            'Setup': grpc.unary_unary_rpc_method_handler(
+                    servicer.Setup,
+                    request_deserializer=jfjoch__pb2.BrokerPersistentSettings.FromString,
                     response_serializer=jfjoch__pb2.Empty.SerializeToString,
             ),
             'GetStatus': grpc.unary_unary_rpc_method_handler(
@@ -416,7 +432,7 @@ class gRPC_JFJochBroker(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/JFJochProtoBuf.gRPC_JFJochBroker/Pedestal',
-            jfjoch__pb2.Empty.SerializeToString,
+            jfjoch__pb2.BrokerSetup.SerializeToString,
             jfjoch__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -451,6 +467,23 @@ class gRPC_JFJochBroker(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/JFJochProtoBuf.gRPC_JFJochBroker/Deactivate',
             jfjoch__pb2.Empty.SerializeToString,
+            jfjoch__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Setup(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/JFJochProtoBuf.gRPC_JFJochBroker/Setup',
+            jfjoch__pb2.BrokerPersistentSettings.SerializeToString,
             jfjoch__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -978,7 +1011,7 @@ class gRPC_JFJochWriterStub(object):
                 )
         self.WriteMasterFile = channel.unary_unary(
                 '/JFJochProtoBuf.gRPC_JFJochWriter/WriteMasterFile',
-                request_serializer=jfjoch__pb2.JFJochReceiverOutput.SerializeToString,
+                request_serializer=jfjoch__pb2.JFJochWriterMetadataInput.SerializeToString,
                 response_deserializer=jfjoch__pb2.Empty.FromString,
                 )
 
@@ -1030,7 +1063,7 @@ def add_gRPC_JFJochWriterServicer_to_server(servicer, server):
             ),
             'WriteMasterFile': grpc.unary_unary_rpc_method_handler(
                     servicer.WriteMasterFile,
-                    request_deserializer=jfjoch__pb2.JFJochReceiverOutput.FromString,
+                    request_deserializer=jfjoch__pb2.JFJochWriterMetadataInput.FromString,
                     response_serializer=jfjoch__pb2.Empty.SerializeToString,
             ),
     }
@@ -1106,7 +1139,7 @@ class gRPC_JFJochWriter(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/JFJochProtoBuf.gRPC_JFJochWriter/WriteMasterFile',
-            jfjoch__pb2.JFJochReceiverOutput.SerializeToString,
+            jfjoch__pb2.JFJochWriterMetadataInput.SerializeToString,
             jfjoch__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

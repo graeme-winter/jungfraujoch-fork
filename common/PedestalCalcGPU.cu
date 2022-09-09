@@ -101,7 +101,7 @@ void analyze_pixel_avg(const uint16_t *raw_image, double *currPedestal, double *
 }
 
 void PedestalCalcGPU::AnalyzeImage(const uint16_t *raw_image) {
-    cuda_err(cudaMemcpyAsync(gpu_image, raw_image, lines * RAW_MODULE_COLS * sizeof(uint16_t), cudaMemcpyHostToDevice, cudastream->v));
+    cuda_err(cudaMemcpy(gpu_image, raw_image, lines * RAW_MODULE_COLS * sizeof(uint16_t), cudaMemcpyHostToDevice));
     size_t nThreads = 256;
     size_t nBlocks  = ((lines * RAW_MODULE_COLS) / (nThreads * numberOfSMs) + 1) * numberOfSMs;
 

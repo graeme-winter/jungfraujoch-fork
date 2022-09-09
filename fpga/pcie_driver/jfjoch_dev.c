@@ -16,14 +16,15 @@ MODULE_DESCRIPTION("Jungfraujoch device module");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("0.1");
 
-#define PCI_VENDOR_ID_ALPHA_DATA (0x4144)
-#define PCI_DEVICE_ID_9H3        (0x0906)
+#define XDMA_GEN4_x8        (0x9048)
+
+#define ACTION_CONFIG_OFFSET     (0x10000)
 
 static ssize_t hbm_temp_show(struct device *dev,
                              struct device_attribute *attr,
                              char *buf) {
-    //ssize_t n = snprint(buf, 25, "x");
-    return 0;
+
+    return scnprintf(buf, PAGE_SIZE, "x");
 }
 
 
@@ -47,7 +48,7 @@ module_param(nbuffer, int, 0600);
 static int device_index = 0;
 
 static const struct pci_device_id jfjoch_pci_tbl[] = {
-        { PCI_DEVICE(PCI_VENDOR_ID_ALPHA_DATA, PCI_DEVICE_ID_9H3) },
+        { PCI_DEVICE(PCI_VENDOR_ID_XILINX, XDMA_GEN4_x8) },
         { 0, },
 };
 
@@ -98,8 +99,8 @@ static int jfjoch_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id
     }
 
     // Check if FPGA action is matching the driver
-    action_type   = ioread32(drvdata->bar0 + ADDR_ACTION_TYPE);
-    release_level = ioread32(drvdata->bar0 + ADDR_RELEASE_LEVEL);
+    action_type   = ioread32(drvdata->bar0 + ACTION_CONFIG_OFFSET + ADDR_ACTION_TYPE);
+    release_level = ioread32(drvdata->bar0 + ACTION_CONFIG_OFFSET + ADDR_RELEASE_LEVEL);
 
     if (action_type != ACTION_TYPE) {
         dev_err(dev, "Mismatch in JFJoch action type (%x)\n", action_type);
@@ -164,6 +165,7 @@ static int jfjoch_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id
 
         drvdata->nbuf++;
     }
+
 
     dev_info(dev, "Jungfraujoch FPGA - all good!");
     return 0;
@@ -260,6 +262,12 @@ long jfjoch_cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
     struct ActionStatus *status;
     struct ActionConfig *config;
     switch (cmd) {
+        case IOCTL_JFJOCH_START:
+            iowrite32(0x1, drvdata->bar0 + ACTION_CONFIG_OFFSET);
+            return 0;
+        case IOCTL_JFJOCH_CANCEL:
+            iowrite32(0x4, drvdata->bar0 + ACTION_CONFIG_OFFSET);
+            return 0;
         case IOCTL_JFJOCH_STATUS:
             status = kzalloc(sizeof(struct ActionStatus), GFP_KERNEL);
             if (status == NULL) {
@@ -274,13 +282,13 @@ long jfjoch_cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
                 kfree(status);
                 return -EFAULT;
             }
-        case IOCTL_JFJOCH_CONFIG:
+        case IOCTL_JFJOCH_READ_CONFIG:
             config = kzalloc(sizeof(struct ActionConfig), GFP_KERNEL);
             if (config == NULL) {
                 dev_err(&drvdata->pdev->dev, "Cannot allocate memory for action status\n");
                 return -ENOMEM;
             }
-            memcpy_fromio(config, (drvdata->bar0) + ADDR_MAC_ADDR_HI, sizeof(struct ActionConfig));
+            memcpy_fromio(config, (drvdata->bar0) + ADDR_IPV4_ADDR, sizeof(struct ActionConfig));
             if (copy_to_user((char *) arg, status, sizeof(struct ActionConfig)) == 0) {
                 kfree(status);
                 return 0;
@@ -288,6 +296,20 @@ long jfjoch_cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
                 kfree(status);
                 return -EFAULT;
             }
+        case IOCTL_JFJOCH_SET_CONFIG:
+            config = kzalloc(sizeof(struct ActionConfig), GFP_KERNEL);
+            if (config == NULL) {
+                dev_err(&drvdata->pdev->dev, "Cannot allocate memory for action status\n");
+                return -ENOMEM;
+            }
+
+            if (copy_from_user(status, (char *) arg, sizeof(struct ActionConfig)) != 0) {
+                kfree(status);
+                return -EFAULT;
+            }
+            memcpy_toio((drvdata->bar0) + ADDR_IPV4_ADDR, config, sizeof(struct ActionConfig));
+            kfree(status);
+            return 0;
         default:
             return -ENOTTY;
     }

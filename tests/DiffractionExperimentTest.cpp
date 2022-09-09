@@ -4,7 +4,10 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+#include <google/protobuf/util/message_differencer.h>
+
 #include "../common/DiffractionExperiment.h"
+
 
 using namespace std::literals::chrono_literals;
 
@@ -219,12 +222,11 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetFrameNum() == 1000);
     REQUIRE(x.GetFrameTime().count() == 1000);
     REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetSummationForPreview() == 1);
     REQUIRE(x.GetPixelDepth() == 2);
     REQUIRE(x.GetOverflow() == INT16_MAX - 4);
     REQUIRE(x.GetUnderflow() == INT16_MIN + 4);
     REQUIRE(x.GetFrameNumPerTrigger() == 1000);
-    x.PedestalG0Frames(1000).PedestalG1Frames(2000).PedestalG2Frames(3000).BeamlineDelay(0ms).NumTriggers(1)
+    x.PedestalG0Frames(1000).PedestalG1Frames(2000).PedestalG2Frames(3000).NumTriggers(1)
         .ImagesPerTrigger(1000).ImageTime(6000us);
 
     REQUIRE(x.GetImageNum() == 1000);
@@ -233,7 +235,6 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetFrameTime().count() == 1000);
     REQUIRE(x.GetFrameCountTime().count() == 1000 - READOUT_TIME_IN_US);
     REQUIRE(x.GetSummation() == 6);
-    REQUIRE(x.GetSummationForPreview() == 6);
     REQUIRE(x.GetImageTime().count() == 6*1000);
     REQUIRE(x.GetImageCountTime().count() == 6 * (1000 - READOUT_TIME_IN_US));
     REQUIRE(x.GetFrameNumPerTrigger() == 6000);
@@ -244,17 +245,13 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetOverflow() == 8*INT16_MAX - 4);
     REQUIRE(x.GetUnderflow() == 8*INT16_MIN + 4);
 
-    x.BeamlineDelay(10ms);
-    REQUIRE(x.GetBeamlineDelay().count() == 10000);
-    REQUIRE(x.GetFrameNum() == 6010);
-
     x.NumTriggers(0);
     REQUIRE(x.GetFrameNum() == 6000);
     REQUIRE(x.GetImageNum() == 1000);
     REQUIRE(x.GetImageNumPerTrigger() == 1000);
 
     x.NumTriggers(2);
-    REQUIRE(x.GetFrameNum() == 12010);
+    REQUIRE(x.GetFrameNum() == 12000);
     REQUIRE(x.GetNumTriggers() == 2);
     REQUIRE(x.GetImageNum() == 2000);
     REQUIRE(x.GetImageNumPerTrigger() == 1000);
@@ -263,8 +260,7 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
 
     x.Mode(DetectorMode::Raw);
     REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetSummationForPreview() == 1);
-    REQUIRE(x.GetFrameNum() == 12010); // Pedestal is not included in raw data collection
+    REQUIRE(x.GetFrameNum() == 12000);
     REQUIRE(x.GetImageNum() == 12000);
     REQUIRE(x.GetImageNumPerTrigger() == 6000);
 
@@ -274,7 +270,6 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetDetectorMode() == DetectorMode::PedestalG0);
     REQUIRE(x.GetFrameNum() == 1000);
     REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetSummationForPreview() == 1);
     REQUIRE(x.GetImageNumPerTrigger() == 0);
 
     x.Mode(DetectorMode::PedestalG1);
@@ -282,7 +277,6 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetFrameNum() == 2000);
     REQUIRE(x.GetFrameTime().count() == 10000);
     REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetSummationForPreview() == 1);
 
     x.PedestalG1G2FrameTime(8345us);
     x.Mode(DetectorMode::PedestalG2);
@@ -291,34 +285,6 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetFrameNum() == 3000);
     REQUIRE(x.GetFrameTime().count() == 8345);
     REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetSummationForPreview() == 1);
-}
-
-TEST_CASE("DiffractionExperiment_FrameSummationEnable","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-    x.Mode(DetectorMode::Conversion);
-    // Timing and frame count
-    x.PedestalG0Frames(1000).ImagesPerTrigger(1000).NumTriggers(1).ImageTime(1000ms);
-
-    REQUIRE(x.GetSummationForPreview() == 1000);
-    REQUIRE(x.GetSummation() == 1000);
-    REQUIRE(x.GetImageNum() == 1000);
-    REQUIRE(x.GetImageNumForPreview() == 1000);
-    REQUIRE(x.GetImageNumPerTrigger() == 1000);
-    REQUIRE(x.GetImageTime() == 1s);
-    REQUIRE(x.GetPixelDepthPreview() == 4);
-    REQUIRE(x.GetPixelDepth() == 4);
-
-    DiffractionExperiment y = DiffractionExperiment(x).FrameSummationEnable(false);
-
-    REQUIRE(y.GetSummationForPreview() == 1000);
-    REQUIRE(y.GetSummation() == 1);
-    REQUIRE(y.GetImageNum() == 1000*1000);
-    REQUIRE(y.GetImageNumForPreview() == 1000);
-    REQUIRE(y.GetImageNumPerTrigger() == 1000*1000);
-    REQUIRE(y.GetImageTime() == 1ms);
-    REQUIRE(y.GetPixelDepthPreview() == 4);
-    REQUIRE(y.GetPixelDepth() == 2);
 }
 
 TEST_CASE("DiffractionExperiment_Timing_FullSpeed","[DiffractionExperiment]") {
@@ -358,17 +324,41 @@ TEST_CASE("DiffractionExperiment_ErrorWhenOverwriting","[DiffractionExperiment]"
 }
 
 TEST_CASE("DiffractionExperiment_UnitCell","[DiffractionExperiment]") {
-    UnitCell cell(10,20,30,90,90,90);
     DiffractionExperiment x;
-    REQUIRE(x.GetUnitCell().empty());
+    REQUIRE(!x.HasUnitCell());
 
+    JFJochProtoBuf::UnitCell cell;
+    cell.set_a(10);
+    cell.set_b(20);
+    cell.set_c(30);
+    cell.set_alpha(90);
+    cell.set_beta(90);
+    cell.set_gamma(90);
     x.SetUnitCell(cell);
-    REQUIRE(!x.GetUnitCell().empty());
+
+    REQUIRE(x.HasUnitCell());
+    REQUIRE(x.GetUnitCell().c() == 30);
 
     JFJochProtoBuf::JungfraujochSettings settings = x;
 
     DiffractionExperiment y(settings);
-    REQUIRE(y.GetUnitCell() == cell);
+
+    REQUIRE(google::protobuf::util::MessageDifferencer::Equivalent(y.GetUnitCell(), x.GetUnitCell()));
+}
+
+TEST_CASE("DiffractionExperiment_SpaceGroup","[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    REQUIRE_THROWS(x.SpaceGroupNumber(999));
+    REQUIRE_THROWS(x.SpaceGroup("P898"));
+
+    REQUIRE_NOTHROW(x.SpaceGroup("P43212"));
+    REQUIRE(x.GetSpaceGroupNumber() == 96);
+    REQUIRE(x.GetCentering() == 'P');
+
+    REQUIRE_NOTHROW(x.SpaceGroupNumber(21));
+    REQUIRE(x.GetSpaceGroupNumber() == 21);
+    REQUIRE(x.GetCentering() == 'C');
+    REQUIRE(x.GetSpaceGroupName() == "C222");
 }
 
 /*
@@ -681,7 +671,7 @@ TEST_CASE("DiffractionExperiment_Metadata","[DiffractionExperiment]") {
 
 TEST_CASE("DiffractionExperiment_TimeResolvedMode", "[DiffractionExperiment]") {
     DiffractionExperiment x;
-    x.ImagesPerTrigger(20).ImagesPerFile(50).NumTriggers(10).BeamlineDelay(std::chrono::seconds(100)).PedestalG0Frames(500).ImageTime(std::chrono::milliseconds(10));
+    x.ImagesPerTrigger(20).ImagesPerFile(50).NumTriggers(10).PedestalG0Frames(500).ImageTime(std::chrono::milliseconds(10));
     x.TimeResolvedMode(true);
 
     REQUIRE(x.GetNumTriggers() == 10);
@@ -816,8 +806,7 @@ TEST_CASE("DiffractionExperiment_ExportProtobuf","[DiffractionExperiment]") {
                         PhotonEnergy_keV(16.0).BeamX_pxl(566).BeamY_pxl(1234).DetectorDistance_mm(145).
                         Transmission(0.5).TotalFlux(1e9).SampleTemperature(90).ForceFullSpeed(true).
                         ImageTime(std::chrono::microseconds(765)).CountTime(std::chrono::microseconds(10)).
-                        PedestalG1G2FrameTime(std::chrono::milliseconds(10)).
-                        BeamlineDelay(std::chrono::milliseconds(24))
+                        PedestalG1G2FrameTime(std::chrono::milliseconds(10))
                 .RotationAxis({3, 4, 5})
                 .BaseIPv4Address("2.2.2.2").BaseUDPPort(64*76).TimeResolvedMode(true).MaskModuleEdges(true);
 
@@ -859,13 +848,14 @@ TEST_CASE("DiffractionExperiment_ExportProtobuf","[DiffractionExperiment]") {
 TEST_CASE("DiffractionExperiment_InternalPacketGenerator", "[DiffractionExperiment]") {
     DiffractionExperiment x;
 
-    x.NumTriggers(50);
+    x.NumTriggers(50).ImagesPerTrigger(20);
     REQUIRE(x.GetNumTriggers() == 50);
     // Default is false
     REQUIRE(!x.IsUsingInternalPacketGen());
     x.UseInternalPacketGenerator(true);
     REQUIRE(x.IsUsingInternalPacketGen());
-    REQUIRE(x.GetNumTriggers() == 0);
+    REQUIRE(x.GetNumTriggers() == 50);
+    REQUIRE(x.GetFrameNum() == 50*20);
 }
 
 TEST_CASE("DiffractionExperiment_CopyConstructor", "[DiffractionExperiment]") {
@@ -904,41 +894,126 @@ TEST_CASE("DiffractionExperiment_ResToPxl","[DiffractionExperiment]") {
     REQUIRE(x.ResToPxl(2.0) == Approx(1000 * 0.55328333517));
 }
 
-TEST_CASE("DiffractionExperiment_BkgEst","[DiffractionExperiment]") {
+TEST_CASE("DiffractionExperiment_RadialIntegration_LowQ","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.DetectorDistance_mm(75).Wavelength_A(1.0).LowResForBkgEstimation(2.0).HighResForBkgEstimation(1.0);
-    // sin(theta) = 1/2
-    // theta = 30 deg
-    // tan(2 * theta) = sqrt(3)
-    REQUIRE(x.GetHighResolutionLimitForBkg_Pixel() == Approx(1000 * sqrt(3)));
 
-    // sin(theta) = 1/4
-    // theta = 14.47 deg
-    // tan(2 * theta) = 0.55328333517
-    REQUIRE(x.GetLowResolutionLimitForBkg_Pixel() == Approx(1000 * 0.55328333517));
+    REQUIRE_THROWS(x.LowQForRadialInt_recipA(0));
+    REQUIRE_THROWS(x.LowQForRadialInt_recipA(-1));
+    REQUIRE_THROWS(x.LowQForRadialInt_recipA(50));
+
+    x.LowQForRadialInt_recipA(4);
+    REQUIRE(x.GetLowQForRadialInt_recipA() == Approx(4));
+
+    REQUIRE_THROWS(x.LowResForRadialInt_A(0));
+    REQUIRE_THROWS(x.LowResForRadialInt_A(-1));
+
+    x.LowResForRadialInt_A(5.0);
+    REQUIRE(x.GetLowQForRadialInt_recipA() == Approx(2 * M_PI / 5.0));
+
+    DiffractionExperiment y(x);
+    REQUIRE(y.GetLowQForRadialInt_recipA() == Approx(2 * M_PI / 5.0));
+}
+
+
+TEST_CASE("DiffractionExperiment_RadialIntegration_HighQ","[DiffractionExperiment]") {
+    DiffractionExperiment x(2, {4,4}, 8, 36);
+
+    REQUIRE_THROWS(x.HighQForRadialInt_recipA(0));
+    REQUIRE_THROWS(x.HighQForRadialInt_recipA(-1));
+    REQUIRE_THROWS(x.HighQForRadialInt_recipA(50));
+
+    x.HighQForRadialInt_recipA(8);
+    REQUIRE(x.GetHighQForRadialInt_recipA() == Approx(8.0));
+
+    REQUIRE_THROWS(x.HighResForRadialInt_A(0));
+    REQUIRE_THROWS(x.HighResForRadialInt_A(-1));
+
+    x.HighResForRadialInt_A(3.0);
+    REQUIRE(x.GetHighQForRadialInt_recipA() == Approx(2 * M_PI / 3.0));
+
+    DiffractionExperiment y(x);
+    REQUIRE(y.GetHighQForRadialInt_recipA() == Approx(2 * M_PI / 3.0));
+}
+
+TEST_CASE("DiffractionExperiment_RadialIntegration_QSpacing","[DiffractionExperiment]") {
+    DiffractionExperiment x(2, {4,4}, 8, 36);
+
+    x.QSpacingForRadialInt_recipA(0.456);
+    REQUIRE(x.GetQSpacingForRadialInt_recipA() == Approx(0.456));
+
+    DiffractionExperiment y(x);
+    REQUIRE(y.GetQSpacingForRadialInt_recipA() == Approx(0.456));
+}
+
+TEST_CASE("DiffractionExperiment_RadialIntegration_BkgEstimate","[DiffractionExperiment]") {
+    DiffractionExperiment x(2, {4,4}, 8, 36);
+
+    x.LowResForBkgEstimation_A(32.0);
+    x.HighResForBkgEstimation_A(14.0);
+
+    REQUIRE(x.GetHighQLimitForBkg_recipA() == Approx(2 * M_PI / 14.0));
+    REQUIRE(x.GetLowQLimitForBkg_recipA() == Approx(2 * M_PI / 32.0));
+
+    DiffractionExperiment y(x);
+    REQUIRE(y.GetHighQLimitForBkg_recipA() == Approx(2 * M_PI / 14.0));
+    REQUIRE(y.GetLowQLimitForBkg_recipA() == Approx(2 * M_PI / 32.0));
 }
 
 TEST_CASE("DiffractionExperiment_BkgEstPeriod","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.DetectorDistance_mm(75).Wavelength_A(1.0).LowResForBkgEstimation(2.0).HighResForBkgEstimation(1.0);
+    x.DetectorDistance_mm(75).Wavelength_A(1.0);
     x.ImageTime(3ms);
     x.BackgroundEstimationPeriod(9ms);
     REQUIRE(x.GetBackgroundEstimationPeriod() == std::chrono::milliseconds(9));
     REQUIRE(x.GetBackgroundEstimationStride() == 3);
 }
 
-
-TEST_CASE("DiffractionExperiment_SkipPedestal","[DiffractionExperiment]") {
+TEST_CASE("DiffractionExperiment_StorageCells","[DiffractionExperiment]") {
+    const int64_t num_triggers = 20;
     DiffractionExperiment x;
-    x.PedestalG0Frames(3000).PedestalG1Frames(1000).PedestalG2Frames(2000);
-    x.SkipPedestal(false);
+    x.ImageTime(std::chrono::milliseconds(10)).ImagesPerTrigger(5).NumTriggers(num_triggers);
+    REQUIRE(x.GetSummation() > 1);
+    REQUIRE(x.GetImageNumPerTrigger() == 5);
+    REQUIRE(x.GetNumTriggers() == num_triggers);
+    REQUIRE(!x.GetTimeResolvedMode());
 
-    REQUIRE(x.GetPedestalG0Frames() == 3000);
-    REQUIRE(x.GetPedestalG1Frames() == 1000);
-    REQUIRE(x.GetPedestalG2Frames() == 2000);
-    x.SkipPedestal(true);
+    x.StorageCells(3);
+    REQUIRE(x.GetStorageCellNumber() == 3);
+    x.StorageCells(7);
+    REQUIRE(x.GetStorageCellNumber() == 7);
 
-    REQUIRE(x.GetPedestalG0Frames() == 0);
-    REQUIRE(x.GetPedestalG1Frames() == 0);
-    REQUIRE(x.GetPedestalG2Frames() == 0);
+    x.StorageCells(16);
+    REQUIRE(x.GetStorageCellNumber() == 16);
+    REQUIRE(x.GetSummation() == 1);
+    REQUIRE(x.GetImageNumPerTrigger() == x.GetStorageCellNumber());
+    REQUIRE(x.GetFrameNumPerTrigger() == x.GetStorageCellNumber());
+    REQUIRE(x.GetImageNum() == x.GetStorageCellNumber() * num_triggers);
+    REQUIRE(x.GetFrameNum() == x.GetStorageCellNumber() * num_triggers);
+    REQUIRE(x.GetTimeResolvedMode());
+    REQUIRE(x.GetImagesPerFile() == num_triggers);
+    REQUIRE(x.GetFilesNum() == 16);
+
+    x.UseInternalPacketGenerator(true);
+    REQUIRE(x.GetImageNumPerTrigger() == x.GetStorageCellNumber());
+    REQUIRE(x.GetFrameNumPerTrigger() == x.GetStorageCellNumber());
+    REQUIRE(x.GetImageNum() == x.GetStorageCellNumber() * num_triggers);
+    REQUIRE(x.GetFrameNum() == x.GetStorageCellNumber() * num_triggers);
+}
+
+TEST_CASE("DiffractionExperiment_StorageCells_Pedestal","[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.PedestalG0Frames(1456).PedestalG1Frames(323).PedestalG2Frames(456).StorageCells(16);
+
+    x.Mode(DetectorMode::PedestalG0);
+    REQUIRE(x.GetStorageCellNumber() == 16);
+    REQUIRE(x.GetFrameNum() == 1456 * 16);
+
+    x.Mode(DetectorMode::PedestalG1);
+    REQUIRE(x.GetStorageCellNumber() == 2);
+    REQUIRE(x.GetFrameNum() == 323 * 2);
+
+    x.StorageCells(11);
+    x.Mode(DetectorMode::PedestalG2);
+    REQUIRE(x.GetStorageCellNumber() == 2);
+    REQUIRE(x.GetFrameNum() == 456 * 2);
 }

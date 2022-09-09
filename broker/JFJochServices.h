@@ -5,7 +5,7 @@
 #define JUNGFRAUJOCH_JFJOCHSERVICES_H
 
 #include "../common/DiffractionExperiment.h"
-#include "../common/JungfrauCalibration.h"
+#include "../common/JFCalibration.h"
 #include "../common/Logger.h"
 #include "../grpc/JFJochReceiverClient.h"
 #include "../grpc/JFJochWriterGroupClient.h"
@@ -27,8 +27,8 @@ public:
     JFJochServices(Logger &in_logger);
     void On(const DiffractionExperiment& experiment);
     void Off();
-    void Start(const DiffractionExperiment& experiment, const JungfrauCalibration &calibration);
-    JFJochProtoBuf::JFJochReceiverOutput Stop();
+    void Start(const DiffractionExperiment& experiment, const JFCalibration &calibration);
+    JFJochProtoBuf::JFJochReceiverOutput Stop(const JFCalibration &calibration);
     void Abort();
     void Cancel();
     bool IsDetectorIdle();

@@ -7,7 +7,6 @@
 #include <numeric>
 
 #include "../common/DiffractionExperiment.h"
-#include "../common/JungfrauCalibration.h"
 #include "HDF5DataFile.h"
 #include "HDF5MasterFile.h"
 
@@ -16,10 +15,8 @@ class HDF5Writer {
     DiffractionExperiment experiment;
 
     std::vector<size_t> images_remaining;
-    size_t images_per_file;
     size_t total_images;
     static void ErrorIfFileExists(const std::string &path);
-    static void MakeDirectory(const std::string &path);
 public:
     explicit HDF5Writer(const DiffractionExperiment &in_experiment);
     void WriteFromStream(const uint8_t *data, int64_t data_size);

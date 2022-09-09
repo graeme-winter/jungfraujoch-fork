@@ -1,9 +1,9 @@
 # set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
 # connect_debug_port dbg_hub/clk [get_nets */APB_0_PCLK]
 
-#create_pblock pblock_opencapi
-#resize_pblock pblock_opencapi -add CLOCKREGION_X0Y0:CLOCKREGION_X7Y3
-#add_cells_to_pblock pblock_opencapi [get_cells [list bsp oc_func cfg ]]
+create_pblock pblock_opencapi
+resize_pblock pblock_opencapi -add SLR0:SLR0
+add_cells_to_pblock pblock_opencapi [get_cells [list bsp oc_func cfg ]]
 
 # This affects reset synchronizers
 set_false_path -to [get_pins oc_func/fw_afu/action_w/action_i/*/resetn_sync_0/U0/q?_reg/CLR]

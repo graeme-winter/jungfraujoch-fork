@@ -1,6 +1,9 @@
 // Copyright (2019-2022) Paul Scherrer Institute
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#ifndef JUNGFRAUJOCH_RAWTOCONVERTEDGEOMETRY_H
+#define JUNGFRAUJOCH_RAWTOCONVERTEDGEOMETRY_H
+
 #include <cmath>
 #include "DiffractionExperiment.h"
 
@@ -199,3 +202,5 @@ template <class T> void ConvertedToRawGeometry(const DiffractionExperiment& expe
         }
     }
 }
+
+#endif

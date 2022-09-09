@@ -10,11 +10,8 @@
 
 class AcquisitionDeviceFilter {
     std::vector<int64_t> sequence_starts;
-    int64_t expected_triggers;
-    int64_t encountered_triggers{0};
 
-    int64_t frames_per_trigger;
-    int64_t frame_number_last_trigger{0};
+    int64_t expected_frames;
 public:
     AcquisitionDeviceFilter();
     AcquisitionDeviceFilter(const DiffractionExperiment &x);

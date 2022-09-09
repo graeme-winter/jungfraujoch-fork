@@ -58,8 +58,6 @@ void hls_action(hls::stream<axis_datamover_ctrl> &in_datamover_cmd_stream, hls::
                 rx100g_hbm_t *d_hbm_p6,  rx100g_hbm_t *d_hbm_p7,
                 rx100g_hbm_t *d_hbm_p8,  rx100g_hbm_t *d_hbm_p9,
                 rx100g_hbm_t *d_hbm_p10, rx100g_hbm_t *d_hbm_p11,
-                rx100g_hbm_t *d_hbm_p12, rx100g_hbm_t *d_hbm_p13,
-                rx100g_hbm_t *d_hbm_p14, rx100g_hbm_t *d_hbm_p15,
                 AXI_STREAM &din_eth, AXI_STREAM &dout_eth,
                 uint64_t fpga_mac_addr,
                 const ActionConfig &act_reg,
@@ -78,7 +76,7 @@ class HLSSimulatedDevice : public AcquisitionDevice {
     ActionConfig cfg;
 
     volatile bool idle;
-    std::vector<char> hbm_memory[16];
+    std::vector<char> hbm_memory[12];
 
     hls::stream<ap_uint<32> > work_request_stream;
     hls::stream<ap_uint<32> > completion_stream;

@@ -1,19 +1,21 @@
 // Copyright (2019-2022) Paul Scherrer Institute
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <filesystem>
 #include "JFJochWriter.h"
-#include "../common/JungfrauCalibration.h"
-#include <unistd.h>
 
 #include <utility>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 JFJochWriter::JFJochWriter(DiffractionExperiment  in_experiment, ZMQContext& context, const std::string& zmq_addr,
                            Logger &in_logger) :
         experiment(std::move(in_experiment)), logger(in_logger), image_puller(context, zmq_addr) {
 
-    SetGroupNumber(experiment);
-
     logger.Info("Write request for dataset: " + experiment.GetFilePrefix() + " ...");
+
+    logger.Info("   ... creating subdirectory");
+    MakeDirectory(experiment.GetFilePrefix());
 
     logger.Info("   ... creating HDF5 files");
     data_file_set = std::make_unique<HDF5Writer>(experiment);
@@ -79,24 +81,35 @@ void JFJochWriter::Stop() {
     WaitTillDone();
 }
 
+void JFJochWriter::MakeDirectory(const std::string &path) {
+    // If first character is /, then it makes no sense to attempt to create root directory anyway
+    auto pos = path.find('/' , 1);
+
+    while (pos != std::string::npos) {
+        std::string dir_name = path.substr(0, pos);
+
+        struct stat info{};
+
+        if( stat( dir_name.c_str(), &info ) == 0) {
+            // Something exists in the filesystem, need to check if this is directory or file
+            if ( (info.st_mode & S_IFDIR) == 0)
+                throw JFJochException(JFJochExceptionCategory::FileWriteError,
+                                      "Cannot create directory - file with this name exists");
+        } else {
+            int ret = mkdir(dir_name.c_str(), S_IRWXU | S_IRWXG | S_ISGID);
+            if (ret == -1)
+                throw JFJochException(JFJochExceptionCategory::FileWriteError, "Cannot create directory");
+            ret = chmod(dir_name.c_str(), S_IRWXU | S_IRWXG | S_ISGID | S_IROTH | S_IXOTH);
+            if (ret == -1)
+                throw JFJochException(JFJochExceptionCategory::FileWriteError, "Cannot set permissions");
+
+        }
+        pos = path.find('/', pos + 1);
+    }
+}
+
 JFJochWriter::~JFJochWriter() {
     try {
         Stop();
     } catch (...) {}
-}
-
-void JFJochWriter::SetGroupNumber(const DiffractionExperiment &experiment) {
-    auto gid = getgid();
-    if (experiment.GetGroupID() != DiffractionExperiment::GroupIDNotSet)
-           gid = experiment.GetGroupID();
-    logger.Info("Switching to group ID " + std::to_string(gid));
-
-    if (setegid(gid) != 0) {
-        if (errno == EINVAL)
-            throw JFJochException(JFJochExceptionCategory::InputParameterInvalid, "Group ID invalid");
-        else if (errno == EPERM)
-            throw JFJochException(JFJochExceptionCategory::InputParameterInvalid, "Group ID permission issue");
-        else
-            throw JFJochException(JFJochExceptionCategory::InputParameterInvalid, "Group ID setting error");
-    }
 }

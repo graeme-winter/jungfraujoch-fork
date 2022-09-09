@@ -15,7 +15,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cjfjoch.proto\x12\x0eJFJochProtoBuf\"\x93\x01\n\x12\x46rameCountSettings\x12\x1a\n\x12images_per_trigger\x18\x01 \x01(\x03\x12\x10\n\x08ntrigger\x18\x02 \x01(\x03\x12\x19\n\x11pedestalG0_frames\x18\x03 \x01(\x03\x12\x19\n\x11pedestalG1_frames\x18\x04 \x01(\x03\x12\x19\n\x11pedestalG2_frames\x18\x05 \x01(\x03\"\xf2\x01\n\x0eTimingSettings\x12\"\n\x1a\x66rame_time_pedestalG1G2_us\x18\x01 \x01(\x03\x12\x1f\n\x17requested_image_time_us\x18\x03 \x01(\x03\x12\x15\n\rcount_time_us\x18\x04 \x01(\x03\x12\x19\n\x11\x62\x65\x61mline_delay_us\x18\x05 \x01(\x03\x12\x16\n\x0elaser_start_us\x18\x06 \x01(\x03\x12\x15\n\rlaser_stop_us\x18\x07 \x01(\x03\x12\x1e\n\x16use_optimal_frame_time\x18\x0c \x01(\x08\x12\x1a\n\x12time_resolved_mode\x18\r \x01(\x08\"\xdc\x03\n\x1b\x44iffractionGeometrySettings\x12\x12\n\nbeam_x_pxl\x18\x01 \x01(\x01\x12\x12\n\nbeam_y_pxl\x18\x02 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x03 \x01(\x01\x12\x17\n\x0fomega_start_deg\x18\x04 \x01(\x01\x12!\n\x19omega_angle_per_image_deg\x18\x05 \x01(\x01\x12\x1b\n\x13\x64\x65tector_size_x_pxl\x18\x06 \x01(\x03\x12\x1b\n\x13\x64\x65tector_size_y_pxl\x18\x07 \x01(\x03\x12\x11\n\tgap_x_pxl\x18\x08 \x01(\x03\x12\x11\n\tgap_y_pxl\x18\t \x01(\x03\x12\x1b\n\x13\x64\x61ta_stream_modules\x18\n \x03(\x03\x12\x1d\n\x15\x66irst_pixel_of_module\x18\x0b \x03(\x03\x12\"\n\x1ahorizontal_module_stacking\x18\x0c \x01(\x03\x12-\n\rrotation_axis\x18\r \x01(\x0b\x32\x16.JFJochProtoBuf.Vector\x12\x31\n\x11scattering_vector\x18\x0e \x01(\x0b\x32\x16.JFJochProtoBuf.Vector\x12\x19\n\x11photon_energy_keV\x18\x10 \x01(\x01\"\x91\x02\n\x18\x42\x65\x61mlineMetadataSettings\x12\x14\n\x0ctransmission\x18\x01 \x01(\x01\x12\x12\n\ntotal_flux\x18\x02 \x01(\x01\x12\x16\n\x0e\x62\x65\x61m_size_x_um\x18\x03 \x01(\x01\x12\x16\n\x0e\x62\x65\x61m_size_y_um\x18\x04 \x01(\x01\x12\x1c\n\x14sample_temperature_K\x18\x05 \x01(\x01\x12\x15\n\rdetector_name\x18\t \x01(\t\x12\x19\n\x11source_name_short\x18\n \x01(\t\x12\x13\n\x0bsource_name\x18\x0b \x01(\t\x12\x17\n\x0finstrument_name\x18\x0c \x01(\t\x12\x1d\n\x15instrument_name_short\x18\r \x01(\t\"\xb4\x01\n\x13\x43ompressionSettings\x12\x42\n\talgorithm\x18\x04 \x01(\x0e\x32/.JFJochProtoBuf.CompressionSettings.Compression\x12\r\n\x05level\x18\x05 \x01(\x03\x12\x12\n\nblock_size\x18\x06 \x01(\x03\"6\n\x0b\x43ompression\x12\r\n\tBSHUF_LZ4\x10\x00\x12\x0e\n\nBSHUF_ZSTD\x10\x01\x12\x08\n\x04NONE\x10\x02\"\xa7\x01\n\x13ImageSavingSettings\x12\x13\n\x0b\x66ile_prefix\x18\x01 \x01(\t\x12\x13\n\x0btracking_id\x18\x02 \x01(\t\x12\x16\n\x0eimage_per_file\x18\x03 \x01(\x03\x12 \n\x18measurement_sequence_num\x18\x04 \x01(\x03\x12\x1f\n\x17\x65rror_when_overwritting\x18\x05 \x01(\x08\x12\x0b\n\x03gid\x18\x06 \x01(\x03\"T\n\x10\x44\x65tectorSettings\x12\x18\n\x10\x66orce_full_speed\x18\x01 \x01(\x08\x12&\n\x1einternal_fpga_packet_generator\x18\x02 \x01(\x08\"\xb3\x01\n\x0fPreviewSettings\x12\x19\n\x11preview_period_us\x18\x01 \x01(\x03\x12\x1e\n\x16spot_finding_period_us\x18\x02 \x01(\x03\x12 \n\x18\x62kg_estimation_period_us\x18\x03 \x01(\x03\x12!\n\x19high_resolution_bkg_limit\x18\x04 \x01(\x01\x12 \n\x18low_resolution_bkg_limit\x18\x05 \x01(\x01\"f\n\x10PedestalSettings\x12\x10\n\x08tracking\x18\x01 \x01(\x08\x12\x1a\n\x12tracking_threshold\x18\x02 \x01(\x01\x12\r\n\x05saved\x18\x03 \x01(\x08\x12\x15\n\rskip_pedestal\x18\x04 \x01(\x08\"\xab\x01\n\x12\x43onversionSettings\x12*\n\x04mode\x18\x01 \x01(\x0e\x32\x1c.JFJochProtoBuf.DetectorMode\x12\x13\n\x0bupside_down\x18\x02 \x01(\x08\x12\x19\n\x11mask_module_edges\x18\x03 \x01(\x08\x12\x17\n\x0fmask_chip_edges\x18\x04 \x01(\x08\x12 \n\x18sum_frames_in_conversion\x18\x05 \x01(\x08\"t\n\x1cJungfraujochInternalSettings\x12\x19\n\x11\x62\x61se_ipv4_address\x18\x06 \x01(\x03\x12\x15\n\rbase_udp_port\x18\x07 \x01(\x03\x12\x10\n\x08git_sha1\x18\x08 \x01(\t\x12\x10\n\x08git_date\x18\t \x01(\t\"{\n\x0eSampleSettings\x12\x0c\n\x04name\x18\x01 \x01(\t\x12+\n\tunit_cell\x18\x02 \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCell\x12\x1a\n\x12space_group_number\x18\x03 \x01(\x03\x12\x12\n\nrun_number\x18\x04 \x01(\x03\"\xba\x05\n\x14JungfraujochSettings\x12\x37\n\x0b\x66rame_count\x18\x01 \x01(\x0b\x32\".JFJochProtoBuf.FrameCountSettings\x12.\n\x06timing\x18\x02 \x01(\x0b\x32\x1e.JFJochProtoBuf.TimingSettings\x12I\n\x14\x64iffraction_geometry\x18\x03 \x01(\x0b\x32+.JFJochProtoBuf.DiffractionGeometrySettings\x12\x43\n\x11\x62\x65\x61mline_metadata\x18\x04 \x01(\x0b\x32(.JFJochProtoBuf.BeamlineMetadataSettings\x12\x39\n\x0cimage_saving\x18\x05 \x01(\x0b\x32#.JFJochProtoBuf.ImageSavingSettings\x12\x32\n\x08\x64\x65tector\x18\x06 \x01(\x0b\x32 .JFJochProtoBuf.DetectorSettings\x12\x30\n\x07preview\x18\x07 \x01(\x0b\x32\x1f.JFJochProtoBuf.PreviewSettings\x12\x32\n\x08pedestal\x18\x08 \x01(\x0b\x32 .JFJochProtoBuf.PedestalSettings\x12\x30\n\x04\x63onv\x18\t \x01(\x0b\x32\".JFJochProtoBuf.ConversionSettings\x12\x32\n\x05\x63ompr\x18\n \x01(\x0b\x32#.JFJochProtoBuf.CompressionSettings\x12>\n\x08internal\x18\x0b \x01(\x0b\x32,.JFJochProtoBuf.JungfraujochInternalSettings\x12.\n\x06sample\x18\x0c \x01(\x0b\x32\x1e.JFJochProtoBuf.SampleSettings\"\xbb\x02\n\rJFCalibration\x12\x10\n\x08nmodules\x18\x01 \x01(\x03\x12\x13\n\x0b\x64\x61ta_stream\x18\x02 \x01(\x03\x12\x13\n\x0bpedestal_g0\x18\x06 \x01(\x0c\x12\x13\n\x0bpedestal_g1\x18\x07 \x01(\x0c\x12\x13\n\x0bpedestal_g2\x18\x08 \x01(\x0c\x12\x17\n\x0fpedestal_rms_g0\x18\t \x01(\x0c\x12\x17\n\x0fpedestal_rms_g1\x18\n \x01(\x0c\x12\x17\n\x0fpedestal_rms_g2\x18\x0b \x01(\x0c\x12\x0c\n\x04mask\x18\x0c \x01(\x0c\x12\x15\n\rpedestal_time\x18\r \x03(\x04\x12\x17\n\x0fpedestal_frames\x18\x0e \x03(\r\x12;\n\x11module_statistics\x18\x0f \x03(\x0b\x32 .JFJochProtoBuf.ModuleStatistics\"\xeb\x02\n\x1b\x41\x63quisitionDeviceStatistics\x12\x14\n\x0cgood_packets\x18\x01 \x01(\x04\x12\"\n\x1apackets_expected_per_image\x18\x02 \x01(\x04\x12\"\n\x1apackets_received_per_image\x18\x03 \x03(\x04\x12\x12\n\nefficiency\x18\x04 \x01(\x01\x12\x16\n\x0eok_eth_packets\x18\x05 \x01(\x04\x12\x17\n\x0fstart_timestamp\x18\x06 \x01(\x04\x12\x15\n\rend_timestamp\x18\x07 \x01(\x04\x12/\n\x0b\x66pga_status\x18\x08 \x01(\x0b\x32\x1a.JFJochProtoBuf.FPGAStatus\x12&\n\x1etrigger_sequence_frame_numbers\x18\t \x03(\x03\x12\x1f\n\x17packet_mask_half_module\x18\n \x03(\x04\x12\x18\n\x10packets_expected\x18\x0b \x01(\x04\"\xaa\x01\n\x13JFJochReceiverInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\x12\x32\n\x0b\x63\x61libration\x18\x02 \x01(\x0b\x32\x1d.JFJochProtoBuf.JFCalibration\x12\x1a\n\x12writer_zmq_address\x18\x03 \x03(\t\"\xf4\x03\n\x14JFJochReceiverOutput\x12\x46\n\x11\x64\x65vice_statistics\x18\x01 \x03(\x0b\x32+.JFJochProtoBuf.AcquisitionDeviceStatistics\x12\x19\n\x11max_receive_delay\x18\x02 \x01(\x04\x12\x17\n\x0f\x63ompressed_size\x18\x03 \x01(\x04\x12\x18\n\x10\x63ompressed_ratio\x18\x04 \x01(\x01\x12\x13\n\x0bimages_sent\x18\x05 \x01(\x04\x12\x15\n\rstart_time_ms\x18\x06 \x01(\x04\x12\x13\n\x0b\x65nd_time_ms\x18\x07 \x01(\x04\x12\x12\n\nefficiency\x18\t \x01(\x01\x12\x1d\n\x15max_image_number_sent\x18\n \x01(\x04\x12\x32\n\x0b\x63\x61libration\x18\x0e \x01(\x0b\x32\x1d.JFJochProtoBuf.JFCalibration\x12\x43\n\x15jungfraujoch_settings\x18\x0f \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\x12@\n\x0eindexer_output\x18\x10 \x01(\x0b\x32#.JFJochProtoBuf.JFJochIndexerOutputH\x00\x88\x01\x01\x42\x11\n\x0f_indexer_outputJ\x04\x08\x08\x10\t\"4\n\x1bJFJochReceiverNetworkConfig\x12\x15\n\rfpga_mac_addr\x18\x01 \x03(\t\"X\n\x11JFJochWriterInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\"\x14\n\x12JFJochWriterOutput\"\xe6\x01\n\x1aJFJochDetectorModuleConfig\x12\x17\n\x0fudp_dest_port_1\x18\x01 \x01(\x04\x12\x17\n\x0fudp_dest_port_2\x18\x02 \x01(\x04\x12\x17\n\x0fipv4_src_addr_1\x18\x03 \x01(\x04\x12\x17\n\x0fipv4_src_addr_2\x18\x04 \x01(\x04\x12\x18\n\x10ipv4_dest_addr_1\x18\x05 \x01(\x04\x12\x18\n\x10ipv4_dest_addr_2\x18\x06 \x01(\x04\x12\x17\n\x0fmac_addr_dest_1\x18\x07 \x01(\t\x12\x17\n\x0fmac_addr_dest_2\x18\x08 \x01(\t\"S\n\x14JFJochDetectorConfig\x12;\n\x07modules\x18\x01 \x03(\x0b\x32*.JFJochProtoBuf.JFJochDetectorModuleConfig\"Z\n\x13JFJochDetectorInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\"\x16\n\x14JFJochDetectorOutput\"\x07\n\x05\x45mpty\"W\n\x08UnitCell\x12\t\n\x01\x61\x18\x01 \x01(\x01\x12\t\n\x01\x62\x18\x02 \x01(\x01\x12\t\n\x01\x63\x18\x03 \x01(\x01\x12\r\n\x05\x61lpha\x18\x04 \x01(\x01\x12\x0c\n\x04\x62\x65ta\x18\x05 \x01(\x01\x12\r\n\x05gamma\x18\x06 \x01(\x01\")\n\x06Vector\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\"\xce\x02\n\x0eParameterValue\x12\x0e\n\x04text\x18\x01 \x01(\tH\x00\x12\x13\n\tfp_number\x18\x02 \x01(\x01H\x00\x12\x10\n\x06number\x18\x03 \x01(\x03H\x00\x12\x11\n\x07logical\x18\x04 \x01(\x08H\x00\x12(\n\x06vector\x18\x05 \x01(\x0b\x32\x16.JFJochProtoBuf.VectorH\x00\x12-\n\tunit_cell\x18\x06 \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCellH\x00\x12\x0c\n\x04unit\x18\x0b \x01(\t\x12\x13\n\x06\x66p_min\x18\x0c \x01(\x01H\x01\x88\x01\x01\x12\x13\n\x06\x66p_max\x18\r \x01(\x01H\x02\x88\x01\x01\x12\x14\n\x07int_min\x18\x0e \x01(\x03H\x03\x88\x01\x01\x12\x14\n\x07int_max\x18\x0f \x01(\x03H\x04\x88\x01\x01\x42\x07\n\x05valueB\t\n\x07_fp_minB\t\n\x07_fp_maxB\n\n\x08_int_minB\n\n\x08_int_max\"\xfb\x06\n\nFPGAStatus\x12\x15\n\rpackets_ether\x18\x02 \x01(\x04\x12\x13\n\x0bpackets_udp\x18\x03 \x01(\x04\x12\x16\n\x0epackets_jfjoch\x18\x04 \x01(\x04\x12\x14\n\x0cpackets_icmp\x18\x05 \x01(\x04\x12\x11\n\tfpga_idle\x18\x06 \x01(\x08\x12\x10\n\x08hbm_temp\x18\x07 \x01(\x04\x12\x14\n\x0cmax_hbm_temp\x18\x08 \x01(\x04\x12\x12\n\nstalls_hbm\x18\t \x01(\x04\x12\x13\n\x0bstalls_host\x18\n \x01(\x04\x12\x1b\n\x13\x65thernet_rx_aligned\x18\x0b \x01(\x08\x12\x18\n\x10\x65thernet_bad_fcs\x18\x0c \x01(\x08\x12\x1c\n\x14\x66ull_status_register\x18\r \x01(\r\x12?\n\x0b\x66ifo_status\x18\x0e \x03(\x0b\x32*.JFJochProtoBuf.FPGAStatus.FifoStatusEntry\x12\x13\n\x0bmax_modules\x18\x0f \x01(\x04\x12\x10\n\x08git_sha1\x18\x10 \x01(\r\x12\x17\n\x0fmailbox_err_reg\x18\x11 \x01(\r\x12\x1a\n\x12mailbox_status_reg\x18\x12 \x01(\r\x12\x1c\n\x14\x64\x61tamover_mm2s_error\x18\x13 \x01(\x08\x12\x1c\n\x14\x64\x61tamover_s2mm_error\x18\x14 \x01(\x08\x12&\n\x1e\x66rame_statistics_alignment_err\x18\x15 \x01(\x08\x12\"\n\x1a\x66rame_statistics_tlast_err\x18\x16 \x01(\x08\x12%\n\x1d\x66rame_statistics_work_req_err\x18\x17 \x01(\x08\x12\x14\n\x0cslowest_head\x18\x18 \x01(\x04\x12\x1b\n\x13qsfp_module_present\x18\x19 \x01(\x08\x12\x16\n\x0e\x66pga_temp_degC\x18\x1a \x01(\x01\x12\x1a\n\x12\x63urrent_edge_12V_A\x18\x1b \x01(\x01\x12\x1a\n\x12voltage_edge_12V_V\x18\x1c \x01(\x01\x12\x1b\n\x13\x63urrent_edge_3p3V_A\x18\x1d \x01(\x01\x12\x1b\n\x13voltage_edge_3p3V_V\x18\x1e \x01(\x01\x1aQ\n\x0f\x46ifoStatusEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12-\n\x05value\x18\x02 \x01(\x0e\x32\x1e.JFJochProtoBuf.FPGAFIFOStatus:\x02\x38\x01\"w\n\x0eReceiverStatus\x12\x10\n\x08progress\x18\x01 \x01(\x01\x12/\n\x0b\x66pga_status\x18\x02 \x03(\x0b\x32\x1a.JFJochProtoBuf.FPGAStatus\x12\x0c\n\x04idle\x18\x03 \x01(\x08\x12\x14\n\x0c\x62kg_estimate\x18\x04 \x03(\x02\"\xc0\x03\n\x16\x44\x61taProcessingSettings\x12\x44\n\x16spot_finding_algorithm\x18\x01 \x01(\x0e\x32$.JFJochProtoBuf.SpotFindingAlgorithm\x12\x1e\n\x16\x65nable_3d_spot_finding\x18\x02 \x01(\x08\x12\"\n\x15high_resolution_limit\x18\x03 \x01(\x01H\x00\x88\x01\x01\x12!\n\x14low_resolution_limit\x18\x04 \x01(\x01H\x01\x88\x01\x01\x12!\n\x19signal_to_noise_threshold\x18\x05 \x01(\x01\x12\x1e\n\x16photon_count_threshold\x18\x06 \x01(\x03\x12\x11\n\tmax_depth\x18\x07 \x01(\x03\x12\x18\n\x10min_pix_per_spot\x18\x08 \x01(\x03\x12\x18\n\x10max_pix_per_spot\x18\t \x01(\x03\x12\x16\n\x0elocal_bkg_size\x18\n \x01(\x03\x12\x16\n\tmax_spots\x18\x0b \x01(\x03H\x02\x88\x01\x01\x42\x18\n\x16_high_resolution_limitB\x17\n\x15_low_resolution_limitB\x0c\n\n_max_spots\"\xc7\x02\n\x0cPreviewFrame\x12\x14\n\x0cimage_number\x18\x01 \x01(\x03\x12\x14\n\x0ctotal_images\x18\x02 \x01(\x03\x12\x14\n\x0cwavelength_A\x18\x03 \x01(\x01\x12\x15\n\rbeam_center_x\x18\x04 \x01(\x01\x12\x15\n\rbeam_center_y\x18\x05 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x06 \x01(\x01\x12\x18\n\x10saturation_value\x18\x07 \x01(\x03\x12\x13\n\x0b\x66ile_prefix\x18\x08 \x01(\t\x12\r\n\x05width\x18\t \x01(\x03\x12\x0e\n\x06height\x18\n \x01(\x03\x12\x13\n\x0bpixel_depth\x18\x0b \x01(\x03\x12\x38\n\x0b\x63ompression\x18\x0c \x01(\x0b\x32#.JFJochProtoBuf.CompressionSettings\x12\x0c\n\x04\x64\x61ta\x18\r \x01(\x0c\"\x81\x01\n\x15SpotFinderImageOutput\x12\x14\n\x0cimage_number\x18\x01 \x01(\x03\x12+\n\tunit_cell\x18\x02 \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCell\x12%\n\x05\x63oord\x18\x03 \x03(\x0b\x32\x16.JFJochProtoBuf.Vector\"\x8f\x01\n\x12IndexerImageOutput\x12\x14\n\x0cimage_number\x18\x01 \x01(\x03\x12\x12\n\nspot_count\x18\x02 \x01(\x03\x12\x0f\n\x07indexed\x18\x03 \x01(\x08\x12\x30\n\tunit_cell\x18\x04 \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCellH\x00\x88\x01\x01\x42\x0c\n\n_unit_cell\"k\n\rIndexerStatus\x12\x15\n\rindexing_rate\x18\x01 \x03(\x01\x12\x12\n\nmean_spots\x18\x02 \x03(\x01\x12\x17\n\x0fimages_analyzed\x18\x03 \x01(\x03\x12\x16\n\x0eimages_indexed\x18\x04 \x01(\x03\"\x82\x01\n\x17OnlineProcessingRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x0e\n\x06images\x18\x02 \x01(\x03\x12\x12\n\nbeam_x_pxl\x18\x03 \x01(\x01\x12\x12\n\nbeam_y_pxl\x18\x04 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x05 \x01(\x01\"\x86\x01\n\x12JFJochIndexerInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\x12\x19\n\x11zmq_recv_pub_addr\x18\x02 \x01(\t\x12\x10\n\x08\x62in_size\x18\x03 \x01(\x03\"}\n\x13JFJochIndexerOutput\x12\x38\n\x0cimage_output\x18\x01 \x03(\x0b\x32\".JFJochProtoBuf.IndexerImageOutput\x12\x14\n\x0cms_per_image\x18\x02 \x01(\x01\x12\x16\n\x0eindexed_images\x18\x03 \x01(\x03\"\xd7\x04\n\x0c\x42rokerStatus\x12\x39\n\rcurrent_state\x18\x01 \x01(\x0e\x32\".JFJochProtoBuf.BrokerStatus.State\x12<\n\x0freceiver_status\x18\x02 \x01(\x0b\x32\x1e.JFJochProtoBuf.ReceiverStatusH\x00\x88\x01\x01\x12:\n\x0eindexer_status\x18\x03 \x01(\x0b\x32\x1d.JFJochProtoBuf.IndexerStatusH\x01\x88\x01\x01\x12)\n!last_measurement_images_collected\x18\x04 \x01(\x04\x12.\n&last_measurement_collection_efficiency\x18\x05 \x01(\x01\x12*\n\"last_measurement_compression_ratio\x18\x06 \x01(\x01\x12(\n last_measurement_sequence_number\x18\x07 \x01(\x03\x12\x1d\n\x15last_measurement_name\x18\x08 \x01(\t\x12;\n\x11module_statistics\x18\t \x03(\x0b\x32 .JFJochProtoBuf.ModuleStatistics\"^\n\x05State\x12\x13\n\x0fNOT_INITIALIZED\x10\x00\x12\x08\n\x04IDLE\x10\x01\x12\x08\n\x04\x42USY\x10\x02\x12\x0c\n\x08PEDESTAL\x10\x03\x12\x13\n\x0f\x44\x41TA_COLLECTION\x10\x04\x12\t\n\x05\x45RROR\x10\x05\x42\x12\n\x10_receiver_statusB\x11\n\x0f_indexer_status\"\xd1\x01\n\x10ModuleStatistics\x12\x18\n\x10pedestal_g0_mean\x18\x02 \x01(\x01\x12\x18\n\x10pedestal_g1_mean\x18\x03 \x01(\x01\x12\x18\n\x10pedestal_g2_mean\x18\x04 \x01(\x01\x12\x1c\n\x14pedestal_rms_g0_mean\x18\x05 \x01(\x01\x12\x1c\n\x14pedestal_rms_g1_mean\x18\x06 \x01(\x01\x12\x1c\n\x14pedestal_rms_g2_mean\x18\x07 \x01(\x01\x12\x15\n\rmasked_pixels\x18\x08 \x01(\x04\"\x12\n\x10\x42rokerStatistics\"\x1e\n\x0e\x44\x65tectorStatus\x12\x0c\n\x04idle\x18\x01 \x01(\x08\"\xeb\x08\n\x0b\x42rokerSetup\x12\x1a\n\x12images_per_trigger\x18\x01 \x01(\x03\x12\x15\n\rimage_time_us\x18\x02 \x01(\x03\x12\x19\n\x11\x62\x65\x61m_center_x_pxl\x18\x03 \x01(\x01\x12\x19\n\x11\x62\x65\x61m_center_y_pxl\x18\x04 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x05 \x01(\x01\x12\x19\n\x11photon_energy_kev\x18\x06 \x01(\x01\x12\x14\n\x0cname_pattern\x18\x07 \x01(\t\x12\x13\n\x0bsample_name\x18\x08 \x01(\t\x12\x15\n\x08ntrigger\x18\x0f \x01(\x03H\x00\x88\x01\x01\x12\x1c\n\x0fimages_per_file\x18\x10 \x01(\x03H\x01\x88\x01\x01\x12\x18\n\x0b\x63ompression\x18\x11 \x01(\tH\x02\x88\x01\x01\x12\x1c\n\x0fomega_start_deg\x18\x12 \x01(\x01H\x03\x88\x01\x01\x12 \n\x13omega_increment_deg\x18\x13 \x01(\x01H\x04\x88\x01\x01\x12\x1f\n\x12time_resolved_mode\x18\x14 \x01(\x08H\x05\x88\x01\x01\x12\x1d\n\x10\x66orce_full_speed\x18\x16 \x01(\x08H\x06\x88\x01\x01\x12!\n\x14\x64\x61ta_collection_mode\x18\x17 \x01(\tH\x07\x88\x01\x01\x12\x1b\n\x0epedestal_saved\x18\x19 \x01(\x08H\x08\x88\x01\x01\x12\x1e\n\x11pedestal_tracking\x18\x1a \x01(\x08H\t\x88\x01\x01\x12\x1c\n\x0fpreview_rate_ms\x18\x1b \x01(\x03H\n\x88\x01\x01\x12\x1c\n\x0f\x66rame_summation\x18\x1c \x01(\x08H\x0b\x88\x01\x01\x12+\n\tunit_cell\x18\x1d \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCell\x12!\n\x14spot_finding_rate_ms\x18\x1e \x01(\x03H\x0c\x88\x01\x01\x12!\n\x14\x62kg_estimate_rate_ms\x18\x1f \x01(\x03H\r\x88\x01\x01\x12\x1a\n\rskip_pedestal\x18  \x01(\x08H\x0e\x88\x01\x01\x12\x1f\n\x12space_group_number\x18! \x01(\x03H\x0f\x88\x01\x01\x12\x17\n\nrun_number\x18\" \x01(\x03H\x10\x88\x01\x01\x42\x0b\n\t_ntriggerB\x12\n\x10_images_per_fileB\x0e\n\x0c_compressionB\x12\n\x10_omega_start_degB\x16\n\x14_omega_increment_degB\x15\n\x13_time_resolved_modeB\x13\n\x11_force_full_speedB\x17\n\x15_data_collection_modeB\x11\n\x0f_pedestal_savedB\x14\n\x12_pedestal_trackingB\x12\n\x10_preview_rate_msB\x12\n\x10_frame_summationB\x17\n\x15_spot_finding_rate_msB\x17\n\x15_bkg_estimate_rate_msB\x10\n\x0e_skip_pedestalB\x15\n\x13_space_group_numberB\r\n\x0b_run_number\"4\n\x05Image\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\r\n\x05width\x18\x02 \x01(\x03\x12\x0e\n\x06height\x18\x03 \x01(\x03\".\n\nMaskToLoad\x12\x0c\n\x04mask\x18\x01 \x03(\r\x12\x12\n\nbit_to_set\x18\x02 \x01(\x05*Z\n\x0c\x44\x65tectorMode\x12\x0e\n\nCONVERSION\x10\x00\x12\x07\n\x03RAW\x10\x01\x12\x0f\n\x0bPEDESTAL_G0\x10\x02\x12\x0f\n\x0bPEDESTAL_G1\x10\x03\x12\x0f\n\x0bPEDESTAL_G2\x10\x04*>\n\x14SpotFindingAlgorithm\x12\t\n\x05LOCAL\x10\x00\x12\n\n\x06RADIAL\x10\x01\x12\x0f\n\x0bPEAKFINDER8\x10\x02*2\n\x0e\x46PGAFIFOStatus\x12\t\n\x05\x45MPTY\x10\x00\x12\x08\n\x04\x46ULL\x10\x01\x12\x0b\n\x07PARTIAL\x10\x02\x32\xa7\n\n\x11gRPC_JFJochBroker\x12=\n\x05Start\x12\x1b.JFJochProtoBuf.BrokerSetup\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x36\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x37\n\x05\x41\x62ort\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x38\n\x06\x43\x61ncel\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12:\n\x08Pedestal\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12<\n\nInitialize\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12<\n\nDeactivate\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x42\n\tGetStatus\x12\x15.JFJochProtoBuf.Empty\x1a\x1c.JFJochProtoBuf.BrokerStatus\"\x00\x12H\n\x0eGetCalibration\x12\x15.JFJochProtoBuf.Empty\x1a\x1d.JFJochProtoBuf.JFCalibration\"\x00\x12Z\n\x19GetDetailedReceiverOutput\x12\x15.JFJochProtoBuf.Empty\x1a$.JFJochProtoBuf.JFJochReceiverOutput\"\x00\x12\\\n\x19GetDataProcessingSettings\x12\x15.JFJochProtoBuf.Empty\x1a&.JFJochProtoBuf.DataProcessingSettings\"\x00\x12\\\n\x19SetDataProcessingSettings\x12&.JFJochProtoBuf.DataProcessingSettings\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12?\n\x08LoadMask\x12\x1a.JFJochProtoBuf.MaskToLoad\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x39\n\x07GetMask\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12\x41\n\x0fGetMaskRawCoord\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12?\n\rGetPedestalG0\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12?\n\rGetPedestalG1\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12?\n\rGetPedestalG2\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12H\n\x0fGetPreviewFrame\x12\x15.JFJochProtoBuf.Empty\x1a\x1c.JFJochProtoBuf.PreviewFrame\"\x00\x32\xde\x04\n\x13gRPC_JFJochReceiver\x12\x45\n\x05Start\x12#.JFJochProtoBuf.JFJochReceiverInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x37\n\x05\x41\x62ort\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x38\n\x06\x43\x61ncel\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x45\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a$.JFJochProtoBuf.JFJochReceiverOutput\"\x00\x12\x44\n\tGetStatus\x12\x15.JFJochProtoBuf.Empty\x1a\x1e.JFJochProtoBuf.ReceiverStatus\"\x00\x12\\\n\x19SetDataProcessingSettings\x12&.JFJochProtoBuf.DataProcessingSettings\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12H\n\x0fGetPreviewFrame\x12\x15.JFJochProtoBuf.Empty\x1a\x1c.JFJochProtoBuf.PreviewFrame\"\x00\x12X\n\x10GetNetworkConfig\x12\x15.JFJochProtoBuf.Empty\x1a+.JFJochProtoBuf.JFJochReceiverNetworkConfig\"\x00\x32\x9b\x02\n\x11gRPC_JFJochWriter\x12\x43\n\x05Start\x12!.JFJochProtoBuf.JFJochWriterInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x37\n\x05\x41\x62ort\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x36\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12P\n\x0fWriteMasterFile\x12$.JFJochProtoBuf.JFJochReceiverOutput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x32\x8e\x03\n\x13gRPC_JFJochDetector\x12\x45\n\x05Start\x12#.JFJochProtoBuf.JFJochDetectorInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x36\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x41\n\x06Status\x12\x15.JFJochProtoBuf.Empty\x1a\x1e.JFJochProtoBuf.DetectorStatus\"\x00\x12\x43\n\x02On\x12$.JFJochProtoBuf.JFJochDetectorConfig\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x35\n\x03Off\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x39\n\x07Trigger\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x32O\n\x12gRPC_JFJochTrigger\x12\x39\n\x07Trigger\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x32\xe5\x01\n\x12gRPC_JFJochIndexer\x12\x44\n\x05Start\x12\".JFJochProtoBuf.JFJochIndexerInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x44\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a#.JFJochProtoBuf.JFJochIndexerOutput\"\x00\x12\x43\n\tGetStatus\x12\x15.JFJochProtoBuf.Empty\x1a\x1d.JFJochProtoBuf.IndexerStatus\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cjfjoch.proto\x12\x0eJFJochProtoBuf\"B\n\x12\x46rameCountSettings\x12\x1a\n\x12images_per_trigger\x18\x01 \x01(\x03\x12\x10\n\x08ntrigger\x18\x02 \x01(\x03\"\xd7\x01\n\x0eTimingSettings\x12\"\n\x1a\x66rame_time_pedestalG1G2_us\x18\x01 \x01(\x03\x12\x1f\n\x17requested_image_time_us\x18\x03 \x01(\x03\x12\x15\n\rcount_time_us\x18\x04 \x01(\x03\x12\x16\n\x0elaser_start_us\x18\x06 \x01(\x03\x12\x15\n\rlaser_stop_us\x18\x07 \x01(\x03\x12\x1e\n\x16use_optimal_frame_time\x18\x0c \x01(\x08\x12\x1a\n\x12time_resolved_mode\x18\r \x01(\x08\"\xdc\x03\n\x1b\x44iffractionGeometrySettings\x12\x12\n\nbeam_x_pxl\x18\x01 \x01(\x01\x12\x12\n\nbeam_y_pxl\x18\x02 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x03 \x01(\x01\x12\x17\n\x0fomega_start_deg\x18\x04 \x01(\x01\x12!\n\x19omega_angle_per_image_deg\x18\x05 \x01(\x01\x12\x1b\n\x13\x64\x65tector_size_x_pxl\x18\x06 \x01(\x03\x12\x1b\n\x13\x64\x65tector_size_y_pxl\x18\x07 \x01(\x03\x12\x11\n\tgap_x_pxl\x18\x08 \x01(\x03\x12\x11\n\tgap_y_pxl\x18\t \x01(\x03\x12\x1b\n\x13\x64\x61ta_stream_modules\x18\n \x03(\x03\x12\x1d\n\x15\x66irst_pixel_of_module\x18\x0b \x03(\x03\x12\"\n\x1ahorizontal_module_stacking\x18\x0c \x01(\x03\x12-\n\rrotation_axis\x18\r \x01(\x0b\x32\x16.JFJochProtoBuf.Vector\x12\x31\n\x11scattering_vector\x18\x0e \x01(\x0b\x32\x16.JFJochProtoBuf.Vector\x12\x19\n\x11photon_energy_keV\x18\x10 \x01(\x01\"\x91\x02\n\x18\x42\x65\x61mlineMetadataSettings\x12\x14\n\x0ctransmission\x18\x01 \x01(\x01\x12\x12\n\ntotal_flux\x18\x02 \x01(\x01\x12\x16\n\x0e\x62\x65\x61m_size_x_um\x18\x03 \x01(\x01\x12\x16\n\x0e\x62\x65\x61m_size_y_um\x18\x04 \x01(\x01\x12\x1c\n\x14sample_temperature_K\x18\x05 \x01(\x01\x12\x15\n\rdetector_name\x18\t \x01(\t\x12\x19\n\x11source_name_short\x18\n \x01(\t\x12\x13\n\x0bsource_name\x18\x0b \x01(\t\x12\x17\n\x0finstrument_name\x18\x0c \x01(\t\x12\x1d\n\x15instrument_name_short\x18\r \x01(\t\"\xb4\x01\n\x13\x43ompressionSettings\x12\x42\n\talgorithm\x18\x04 \x01(\x0e\x32/.JFJochProtoBuf.CompressionSettings.Compression\x12\r\n\x05level\x18\x05 \x01(\x03\x12\x12\n\nblock_size\x18\x06 \x01(\x03\"6\n\x0b\x43ompression\x12\r\n\tBSHUF_LZ4\x10\x00\x12\x0e\n\nBSHUF_ZSTD\x10\x01\x12\x08\n\x04NONE\x10\x02\"\x9a\x01\n\x13ImageSavingSettings\x12\x13\n\x0b\x66ile_prefix\x18\x01 \x01(\t\x12\x13\n\x0btracking_id\x18\x02 \x01(\t\x12\x16\n\x0eimage_per_file\x18\x03 \x01(\x03\x12 \n\x18measurement_sequence_num\x18\x04 \x01(\x03\x12\x1f\n\x17\x65rror_when_overwritting\x18\x05 \x01(\x08\"\xa7\x01\n\x10\x44\x65tectorSettings\x12\x18\n\x10\x66orce_full_speed\x18\x01 \x01(\x08\x12&\n\x1einternal_fpga_packet_generator\x18\x02 \x01(\x08\x12\x15\n\rstorage_cells\x18\x03 \x01(\x03\x12\x1a\n\x12storage_cell_start\x18\x04 \x01(\x03\x12\x1e\n\x16\x64\x65lay_after_trigger_us\x18\x05 \x01(\x03\"n\n\x0fPreviewSettings\x12\x19\n\x11preview_period_us\x18\x01 \x01(\x03\x12\x1e\n\x16spot_finding_period_us\x18\x02 \x01(\x03\x12 \n\x18\x62kg_estimation_period_us\x18\x03 \x01(\x03\"Z\n\x10PedestalSettings\x12\x11\n\tg0_frames\x18\x01 \x01(\x03\x12\x11\n\tg1_frames\x18\x02 \x01(\x03\x12\x11\n\tg2_frames\x18\x03 \x01(\x03\x12\r\n\x05saved\x18\x04 \x01(\x08\"\x89\x01\n\x12\x43onversionSettings\x12*\n\x04mode\x18\x01 \x01(\x0e\x32\x1c.JFJochProtoBuf.DetectorMode\x12\x13\n\x0bupside_down\x18\x02 \x01(\x08\x12\x19\n\x11mask_module_edges\x18\x03 \x01(\x08\x12\x17\n\x0fmask_chip_edges\x18\x04 \x01(\x08\"t\n\x1cJungfraujochInternalSettings\x12\x19\n\x11\x62\x61se_ipv4_address\x18\x06 \x01(\x03\x12\x15\n\rbase_udp_port\x18\x07 \x01(\x03\x12\x10\n\x08git_sha1\x18\x08 \x01(\t\x12\x10\n\x08git_date\x18\t \x01(\t\"\x8e\x01\n\x0eSampleSettings\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x30\n\tunit_cell\x18\x02 \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCellH\x00\x88\x01\x01\x12\x1a\n\x12space_group_number\x18\x03 \x01(\x03\x12\x12\n\nrun_number\x18\x04 \x01(\x03\x42\x0c\n\n_unit_cell\"\x86\x01\n\x19RadialIntegrationSettings\x12\r\n\x05low_q\x18\x01 \x01(\x01\x12\x0e\n\x06high_q\x18\x02 \x01(\x01\x12\x11\n\tq_spacing\x18\x03 \x01(\x01\x12\x1a\n\x12\x62kg_estimate_low_q\x18\x04 \x01(\x01\x12\x1b\n\x13\x62kg_estimate_high_q\x18\x05 \x01(\x01\"\xf9\x05\n\x14JungfraujochSettings\x12\x37\n\x0b\x66rame_count\x18\x01 \x01(\x0b\x32\".JFJochProtoBuf.FrameCountSettings\x12.\n\x06timing\x18\x02 \x01(\x0b\x32\x1e.JFJochProtoBuf.TimingSettings\x12I\n\x14\x64iffraction_geometry\x18\x03 \x01(\x0b\x32+.JFJochProtoBuf.DiffractionGeometrySettings\x12\x43\n\x11\x62\x65\x61mline_metadata\x18\x04 \x01(\x0b\x32(.JFJochProtoBuf.BeamlineMetadataSettings\x12\x39\n\x0cimage_saving\x18\x05 \x01(\x0b\x32#.JFJochProtoBuf.ImageSavingSettings\x12\x32\n\x08\x64\x65tector\x18\x06 \x01(\x0b\x32 .JFJochProtoBuf.DetectorSettings\x12\x30\n\x07preview\x18\x07 \x01(\x0b\x32\x1f.JFJochProtoBuf.PreviewSettings\x12\x32\n\x08pedestal\x18\x08 \x01(\x0b\x32 .JFJochProtoBuf.PedestalSettings\x12\x30\n\x04\x63onv\x18\t \x01(\x0b\x32\".JFJochProtoBuf.ConversionSettings\x12\x32\n\x05\x63ompr\x18\n \x01(\x0b\x32#.JFJochProtoBuf.CompressionSettings\x12>\n\x08internal\x18\x0b \x01(\x0b\x32,.JFJochProtoBuf.JungfraujochInternalSettings\x12.\n\x06sample\x18\x0c \x01(\x0b\x32\x1e.JFJochProtoBuf.SampleSettings\x12=\n\nradial_int\x18\r \x01(\x0b\x32).JFJochProtoBuf.RadialIntegrationSettings\"\\\n\nJFPedestal\x12\x10\n\x08pedestal\x18\x01 \x01(\x0c\x12\x0b\n\x03rms\x18\x02 \x01(\x0c\x12\x0c\n\x04mask\x18\x03 \x01(\x0c\x12\x11\n\ttime_unix\x18\x04 \x01(\x03\x12\x0e\n\x06\x66rames\x18\x05 \x01(\x04\"u\n\rJFCalibration\x12\x10\n\x08nmodules\x18\x01 \x01(\x04\x12\x16\n\x0enstorage_cells\x18\x02 \x01(\x04\x12,\n\x08pedestal\x18\x03 \x03(\x0b\x32\x1a.JFJochProtoBuf.JFPedestal\x12\x0c\n\x04mask\x18\x04 \x01(\x0c\"V\n\x17JFCalibrationStatistics\x12;\n\x11module_statistics\x18\x01 \x03(\x0b\x32 .JFJochProtoBuf.ModuleStatistics\"\xfe\x02\n\x1b\x41\x63quisitionDeviceStatistics\x12\x14\n\x0cgood_packets\x18\x01 \x01(\x04\x12\"\n\x1apackets_expected_per_image\x18\x02 \x01(\x04\x12\"\n\x1apackets_received_per_image\x18\x03 \x03(\x04\x12\x12\n\nefficiency\x18\x04 \x01(\x01\x12\x16\n\x0eok_eth_packets\x18\x05 \x01(\x04\x12\x17\n\x0fstart_timestamp\x18\x06 \x01(\x04\x12\x15\n\rend_timestamp\x18\x07 \x01(\x04\x12/\n\x0b\x66pga_status\x18\x08 \x01(\x0b\x32\x1a.JFJochProtoBuf.FPGAStatus\x12&\n\x1etrigger_sequence_frame_numbers\x18\t \x03(\x03\x12\x1f\n\x17packet_mask_half_module\x18\n \x03(\x04\x12\x18\n\x10packets_expected\x18\x0b \x01(\x04\x12\x11\n\ttimestamp\x18\x0c \x03(\r\"\xaa\x01\n\x13JFJochReceiverInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\x12\x32\n\x0b\x63\x61libration\x18\x02 \x01(\x0b\x32\x1d.JFJochProtoBuf.JFCalibration\x12\x1a\n\x12writer_zmq_address\x18\x03 \x03(\t\"\x95\x04\n\x14JFJochReceiverOutput\x12\x46\n\x11\x64\x65vice_statistics\x18\x01 \x03(\x0b\x32+.JFJochProtoBuf.AcquisitionDeviceStatistics\x12\x19\n\x11max_receive_delay\x18\x02 \x01(\x04\x12\x17\n\x0f\x63ompressed_size\x18\x03 \x01(\x04\x12\x18\n\x10\x63ompressed_ratio\x18\x04 \x01(\x01\x12\x13\n\x0bimages_sent\x18\x05 \x01(\x04\x12\x15\n\rstart_time_ms\x18\x06 \x01(\x04\x12\x13\n\x0b\x65nd_time_ms\x18\x07 \x01(\x04\x12\x12\n\nefficiency\x18\t \x01(\x01\x12\x1d\n\x15max_image_number_sent\x18\n \x01(\x04\x12\x43\n\x15jungfraujoch_settings\x18\x0f \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\x12@\n\x0eindexer_output\x18\x10 \x01(\x0b\x32#.JFJochProtoBuf.JFJochIndexerOutputH\x00\x88\x01\x01\x12\x33\n\x0fpedestal_result\x18\x11 \x03(\x0b\x32\x1a.JFJochProtoBuf.JFPedestal\x12\x18\n\x10master_file_name\x18\x12 \x01(\tB\x11\n\x0f_indexer_outputJ\x04\x08\x08\x10\tJ\x04\x08\x0e\x10\x0f\"\x8e\x01\n\x19JFJochWriterMetadataInput\x12=\n\x0freceiver_output\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JFJochReceiverOutput\x12\x32\n\x0b\x63\x61libration\x18\x02 \x01(\x0b\x32\x1d.JFJochProtoBuf.JFCalibration\"4\n\x1bJFJochReceiverNetworkConfig\x12\x15\n\rfpga_mac_addr\x18\x01 \x03(\t\"X\n\x11JFJochWriterInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\"\x14\n\x12JFJochWriterOutput\"\xe6\x01\n\x1aJFJochDetectorModuleConfig\x12\x17\n\x0fudp_dest_port_1\x18\x01 \x01(\x04\x12\x17\n\x0fudp_dest_port_2\x18\x02 \x01(\x04\x12\x17\n\x0fipv4_src_addr_1\x18\x03 \x01(\x04\x12\x17\n\x0fipv4_src_addr_2\x18\x04 \x01(\x04\x12\x18\n\x10ipv4_dest_addr_1\x18\x05 \x01(\x04\x12\x18\n\x10ipv4_dest_addr_2\x18\x06 \x01(\x04\x12\x17\n\x0fmac_addr_dest_1\x18\x07 \x01(\t\x12\x17\n\x0fmac_addr_dest_2\x18\x08 \x01(\t\"S\n\x14JFJochDetectorConfig\x12;\n\x07modules\x18\x01 \x03(\x0b\x32*.JFJochProtoBuf.JFJochDetectorModuleConfig\"Z\n\x13JFJochDetectorInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\"\x16\n\x14JFJochDetectorOutput\"\x07\n\x05\x45mpty\"W\n\x08UnitCell\x12\t\n\x01\x61\x18\x01 \x01(\x01\x12\t\n\x01\x62\x18\x02 \x01(\x01\x12\t\n\x01\x63\x18\x03 \x01(\x01\x12\r\n\x05\x61lpha\x18\x04 \x01(\x01\x12\x0c\n\x04\x62\x65ta\x18\x05 \x01(\x01\x12\r\n\x05gamma\x18\x06 \x01(\x01\")\n\x06Vector\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\"\xce\x02\n\x0eParameterValue\x12\x0e\n\x04text\x18\x01 \x01(\tH\x00\x12\x13\n\tfp_number\x18\x02 \x01(\x01H\x00\x12\x10\n\x06number\x18\x03 \x01(\x03H\x00\x12\x11\n\x07logical\x18\x04 \x01(\x08H\x00\x12(\n\x06vector\x18\x05 \x01(\x0b\x32\x16.JFJochProtoBuf.VectorH\x00\x12-\n\tunit_cell\x18\x06 \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCellH\x00\x12\x0c\n\x04unit\x18\x0b \x01(\t\x12\x13\n\x06\x66p_min\x18\x0c \x01(\x01H\x01\x88\x01\x01\x12\x13\n\x06\x66p_max\x18\r \x01(\x01H\x02\x88\x01\x01\x12\x14\n\x07int_min\x18\x0e \x01(\x03H\x03\x88\x01\x01\x12\x14\n\x07int_max\x18\x0f \x01(\x03H\x04\x88\x01\x01\x42\x07\n\x05valueB\t\n\x07_fp_minB\t\n\x07_fp_maxB\n\n\x08_int_minB\n\n\x08_int_max\"\xfb\x06\n\nFPGAStatus\x12\x15\n\rpackets_ether\x18\x02 \x01(\x04\x12\x13\n\x0bpackets_udp\x18\x03 \x01(\x04\x12\x16\n\x0epackets_jfjoch\x18\x04 \x01(\x04\x12\x14\n\x0cpackets_icmp\x18\x05 \x01(\x04\x12\x11\n\tfpga_idle\x18\x06 \x01(\x08\x12\x10\n\x08hbm_temp\x18\x07 \x01(\x04\x12\x14\n\x0cmax_hbm_temp\x18\x08 \x01(\x04\x12\x12\n\nstalls_hbm\x18\t \x01(\x04\x12\x13\n\x0bstalls_host\x18\n \x01(\x04\x12\x1b\n\x13\x65thernet_rx_aligned\x18\x0b \x01(\x08\x12\x18\n\x10\x65thernet_bad_fcs\x18\x0c \x01(\x08\x12\x1c\n\x14\x66ull_status_register\x18\r \x01(\r\x12?\n\x0b\x66ifo_status\x18\x0e \x03(\x0b\x32*.JFJochProtoBuf.FPGAStatus.FifoStatusEntry\x12\x13\n\x0bmax_modules\x18\x0f \x01(\x04\x12\x10\n\x08git_sha1\x18\x10 \x01(\r\x12\x17\n\x0fmailbox_err_reg\x18\x11 \x01(\r\x12\x1a\n\x12mailbox_status_reg\x18\x12 \x01(\r\x12\x1c\n\x14\x64\x61tamover_mm2s_error\x18\x13 \x01(\x08\x12\x1c\n\x14\x64\x61tamover_s2mm_error\x18\x14 \x01(\x08\x12&\n\x1e\x66rame_statistics_alignment_err\x18\x15 \x01(\x08\x12\"\n\x1a\x66rame_statistics_tlast_err\x18\x16 \x01(\x08\x12%\n\x1d\x66rame_statistics_work_req_err\x18\x17 \x01(\x08\x12\x14\n\x0cslowest_head\x18\x18 \x01(\x04\x12\x1b\n\x13qsfp_module_present\x18\x19 \x01(\x08\x12\x16\n\x0e\x66pga_temp_degC\x18\x1a \x01(\x01\x12\x1a\n\x12\x63urrent_edge_12V_A\x18\x1b \x01(\x01\x12\x1a\n\x12voltage_edge_12V_V\x18\x1c \x01(\x01\x12\x1b\n\x13\x63urrent_edge_3p3V_A\x18\x1d \x01(\x01\x12\x1b\n\x13voltage_edge_3p3V_V\x18\x1e \x01(\x01\x1aQ\n\x0f\x46ifoStatusEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12-\n\x05value\x18\x02 \x01(\x0e\x32\x1e.JFJochProtoBuf.FPGAFIFOStatus:\x02\x38\x01\"\x1c\n\x04Plot\x12\t\n\x01x\x18\x01 \x03(\x02\x12\t\n\x01y\x18\x02 \x03(\x02\"\xe9\x01\n\x0eReceiverStatus\x12\x10\n\x08progress\x18\x01 \x01(\x01\x12/\n\x0b\x66pga_status\x18\x02 \x03(\x0b\x32\x1a.JFJochProtoBuf.FPGAStatus\x12\x0c\n\x04idle\x18\x03 \x01(\x08\x12*\n\x0c\x62kg_estimate\x18\x04 \x01(\x0b\x32\x14.JFJochProtoBuf.Plot\x12\x30\n\x12radial_int_profile\x18\x05 \x01(\x0b\x32\x14.JFJochProtoBuf.Plot\x12(\n\nspot_count\x18\x06 \x01(\x0b\x32\x14.JFJochProtoBuf.Plot\"\xc0\x03\n\x16\x44\x61taProcessingSettings\x12\x44\n\x16spot_finding_algorithm\x18\x01 \x01(\x0e\x32$.JFJochProtoBuf.SpotFindingAlgorithm\x12\x1e\n\x16\x65nable_3d_spot_finding\x18\x02 \x01(\x08\x12\"\n\x15high_resolution_limit\x18\x03 \x01(\x01H\x00\x88\x01\x01\x12!\n\x14low_resolution_limit\x18\x04 \x01(\x01H\x01\x88\x01\x01\x12!\n\x19signal_to_noise_threshold\x18\x05 \x01(\x01\x12\x1e\n\x16photon_count_threshold\x18\x06 \x01(\x03\x12\x11\n\tmax_depth\x18\x07 \x01(\x03\x12\x18\n\x10min_pix_per_spot\x18\x08 \x01(\x03\x12\x18\n\x10max_pix_per_spot\x18\t \x01(\x03\x12\x16\n\x0elocal_bkg_size\x18\n \x01(\x03\x12\x16\n\tmax_spots\x18\x0b \x01(\x03H\x02\x88\x01\x01\x42\x18\n\x16_high_resolution_limitB\x17\n\x15_low_resolution_limitB\x0c\n\n_max_spots\"\xc7\x02\n\x0cPreviewFrame\x12\x14\n\x0cimage_number\x18\x01 \x01(\x03\x12\x14\n\x0ctotal_images\x18\x02 \x01(\x03\x12\x14\n\x0cwavelength_A\x18\x03 \x01(\x01\x12\x15\n\rbeam_center_x\x18\x04 \x01(\x01\x12\x15\n\rbeam_center_y\x18\x05 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x06 \x01(\x01\x12\x18\n\x10saturation_value\x18\x07 \x01(\x03\x12\x13\n\x0b\x66ile_prefix\x18\x08 \x01(\t\x12\r\n\x05width\x18\t \x01(\x03\x12\x0e\n\x06height\x18\n \x01(\x03\x12\x13\n\x0bpixel_depth\x18\x0b \x01(\x03\x12\x38\n\x0b\x63ompression\x18\x0c \x01(\x0b\x32#.JFJochProtoBuf.CompressionSettings\x12\x0c\n\x04\x64\x61ta\x18\r \x01(\x0c\"T\n\x15SpotFinderImageOutput\x12\x14\n\x0cimage_number\x18\x01 \x01(\x03\x12%\n\x05\x63oord\x18\x03 \x03(\x0b\x32\x16.JFJochProtoBuf.Vector\"\x8f\x01\n\x12IndexerImageOutput\x12\x14\n\x0cimage_number\x18\x01 \x01(\x03\x12\x12\n\nspot_count\x18\x02 \x01(\x03\x12\x0f\n\x07indexed\x18\x03 \x01(\x08\x12\x30\n\tunit_cell\x18\x04 \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCellH\x00\x88\x01\x01\x42\x0c\n\n_unit_cell\"m\n\rIndexerStatus\x12+\n\rindexing_rate\x18\x01 \x01(\x0b\x32\x14.JFJochProtoBuf.Plot\x12\x17\n\x0fimages_analyzed\x18\x03 \x01(\x03\x12\x16\n\x0eimages_indexed\x18\x04 \x01(\x03\"\x82\x01\n\x17OnlineProcessingRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x0e\n\x06images\x18\x02 \x01(\x03\x12\x12\n\nbeam_x_pxl\x18\x03 \x01(\x01\x12\x12\n\nbeam_y_pxl\x18\x04 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x05 \x01(\x01\"\x86\x01\n\x12JFJochIndexerInput\x12\x43\n\x15jungfraujoch_settings\x18\x01 \x01(\x0b\x32$.JFJochProtoBuf.JungfraujochSettings\x12\x19\n\x11zmq_recv_pub_addr\x18\x02 \x01(\t\x12\x10\n\x08\x62in_size\x18\x03 \x01(\x03\"}\n\x13JFJochIndexerOutput\x12\x38\n\x0cimage_output\x18\x01 \x03(\x0b\x32\".JFJochProtoBuf.IndexerImageOutput\x12\x14\n\x0cms_per_image\x18\x02 \x01(\x01\x12\x16\n\x0eindexed_images\x18\x03 \x01(\x03\"\xe3\x04\n\x0c\x42rokerStatus\x12\x39\n\rcurrent_state\x18\x01 \x01(\x0e\x32\".JFJochProtoBuf.BrokerStatus.State\x12<\n\x0freceiver_status\x18\x02 \x01(\x0b\x32\x1e.JFJochProtoBuf.ReceiverStatusH\x00\x88\x01\x01\x12:\n\x0eindexer_status\x18\x03 \x01(\x0b\x32\x1d.JFJochProtoBuf.IndexerStatusH\x01\x88\x01\x01\x12)\n!last_measurement_images_collected\x18\x04 \x01(\x04\x12.\n&last_measurement_collection_efficiency\x18\x05 \x01(\x01\x12*\n\"last_measurement_compression_ratio\x18\x06 \x01(\x01\x12(\n last_measurement_sequence_number\x18\x07 \x01(\x03\x12\x1d\n\x15last_measurement_name\x18\x08 \x01(\t\x12G\n\x16\x63\x61libration_statistics\x18\n \x01(\x0b\x32\'.JFJochProtoBuf.JFCalibrationStatistics\"^\n\x05State\x12\x13\n\x0fNOT_INITIALIZED\x10\x00\x12\x08\n\x04IDLE\x10\x01\x12\x08\n\x04\x42USY\x10\x02\x12\x0c\n\x08PEDESTAL\x10\x03\x12\x13\n\x0f\x44\x41TA_COLLECTION\x10\x04\x12\t\n\x05\x45RROR\x10\x05\x42\x12\n\x10_receiver_statusB\x11\n\x0f_indexer_status\"\x85\x02\n\x10ModuleStatistics\x12\x15\n\rmodule_number\x18\x01 \x01(\x03\x12\x1b\n\x13storage_cell_number\x18\x02 \x01(\x03\x12\x18\n\x10pedestal_g0_mean\x18\x03 \x01(\x01\x12\x18\n\x10pedestal_g1_mean\x18\x04 \x01(\x01\x12\x18\n\x10pedestal_g2_mean\x18\x05 \x01(\x01\x12\x1c\n\x14pedestal_rms_g0_mean\x18\x06 \x01(\x01\x12\x1c\n\x14pedestal_rms_g1_mean\x18\x07 \x01(\x01\x12\x1c\n\x14pedestal_rms_g2_mean\x18\x08 \x01(\x01\x12\x15\n\rmasked_pixels\x18\t \x01(\x04\"\x12\n\x10\x42rokerStatistics\"\x1e\n\x0e\x44\x65tectorStatus\x12\x0c\n\x04idle\x18\x01 \x01(\x08\"\xa7\x08\n\x0b\x42rokerSetup\x12\x1a\n\x12images_per_trigger\x18\x01 \x01(\x03\x12\x15\n\rimage_time_us\x18\x02 \x01(\x03\x12\x19\n\x11\x62\x65\x61m_center_x_pxl\x18\x03 \x01(\x01\x12\x19\n\x11\x62\x65\x61m_center_y_pxl\x18\x04 \x01(\x01\x12\x1c\n\x14\x64\x65tector_distance_mm\x18\x05 \x01(\x01\x12\x19\n\x11photon_energy_kev\x18\x06 \x01(\x01\x12\x14\n\x0cname_pattern\x18\x07 \x01(\t\x12\x13\n\x0bsample_name\x18\x08 \x01(\t\x12\x15\n\x08ntrigger\x18\x0f \x01(\x03H\x00\x88\x01\x01\x12\x1c\n\x0fimages_per_file\x18\x10 \x01(\x03H\x01\x88\x01\x01\x12\x18\n\x0b\x63ompression\x18\x11 \x01(\tH\x02\x88\x01\x01\x12\x1c\n\x0fomega_start_deg\x18\x12 \x01(\x01H\x03\x88\x01\x01\x12 \n\x13omega_increment_deg\x18\x13 \x01(\x01H\x04\x88\x01\x01\x12\x1f\n\x12time_resolved_mode\x18\x14 \x01(\x08H\x05\x88\x01\x01\x12\x1d\n\x10\x66orce_full_speed\x18\x16 \x01(\x08H\x06\x88\x01\x01\x12!\n\x14\x64\x61ta_collection_mode\x18\x17 \x01(\tH\x07\x88\x01\x01\x12\x1b\n\x0epedestal_saved\x18\x19 \x01(\x08H\x08\x88\x01\x01\x12\x1c\n\x0fpreview_rate_ms\x18\x1b \x01(\x03H\t\x88\x01\x01\x12+\n\tunit_cell\x18\x1d \x01(\x0b\x32\x18.JFJochProtoBuf.UnitCell\x12!\n\x14spot_finding_rate_ms\x18\x1e \x01(\x03H\n\x88\x01\x01\x12!\n\x14\x62kg_estimate_rate_ms\x18\x1f \x01(\x03H\x0b\x88\x01\x01\x12\x1f\n\x12space_group_number\x18! \x01(\x03H\x0c\x88\x01\x01\x12\x17\n\nrun_number\x18\" \x01(\x03H\r\x88\x01\x01\x12,\n\x1f\x64\x65tector_delay_after_trigger_us\x18# \x01(\x03H\x0e\x88\x01\x01\x42\x0b\n\t_ntriggerB\x12\n\x10_images_per_fileB\x0e\n\x0c_compressionB\x12\n\x10_omega_start_degB\x16\n\x14_omega_increment_degB\x15\n\x13_time_resolved_modeB\x13\n\x11_force_full_speedB\x17\n\x15_data_collection_modeB\x11\n\x0f_pedestal_savedB\x12\n\x10_preview_rate_msB\x17\n\x15_spot_finding_rate_msB\x17\n\x15_bkg_estimate_rate_msB\x15\n\x13_space_group_numberB\r\n\x0b_run_numberB\"\n _detector_delay_after_trigger_us\"4\n\x05Image\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\r\n\x05width\x18\x02 \x01(\x03\x12\x0e\n\x06height\x18\x03 \x01(\x03\".\n\nMaskToLoad\x12\x0c\n\x04mask\x18\x01 \x03(\r\x12\x12\n\nbit_to_set\x18\x02 \x01(\x05\"\xa6\x02\n\x18\x42rokerPersistentSettings\x12\x1e\n\x11use_storage_cells\x18\x01 \x01(\x08H\x00\x88\x01\x01\x12\x1a\n\rcount_time_us\x18\x02 \x01(\x03H\x01\x88\x01\x01\x12\x1f\n\x12pedestal_g0_frames\x18\x03 \x01(\x03H\x02\x88\x01\x01\x12\x1f\n\x12pedestal_g1_frames\x18\x04 \x01(\x03H\x03\x88\x01\x01\x12\x1f\n\x12pedestal_g2_frames\x18\x05 \x01(\x03H\x04\x88\x01\x01\x42\x14\n\x12_use_storage_cellsB\x10\n\x0e_count_time_usB\x15\n\x13_pedestal_g0_framesB\x15\n\x13_pedestal_g1_framesB\x15\n\x13_pedestal_g2_frames*Z\n\x0c\x44\x65tectorMode\x12\x0e\n\nCONVERSION\x10\x00\x12\x07\n\x03RAW\x10\x01\x12\x0f\n\x0bPEDESTAL_G0\x10\x02\x12\x0f\n\x0bPEDESTAL_G1\x10\x03\x12\x0f\n\x0bPEDESTAL_G2\x10\x04*>\n\x14SpotFindingAlgorithm\x12\t\n\x05LOCAL\x10\x00\x12\n\n\x06RADIAL\x10\x01\x12\x0f\n\x0bPEAKFINDER8\x10\x02*2\n\x0e\x46PGAFIFOStatus\x12\t\n\x05\x45MPTY\x10\x00\x12\x08\n\x04\x46ULL\x10\x01\x12\x0b\n\x07PARTIAL\x10\x02\x32\xf9\n\n\x11gRPC_JFJochBroker\x12=\n\x05Start\x12\x1b.JFJochProtoBuf.BrokerSetup\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x36\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x37\n\x05\x41\x62ort\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x38\n\x06\x43\x61ncel\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12@\n\x08Pedestal\x12\x1b.JFJochProtoBuf.BrokerSetup\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12<\n\nInitialize\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12<\n\nDeactivate\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12J\n\x05Setup\x12(.JFJochProtoBuf.BrokerPersistentSettings\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x42\n\tGetStatus\x12\x15.JFJochProtoBuf.Empty\x1a\x1c.JFJochProtoBuf.BrokerStatus\"\x00\x12H\n\x0eGetCalibration\x12\x15.JFJochProtoBuf.Empty\x1a\x1d.JFJochProtoBuf.JFCalibration\"\x00\x12Z\n\x19GetDetailedReceiverOutput\x12\x15.JFJochProtoBuf.Empty\x1a$.JFJochProtoBuf.JFJochReceiverOutput\"\x00\x12\\\n\x19GetDataProcessingSettings\x12\x15.JFJochProtoBuf.Empty\x1a&.JFJochProtoBuf.DataProcessingSettings\"\x00\x12\\\n\x19SetDataProcessingSettings\x12&.JFJochProtoBuf.DataProcessingSettings\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12?\n\x08LoadMask\x12\x1a.JFJochProtoBuf.MaskToLoad\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x39\n\x07GetMask\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12\x41\n\x0fGetMaskRawCoord\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12?\n\rGetPedestalG0\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12?\n\rGetPedestalG1\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12?\n\rGetPedestalG2\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Image\"\x00\x12H\n\x0fGetPreviewFrame\x12\x15.JFJochProtoBuf.Empty\x1a\x1c.JFJochProtoBuf.PreviewFrame\"\x00\x32\xde\x04\n\x13gRPC_JFJochReceiver\x12\x45\n\x05Start\x12#.JFJochProtoBuf.JFJochReceiverInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x37\n\x05\x41\x62ort\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x38\n\x06\x43\x61ncel\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x45\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a$.JFJochProtoBuf.JFJochReceiverOutput\"\x00\x12\x44\n\tGetStatus\x12\x15.JFJochProtoBuf.Empty\x1a\x1e.JFJochProtoBuf.ReceiverStatus\"\x00\x12\\\n\x19SetDataProcessingSettings\x12&.JFJochProtoBuf.DataProcessingSettings\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12H\n\x0fGetPreviewFrame\x12\x15.JFJochProtoBuf.Empty\x1a\x1c.JFJochProtoBuf.PreviewFrame\"\x00\x12X\n\x10GetNetworkConfig\x12\x15.JFJochProtoBuf.Empty\x1a+.JFJochProtoBuf.JFJochReceiverNetworkConfig\"\x00\x32\xa0\x02\n\x11gRPC_JFJochWriter\x12\x43\n\x05Start\x12!.JFJochProtoBuf.JFJochWriterInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x37\n\x05\x41\x62ort\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x36\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12U\n\x0fWriteMasterFile\x12).JFJochProtoBuf.JFJochWriterMetadataInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x32\x8e\x03\n\x13gRPC_JFJochDetector\x12\x45\n\x05Start\x12#.JFJochProtoBuf.JFJochDetectorInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x36\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x41\n\x06Status\x12\x15.JFJochProtoBuf.Empty\x1a\x1e.JFJochProtoBuf.DetectorStatus\"\x00\x12\x43\n\x02On\x12$.JFJochProtoBuf.JFJochDetectorConfig\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x35\n\x03Off\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x39\n\x07Trigger\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x32O\n\x12gRPC_JFJochTrigger\x12\x39\n\x07Trigger\x12\x15.JFJochProtoBuf.Empty\x1a\x15.JFJochProtoBuf.Empty\"\x00\x32\xe5\x01\n\x12gRPC_JFJochIndexer\x12\x44\n\x05Start\x12\".JFJochProtoBuf.JFJochIndexerInput\x1a\x15.JFJochProtoBuf.Empty\"\x00\x12\x44\n\x04Stop\x12\x15.JFJochProtoBuf.Empty\x1a#.JFJochProtoBuf.JFJochIndexerOutput\"\x00\x12\x43\n\tGetStatus\x12\x15.JFJochProtoBuf.Empty\x1a\x1d.JFJochProtoBuf.IndexerStatus\"\x00\x62\x06proto3')
 
 _DETECTORMODE = DESCRIPTOR.enum_types_by_name['DetectorMode']
 DetectorMode = enum_type_wrapper.EnumTypeWrapper(_DETECTORMODE)
@@ -48,11 +48,15 @@ _PEDESTALSETTINGS = DESCRIPTOR.message_types_by_name['PedestalSettings']
 _CONVERSIONSETTINGS = DESCRIPTOR.message_types_by_name['ConversionSettings']
 _JUNGFRAUJOCHINTERNALSETTINGS = DESCRIPTOR.message_types_by_name['JungfraujochInternalSettings']
 _SAMPLESETTINGS = DESCRIPTOR.message_types_by_name['SampleSettings']
+_RADIALINTEGRATIONSETTINGS = DESCRIPTOR.message_types_by_name['RadialIntegrationSettings']
 _JUNGFRAUJOCHSETTINGS = DESCRIPTOR.message_types_by_name['JungfraujochSettings']
+_JFPEDESTAL = DESCRIPTOR.message_types_by_name['JFPedestal']
 _JFCALIBRATION = DESCRIPTOR.message_types_by_name['JFCalibration']
+_JFCALIBRATIONSTATISTICS = DESCRIPTOR.message_types_by_name['JFCalibrationStatistics']
 _ACQUISITIONDEVICESTATISTICS = DESCRIPTOR.message_types_by_name['AcquisitionDeviceStatistics']
 _JFJOCHRECEIVERINPUT = DESCRIPTOR.message_types_by_name['JFJochReceiverInput']
 _JFJOCHRECEIVEROUTPUT = DESCRIPTOR.message_types_by_name['JFJochReceiverOutput']
+_JFJOCHWRITERMETADATAINPUT = DESCRIPTOR.message_types_by_name['JFJochWriterMetadataInput']
 _JFJOCHRECEIVERNETWORKCONFIG = DESCRIPTOR.message_types_by_name['JFJochReceiverNetworkConfig']
 _JFJOCHWRITERINPUT = DESCRIPTOR.message_types_by_name['JFJochWriterInput']
 _JFJOCHWRITEROUTPUT = DESCRIPTOR.message_types_by_name['JFJochWriterOutput']
@@ -66,6 +70,7 @@ _VECTOR = DESCRIPTOR.message_types_by_name['Vector']
 _PARAMETERVALUE = DESCRIPTOR.message_types_by_name['ParameterValue']
 _FPGASTATUS = DESCRIPTOR.message_types_by_name['FPGAStatus']
 _FPGASTATUS_FIFOSTATUSENTRY = _FPGASTATUS.nested_types_by_name['FifoStatusEntry']
+_PLOT = DESCRIPTOR.message_types_by_name['Plot']
 _RECEIVERSTATUS = DESCRIPTOR.message_types_by_name['ReceiverStatus']
 _DATAPROCESSINGSETTINGS = DESCRIPTOR.message_types_by_name['DataProcessingSettings']
 _PREVIEWFRAME = DESCRIPTOR.message_types_by_name['PreviewFrame']
@@ -82,6 +87,7 @@ _DETECTORSTATUS = DESCRIPTOR.message_types_by_name['DetectorStatus']
 _BROKERSETUP = DESCRIPTOR.message_types_by_name['BrokerSetup']
 _IMAGE = DESCRIPTOR.message_types_by_name['Image']
 _MASKTOLOAD = DESCRIPTOR.message_types_by_name['MaskToLoad']
+_BROKERPERSISTENTSETTINGS = DESCRIPTOR.message_types_by_name['BrokerPersistentSettings']
 _COMPRESSIONSETTINGS_COMPRESSION = _COMPRESSIONSETTINGS.enum_types_by_name['Compression']
 _BROKERSTATUS_STATE = _BROKERSTATUS.enum_types_by_name['State']
 FrameCountSettings = _reflection.GeneratedProtocolMessageType('FrameCountSettings', (_message.Message,), {
@@ -168,6 +174,13 @@ SampleSettings = _reflection.GeneratedProtocolMessageType('SampleSettings', (_me
   })
 _sym_db.RegisterMessage(SampleSettings)
 
+RadialIntegrationSettings = _reflection.GeneratedProtocolMessageType('RadialIntegrationSettings', (_message.Message,), {
+  'DESCRIPTOR' : _RADIALINTEGRATIONSETTINGS,
+  '__module__' : 'jfjoch_pb2'
+  # @@protoc_insertion_point(class_scope:JFJochProtoBuf.RadialIntegrationSettings)
+  })
+_sym_db.RegisterMessage(RadialIntegrationSettings)
+
 JungfraujochSettings = _reflection.GeneratedProtocolMessageType('JungfraujochSettings', (_message.Message,), {
   'DESCRIPTOR' : _JUNGFRAUJOCHSETTINGS,
   '__module__' : 'jfjoch_pb2'
@@ -175,12 +188,26 @@ JungfraujochSettings = _reflection.GeneratedProtocolMessageType('JungfraujochSet
   })
 _sym_db.RegisterMessage(JungfraujochSettings)
 
+JFPedestal = _reflection.GeneratedProtocolMessageType('JFPedestal', (_message.Message,), {
+  'DESCRIPTOR' : _JFPEDESTAL,
+  '__module__' : 'jfjoch_pb2'
+  # @@protoc_insertion_point(class_scope:JFJochProtoBuf.JFPedestal)
+  })
+_sym_db.RegisterMessage(JFPedestal)
+
 JFCalibration = _reflection.GeneratedProtocolMessageType('JFCalibration', (_message.Message,), {
   'DESCRIPTOR' : _JFCALIBRATION,
   '__module__' : 'jfjoch_pb2'
   # @@protoc_insertion_point(class_scope:JFJochProtoBuf.JFCalibration)
   })
 _sym_db.RegisterMessage(JFCalibration)
+
+JFCalibrationStatistics = _reflection.GeneratedProtocolMessageType('JFCalibrationStatistics', (_message.Message,), {
+  'DESCRIPTOR' : _JFCALIBRATIONSTATISTICS,
+  '__module__' : 'jfjoch_pb2'
+  # @@protoc_insertion_point(class_scope:JFJochProtoBuf.JFCalibrationStatistics)
+  })
+_sym_db.RegisterMessage(JFCalibrationStatistics)
 
 AcquisitionDeviceStatistics = _reflection.GeneratedProtocolMessageType('AcquisitionDeviceStatistics', (_message.Message,), {
   'DESCRIPTOR' : _ACQUISITIONDEVICESTATISTICS,
@@ -202,6 +229,13 @@ JFJochReceiverOutput = _reflection.GeneratedProtocolMessageType('JFJochReceiverO
   # @@protoc_insertion_point(class_scope:JFJochProtoBuf.JFJochReceiverOutput)
   })
 _sym_db.RegisterMessage(JFJochReceiverOutput)
+
+JFJochWriterMetadataInput = _reflection.GeneratedProtocolMessageType('JFJochWriterMetadataInput', (_message.Message,), {
+  'DESCRIPTOR' : _JFJOCHWRITERMETADATAINPUT,
+  '__module__' : 'jfjoch_pb2'
+  # @@protoc_insertion_point(class_scope:JFJochProtoBuf.JFJochWriterMetadataInput)
+  })
+_sym_db.RegisterMessage(JFJochWriterMetadataInput)
 
 JFJochReceiverNetworkConfig = _reflection.GeneratedProtocolMessageType('JFJochReceiverNetworkConfig', (_message.Message,), {
   'DESCRIPTOR' : _JFJOCHRECEIVERNETWORKCONFIG,
@@ -294,6 +328,13 @@ FPGAStatus = _reflection.GeneratedProtocolMessageType('FPGAStatus', (_message.Me
   })
 _sym_db.RegisterMessage(FPGAStatus)
 _sym_db.RegisterMessage(FPGAStatus.FifoStatusEntry)
+
+Plot = _reflection.GeneratedProtocolMessageType('Plot', (_message.Message,), {
+  'DESCRIPTOR' : _PLOT,
+  '__module__' : 'jfjoch_pb2'
+  # @@protoc_insertion_point(class_scope:JFJochProtoBuf.Plot)
+  })
+_sym_db.RegisterMessage(Plot)
 
 ReceiverStatus = _reflection.GeneratedProtocolMessageType('ReceiverStatus', (_message.Message,), {
   'DESCRIPTOR' : _RECEIVERSTATUS,
@@ -407,6 +448,13 @@ MaskToLoad = _reflection.GeneratedProtocolMessageType('MaskToLoad', (_message.Me
   })
 _sym_db.RegisterMessage(MaskToLoad)
 
+BrokerPersistentSettings = _reflection.GeneratedProtocolMessageType('BrokerPersistentSettings', (_message.Message,), {
+  'DESCRIPTOR' : _BROKERPERSISTENTSETTINGS,
+  '__module__' : 'jfjoch_pb2'
+  # @@protoc_insertion_point(class_scope:JFJochProtoBuf.BrokerPersistentSettings)
+  })
+_sym_db.RegisterMessage(BrokerPersistentSettings)
+
 _GRPC_JFJOCHBROKER = DESCRIPTOR.services_by_name['gRPC_JFJochBroker']
 _GRPC_JFJOCHRECEIVER = DESCRIPTOR.services_by_name['gRPC_JFJochReceiver']
 _GRPC_JFJOCHWRITER = DESCRIPTOR.services_by_name['gRPC_JFJochWriter']
@@ -418,118 +466,130 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _FPGASTATUS_FIFOSTATUSENTRY._options = None
   _FPGASTATUS_FIFOSTATUSENTRY._serialized_options = b'8\001'
-  _DETECTORMODE._serialized_start=10145
-  _DETECTORMODE._serialized_end=10235
-  _SPOTFINDINGALGORITHM._serialized_start=10237
-  _SPOTFINDINGALGORITHM._serialized_end=10299
-  _FPGAFIFOSTATUS._serialized_start=10301
-  _FPGAFIFOSTATUS._serialized_end=10351
-  _FRAMECOUNTSETTINGS._serialized_start=33
-  _FRAMECOUNTSETTINGS._serialized_end=180
-  _TIMINGSETTINGS._serialized_start=183
-  _TIMINGSETTINGS._serialized_end=425
-  _DIFFRACTIONGEOMETRYSETTINGS._serialized_start=428
-  _DIFFRACTIONGEOMETRYSETTINGS._serialized_end=904
-  _BEAMLINEMETADATASETTINGS._serialized_start=907
-  _BEAMLINEMETADATASETTINGS._serialized_end=1180
-  _COMPRESSIONSETTINGS._serialized_start=1183
-  _COMPRESSIONSETTINGS._serialized_end=1363
-  _COMPRESSIONSETTINGS_COMPRESSION._serialized_start=1309
-  _COMPRESSIONSETTINGS_COMPRESSION._serialized_end=1363
-  _IMAGESAVINGSETTINGS._serialized_start=1366
-  _IMAGESAVINGSETTINGS._serialized_end=1533
-  _DETECTORSETTINGS._serialized_start=1535
-  _DETECTORSETTINGS._serialized_end=1619
-  _PREVIEWSETTINGS._serialized_start=1622
-  _PREVIEWSETTINGS._serialized_end=1801
-  _PEDESTALSETTINGS._serialized_start=1803
-  _PEDESTALSETTINGS._serialized_end=1905
-  _CONVERSIONSETTINGS._serialized_start=1908
-  _CONVERSIONSETTINGS._serialized_end=2079
-  _JUNGFRAUJOCHINTERNALSETTINGS._serialized_start=2081
-  _JUNGFRAUJOCHINTERNALSETTINGS._serialized_end=2197
-  _SAMPLESETTINGS._serialized_start=2199
-  _SAMPLESETTINGS._serialized_end=2322
-  _JUNGFRAUJOCHSETTINGS._serialized_start=2325
-  _JUNGFRAUJOCHSETTINGS._serialized_end=3023
-  _JFCALIBRATION._serialized_start=3026
-  _JFCALIBRATION._serialized_end=3341
-  _ACQUISITIONDEVICESTATISTICS._serialized_start=3344
-  _ACQUISITIONDEVICESTATISTICS._serialized_end=3707
-  _JFJOCHRECEIVERINPUT._serialized_start=3710
-  _JFJOCHRECEIVERINPUT._serialized_end=3880
-  _JFJOCHRECEIVEROUTPUT._serialized_start=3883
-  _JFJOCHRECEIVEROUTPUT._serialized_end=4383
-  _JFJOCHRECEIVERNETWORKCONFIG._serialized_start=4385
-  _JFJOCHRECEIVERNETWORKCONFIG._serialized_end=4437
-  _JFJOCHWRITERINPUT._serialized_start=4439
-  _JFJOCHWRITERINPUT._serialized_end=4527
-  _JFJOCHWRITEROUTPUT._serialized_start=4529
-  _JFJOCHWRITEROUTPUT._serialized_end=4549
-  _JFJOCHDETECTORMODULECONFIG._serialized_start=4552
-  _JFJOCHDETECTORMODULECONFIG._serialized_end=4782
-  _JFJOCHDETECTORCONFIG._serialized_start=4784
-  _JFJOCHDETECTORCONFIG._serialized_end=4867
-  _JFJOCHDETECTORINPUT._serialized_start=4869
-  _JFJOCHDETECTORINPUT._serialized_end=4959
-  _JFJOCHDETECTOROUTPUT._serialized_start=4961
-  _JFJOCHDETECTOROUTPUT._serialized_end=4983
-  _EMPTY._serialized_start=4985
-  _EMPTY._serialized_end=4992
-  _UNITCELL._serialized_start=4994
-  _UNITCELL._serialized_end=5081
-  _VECTOR._serialized_start=5083
-  _VECTOR._serialized_end=5124
-  _PARAMETERVALUE._serialized_start=5127
-  _PARAMETERVALUE._serialized_end=5461
-  _FPGASTATUS._serialized_start=5464
-  _FPGASTATUS._serialized_end=6355
-  _FPGASTATUS_FIFOSTATUSENTRY._serialized_start=6274
-  _FPGASTATUS_FIFOSTATUSENTRY._serialized_end=6355
-  _RECEIVERSTATUS._serialized_start=6357
-  _RECEIVERSTATUS._serialized_end=6476
-  _DATAPROCESSINGSETTINGS._serialized_start=6479
-  _DATAPROCESSINGSETTINGS._serialized_end=6927
-  _PREVIEWFRAME._serialized_start=6930
-  _PREVIEWFRAME._serialized_end=7257
-  _SPOTFINDERIMAGEOUTPUT._serialized_start=7260
-  _SPOTFINDERIMAGEOUTPUT._serialized_end=7389
-  _INDEXERIMAGEOUTPUT._serialized_start=7392
-  _INDEXERIMAGEOUTPUT._serialized_end=7535
-  _INDEXERSTATUS._serialized_start=7537
-  _INDEXERSTATUS._serialized_end=7644
-  _ONLINEPROCESSINGREQUEST._serialized_start=7647
-  _ONLINEPROCESSINGREQUEST._serialized_end=7777
-  _JFJOCHINDEXERINPUT._serialized_start=7780
-  _JFJOCHINDEXERINPUT._serialized_end=7914
-  _JFJOCHINDEXEROUTPUT._serialized_start=7916
-  _JFJOCHINDEXEROUTPUT._serialized_end=8041
-  _BROKERSTATUS._serialized_start=8044
-  _BROKERSTATUS._serialized_end=8643
-  _BROKERSTATUS_STATE._serialized_start=8510
-  _BROKERSTATUS_STATE._serialized_end=8604
-  _MODULESTATISTICS._serialized_start=8646
-  _MODULESTATISTICS._serialized_end=8855
-  _BROKERSTATISTICS._serialized_start=8857
-  _BROKERSTATISTICS._serialized_end=8875
-  _DETECTORSTATUS._serialized_start=8877
-  _DETECTORSTATUS._serialized_end=8907
-  _BROKERSETUP._serialized_start=8910
-  _BROKERSETUP._serialized_end=10041
-  _IMAGE._serialized_start=10043
-  _IMAGE._serialized_end=10095
-  _MASKTOLOAD._serialized_start=10097
-  _MASKTOLOAD._serialized_end=10143
-  _GRPC_JFJOCHBROKER._serialized_start=10354
-  _GRPC_JFJOCHBROKER._serialized_end=11673
-  _GRPC_JFJOCHRECEIVER._serialized_start=11676
-  _GRPC_JFJOCHRECEIVER._serialized_end=12282
-  _GRPC_JFJOCHWRITER._serialized_start=12285
-  _GRPC_JFJOCHWRITER._serialized_end=12568
-  _GRPC_JFJOCHDETECTOR._serialized_start=12571
-  _GRPC_JFJOCHDETECTOR._serialized_end=12969
-  _GRPC_JFJOCHTRIGGER._serialized_start=12971
-  _GRPC_JFJOCHTRIGGER._serialized_end=13050
-  _GRPC_JFJOCHINDEXER._serialized_start=13053
-  _GRPC_JFJOCHINDEXER._serialized_end=13282
+  _DETECTORMODE._serialized_start=10785
+  _DETECTORMODE._serialized_end=10875
+  _SPOTFINDINGALGORITHM._serialized_start=10877
+  _SPOTFINDINGALGORITHM._serialized_end=10939
+  _FPGAFIFOSTATUS._serialized_start=10941
+  _FPGAFIFOSTATUS._serialized_end=10991
+  _FRAMECOUNTSETTINGS._serialized_start=32
+  _FRAMECOUNTSETTINGS._serialized_end=98
+  _TIMINGSETTINGS._serialized_start=101
+  _TIMINGSETTINGS._serialized_end=316
+  _DIFFRACTIONGEOMETRYSETTINGS._serialized_start=319
+  _DIFFRACTIONGEOMETRYSETTINGS._serialized_end=795
+  _BEAMLINEMETADATASETTINGS._serialized_start=798
+  _BEAMLINEMETADATASETTINGS._serialized_end=1071
+  _COMPRESSIONSETTINGS._serialized_start=1074
+  _COMPRESSIONSETTINGS._serialized_end=1254
+  _COMPRESSIONSETTINGS_COMPRESSION._serialized_start=1200
+  _COMPRESSIONSETTINGS_COMPRESSION._serialized_end=1254
+  _IMAGESAVINGSETTINGS._serialized_start=1257
+  _IMAGESAVINGSETTINGS._serialized_end=1411
+  _DETECTORSETTINGS._serialized_start=1414
+  _DETECTORSETTINGS._serialized_end=1581
+  _PREVIEWSETTINGS._serialized_start=1583
+  _PREVIEWSETTINGS._serialized_end=1693
+  _PEDESTALSETTINGS._serialized_start=1695
+  _PEDESTALSETTINGS._serialized_end=1785
+  _CONVERSIONSETTINGS._serialized_start=1788
+  _CONVERSIONSETTINGS._serialized_end=1925
+  _JUNGFRAUJOCHINTERNALSETTINGS._serialized_start=1927
+  _JUNGFRAUJOCHINTERNALSETTINGS._serialized_end=2043
+  _SAMPLESETTINGS._serialized_start=2046
+  _SAMPLESETTINGS._serialized_end=2188
+  _RADIALINTEGRATIONSETTINGS._serialized_start=2191
+  _RADIALINTEGRATIONSETTINGS._serialized_end=2325
+  _JUNGFRAUJOCHSETTINGS._serialized_start=2328
+  _JUNGFRAUJOCHSETTINGS._serialized_end=3089
+  _JFPEDESTAL._serialized_start=3091
+  _JFPEDESTAL._serialized_end=3183
+  _JFCALIBRATION._serialized_start=3185
+  _JFCALIBRATION._serialized_end=3302
+  _JFCALIBRATIONSTATISTICS._serialized_start=3304
+  _JFCALIBRATIONSTATISTICS._serialized_end=3390
+  _ACQUISITIONDEVICESTATISTICS._serialized_start=3393
+  _ACQUISITIONDEVICESTATISTICS._serialized_end=3775
+  _JFJOCHRECEIVERINPUT._serialized_start=3778
+  _JFJOCHRECEIVERINPUT._serialized_end=3948
+  _JFJOCHRECEIVEROUTPUT._serialized_start=3951
+  _JFJOCHRECEIVEROUTPUT._serialized_end=4484
+  _JFJOCHWRITERMETADATAINPUT._serialized_start=4487
+  _JFJOCHWRITERMETADATAINPUT._serialized_end=4629
+  _JFJOCHRECEIVERNETWORKCONFIG._serialized_start=4631
+  _JFJOCHRECEIVERNETWORKCONFIG._serialized_end=4683
+  _JFJOCHWRITERINPUT._serialized_start=4685
+  _JFJOCHWRITERINPUT._serialized_end=4773
+  _JFJOCHWRITEROUTPUT._serialized_start=4775
+  _JFJOCHWRITEROUTPUT._serialized_end=4795
+  _JFJOCHDETECTORMODULECONFIG._serialized_start=4798
+  _JFJOCHDETECTORMODULECONFIG._serialized_end=5028
+  _JFJOCHDETECTORCONFIG._serialized_start=5030
+  _JFJOCHDETECTORCONFIG._serialized_end=5113
+  _JFJOCHDETECTORINPUT._serialized_start=5115
+  _JFJOCHDETECTORINPUT._serialized_end=5205
+  _JFJOCHDETECTOROUTPUT._serialized_start=5207
+  _JFJOCHDETECTOROUTPUT._serialized_end=5229
+  _EMPTY._serialized_start=5231
+  _EMPTY._serialized_end=5238
+  _UNITCELL._serialized_start=5240
+  _UNITCELL._serialized_end=5327
+  _VECTOR._serialized_start=5329
+  _VECTOR._serialized_end=5370
+  _PARAMETERVALUE._serialized_start=5373
+  _PARAMETERVALUE._serialized_end=5707
+  _FPGASTATUS._serialized_start=5710
+  _FPGASTATUS._serialized_end=6601
+  _FPGASTATUS_FIFOSTATUSENTRY._serialized_start=6520
+  _FPGASTATUS_FIFOSTATUSENTRY._serialized_end=6601
+  _PLOT._serialized_start=6603
+  _PLOT._serialized_end=6631
+  _RECEIVERSTATUS._serialized_start=6634
+  _RECEIVERSTATUS._serialized_end=6867
+  _DATAPROCESSINGSETTINGS._serialized_start=6870
+  _DATAPROCESSINGSETTINGS._serialized_end=7318
+  _PREVIEWFRAME._serialized_start=7321
+  _PREVIEWFRAME._serialized_end=7648
+  _SPOTFINDERIMAGEOUTPUT._serialized_start=7650
+  _SPOTFINDERIMAGEOUTPUT._serialized_end=7734
+  _INDEXERIMAGEOUTPUT._serialized_start=7737
+  _INDEXERIMAGEOUTPUT._serialized_end=7880
+  _INDEXERSTATUS._serialized_start=7882
+  _INDEXERSTATUS._serialized_end=7991
+  _ONLINEPROCESSINGREQUEST._serialized_start=7994
+  _ONLINEPROCESSINGREQUEST._serialized_end=8124
+  _JFJOCHINDEXERINPUT._serialized_start=8127
+  _JFJOCHINDEXERINPUT._serialized_end=8261
+  _JFJOCHINDEXEROUTPUT._serialized_start=8263
+  _JFJOCHINDEXEROUTPUT._serialized_end=8388
+  _BROKERSTATUS._serialized_start=8391
+  _BROKERSTATUS._serialized_end=9002
+  _BROKERSTATUS_STATE._serialized_start=8869
+  _BROKERSTATUS_STATE._serialized_end=8963
+  _MODULESTATISTICS._serialized_start=9005
+  _MODULESTATISTICS._serialized_end=9266
+  _BROKERSTATISTICS._serialized_start=9268
+  _BROKERSTATISTICS._serialized_end=9286
+  _DETECTORSTATUS._serialized_start=9288
+  _DETECTORSTATUS._serialized_end=9318
+  _BROKERSETUP._serialized_start=9321
+  _BROKERSETUP._serialized_end=10384
+  _IMAGE._serialized_start=10386
+  _IMAGE._serialized_end=10438
+  _MASKTOLOAD._serialized_start=10440
+  _MASKTOLOAD._serialized_end=10486
+  _BROKERPERSISTENTSETTINGS._serialized_start=10489
+  _BROKERPERSISTENTSETTINGS._serialized_end=10783
+  _GRPC_JFJOCHBROKER._serialized_start=10994
+  _GRPC_JFJOCHBROKER._serialized_end=12395
+  _GRPC_JFJOCHRECEIVER._serialized_start=12398
+  _GRPC_JFJOCHRECEIVER._serialized_end=13004
+  _GRPC_JFJOCHWRITER._serialized_start=13007
+  _GRPC_JFJOCHWRITER._serialized_end=13295
+  _GRPC_JFJOCHDETECTOR._serialized_start=13298
+  _GRPC_JFJOCHDETECTOR._serialized_end=13696
+  _GRPC_JFJOCHTRIGGER._serialized_start=13698
+  _GRPC_JFJOCHTRIGGER._serialized_end=13777
+  _GRPC_JFJOCHINDEXER._serialized_start=13780
+  _GRPC_JFJOCHINDEXER._serialized_end=14009
 # @@protoc_insertion_point(module_scope)

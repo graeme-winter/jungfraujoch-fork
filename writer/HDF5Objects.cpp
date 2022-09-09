@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <cstring>
+#include <filesystem>
 
 #include <bitshuffle/bshuf_h5filter.h>
 #include "HDF5Objects.h"
@@ -238,6 +239,18 @@ HDF5Object & HDF5Object::Attr(const std::string &name, int32_t val) {
 }
 
 HDF5Object & HDF5Object::Attr(const std::string &name, uint32_t val) {
+    HDF5DataSpace dataspace;
+    HDF5DataType datatype(val);
+
+    hid_t attr_id = H5Acreate2(id, name.c_str(), datatype.GetID(), dataspace.GetID(), H5P_DEFAULT, H5P_DEFAULT);
+    herr_t ret = H5Awrite(attr_id, datatype.GetID(), &val);
+    H5Aclose(attr_id);
+
+    if (ret < 0) throw JFJochException(JFJochExceptionCategory::HDF5, "Atrribute write unsucessful");
+    return *this;
+}
+
+HDF5Object & HDF5Object::Attr(const std::string &name, int64_t val) {
     HDF5DataSpace dataspace;
     HDF5DataType datatype(val);
 
@@ -527,8 +540,7 @@ void HDF5Dcpl::SetCompression(CompressionAlgorithm c, size_t elem_size, size_t b
 }
 
 std::string ExtractFilename(const std::string& str) {
-    if (str.find('/') == std::string::npos)
-        return str;
-    else
-        return str.substr(str.find_last_of("/") + 1);
+    std::filesystem::path path(str);
+    // if (std::filesystem::is_regular_file(path))
+    return path.filename();
 }

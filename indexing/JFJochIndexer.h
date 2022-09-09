@@ -9,6 +9,8 @@
 #include "../common/ZMQWrappers.h"
 #include "../common/Logger.h"
 #include "../common/DiffractionExperiment.h"
+#include "../common/StatusVector.h"
+
 #define MIN_SPOTS_TO_INDEX (8)
 
 class JFJochIndexer {
@@ -24,6 +26,7 @@ class JFJochIndexer {
     std::vector<std::future<int64_t>> processing_threads;
     int64_t Run(const DiffractionExperiment &settings);
     int64_t image_stride;
+    StatusVector<uint8_t> indexed_result;
     void AddIndexerImageOutput(const JFJochProtoBuf::IndexerImageOutput &output);
 public:
     JFJochIndexer(ZMQContext &context, const JFJochProtoBuf::JFJochIndexerInput &input, Logger &logger, int64_t nthreads);

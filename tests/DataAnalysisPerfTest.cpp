@@ -10,7 +10,6 @@
 #include "../common/SpotFinder.h"
 #include "../indexing/XgandalfWrapper.h"
 #include "../common/RadialIntegration.h"
-#include "../common/BackgroundEstimation.h"
 
 void TestIndexing() {
     const int nexec_std  = 2;
@@ -22,12 +21,12 @@ void TestIndexing() {
             for (int k = 1; k < 4; k++)
                 hkl.emplace_back(i,j,k);
 
-    std::vector<UnitCell> cells;
-    cells.emplace_back(30,40,50,90,90,90);
-    cells.emplace_back(80,80,90,90,90,120);
-    cells.emplace_back(40,45,80,90,82.5,90);
-    cells.emplace_back(80,80,150,90,90,90);
-    cells.emplace_back(30,40,50,90,90,90);
+    std::vector<JFJochProtoBuf::UnitCell> cells;
+    cells.emplace_back(make_unit_cell(30,40,50,90,90,90));
+    cells.emplace_back(make_unit_cell(80,80,90,90,90,120));
+    cells.emplace_back(make_unit_cell(40,45,80,90,82.5,90));
+    cells.emplace_back(make_unit_cell(80,80,150,90,90,90));
+    cells.emplace_back(make_unit_cell(30,40,50,90,90,90));
 
     IndexingSettings settings;
     settings.algorithm = IndexingAlgorithm::Xgandalf_fast;
@@ -42,13 +41,14 @@ void TestIndexing() {
         std::vector<Coord> recip;
         recip.reserve(hkl.size());
         for (const auto &i: hkl)
-            recip.emplace_back(i.x * recip_l.vec_a + i.y * recip_l.vec_b + i.z * recip_l.vec_c);
+            recip.emplace_back(i.x * recip_l.vec[0] + i.y * recip_l.vec[1] + i.z * recip_l.vec[2]);
 
         DiffractionExperiment experiment;
-        experiment.SetUnitCell(UnitCell(36.9, 78.95, 78.95, 90, 90, 90));
+        experiment.SetUnitCell(make_unit_cell(36.9, 78.95, 78.95, 90, 90, 90));
 
         XgandalfWrapper wrapper;
         settings.algorithm = IndexingAlgorithm::Xgandalf;
+        settings.centering = 'P';
 
         auto start_time = std::chrono::system_clock::now();
 
@@ -81,13 +81,18 @@ void TestIndexing() {
 #ifdef CUDA_SPOT_FINDING
 auto TestSpotFinder(const DiffractionExperiment &experiment, const JFJochProtoBuf::DataProcessingSettings &settings,
                     SpotFinder &spot_finder, int16_t* image, size_t nimages) {
+
+    std::vector<int16_t> spot_finder_buffer(experiment.GetPixelsNum());
     std::vector<DiffractionSpot> spots;
+
+    spot_finder.SetInputBuffer(spot_finder_buffer.data());
 
     auto start_time = std::chrono::system_clock::now();
     for (int i = 0; i < nimages; i++) {
-        memcpy(spot_finder.GetInputBuffer(), image + i * experiment.GetPixelsNum(),
+        memcpy(spot_finder_buffer.data(), image + i * experiment.GetPixelsNum(),
                experiment.GetPixelsNum() * sizeof(int16_t));
-        spot_finder.FindSpots(experiment, settings, spots, i);
+        spot_finder.RunSpotFinder(settings);
+        spot_finder.GetResults(experiment, settings, spots, i);
     }
 
     auto end_time = std::chrono::system_clock::now();
@@ -104,35 +109,15 @@ auto TestRadialIntegration(const DiffractionExperiment &experiment, const JFJoch
                            int16_t* image, size_t nimages) {
 
     uint32_t nredo = 20;
-
-    RadialIntegration integration(experiment.GetXPixelsNum(), experiment.GetYPixelsNum());
-    std::vector<uint32_t> empty_mask(experiment.GetPixelsNum(), 0);
-
-    integration.Setup(experiment.GetBeamX_pxl(), experiment.GetBeamY_pxl(),empty_mask);
-
-    auto start_time = std::chrono::system_clock::now();
-    for (int redo = 0; redo < nredo; redo++) {
-        for (int i = 0; i < nimages; i++)
-            integration.Process<int16_t>(image + i * experiment.GetPixelsNum(), INT16_MIN, INT16_MAX);
-        auto output = integration.GetAverage();
-    }
-    auto end_time = std::chrono::system_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-
-    return std::lround(elapsed.count() / (1000.0 * (double) nimages * nredo));
-}
-
-auto TestBackgroundEstimation(const DiffractionExperiment &experiment, const JFJochProtoBuf::DataProcessingSettings &settings,
-                           int16_t* image, size_t nimages) {
-
-    uint32_t nredo = 20;
-
-    BackgroundEstimation estimation(experiment);
+    RadialIntegrationMapping mapping(experiment);
+    RadialIntegration integration(mapping);
+    std::vector<float> result;
 
     auto start_time = std::chrono::system_clock::now();
     for (int redo = 0; redo < nredo; redo++) {
         for (int i = 0; i < nimages; i++) {
-            estimation.Process(image + i * experiment.GetPixelsNum());
+            integration.Process(image + i * experiment.GetPixelsNum(), experiment.GetPixelsNum());
+            //integration.GetResult(result);
         }
     }
     auto end_time = std::chrono::system_clock::now();
@@ -161,7 +146,6 @@ int main(int argc, char **argv) {
     }
 
     DiffractionExperiment x;
-    x.LowResForBkgEstimation(4.0).HighResForBkgEstimation(3.0);
 
     if ((file_space.GetDimensions()[1] == 2164) && (file_space.GetDimensions()[2] == 2068)) {
         std::cout << "JF4M with gaps detected (2068 x 2164)" << std::endl;
@@ -214,9 +198,6 @@ int main(int argc, char **argv) {
 #endif
 
     std::cout << "Radial int. (JFjoch) " << std::setw(5) << TestRadialIntegration(x, settings,
-                                                                                  image_conv.data(), nimages) << " ms/image" << std::endl;
-
-    std::cout << "Bkg. est.   (JFjoch) " << std::setw(5) << TestBackgroundEstimation(x, settings,
                                                                                   image_conv.data(), nimages) << " ms/image" << std::endl;
 
     std::cout << std::endl;

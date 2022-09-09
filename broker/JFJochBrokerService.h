@@ -10,16 +10,20 @@
 
 class JFJochBrokerService : public JFJochProtoBuf::gRPC_JFJochBroker::Service {
     DiffractionExperiment experiment;
+    std::mutex experiment_mutex;
+    DiffractionExperiment GetExperiment();
+
     JFJochServices services;
     JFJochStateMachine state_machine {services, experiment};
     JFJochProtoBuf::DataProcessingSettings data_processing_settings;
     std::mutex data_processing_settings_mutex;
     JFJochProtoBuf::DataProcessingSettings GetDataProcessingSettings();
     Logger &logger;
+    static void ParseBrokerSetup(DiffractionExperiment &experiment, const JFJochProtoBuf::BrokerSetup *request);
 public:
     JFJochBrokerService(Logger &logger);
 
-    DiffractionExperiment& Experiment();
+    DiffractionExperiment& Experiment(); // Not protected via mutex, don't execute in parallel context !
     JFJochServices& Services();
 
     grpc::Status Start(grpc::ServerContext *context, const JFJochProtoBuf::BrokerSetup *request,
@@ -34,8 +38,11 @@ public:
                             JFJochProtoBuf::Empty *response) override;
     grpc::Status Deactivate(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                             JFJochProtoBuf::Empty *response) override;
-    grpc::Status Pedestal(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
+    grpc::Status Pedestal(grpc::ServerContext *context, const JFJochProtoBuf::BrokerSetup *request,
                           JFJochProtoBuf::Empty *response) override;
+    grpc::Status Setup(grpc::ServerContext *context, const JFJochProtoBuf::BrokerPersistentSettings *request,
+                         JFJochProtoBuf::Empty *response) override;
+
     grpc::Status GetStatus(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                            JFJochProtoBuf::BrokerStatus *response) override;
     grpc::Status GetCalibration(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,

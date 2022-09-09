@@ -13,7 +13,8 @@ public:
     void AddClient(const std::string &addr);
     void Start(const DiffractionExperiment &experiment);
     void Stop();
-    void WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request);
+    void WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request,
+                         const JFJochProtoBuf::JFCalibration &calibration);
     void Abort();
 };
 

@@ -12,7 +12,7 @@ ADD_LIBRARY(JFJochWriter STATIC
         HDF5Objects.cpp   HDF5Objects.h
         HDF5NXmx.cpp      HDF5NXmx.h
         HDF5Writer.cpp    HDF5Writer.h
-        ../compression/bitshuffle/bshuf_h5filter.c)
+        ../compression/bitshuffle/bshuf_h5filter.c ZMQHDF5FileStatusPublisher.cpp ZMQHDF5FileStatusPublisher.h)
 
 TARGET_LINK_LIBRARIES(JFJochWriter CommonFunctions ${HDF5_LIBRARIES})
 TARGET_INCLUDE_DIRECTORIES(JFJochWriter PUBLIC ${HDF5_INCLUDE_DIRS})

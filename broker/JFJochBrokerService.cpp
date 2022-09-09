@@ -11,8 +11,6 @@ JFJochBrokerService::JFJochBrokerService(Logger &in_logger)
     data_processing_settings.set_photon_count_threshold(16);
     data_processing_settings.set_min_pix_per_spot(1);
     data_processing_settings.set_max_pix_per_spot(50);
-
-    experiment.BeamlineDelay(std::chrono::seconds(30));
 }
 
 DiffractionExperiment &JFJochBrokerService::Experiment() {
@@ -23,70 +21,77 @@ JFJochServices &JFJochBrokerService::Services() {
     return services;
 }
 
+void JFJochBrokerService::ParseBrokerSetup(DiffractionExperiment &started_experiment,
+                                           const JFJochProtoBuf::BrokerSetup *request) {
+    started_experiment.ImagesPerTrigger(request->images_per_trigger());
+    started_experiment.ImageTime(std::chrono::microseconds(request->image_time_us()));
+    started_experiment.BeamX_pxl(request->beam_center_x_pxl());
+    started_experiment.BeamY_pxl(request->beam_center_y_pxl());
+    started_experiment.DetectorDistance_mm(request->detector_distance_mm());
+    started_experiment.PhotonEnergy_keV(request->photon_energy_kev());
+    started_experiment.FilePrefix(request->name_pattern());
+    started_experiment.SampleName(request->sample_name());
+
+    if (request->has_ntrigger())
+        started_experiment.NumTriggers(request->ntrigger());
+
+    if (request->has_images_per_file())
+        started_experiment.ImagesPerFile(request->images_per_file());
+
+    if (request->has_compression())
+        started_experiment.Compression_Text(request->compression());
+
+    if (request->has_omega_start_deg())
+        started_experiment.OmegaStart(request->omega_start_deg());
+
+    if (request->has_omega_increment_deg())
+        started_experiment.OmegaIncrement(request->omega_increment_deg());
+
+    if (request->has_time_resolved_mode())
+        started_experiment.TimeResolvedMode(request->time_resolved_mode());
+
+    if (request->has_force_full_speed())
+        started_experiment.ForceFullSpeed(request->force_full_speed());
+
+    if (request->has_data_collection_mode())
+        started_experiment.Mode_Text(request->data_collection_mode());
+
+    if (request->has_pedestal_saved())
+        started_experiment.PedestalSaved(request->pedestal_saved());
+
+    if (request->has_preview_rate_ms())
+        started_experiment.PreviewPeriod(std::chrono::milliseconds(request->preview_rate_ms()));
+
+    if (request->has_spot_finding_rate_ms())
+        started_experiment.SpotFindingPeriod(std::chrono::milliseconds(request->spot_finding_rate_ms()));
+
+    if (request->has_bkg_estimate_rate_ms())
+        started_experiment.BackgroundEstimationPeriod(std::chrono::milliseconds(request->bkg_estimate_rate_ms()));
+
+    if (request->has_unit_cell())
+        started_experiment.SetUnitCell(request->unit_cell());
+
+    if (request->has_space_group_number())
+        started_experiment.SpaceGroupNumber(request->space_group_number());
+
+    if (request->has_run_number())
+        started_experiment.RunNumber(request->run_number());
+
+    if (request->has_detector_delay_after_trigger_us())
+        started_experiment.DetectorDelayAfterTrigger(std::chrono::microseconds(request->detector_delay_after_trigger_us()));
+}
+
 grpc::Status JFJochBrokerService::Start(grpc::ServerContext *context, const JFJochProtoBuf::BrokerSetup *request,
                                         JFJochProtoBuf::Empty *response) {
-    experiment.IncrementMeasurementSequenceNumber();
-    DiffractionExperiment started_experiment(experiment);
+    DiffractionExperiment started_experiment;
+    {
+        std::unique_lock<std::mutex> ul(experiment_mutex);
+        experiment.IncrementMeasurementSequenceNumber();
+        started_experiment = experiment;
+    }
+
     try {
-        started_experiment.ImagesPerTrigger(request->images_per_trigger());
-        started_experiment.ImageTime(std::chrono::microseconds(request->image_time_us()));
-        started_experiment.BeamX_pxl(request->beam_center_x_pxl());
-        started_experiment.BeamY_pxl(request->beam_center_y_pxl());
-        started_experiment.DetectorDistance_mm(request->detector_distance_mm());
-        started_experiment.PhotonEnergy_keV(request->photon_energy_kev());
-        started_experiment.FilePrefix(request->name_pattern());
-        started_experiment.SampleName(request->sample_name());
-
-        if (request->has_ntrigger())
-            started_experiment.NumTriggers(request->ntrigger());
-
-        if (request->has_images_per_file())
-            started_experiment.ImagesPerFile(request->images_per_file());
-
-        if (request->has_compression())
-            started_experiment.Compression_Text(request->compression());
-
-        if (request->has_omega_start_deg())
-            started_experiment.OmegaStart(request->omega_start_deg());
-
-        if (request->has_omega_increment_deg())
-            started_experiment.OmegaIncrement(request->omega_increment_deg());
-
-        if (request->has_time_resolved_mode())
-            started_experiment.TimeResolvedMode(request->time_resolved_mode());
-
-        if (request->has_force_full_speed())
-            started_experiment.ForceFullSpeed(request->force_full_speed());
-
-        if (request->has_data_collection_mode())
-            started_experiment.Mode_Text(request->data_collection_mode());
-
-        if (request->has_pedestal_saved())
-            started_experiment.PedestalSaved(request->pedestal_saved());
-
-        if (request->has_preview_rate_ms())
-            started_experiment.PreviewPeriod(std::chrono::milliseconds(request->preview_rate_ms()));
-
-        if (request->has_spot_finding_rate_ms())
-            started_experiment.SpotFindingPeriod(std::chrono::milliseconds(request->spot_finding_rate_ms()));
-
-        if (request->has_bkg_estimate_rate_ms())
-            started_experiment.BackgroundEstimationPeriod(std::chrono::milliseconds(request->bkg_estimate_rate_ms()));
-
-        if (request->has_frame_summation())
-            started_experiment.FrameSummationEnable(request->frame_summation());
-
-        if (request->has_skip_pedestal())
-            started_experiment.SkipPedestal(request->skip_pedestal());
-
-        if (request->has_unit_cell())
-            started_experiment.SetUnitCell(request->unit_cell());
-
-        if (request->has_space_group_number())
-            started_experiment.SpaceGroupNumber(request->space_group_number());
-
-        if (request->has_run_number())
-            started_experiment.RunNumber(request->run_number());
+        ParseBrokerSetup(started_experiment, request);
     } catch (JFJochException &e) {
         return {grpc::StatusCode::INVALID_ARGUMENT, e.what()};
     }
@@ -149,7 +154,8 @@ grpc::Status JFJochBrokerService::Stop(grpc::ServerContext *context, const JFJoc
 grpc::Status JFJochBrokerService::Initialize(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                              JFJochProtoBuf::Empty *response) {
     try {
-        state_machine.Initialize(experiment);
+        DiffractionExperiment tmp = GetExperiment();
+        state_machine.Initialize(tmp);
     } catch (JFJochException &e) {
         logger.ErrorException(e);
         return {grpc::StatusCode::ABORTED, e.what()};
@@ -157,10 +163,18 @@ grpc::Status JFJochBrokerService::Initialize(grpc::ServerContext *context, const
     return grpc::Status::OK;
 }
 
-grpc::Status JFJochBrokerService::Pedestal(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
+grpc::Status JFJochBrokerService::Pedestal(grpc::ServerContext *context, const JFJochProtoBuf::BrokerSetup *request,
                                            JFJochProtoBuf::Empty *response) {
+    DiffractionExperiment tmp = GetExperiment();
+
     try {
-        state_machine.TakePedestal(experiment);
+        ParseBrokerSetup(tmp, request);
+    } catch (JFJochException &e) {
+        return {grpc::StatusCode::INVALID_ARGUMENT, e.what()};
+    }
+
+    try {
+        state_machine.TakePedestal(tmp);
     } catch (JFJochException &e) {
         logger.ErrorException(e);
         return {grpc::StatusCode::ABORTED, e.what()};
@@ -181,13 +195,13 @@ grpc::Status JFJochBrokerService::GetStatus(grpc::ServerContext *context, const 
     } catch (JFJochException &e) {} // ignore exception in getting receiver status (don't really care, e.g. if receiver is down)
 
     auto last_receiver_output = state_machine.GetLastReceiverOutput();
-    *response->mutable_module_statistics() = last_receiver_output.calibration().module_statistics();
+    *response->mutable_calibration_statistics() = state_machine.GetCalibrationStatistics();
 
     response->set_last_measurement_compression_ratio(last_receiver_output.compressed_ratio());
     response->set_last_measurement_collection_efficiency(last_receiver_output.efficiency());
     response->set_last_measurement_compression_ratio(last_receiver_output.compressed_ratio());
     response->set_last_measurement_images_collected(last_receiver_output.images_sent());
-    response->set_last_measurement_name(last_receiver_output.jungfraujoch_settings().image_saving().file_prefix());
+    response->set_last_measurement_name(last_receiver_output.master_file_name());
     response->set_last_measurement_sequence_number(last_receiver_output.jungfraujoch_settings().image_saving().measurement_sequence_num());
 
     switch (state_machine.GetState()) {
@@ -249,9 +263,7 @@ JFJochBrokerService::GetDetailedReceiverOutput(grpc::ServerContext *context, con
 
 grpc::Status JFJochBrokerService::GetMask(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                           JFJochProtoBuf::Image *response) {
-    std::vector<uint32_t> mask;
-
-    state_machine.GetCalibration().GetMaskTransformed(experiment, mask);
+    auto mask = state_machine.GetCalibration().CalculateNexusMask(experiment);
 
     response->set_width(experiment.GetXPixelsNum());
     response->set_height(experiment.GetYPixelsNum());
@@ -273,7 +285,7 @@ grpc::Status JFJochBrokerService::LoadMask(grpc::ServerContext *context, const J
 
 grpc::Status JFJochBrokerService::GetPedestalG0(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                                 JFJochProtoBuf::Image *response) {
-    auto &pedestal = state_machine.GetCalibration().Pedestal(0);
+    auto pedestal = state_machine.GetCalibration().GetPedestal(0);
 
     response->set_width(RAW_MODULE_COLS);
     response->set_height(experiment.GetModulesNum() * RAW_MODULE_LINES);
@@ -284,7 +296,7 @@ grpc::Status JFJochBrokerService::GetPedestalG0(grpc::ServerContext *context, co
 
 grpc::Status JFJochBrokerService::GetMaskRawCoord(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                                   JFJochProtoBuf::Image *response) {
-    auto &mask = state_machine.GetCalibration().Mask();
+    auto mask = state_machine.GetCalibration().CalculateMask(experiment);
 
     response->set_width(RAW_MODULE_COLS);
     response->set_height(experiment.GetModulesNum() * RAW_MODULE_LINES);
@@ -295,7 +307,7 @@ grpc::Status JFJochBrokerService::GetMaskRawCoord(grpc::ServerContext *context, 
 
 grpc::Status JFJochBrokerService::GetPedestalG1(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                                 JFJochProtoBuf::Image *response) {
-    auto &pedestal = state_machine.GetCalibration().Pedestal(0);
+    auto pedestal = state_machine.GetCalibration().GetPedestal(1);
 
     response->set_width(RAW_MODULE_COLS);
     response->set_height(experiment.GetModulesNum() * RAW_MODULE_LINES);
@@ -306,7 +318,7 @@ grpc::Status JFJochBrokerService::GetPedestalG1(grpc::ServerContext *context, co
 
 grpc::Status JFJochBrokerService::GetPedestalG2(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                                 JFJochProtoBuf::Image *response) {
-    auto &pedestal = state_machine.GetCalibration().Pedestal(0);
+    auto pedestal = state_machine.GetCalibration().GetPedestal(2);
 
     response->set_width(RAW_MODULE_COLS);
     response->set_height(experiment.GetModulesNum() * RAW_MODULE_LINES);
@@ -324,4 +336,39 @@ grpc::Status JFJochBrokerService::GetPreviewFrame(grpc::ServerContext *context, 
         return {grpc::StatusCode::ABORTED, e.what()};
     }
     return grpc::Status::OK;
+}
+
+grpc::Status JFJochBrokerService::Setup(grpc::ServerContext *context, const JFJochProtoBuf::BrokerPersistentSettings *request,
+                           JFJochProtoBuf::Empty *response) {
+    try {
+        std::unique_lock<std::mutex> ul(experiment_mutex);
+
+        DiffractionExperiment tmp = experiment;
+
+        if (request->has_count_time_us())
+            tmp.CountTime(std::chrono::microseconds(request->count_time_us()));
+
+        if (request->has_use_storage_cells())
+            tmp.StorageCells(request->use_storage_cells() ? 16 : 1);
+
+        if (request->has_pedestal_g0_frames())
+            tmp.PedestalG0Frames(request->pedestal_g0_frames());
+
+        if (request->has_pedestal_g1_frames())
+            tmp.PedestalG1Frames(request->pedestal_g1_frames());
+
+        if (request->has_pedestal_g2_frames())
+            tmp.PedestalG2Frames(request->pedestal_g2_frames());
+
+        experiment = tmp;
+
+        return grpc::Status::OK;
+    } catch (const JFJochException &e) {
+        return {grpc::StatusCode::ABORTED, e.what()};
+    }
+}
+
+DiffractionExperiment JFJochBrokerService::GetExperiment() {
+    std::unique_lock<std::mutex> ul(experiment_mutex);
+    return experiment;
 }

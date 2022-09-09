@@ -13,7 +13,7 @@
 #include "GitInfo.h"
 #include "DiffractionExperiment.h"
 #include "JFJochException.h"
-
+#include <gemmi/symmetry.hpp>
 
 DiffractionExperiment::DiffractionExperiment(const JFJochProtoBuf::JungfraujochSettings &settings) : DiffractionExperiment() {
     Import(settings);
@@ -44,6 +44,8 @@ DiffractionExperiment& DiffractionExperiment::Import(const JFJochProtoBuf::Jungf
         compr = settings.compr();
     if (settings.has_sample())
         sample = settings.sample();
+    if (settings.has_radial_int())
+        radial_int = settings.radial_int();
     return *this;
 }
 
@@ -61,6 +63,7 @@ DiffractionExperiment::operator JFJochProtoBuf::JungfraujochSettings() const {
     *settings.mutable_compr() = compr;
     *settings.mutable_internal() = internal;
     *settings.mutable_sample() = sample;
+    *settings.mutable_radial_int() = radial_int;
     return settings;
 }
 
@@ -95,34 +98,37 @@ DiffractionExperiment::DiffractionExperiment() {
     image_saving.set_image_per_file(100);
     image_saving.set_file_prefix("test");
     image_saving.set_error_when_overwritting(false);
-    image_saving.set_gid(GroupIDNotSet);
 
     timing.set_requested_image_time_us(MIN_FRAME_TIME_HALF_SPEED_IN_US);
     timing.set_frame_time_pedestalg1g2_us(FRAME_TIME_PEDE_G1G2_IN_US);
     timing.set_use_optimal_frame_time(true);
     timing.set_time_resolved_mode(false);
 
-    conv.set_sum_frames_in_conversion(true);
     conv.set_mask_chip_edges(false);
     conv.set_mask_module_edges(false);
     conv.set_upside_down(true);
 
     preview.set_preview_period_us(1000*1000); // 1s / 1 Hz
-    preview.set_spot_finding_period_us(100*1000); // 100 ms / 10 Hz
+    preview.set_spot_finding_period_us(10*1000); // 10 ms / 100 Hz
+    preview.set_bkg_estimation_period_us(10*1000); // 10 ms / 100 Hz
 
-    preview.set_bkg_estimation_period_us(100*1000);
-    preview.set_low_resolution_bkg_limit(4.0);
-    preview.set_high_resolution_bkg_limit(3.0);
+    radial_int.set_low_q(0.1);
+    radial_int.set_high_q(5.0);
+    radial_int.set_q_spacing(0.1);
+    radial_int.set_bkg_estimate_low_q(2 * M_PI / 5.0);
+    radial_int.set_bkg_estimate_high_q(2 * M_PI / 3.0);
 
     internal.set_base_ipv4_address(0x0132010a);
     internal.set_base_udp_port(8192);
     internal.set_git_sha1(jfjoch_git_sha1());
     internal.set_git_date(jfjoch_git_date());
 
-    pedestal.set_skip_pedestal(false);
-
     sample.set_run_number(RunNumberNotSet);
+    sample.set_space_group_number(1); // P1
 
+    detector.set_storage_cells(1);
+    detector.set_storage_cell_start(15);
+    detector.set_delay_after_trigger_us(0);
     UpdateGeometry();
 }
 
@@ -173,18 +179,13 @@ DiffractionExperiment &DiffractionExperiment::ImageTime(std::chrono::microsecond
 }
 
 DiffractionExperiment &DiffractionExperiment::CountTime(std::chrono::microseconds input) {
+    check_max("Count time (us)", input.count(), 1500);
     timing.set_count_time_us(input.count());
     return *this;
 }
 
 DiffractionExperiment &DiffractionExperiment::OptimizeFrameTime(bool input) {
     timing.set_use_optimal_frame_time(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::BeamlineDelay(std::chrono::microseconds input) {
-    check_min("Beamline delay ", input.count(), 0);
-    timing.set_beamline_delay_us(input.count());
     return *this;
 }
 
@@ -197,19 +198,19 @@ DiffractionExperiment &DiffractionExperiment::PedestalG1G2FrameTime(std::chrono:
 DiffractionExperiment &DiffractionExperiment::PedestalG0Frames(int64_t input) {
     check_min("Pedestal G0 frames", input, 0);
     // Max?
-    frame_count.set_pedestalg0_frames(input);
+    pedestal.set_g0_frames(input);
     return *this;
 }
 
 DiffractionExperiment &DiffractionExperiment::PedestalG1Frames(int64_t input) {
     check_min("Pedestal G1 frames", input, 0);
-    frame_count.set_pedestalg1_frames(input);
+    pedestal.set_g1_frames(input);
     return *this;
 }
 
 DiffractionExperiment &DiffractionExperiment::PedestalG2Frames(int64_t input) {
     check_min("Pedestal G2 frames", input, 0);
-    frame_count.set_pedestalg2_frames(input);
+    pedestal.set_g2_frames(input);
     return *this;
 }
 
@@ -446,24 +447,12 @@ DiffractionExperiment &DiffractionExperiment::MaskModuleEdges(bool input) {
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::LowResForBkgEstimation(double input) {
-    check_min("Low resolution limit for background est.", input, 1.0);
-    preview.set_low_resolution_bkg_limit(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::HighResForBkgEstimation(double input) {
-    check_min("High resolution limit for background est.", input, 0.0);
-    preview.set_high_resolution_bkg_limit(input);
-    return *this;
-}
-
 int64_t DiffractionExperiment::GetNumTriggers() const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
         case DetectorMode::Raw:
-            if (detector.internal_fpga_packet_generator())
-                return 0;
+            if (GetTimeResolvedMode() && (frame_count.ntrigger() < 1))
+                return 1;
             else
                 return frame_count.ntrigger();
         case DetectorMode::PedestalG0:
@@ -512,15 +501,7 @@ int64_t DiffractionExperiment::GetFrameToReqImageRatio() const {
 }
 
 int64_t DiffractionExperiment::GetSummation() const {
-    if ((GetDetectorMode() == DetectorMode::Conversion) && conv.sum_frames_in_conversion())
-        // Only conversion mode allows for summation, but this option can be overridden by setting an option
-        return GetFrameToReqImageRatio();
-    else
-        return 1;
-}
-
-int64_t DiffractionExperiment::GetSummationForPreview() const {
-    if (GetDetectorMode() == DetectorMode::Conversion)
+    if ((GetDetectorMode() == DetectorMode::Conversion) && (GetStorageCellNumber() == 1))
         // Only conversion mode allows for summation, but this option can be overridden by setting an option
         return GetFrameToReqImageRatio();
     else
@@ -553,28 +534,14 @@ std::chrono::microseconds DiffractionExperiment::GetImageTime() const {
     }
 }
 
-std::chrono::microseconds DiffractionExperiment::GetImageTimeForPreview() const {
-    switch (GetDetectorMode()) {
-        case DetectorMode::PedestalG1:
-        case DetectorMode::PedestalG2:
-            return std::chrono::microseconds(timing.frame_time_pedestalg1g2_us());
-        case DetectorMode::Conversion:
-        case DetectorMode::Raw:
-        case DetectorMode::PedestalG0:
-        default:
-            return GetFrameTime() * GetSummationForPreview();
-    }
-}
-
-int64_t DiffractionExperiment::GetImageNum(int64_t summation) const {
+int64_t DiffractionExperiment::GetImageNum() const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
         case DetectorMode::Raw:
-            if (frame_count.ntrigger() == 0)
-                return frame_count.images_per_trigger() * (GetFrameToReqImageRatio() / summation);
+            if (GetNumTriggers() == 0)
+                return GetImageNumPerTrigger() ;
             else
-                return frame_count.images_per_trigger() * (GetFrameToReqImageRatio() / summation)
-                       * frame_count.ntrigger();
+                return GetImageNumPerTrigger() * GetNumTriggers();
         case DetectorMode::PedestalG0:
         case DetectorMode::PedestalG1:
         case DetectorMode::PedestalG2:
@@ -583,28 +550,24 @@ int64_t DiffractionExperiment::GetImageNum(int64_t summation) const {
                 // No frames saved for pedestal runs
             else return 0;
     }
-}
-
-int64_t DiffractionExperiment::GetImageNum() const {
-    return GetImageNum(GetSummation());
-}
-
-int64_t DiffractionExperiment::GetImageNumForPreview() const {
-    return GetImageNum(GetSummationForPreview());
 }
 
 int64_t DiffractionExperiment::GetImageNumPerTrigger() const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
         case DetectorMode::Raw:
-            return frame_count.images_per_trigger() * (GetFrameToReqImageRatio() / GetSummation());
+            if (GetStorageCellNumber() > 1)
+                return GetStorageCellNumber();
+            return GetFrameNumPerTrigger() / GetSummation();
         case DetectorMode::PedestalG0:
         case DetectorMode::PedestalG1:
         case DetectorMode::PedestalG2:
+            if (pedestal.saved())
+                return GetFrameNumPerTrigger();
+            else
+                return 0;
         default:
-            if (pedestal.saved()) return GetFrameNum();
-                // No frames saved for pedestal runs
-            else return 0;
+            return 0;
     }
 }
 
@@ -618,21 +581,13 @@ int64_t DiffractionExperiment::GetFrameNum() const {
                 nframes += GetFrameNumPerTrigger();
             else {
                 nframes += GetFrameNumPerTrigger() * frame_count.ntrigger();
-                // Trigger mode == collects more frames & uses filter
-                // Time resolved mode == collects exactly number of useful frames
-                if (!GetTimeResolvedMode()) {
-                    std::chrono::microseconds preparation_time(timing.beamline_delay_us());
-                    nframes += preparation_time / GetFrameTime();
-                }
             }
             return nframes;
         }
         case DetectorMode::PedestalG0:
-            return frame_count.pedestalg0_frames();
         case DetectorMode::PedestalG1:
-            return frame_count.pedestalg1_frames();
         case DetectorMode::PedestalG2:
-            return frame_count.pedestalg2_frames();
+            return GetFrameNumPerTrigger();
         default:
             return 0;
     }
@@ -642,13 +597,16 @@ int64_t DiffractionExperiment::GetFrameNumPerTrigger() const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
         case DetectorMode::Raw:
-            return frame_count.images_per_trigger() * GetFrameToReqImageRatio();
+            if (GetStorageCellNumber() > 1)
+                return GetStorageCellNumber();
+            else
+                return frame_count.images_per_trigger() * GetFrameToReqImageRatio();
         case DetectorMode::PedestalG0:
-            return frame_count.pedestalg0_frames();
+            return pedestal.g0_frames() * GetStorageCellNumber();
         case DetectorMode::PedestalG1:
-            return frame_count.pedestalg1_frames();
+            return pedestal.g1_frames() * GetStorageCellNumber();
         case DetectorMode::PedestalG2:
-            return frame_count.pedestalg2_frames();
+            return pedestal.g2_frames() * GetStorageCellNumber();
         default:
             return 0;
     }
@@ -672,28 +630,15 @@ std::chrono::microseconds DiffractionExperiment::GetImageCountTime() const {
 }
 
 int64_t DiffractionExperiment::GetPedestalG0Frames() const {
-    if (pedestal.skip_pedestal())
-        return 0;
-    else
-        return frame_count.pedestalg0_frames();
+    return pedestal.g0_frames();
 }
 
 int64_t DiffractionExperiment::GetPedestalG1Frames() const {
-    if (pedestal.skip_pedestal())
-        return 0;
-    else
-        return frame_count.pedestalg1_frames();
+    return pedestal.g1_frames();
 }
 
 int64_t DiffractionExperiment::GetPedestalG2Frames() const {
-    if (pedestal.skip_pedestal())
-        return 0;
-    else
-        return frame_count.pedestalg2_frames();
-}
-
-std::chrono::microseconds DiffractionExperiment::GetBeamlineDelay() const {
-    return std::chrono::microseconds(timing.beamline_delay_us());
+    return pedestal.g2_frames();
 }
 
 double DiffractionExperiment::GetPhotonEnergy_keV() const {
@@ -894,11 +839,6 @@ DiffractionExperiment &DiffractionExperiment::MaskChipEdges(bool input) {
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::FrameSummationEnable(bool input) {
-    conv.set_sum_frames_in_conversion(input);
-    return *this;
-}
-
 DiffractionExperiment &DiffractionExperiment::Mode_Text(std::string input) {
     if (input == "pedestalG0")
         return Mode(DetectorMode::PedestalG0);
@@ -1010,11 +950,6 @@ void DiffractionExperiment::UpdateGeometry() {
 
 int64_t DiffractionExperiment::GetPixelDepth() const {
     if (GetSummation() == 1) return 2;
-    else return 4;
-}
-
-int64_t DiffractionExperiment::GetPixelDepthPreview() const {
-    if (GetSummationForPreview() == 1) return 2;
     else return 4;
 }
 
@@ -1242,7 +1177,12 @@ int64_t DiffractionExperiment::GetPreviewStride() const {
 }
 
 int64_t DiffractionExperiment::GetSpotFindingStride() const {
-    return GetPreviewStride(GetSpotFindingPeriod());
+    switch (GetDetectorMode()) {
+        case DetectorMode::Conversion:
+            return CalculateStride(GetImageTime(), GetSpotFindingPeriod());
+        default:
+            return 0;
+    }
 }
 
 int64_t DiffractionExperiment::GetBackgroundEstimationStride() const {
@@ -1261,7 +1201,7 @@ int64_t DiffractionExperiment::GetSpotFindingBin() const {
 int64_t DiffractionExperiment::GetPreviewStride(std::chrono::microseconds period) const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
-            return CalculateStride(GetImageTimeForPreview(), period);
+            return CalculateStride(GetImageTime(), period);
         default:
             return 0;
     }
@@ -1321,7 +1261,7 @@ uint16_t DiffractionExperiment::GetDestUDPPort(uint16_t data_stream, uint16_t mo
 }
 
 bool DiffractionExperiment::GetTimeResolvedMode() const {
-    return timing.time_resolved_mode() && (GetImageNumPerTrigger() > 0) && (GetNumTriggers() > 0);
+    return (GetStorageCellNumber() > 1) || timing.time_resolved_mode();
 }
 
 int64_t DiffractionExperiment::GetMeasurementSequenceNumber() const {
@@ -1358,13 +1298,17 @@ DiffractionExperiment &DiffractionExperiment::SetUnitCell(const JFJochProtoBuf::
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::SetUnitCell(UnitCell &cell) {
-    *sample.mutable_unit_cell() = cell;
+DiffractionExperiment &DiffractionExperiment::SetUnitCell() {
+    sample.clear_unit_cell();
     return *this;
 }
 
-UnitCell DiffractionExperiment::GetUnitCell() const {
+JFJochProtoBuf::UnitCell DiffractionExperiment::GetUnitCell() const {
     return sample.unit_cell();
+}
+
+bool DiffractionExperiment::HasUnitCell() const {
+    return sample.has_unit_cell();
 }
 
 double DiffractionExperiment::ResToPxl(double resolution) const {
@@ -1377,17 +1321,25 @@ double DiffractionExperiment::ResToPxl(double resolution) const {
     return tan_2theta * GetDetectorDistance_mm() / PIXEL_SIZE_IN_MM;
 }
 
-double DiffractionExperiment::GetLowResolutionLimitForBkg_Pixel() const {
-    return ResToPxl(preview.low_resolution_bkg_limit());
+Coord DiffractionExperiment::LabCoord(double detector_x, double detector_y) const {
+    // Assumes planar detector, 90 deg towards beam
+    return {(detector_x - GetBeamX_pxl()) * PIXEL_SIZE_IN_MM ,
+            (detector_y - GetBeamY_pxl()) * PIXEL_SIZE_IN_MM ,
+            GetDetectorDistance_mm()};
 }
 
-double DiffractionExperiment::GetHighResolutionLimitForBkg_Pixel() const {
-    return ResToPxl(preview.high_resolution_bkg_limit());
-}
+double DiffractionExperiment::PxlToRes(double detector_x, double detector_y) const {
+    auto lab = LabCoord(detector_x, detector_y);
 
-DiffractionExperiment &DiffractionExperiment::SkipPedestal(bool input) {
-    pedestal.set_skip_pedestal(input);
-    return *this;
+    double beam_path = lab.Length();
+    if (beam_path == GetDetectorDistance_mm()) return std::numeric_limits<double>::infinity();
+
+    double cos_2theta = GetDetectorDistance_mm() / beam_path;
+    // cos(2theta) = cos(theta)^2 - sin(theta)^2
+    // cos(2theta) = 1 - 2*sin(theta)^2
+    // Technically two solutions for two theta, but it makes sense only to take positive one in this case
+    double sin_theta = sqrt((1-cos_2theta)/2);
+    return GetWavelength_A() / (2 * sin_theta);
 }
 
 DiffractionExperiment &DiffractionExperiment::SampleName(const std::string &input) {
@@ -1396,17 +1348,24 @@ DiffractionExperiment &DiffractionExperiment::SampleName(const std::string &inpu
 }
 
 DiffractionExperiment &DiffractionExperiment::SpaceGroupNumber(int64_t input) {
-    check_min("Space group number", input, 0);
-    check_max("Space group number", input, 230);
-    sample.set_space_group_number(input);
+    try {
+        auto sg = gemmi::get_spacegroup_by_number(input);
+        sample.set_space_group_number(input);
+    } catch (...) {
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Invalid space group number " + std::to_string(input));
+    }
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::GroupID(int64_t input) {
-    check_min("Unix Group ID", input, -1); // GroupIDNotSet
-    check_max("Unix Group ID", input, 65534);
-
-    image_saving.set_gid(input);
+DiffractionExperiment &DiffractionExperiment::SpaceGroup(const std::string &input) {
+    try {
+        auto sg = gemmi::get_spacegroup_by_name(input);
+        sample.set_space_group_number(sg.number);
+    } catch (...) {
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Invalid space group number " + input);
+    }
     return *this;
 }
 
@@ -1418,8 +1377,14 @@ int64_t DiffractionExperiment::GetSpaceGroupNumber() const {
     return sample.space_group_number();
 }
 
-int64_t DiffractionExperiment::GetGroupID() const {
-    return image_saving.gid();
+std::string DiffractionExperiment::GetSpaceGroupName() const {
+    auto sg = gemmi::get_spacegroup_by_number(GetSpaceGroupNumber());
+    return sg.short_name();
+}
+
+char DiffractionExperiment::GetCentering() const {
+    auto sg = gemmi::get_spacegroup_by_number(GetSpaceGroupNumber());
+    return sg.centring_type();
 }
 
 DiffractionExperiment &DiffractionExperiment::RunNumber(int64_t input) {
@@ -1433,3 +1398,108 @@ int64_t DiffractionExperiment::GetRunNumber() const {
     return sample.run_number();
 }
 
+DiffractionExperiment &DiffractionExperiment::StorageCells(int64_t input) {
+    check_min("Storage cell number", input, 1);
+    check_max("Storage cell number", input, 16);
+    detector.set_storage_cells(input);
+    return *this;
+}
+
+DiffractionExperiment &DiffractionExperiment::StorageCellStart(int64_t input) {
+    check_min("Start storage cell", input, 0);
+    check_max("Start storage cell", input, 15);
+    detector.set_storage_cell_start(input);
+    return *this;
+}
+int64_t DiffractionExperiment::GetStorageCellNumber() const {
+    switch (GetDetectorMode()) {
+        case DetectorMode::PedestalG1:
+        case DetectorMode::PedestalG2:
+            if (detector.storage_cells() > 1)
+                return 2;
+            else
+                return 1;
+        default:
+            return detector.storage_cells();
+    }
+}
+
+int64_t DiffractionExperiment::GetStorageCellStart() const {
+    return detector.storage_cell_start();
+}
+
+DiffractionExperiment &DiffractionExperiment::DetectorDelayAfterTrigger(std::chrono::microseconds input) {
+    check_min("Input delay (us)", input.count(), 0);
+    detector.set_delay_after_trigger_us(input.count());
+    return *this;
+}
+
+std::chrono::microseconds DiffractionExperiment::GetDetectorDelayAfterTrigger() const {
+    return std::chrono::microseconds(detector.delay_after_trigger_us());
+}
+
+double DiffractionExperiment::GetLowQLimitForBkg_recipA() const {
+    return radial_int.bkg_estimate_low_q();
+}
+
+double DiffractionExperiment::GetHighQLimitForBkg_recipA() const {
+    return radial_int.bkg_estimate_high_q();
+}
+
+double DiffractionExperiment::GetLowQForRadialInt_recipA() const {
+    return radial_int.low_q();
+}
+double DiffractionExperiment::GetHighQForRadialInt_recipA() const {
+    return radial_int.high_q();
+}
+
+double DiffractionExperiment::GetQSpacingForRadialInt_recipA() const {
+    return radial_int.q_spacing();
+}
+
+DiffractionExperiment& DiffractionExperiment::LowResForBkgEstimation_A(double input) {
+    check_min("Low Resolution for background estimation", input, 0.1);
+    check_max("Low Resolution for background estimation", input, 500.0);
+    radial_int.set_bkg_estimate_low_q(2 * M_PI / input);
+    return *this;
+}
+
+DiffractionExperiment& DiffractionExperiment::HighResForBkgEstimation_A(double input) {
+    check_min("High Resolution for background estimation", input, 0.1);
+    check_max("High Resolution for background estimation", input, 500.0);
+    radial_int.set_bkg_estimate_high_q(2 * M_PI / input);
+    return *this;
+}
+
+DiffractionExperiment& DiffractionExperiment::LowResForRadialInt_A(double input) {
+    check_min("Low Resolution for radial integration", input, 0.1);
+    check_max("Low Resolution for radial integration", input, 500.0);
+    radial_int.set_low_q(2 * M_PI / input);
+    return *this;
+}
+DiffractionExperiment& DiffractionExperiment::HighResForRadialInt_A(double input) {
+    check_min("High Resolution for radial integration", input, 0.1);
+    check_max("High Resolution for radial integration", input, 500.0);
+    radial_int.set_high_q(2 * M_PI / input);
+    return *this;
+}
+
+DiffractionExperiment& DiffractionExperiment::LowQForRadialInt_recipA(double input) {
+    check_min("Low Q for radial integration", input, 0.001);
+    check_max("Low Q for radial integration", input, 10.0);
+    radial_int.set_low_q(input);
+    return *this;
+}
+
+DiffractionExperiment& DiffractionExperiment::HighQForRadialInt_recipA(double input) {
+    check_min("High Q for radial integration", input, 0.001);
+    check_max("High Q for radial integration", input, 10.0);
+    radial_int.set_high_q(input);
+    return *this;
+}
+
+DiffractionExperiment& DiffractionExperiment::QSpacingForRadialInt_recipA(double input) {
+    check_min("Q spacing for radial integration", input, 0.01);
+    radial_int.set_q_spacing(input);
+    return *this;
+}

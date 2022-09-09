@@ -7,8 +7,9 @@
 
 #include "../common/DiffractionExperiment.h"
 #include "../common/DiffractionSpot.h"
-#include "../common/CrystalLattice.h"
 #include "../common/ZMQWrappers.h"
+
+#include "CrystalLattice.h"
 
 #include "adaptions/crystfel/Lattice.h"
 #include "adaptions/crystfel/ExperimentSettings.h"
@@ -19,7 +20,9 @@ enum class IndexingAlgorithm {Xgandalf, Xgandalf_fast};
 struct IndexingSettings {
     IndexingAlgorithm algorithm;
     uint64_t max_indexing_spots;
-    UnitCell unit_cell;
+    JFJochProtoBuf::UnitCell unit_cell;
+    bool has_unit_cell;
+    char centering;
 };
 
 class XgandalfWrapper  {
@@ -30,11 +33,10 @@ class XgandalfWrapper  {
     const double max_unit_cell = 250.0;
     const double tolerance = 0.02;
     void Setup(const IndexingSettings &settings);
-    UnitCell unit_cell;
 public:
     XgandalfWrapper();
     ~XgandalfWrapper();
-    std::vector<UnitCell> Run(const IndexingSettings &settings, const std::vector<Coord> &coord);
+    std::vector<JFJochProtoBuf::UnitCell> Run(const IndexingSettings &settings, const std::vector<Coord> &coord);
 };
 
 

@@ -8,13 +8,13 @@
 #include <jfjoch.grpc.pb.h>
 
 #include "../common/DiffractionExperiment.h"
-#include "../common/JungfrauCalibration.h"
+#include "../common/JFCalibration.h"
 
 class JFJochReceiverClient {
     std::unique_ptr<JFJochProtoBuf::gRPC_JFJochReceiver::Stub> _stub;
 public:
     void Connect(const std::string& addr);
-    void Start(const DiffractionExperiment &experiment, const JungfrauCalibration &calibration,
+    void Start(const DiffractionExperiment &experiment, const JFCalibration *calibration,
                const std::vector<std::string> &writer_zmq_addr);
     void Abort();
     void Cancel();

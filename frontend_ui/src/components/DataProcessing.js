@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
-import Paper from '@material-ui/core/Paper';
-import {Slider, Typography, Grid, Switch} from "@material-ui/core";
+import Paper from '@mui/material/Paper';
+import {Slider, Typography, Grid, Switch} from "@mui/material";
 
 class DetectorGrid extends Component {
 
@@ -27,6 +27,8 @@ class DetectorGrid extends Component {
                     <Slider defaultValue={3} min={1} max={10} step={0.5} onChange={this.props.signalToNoiseSlider} valueLabelDisplay="auto" />
                     <br/><Typography> Minimum pixel / spot </Typography>
                     <Slider defaultValue={2} min={1} max={8} step={1} onChange={this.props.minPixPerSpotSlider} valueLabelDisplay="auto"  />
+                    <Typography> High resolution limit [&#8491;] </Typography>
+                    <Slider defaultValue={2} min={1} max={5} step={0.2} onChange={this.props.highResolutionSlider} valueLabelDisplay="auto"  />
                     <br/>
                 </Paper>
             </Grid>

@@ -76,10 +76,12 @@ void AcquisitionDevice::FillActionRegister(const DiffractionExperiment& x, Actio
     job.nmodules            = x.GetModulesNum(data_stream);
 
     // Taken from DiffrationExperiment class
-    job.frames_per_trigger = x.GetFrameNumPerTrigger();
+    job.frames_internal_packet_gen = x.GetFrameNum();
 
     // Convert floats to fixed point numbers
     job.one_over_energy = std::lround((1<<20)/ x.GetPhotonEnergy_keV());
+
+    job.nstorage_cells = x.GetStorageCellNumber() - 1;
 
     uint64_t mode = 0;
 
@@ -102,7 +104,6 @@ void AcquisitionDevice::FillActionRegister(const DiffractionExperiment& x, Actio
 }
 
 void AcquisitionDevice::PrepareAction(const DiffractionExperiment &experiment) {
-    // Just as precaution, abort action, if it is running (ActionAbort will internally check for !HW_IsIdle() condition)
     if (!HW_IsIdle())
         throw(JFJochException(JFJochExceptionCategory::OpenCAPIError,
                               "Hardware action running prior to start of data acquisition"));
@@ -115,7 +116,6 @@ void AcquisitionDevice::PrepareAction(const DiffractionExperiment &experiment) {
 }
 
 void AcquisitionDevice::StartAction(const DiffractionExperiment &experiment) {
-    // Just as precaution, abort action, if it is running (ActionAbort will internally check for !HW_IsIdle() condition)
     if (!HW_IsIdle())
         throw(JFJochException(JFJochExceptionCategory::OpenCAPIError,
                               "Hardware action running prior to start of data acquisition"));
@@ -152,7 +152,7 @@ void AcquisitionDevice::StartAction(const DiffractionExperiment &experiment) {
     if (cfg_out.fpga_ipv4_addr != cfg_in.fpga_ipv4_addr)
         throw JFJochException(JFJochExceptionCategory::OpenCAPIError,
                               "Mismatch between expected and actual values of configuration registers (FPGA IPv4 Addr)");
-    if (cfg_out.frames_per_trigger != cfg_in.frames_per_trigger)
+    if (cfg_out.frames_internal_packet_gen != cfg_in.frames_internal_packet_gen)
         throw JFJochException(JFJochExceptionCategory::OpenCAPIError,
                               "Mismatch between expected and actual values of configuration registers (Frames per trigger)");
     if (cfg_out.nmodules != cfg_in.nmodules)
@@ -181,7 +181,7 @@ void AcquisitionDevice::SetDefaultInternalGeneratorFrame(size_t buf_h2c_number) 
 void AcquisitionDevice::SetCustomInternalGeneratorFrame(const void *input, size_t input_size) {
     for (int m = 0; m < std::min<uint32_t>(input_size / FPGA_BUFFER_LOCATION_SIZE,
                                            HW_GetInternalPacketGeneratorModuleNum()) ; m++) {
-            memcpy(buffer_h2c[m + HW_GetMaxModuleNum() * 6],
+            memcpy(buffer_h2c[m + HW_GetMaxModuleNum() * (3+3*16)],
                    (uint8_t *) input + m * FPGA_BUFFER_LOCATION_SIZE,
                    FPGA_BUFFER_LOCATION_SIZE);
     }
@@ -232,6 +232,7 @@ Completion AcquisitionDevice::ReadCompletion() {
 
     c.trigger      = tmp[0] & (1 << 31u);
     c.frame_number = detector_frame_number;
+    c.timestamp    = tmp[1];
 
     if (all_packets_ok) {
         // All packets arrived, no more messages in completion coming
@@ -269,6 +270,7 @@ void AcquisitionDevice::WaitForActionComplete() {
                           + " completion frame number " + std::to_string(c.frame_number)
                           + " module " + std::to_string(c.module)
                           + " handle " + std::to_string(c.handle)
+                          + " timestamp " + std::to_string(c.timestamp)
                           + " trigger value " + std::to_string(c.trigger));
 
         c = work_completion_queue.GetBlocking();
@@ -345,6 +347,10 @@ void AcquisitionDevice::SaveStatistics(const DiffractionExperiment &experiment,
     if (!tmp_v2.empty())
         *statistics.mutable_packet_mask_half_module() = {tmp_v2.begin(), tmp_v2.end()};
 
+    auto tmp_v3 = counters.Timestamps();
+    if (!tmp_v3.empty())
+        *statistics.mutable_timestamp() = {tmp_v3.begin(), tmp_v3.end()};
+
     *statistics.mutable_fpga_status() = GetStatus();
 }
 
@@ -389,15 +395,36 @@ const int16_t *AcquisitionDevice::GetFrameBuffer(size_t frame_number, uint16_t m
         return buffer_err.data();
 }
 
-void AcquisitionDevice::InitializeCalibration(const DiffractionExperiment &experiment, const JungfrauCalibration &calib) {
-    auto offset = RAW_MODULE_SIZE * experiment.GetFirstModuleOfDataStream(data_stream);
+void AcquisitionDevice::InitializeCalibration(const DiffractionExperiment &experiment, const JFCalibration &calib) {
+    auto offset = experiment.GetFirstModuleOfDataStream(data_stream);
     auto nm = HW_GetMaxModuleNum();
 
+    if (calib.GetModulesNum() != experiment.GetModulesNum())
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Mismatch regarding module count in calibration and experiment description");
+
+    if (calib.GetStorageCellNum() != calib.GetStorageCellNum())
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Mismatch regarding storage cell count in calibration and experiment description");
+
+    if (gain0.size() != nm)
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Gain factors not loaded");
+
     for (int m = 0; m < experiment.GetModulesNum(data_stream); m++) {
-        for (int i = 0; i < RAW_MODULE_SIZE; i++) {
-            buffer_h2c[m + 5 * nm][i] = calib.Pedestal(0)[offset + m * RAW_MODULE_SIZE + i];
-            buffer_h2c[m + 3 * nm][i] = calib.Pedestal(1)[offset + m * RAW_MODULE_SIZE + i];
-            buffer_h2c[m + 4 * nm][i] = calib.Pedestal(2)[offset + m * RAW_MODULE_SIZE + i];
+        memcpy(buffer_h2c[m],          gain0[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
+        memcpy(buffer_h2c[m + nm],     gain1[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
+        memcpy(buffer_h2c[m + nm * 2], gain2[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
+    }
+
+    for (int s = 0; s < experiment.GetStorageCellNumber(); s++) {
+        for (int m = 0; m < experiment.GetModulesNum(data_stream); m++) {
+            for (int i = 0; i < RAW_MODULE_SIZE; i++) {
+                buffer_h2c[m + (3 + 0 * 16 + s) * nm][i] = calib.Pedestal(offset + m, 0,s)[i];
+                buffer_h2c[m + (3 + 1 * 16 + s) * nm][i] = calib.Pedestal(offset + m, 1,s)[i];
+                buffer_h2c[m + (3 + 2 * 16 + s) * nm][i] = calib.Pedestal(offset + m, 2,s)[i];
+
+            }
         }
     }
 }
@@ -423,16 +450,24 @@ void AcquisitionDevice::UnmapBuffers() {
 
 template <class T>
 void AcquisitionDevice::LoadModuleGain(const std::vector<T> &vector, uint16_t module) {
-    auto nm = HW_GetMaxModuleNum();
+    if (module >= HW_GetMaxModuleNum())
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Module number out of bounds");
 
+    if (gain0.empty())
+        gain0.resize(HW_GetMaxModuleNum());
     for (int i = 0; i < RAW_MODULE_SIZE; i++)
-        buffer_h2c[module + 0 * nm][i] = to_fixed(GAIN_G0_MULTIPLIER, vector[i],14);
+        gain0[module][i] = to_fixed(GAIN_G0_MULTIPLIER, vector.at(i),14);
 
+    if (gain1.empty())
+        gain1.resize(HW_GetMaxModuleNum());
     for (int i = 0; i < RAW_MODULE_SIZE; i++)
-        buffer_h2c[module + 1 * nm][i] = to_fixed(GAIN_G1_MULTIPLIER, vector[i + RAW_MODULE_SIZE], 12);
+        gain1[module][i] = to_fixed(GAIN_G1_MULTIPLIER, vector.at(i + RAW_MODULE_SIZE), 12);
 
+    if (gain2.empty())
+        gain2.resize(HW_GetMaxModuleNum());
     for (int i = 0; i < RAW_MODULE_SIZE; i++)
-        buffer_h2c[module + 2 * nm][i] = to_fixed(GAIN_G2_MULTIPLIER, vector[i + 2 * RAW_MODULE_SIZE], 10);
+        gain2[module][i] = to_fixed(GAIN_G2_MULTIPLIER, vector.at(i + 2 * RAW_MODULE_SIZE), 10);
 }
 
 void AcquisitionDevice::SendWorkRequestThread() {

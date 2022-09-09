@@ -12,8 +12,7 @@
 #include "../../common/Definitions.h"
 #include "../../common/DiffractionExperiment.h"
 #include "../../common/Logger.h"
-#include "../../common/JungfrauCalibration.h"
-#include "../../common/Logger.h"
+#include "../../common/JFCalibration.h"
 #include "../../common/ThreadSafeFIFO.h"
 
 #include "jfjoch.pb.h"
@@ -27,6 +26,10 @@ void *mmap_acquisition_buffer(size_t size, int16_t numa_node);
 
 class AcquisitionDevice {
     uint32_t packets_ok = 0;
+
+    std::vector<std::array<uint16_t, RAW_MODULE_SIZE> > gain0;
+    std::vector<std::array<uint16_t, RAW_MODULE_SIZE> > gain1;
+    std::vector<std::array<uint16_t, RAW_MODULE_SIZE> > gain2;
 
     std::vector<int16_t> buffer_err;
 
@@ -110,7 +113,7 @@ public:
     const int16_t *GetPacketBuffer(size_t frame_number, uint16_t module, uint16_t packet);
 
     // Calibration
-     void InitializeCalibration(const DiffractionExperiment &experiment, const JungfrauCalibration &calib);
+    void InitializeCalibration(const DiffractionExperiment &experiment, const JFCalibration &calib);
 
     template<class T> void LoadModuleGain(const std::vector<T> &vector, uint16_t module);
     void LoadModuleGain(const std::string &filename, uint16_t module);

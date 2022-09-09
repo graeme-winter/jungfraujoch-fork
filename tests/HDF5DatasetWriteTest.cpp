@@ -7,6 +7,7 @@
 #include "../writer/HDF5Writer.h"
 #include "../common/FrameTransformation.h"
 #include "../common/RawToConvertedGeometry.h"
+#include "../common/JFCalibration.h"
 
 int main(int argc, char **argv) {
     Logger logger("HDF5DatasetWriteTest");
@@ -92,8 +93,7 @@ int main(int argc, char **argv) {
     // Switch to mode with gaps for transformation
     x.DataStreamModuleSize(2, {8}, 8, 36);
 
-    JungfrauCalibration calibration(x);
-    FrameTransformation transformation(x, calibration);
+    FrameTransformation transformation(x);
 
     std::vector<int64_t> output_size(nimages);
     std::vector<std::vector<char> > output(nimages);
@@ -109,15 +109,6 @@ int main(int argc, char **argv) {
 
     x.ImagesPerTrigger(nimages_out);
     logger.Info("Number of images to write: " + std::to_string(nimages_out));
-
-    JungfrauCalibration c(8,0);
-
-    /*
-    for (int i = 0; i < RAW_MODULE_COLS; i++) {
-        c.Mask()[RAW_MODULE_COLS*25+i] = 2;
-        c.Mask()[2*RAW_MODULE_SIZE + RAW_MODULE_COLS*256 + i] = 4;
-        c.Mask()[4*RAW_MODULE_SIZE + RAW_MODULE_COLS*54+i] = 8;
-    } */
 
     // Master & calibration files are written outside of timing routine
     auto fileset = std::make_unique<HDF5Writer>(x);
@@ -140,14 +131,20 @@ int main(int argc, char **argv) {
     int64_t frequency_Hz = (nimages_out * 1e6) / (double) (elapsed.count());
 
     logger.Info("Write HDF5 master file");
+
     JFJochProtoBuf::JFJochReceiverOutput receiver_output;
-    *receiver_output.mutable_calibration() = c;
+
     receiver_output.set_start_time_ms(1640995200000);
     receiver_output.set_end_time_ms(1640995210000);
     receiver_output.set_images_sent(nimages);
     receiver_output.set_max_image_number_sent(nimages - 1);
     *receiver_output.mutable_jungfraujoch_settings() = x;
-    WriteHDF5MasterFile(receiver_output);
+
+    JFJochProtoBuf::JFJochWriterMetadataInput request;
+    *request.mutable_receiver_output() = receiver_output;
+    *request.mutable_calibration() = JFCalibration(x);
+
+    WriteHDF5MasterFile(request);
 
     logger.Info("Writing done");
 

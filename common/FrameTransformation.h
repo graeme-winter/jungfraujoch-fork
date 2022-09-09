@@ -6,7 +6,6 @@
 
 #include "DiffractionExperiment.h"
 #include "JFJochCompressor.h"
-#include "JungfrauCalibration.h"
 
 class FrameTransformation {
     const DiffractionExperiment& experiment;
@@ -16,6 +15,7 @@ class FrameTransformation {
 
     std::vector<std::vector<int32_t> > summation_buffer;
     std::vector<char> precompression_buffer;
+    std::vector<int16_t> image16bit;
 
     char *standard_output = nullptr;
 
@@ -25,9 +25,7 @@ class FrameTransformation {
     void ProcessPacketNoSummation(const int16_t *input, size_t frame_number, uint16_t module_number, uint16_t packet_number, int data_stream);
     void ProcessPacketSummation(const int16_t *input, size_t frame_number, uint16_t module_number, uint16_t packet_number, int data_stream);
 public:
-    FrameTransformation(const DiffractionExperiment &experiment, const JungfrauCalibration &calibration, size_t summation, CompressionAlgorithm algorithm);
-    FrameTransformation(const DiffractionExperiment &experiment, const JungfrauCalibration &calibration, size_t summation);
-    FrameTransformation(const DiffractionExperiment &experiment, const JungfrauCalibration &calibration);
+    FrameTransformation(const DiffractionExperiment &experiment);
     FrameTransformation& SetOutput(void *output);
     void ProcessModule(const int16_t *input, size_t frame_number, uint16_t module_number, int data_stream);
     void ProcessPacket(const int16_t *input, size_t frame_number, uint16_t module_number, uint16_t packet_number, int data_stream);
@@ -35,7 +33,7 @@ public:
     size_t PackStandardOutput(); // transfer summed image to converted coordinates, clear summation buffer, compress
     void PackUncompressed(); // transfer summed image to converted coordinates, clear summation buffer, no compression
 
-    const char *GetUncompressedImage() const;
+    int16_t *GetPreview16BitImage();
 };
 
 #endif //JUNGFRAUJOCH_FRAMETRANSFORMATION_H

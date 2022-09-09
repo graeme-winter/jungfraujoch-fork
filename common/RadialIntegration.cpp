@@ -2,42 +2,66 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "RadialIntegration.h"
+#include "JFJochException.h"
 
-void RadialIntegration::Clear() {
+RadialIntegration::RadialIntegration(const std::vector<uint16_t>& in_mapping, uint16_t in_nbins) :
+        pixel_to_bin(in_mapping), nbins(in_nbins), sum(in_nbins, 0), count(in_nbins, 0)
+{}
+
+RadialIntegration::RadialIntegration(const RadialIntegrationMapping &mapping) :
+        RadialIntegration(mapping.GetPixelToBinMapping(), mapping.GetBinNumber())
+{}
+
+void RadialIntegration::Process(const int16_t *data, size_t npixel) {
     for (auto &i : sum)
         i = 0;
-    for (auto &i: count)
+
+    for (auto &i : count)
         i = 0;
-}
 
-RadialIntegration::RadialIntegration(size_t in_xpixel, size_t in_ypixel) :
-bin_map(in_xpixel * in_ypixel, UINT32_MAX) {
-    xpixel = in_xpixel;
-    ypixel = in_ypixel;
-}
+    if (npixel != pixel_to_bin.size())
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Mismatch in size of pixel-to-bin mapping and image");
 
-void RadialIntegration::Setup(double beam_x, double beam_y, const std::vector<uint32_t> &in_mask) {
-    size_t rmax = 0;
-    for (int y = 0; y < ypixel; y++) {
-        for (int x = 0; x < xpixel; x++) {
-            uint16_t val =  std::lround(sqrt((x-beam_x)*(x-beam_x) + (y-beam_y)*(y-beam_y)));
-
-            if (in_mask[x + y * xpixel] != 0)
-                bin_map[x + y * xpixel] = UINT32_MAX;
-            else
-                bin_map[x + y * xpixel] = val;
-
-            if (val > rmax) rmax = val;
+    for (int i = 0; i < npixel; i++) {
+        auto bin = pixel_to_bin[i];
+        auto value  = data[i];
+        if ((value > INT16_MIN + 4) && (value < INT16_MAX - 4) && (bin < nbins)) {
+            sum[bin]   += value;
+            count[bin] += 1;
         }
     }
-    sum = std::vector<int64_t>(rmax + 2, 0);
-    count = std::vector<int64_t>(rmax + 2, 0);
 }
 
-std::vector<double> RadialIntegration::GetAverage() {
-    std::vector<double> ret(sum.size(), 0);
-    for (int i = 0; i < sum.size(); i++) {
-        ret[i] = static_cast<double>(sum[i]) / static_cast<double>(count[i]);
+void RadialIntegration::GetResult(std::vector<float> &result) const {
+    result.resize(nbins);
+
+    for (int i = 0; i < nbins; i++) {
+        if (count[i] > 0)
+            result[i] = static_cast<float>(sum[i]) / static_cast<float>(count[i]);
+        else
+            result[i] = 0;
     }
-    return ret;
+}
+
+const std::vector<int64_t> &RadialIntegration::GetSum() const {
+    return sum;
+}
+
+const std::vector<int64_t> &RadialIntegration::GetCount() const {
+    return count;
+}
+
+float RadialIntegration::GetRangeValue(uint16_t min_bin, uint16_t max_bin) {
+    int64_t ret_sum = 0;
+    int64_t ret_count = 0;
+
+    for (int i = std::min(nbins,min_bin); i <= std::min((uint16_t)(nbins-1),max_bin); i++) {
+        ret_sum += sum[i];
+        ret_count += count[i];
+    }
+    if (ret_count == 0)
+        return 0;
+    else
+        return static_cast<float>(ret_sum) / static_cast<float>(ret_count);
 }

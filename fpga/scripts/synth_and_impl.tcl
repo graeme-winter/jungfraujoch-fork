@@ -9,12 +9,19 @@ set part [get_property PART [current_project]]
 if {$part eq {xcvu35p-fsvh2104-2-e}} {
     set fpga_flash_size 128
     set fpga_name "VU35P"
+    set interface "SPIx8"
+} elseif {$part eq {xcu55c-fsvh2892-2L-e}} {
+    set fpga_flash_size 128
+    set fpga_name "U55C"
+    set interface "SPIx4"
 } elseif {$part eq {xcu50-fsvh2104-2-e}} {
     set fpga_flash_size 128
     set fpga_name "U50"
+    set interface "SPIx8"
 } else {
     set fpga_flash_size 64
     set fpga_name "VU33P"
+    set interface "SPIx8"
 }
 
 set bitstream_name jfjoch_${flow}_${fpga_name}_rel@RELEASE_LEVEL@_@GIT_SHA1@
@@ -84,7 +91,7 @@ if {$WNSPLACE > -1.000} {
 
     if {$WNSROUTE >= -0.050} {
         write_bitstream -force -file ${bitstream_name} >> bitstream.log
-        write_cfgmem -force -size ${fpga_flash_size} -format bin -interface SPIx8 -loadbit "up 0x0 ${bitstream_name}.bit" ${bitstream_name} >> cfgmem.log
+        write_cfgmem -force -size ${fpga_flash_size} -format bin -interface ${interface} -loadbit "up 0x0 ${bitstream_name}.bit" ${bitstream_name} >> cfgmem.log
         puts "    ***** Bitstream ${bitstream_name}.bin written! *****"
         puts ""
     } else {

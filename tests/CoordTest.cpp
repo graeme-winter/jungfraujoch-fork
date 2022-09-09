@@ -3,7 +3,6 @@
 
 #include <catch2/catch.hpp>
 #include "../common/Coord.h"
-#include "../common/CrystalLattice.h"
 
 TEST_CASE("Coord_arithmetic", "[LinearAlgebra][Coord]") {
     Coord a{1,2,3};
@@ -67,6 +66,16 @@ TEST_CASE("Coord_arithmetic", "[LinearAlgebra][Coord]") {
     REQUIRE(matrix_mult.z == M[2][0] * a.x + M[2][1] * a.y + M[2][2] * a.z);
 }
 
+TEST_CASE("Coord_operator_bracket","[LinearAlgebra][Coord]") {
+    Coord a{1,2,3};
+    REQUIRE(a[0] == 1);
+    REQUIRE(a[1] == 2);
+    REQUIRE(a[2] == 3);
+    REQUIRE_THROWS(a[4]);
+    REQUIRE_THROWS(a[-1]);
+    REQUIRE_THROWS(a[56667]);
+}
+
 TEST_CASE("Coord_normalize","[LinearAlgebra][Coord]") {
     Coord a{4,0,0};
     REQUIRE(a.Length() == 4.0);
@@ -113,80 +122,4 @@ TEST_CASE("Coord_Gaussian_Reduction") {
     REQUIRE(p == -c);
     REQUIRE(q == a);
     REQUIRE(r == b);
-}
-
-TEST_CASE("UnitCell_Empty") {
-    UnitCell cell1;
-    REQUIRE(cell1.empty());
-
-    UnitCell cell2(20,30,40,90,92,93.4);
-    REQUIRE(!cell2.empty());
-
-    UnitCell cell3((JFJochProtoBuf::UnitCell()));
-    REQUIRE(cell3.empty());
-
-    UnitCell cell4(cell2);
-    REQUIRE(!cell4.empty());
-}
-
-TEST_CASE("UnitCell_Equals") {
-    UnitCell cell1(20,30,40,90,92,93.4);
-
-    REQUIRE(cell1 == cell1);
-    REQUIRE(cell1 != UnitCell());
-
-    REQUIRE(cell1 == UnitCell(20,30,40,90,92,93.4));
-    REQUIRE(!(cell1 == UnitCell(20,30,40,90,92,93.5)));
-
-    REQUIRE(cell1 != UnitCell(21,30,40,90,92,93.4));
-    REQUIRE(cell1 != UnitCell(20,32,40,90,92,93.4));
-    REQUIRE(cell1 != UnitCell(20,30,42,90,92,93.4));
-    REQUIRE(cell1 != UnitCell(20,30,40,92,92,93.4));
-    REQUIRE(cell1 != UnitCell(20,30,40,90,92.4,93.4));
-    REQUIRE(cell1 != UnitCell(20,30,40,90,92,93.6));
-
-    REQUIRE(UnitCell() == UnitCell(0,0,0,0,0,0));
-}
-
-TEST_CASE("CrystalLattice") {
-    CrystalLattice l(UnitCell(50,60,80, 90, 90, 90));
-    REQUIRE(l.vec_a.Length() == Approx(50));
-    REQUIRE(l.vec_b.Length() == Approx(60));
-    REQUIRE(l.vec_c.Length() == Approx(80));
-    REQUIRE(angle_deg(l.vec_a, l.vec_c) == 90);
-    REQUIRE(angle_deg(l.vec_a, l.vec_b) == 90);
-    REQUIRE(angle_deg(l.vec_b, l.vec_c) == 90);
-
-    l = CrystalLattice(UnitCell(30, 40, 70, 90, 95, 90));
-    REQUIRE(l.vec_a.Length() == Approx(30));
-    REQUIRE(l.vec_b.Length() == Approx(40));
-    REQUIRE(l.vec_c.Length() == Approx(70));
-    REQUIRE(angle_deg(l.vec_a, l.vec_c) == 95);
-    REQUIRE(angle_deg(l.vec_a, l.vec_b) == 90);
-    REQUIRE(angle_deg(l.vec_b, l.vec_c) == 90);
-
-    l = CrystalLattice(UnitCell(45, 45, 70, 90, 90, 120));
-    REQUIRE(l.vec_a.Length() == Approx(45));
-    REQUIRE(l.vec_b.Length() == Approx(45));
-    REQUIRE(l.vec_c.Length() == Approx(70));
-    REQUIRE(angle_deg(l.vec_a, l.vec_c) == Approx(90));
-    REQUIRE(angle_deg(l.vec_a, l.vec_b) == Approx(120));
-    REQUIRE(angle_deg(l.vec_b, l.vec_c) == Approx(90));
-}
-
-TEST_CASE("CrystalLattice_ReciprocalLattice") {
-    CrystalLattice l(UnitCell(50,60,80, 78, 80, 120));
-    CrystalLattice rl = l.ReciprocalLattice();
-
-   REQUIRE(l.vec_a * rl.vec_a == Approx(1.0));
-   REQUIRE(l.vec_a * rl.vec_b < 1e-10);
-   REQUIRE(l.vec_a * rl.vec_c < 1e-10);
-
-    REQUIRE(l.vec_b * rl.vec_a < 1e-10);
-    REQUIRE(l.vec_b * rl.vec_b == Approx(1.0));
-    REQUIRE(l.vec_b * rl.vec_c < 1e-10);
-
-    REQUIRE(l.vec_c * rl.vec_a < 1e-10);
-    REQUIRE(l.vec_c * rl.vec_b < 1e-10);
-    REQUIRE(l.vec_c * rl.vec_c == Approx(1.0));
 }

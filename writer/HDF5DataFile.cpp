@@ -13,6 +13,14 @@ experiment(in_experiment) {
     max_image_number = 0;
 }
 
+HDF5DataFile::~HDF5DataFile() {
+    data_set.reset();
+    data_file.reset();
+
+    std::string tmp_filename = filename + ".tmp";
+    rename(tmp_filename.c_str(), filename.c_str());
+}
+
 void HDF5DataFile::Write(const void *data, size_t data_size, size_t image_number) {
     std::lock_guard<std::mutex> lock(hdf5_mutex);
     if (!data_file) {
@@ -30,10 +38,6 @@ void HDF5DataFile::Write(const void *data, size_t data_size, size_t image_number
     data_set->WriteDirectChunk(data, data_size, {image_number, 0, 0});
 }
 
-HDF5DataFile::~HDF5DataFile() {
-    data_set.reset();
-    data_file.reset();
-
-    std::string tmp_filename = filename + ".tmp";
-    rename(tmp_filename.c_str(), filename.c_str());
+size_t HDF5DataFile::GetMaxImageNumber() const {
+    return max_image_number;
 }
