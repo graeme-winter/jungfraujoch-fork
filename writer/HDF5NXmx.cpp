@@ -216,6 +216,7 @@ void HDF5Metadata::Detector(HDF5File *hdf5_file, const DiffractionExperiment &ex
     SaveScalar(det_specific, "detector_full_speed", experiment.IsDetectorFullSpeed());
     SaveScalar(det_specific, "storage_cell_number", experiment.GetStorageCellNumber());
     SaveScalar(det_specific, "storage_cell_start", experiment.GetStorageCellStart());
+    SaveScalar(det_specific, "time_resolved_mode", experiment.GetTimeResolvedMode());
     SaveScalar(det_specific, "delay_after_trigger", experiment.GetDetectorDelayAfterTrigger().count())->Units("us");
 }
 

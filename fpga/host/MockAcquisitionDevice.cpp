@@ -44,17 +44,21 @@ bool MockAcquisitionDevice::HW_IsIdle() const {
 MockAcquisitionDevice::MockAcquisitionDevice(uint16_t data_stream, size_t in_frame_buffer_size_modules)
 : AcquisitionDevice(data_stream) {
 
+    max_modules = 16;
+
     MapBuffersStandard(in_frame_buffer_size_modules,
                        (3 + 3 * 16) * max_modules + frames_int_pkt_gen, -1);
     max_handle = in_frame_buffer_size_modules;
 }
 
 void MockAcquisitionDevice::AddModule(uint64_t frame, uint16_t module, const uint16_t *data) {
-    if (buffer_h2c.empty())
-        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
-                              "Need to explictely allocate memory");
+
+    if (module >= max_modules)
+        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds,
+                              "Module number exceeding limit");
+
     if (current_handle < max_handle) {
-        memcpy(buffer_c2h.at(current_handle), data, RAW_MODULE_SIZE * sizeof(uint16_t));
+        memcpy(buffer_device.at(current_handle), data, RAW_MODULE_SIZE * sizeof(uint16_t));
 
         uint32_t parity = (std::bitset<32>(current_handle).count() + std::bitset<32>(module & 0xFF).count() + 1
                            + std::bitset<64>(frame).count()) % 2;
@@ -83,14 +87,15 @@ void MockAcquisitionDevice::Terminate() {
     mailbox_fifo.Put(0);
 }
 
-uint32_t MockAcquisitionDevice::HW_GetInternalPacketGeneratorModuleNum() {
-    return frames_int_pkt_gen;
-}
-
-uint32_t MockAcquisitionDevice::HW_GetMaxModuleNum() {
-    return max_modules; // Doesn't matter
-}
-
 uint64_t MockAcquisitionDevice::HW_GetMACAddress() const {
     return 0; // Doesn't matter
 }
+
+void MockAcquisitionDevice::HW_GetStatus(ActionStatus *status) const {
+    memset(status, 0, sizeof(ActionStatus));
+    status->max_modules = max_modules;
+    status->modules_internal_packet_generator = 1;
+}
+
+void MockAcquisitionDevice::CopyInternalPacketGenFrameToDeviceBuffer() {}
+void MockAcquisitionDevice::InitializeCalibration(const DiffractionExperiment &experiment, const JFCalibration &calib) {}

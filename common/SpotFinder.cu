@@ -383,4 +383,16 @@ void SpotFinder::LoadMask(const std::vector<uint8_t> &mask) {
     cudaMemcpy(gpu_mask, mask.data(), xpixels*ypixels, cudaMemcpyHostToDevice);
 }
 
+void SpotFinder::RegisterBuffer() {
+#ifndef __PPC__
+    cudaHostRegister(host_in, xpixels * ypixels * sizeof(uint16_t), cudaHostRegisterDefault);
+#endif
+}
+
+void SpotFinder::UnregisterBuffer() {
+#ifndef __PPC__
+    cudaHostUnregister(host_in);
+#endif
+}
+
 std::atomic<uint16_t> SpotFinder::threadid{0};

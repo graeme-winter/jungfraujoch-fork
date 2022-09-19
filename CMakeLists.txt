@@ -45,6 +45,7 @@ ADD_SUBDIRECTORY(compression)
 ADD_SUBDIRECTORY(common)
 ADD_SUBDIRECTORY(broker)
 ADD_SUBDIRECTORY(etc)
+ADD_SUBDIRECTORY(tools)
 
 SET(jfjoch_executables jfjoch_broker)
 

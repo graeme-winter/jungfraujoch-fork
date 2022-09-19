@@ -5,7 +5,8 @@ ADD_LIBRARY(JungfraujochHost STATIC
         AcquisitionDeviceCounters.cpp AcquisitionDeviceCounters.h
         MockAcquisitionDevice.cpp MockAcquisitionDevice.h
         HLSSimulatedDevice.cpp HLSSimulatedDevice.h
-        Completion.cpp Completion.h ActionConfig.h)
+        Completion.cpp Completion.h ActionConfig.h
+        PCIExpressDevice.cpp PCIExpressDevice.h MakeAcquisitionDevice.cpp MakeAcquisitionDevice.h)
 
 TARGET_LINK_LIBRARIES(JungfraujochHost CommonFunctions HLSSimulation)
 
@@ -13,6 +14,18 @@ TARGET_INCLUDE_DIRECTORIES(JungfraujochHost PUBLIC ../../include)
 
 FIND_LIBRARY(NUMA_LIBRARY NAMES numa DOC "NUMA Library")
 CHECK_INCLUDE_FILE(numaif.h HAS_NUMAIF)
+
+ADD_EXECUTABLE(jfjoch_pcie_status jfjoch_pcie_status.cpp)
+TARGET_LINK_LIBRARIES(jfjoch_pcie_status JungfraujochHost)
+INSTALL(TARGETS jfjoch_pcie_status RUNTIME)
+
+ADD_EXECUTABLE(jfjoch_pcie_fill_buffer jfjoch_pcie_fill_buffer.cpp)
+TARGET_LINK_LIBRARIES(jfjoch_pcie_fill_buffer JungfraujochHost)
+INSTALL(TARGETS jfjoch_pcie_fill_buffer RUNTIME)
+
+ADD_EXECUTABLE(jfjoch_pcie_print_dev_buf jfjoch_pcie_print_dev_buf.cpp)
+TARGET_LINK_LIBRARIES(jfjoch_pcie_print_dev_buf JungfraujochHost)
+INSTALL(TARGETS jfjoch_pcie_print_dev_buf RUNTIME)
 
 IF(HAS_NUMAIF AND NUMA_LIBRARY)
     TARGET_COMPILE_DEFINITIONS(JungfraujochHost PRIVATE -DJFJOCH_USE_NUMA)

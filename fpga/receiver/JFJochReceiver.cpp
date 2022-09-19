@@ -99,6 +99,7 @@ int64_t JFJochReceiver::FrameTransformationThread() {
     try {
         spot_finder = std::make_unique<SpotFinder>(experiment);
         spot_finder->SetInputBuffer(transformation.GetPreview16BitImage());
+        spot_finder->RegisterBuffer();
         spot_finder->LoadMask(one_byte_mask);
     } catch (const JFJochException& e) {
         frame_transformation_ready->CountDown();
@@ -185,8 +186,8 @@ int64_t JFJochReceiver::FrameTransformationThread() {
                                                image_number);
 
                 if (send_bkg_estimate) {
-                    rad_int->Process(transformation.GetPreview16BitImage(),
-                                     experiment.GetPixelsNum());
+                    rad_int->ProcessOneImage(transformation.GetPreview16BitImage(),
+                                             experiment.GetPixelsNum());
                     bkg_estimate.AddElement(image_number,
                                             rad_int->GetRangeValue(rad_int_min_bin, rad_int_max_bin));
                     rad_int->GetResult(rad_int_result);
@@ -204,6 +205,10 @@ int64_t JFJochReceiver::FrameTransformationThread() {
             }
         } catch (const JFJochException &e) { Abort(e); }
     }
+
+#ifdef CUDA_SPOT_FINDING
+    spot_finder->UnregisterBuffer();
+#endif
 
     logger.Debug("sum-and-forward-done");
 

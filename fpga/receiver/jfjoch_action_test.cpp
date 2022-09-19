@@ -3,28 +3,28 @@
 
 #include <iostream>
 
-#include "OpenCAPIDevice.h"
+#include "MakeAcquisitionDevice.h"
 #include "JFJochReceiverTest.h"
 
 int main(int argc, char **argv) {
     uint16_t nstreams = 1;
     uint16_t nmodules = 1;
     size_t nimages = 2;
-    std::string logfile = "";
+    uint64_t processing_period = 20;
 
     bool abort_test = false;
 
     if ((argc == 1) || (argc > 6)) {
-        std::cout << "Usage ./jfjoch_action_test <path to JFjoch source> {<# of images> {<# of modules> {<# of streams> {<log filename>}}}}" << std::endl;
+        std::cout << "Usage ./jfjoch_action_test <path to JFjoch source> {<# of images> {<# of modules> {<# of streams> {<processing period>}}}}" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     if (argc >= 3) nimages = atol(argv[2]);
     if (argc >= 4) nmodules = atol(argv[3]);
     if (argc >= 5) nstreams = atoi(argv[4]);
-    if (argc >= 6) logfile = std::string(argv[5]);
+    if (argc >= 6) processing_period = atoi(argv[5]);
 
-    Logger logger("ActionTest", logfile);
+    Logger logger("ActionTest");
     logger.Verbose(true);
     DiffractionExperiment x;
 
@@ -34,19 +34,23 @@ int main(int argc, char **argv) {
 
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, detector_geom);
     x.ImagesPerTrigger(nimages).PedestalG0Frames(0).UseInternalPacketGenerator(true).PhotonEnergy_keV(12.4).NumTriggers(0);
-    x.SpotFindingPeriod(std::chrono::milliseconds(10)).ImagesPerFile(100);
+    x.SpotFindingPeriod(std::chrono::milliseconds(processing_period))
+            .BackgroundEstimationPeriod(std::chrono::milliseconds(processing_period))
+            .ImagesPerFile(100);
     x.Compression(CompressionAlgorithm::BSHUF_ZSTD,ZSTD_USE_JFJOCH_RLE);
 
 #ifdef __PPC__
     std::vector<uint16_t> pci_slot_number = {4, 5};
     std::vector<uint16_t> numa_node = {0, 8};
     bool verbose = false;
+    bool print_status_updates = true;
     size_t frame_buffer_size = 4096;
     uint16_t nthreads = nstreams * 40;
 #else
     std::vector<int16_t> pci_slot_number = {4};
     std::vector<int16_t> numa_node = {-1};
     bool verbose = true;
+    bool print_status_updates = false;
     size_t frame_buffer_size = 32;
     uint16_t nthreads = nstreams * 2;
 #endif
@@ -58,11 +62,12 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    std::vector<std::unique_ptr<OpenCAPIDevice>> oc_devices;
+    std::vector<std::unique_ptr<AcquisitionDevice>> oc_devices;
     std::vector<AcquisitionDevice *> aq_devices;
 
     for (int i = 0; i < nstreams; i++) {
-        oc_devices.push_back(std::make_unique<OpenCAPIDevice>(pci_slot_number[i], i, frame_buffer_size, numa_node[i]));
+        oc_devices.push_back(MakeAcquisitionDevice(AcquisitionDeviceType::OpenCAPI, i, frame_buffer_size,
+                                                   pci_slot_number[i], numa_node[i]));
         oc_devices[i]->EnableLogging(&logger);
         aq_devices.push_back(oc_devices[i].get());
     }
@@ -81,19 +86,21 @@ int main(int argc, char **argv) {
         done = true;
     });
 
-#ifdef __PPC__
-    while (!done) {
-       for (int i = 0; i < nstreams; i++) {
-           auto status = oc_devices[i]->GetStatus();
-           logger.Info("Dev: " + std::to_string(i)
-                       + " Power: " + std::to_string(status.current_edge_12v_a()*status.voltage_edge_12v_v()+status.current_edge_3p3v_a()*status.voltage_edge_3p3v_v())
-                       + " FPGA Temp: " + std::to_string(status.fpga_temp_degc())
-                       + " HBM Temp: " + std::to_string(status.hbm_temp())
-                       + " Stalls: " + std::to_string(status.stalls_hbm()));
-       }
-       std::this_thread::sleep_for(std::chrono::seconds(1));
+    if (print_status_updates) {
+        while (!done) {
+            for (int i = 0; i < nstreams; i++) {
+                auto status = oc_devices[i]->GetStatus();
+                logger.Info("Dev: " + std::to_string(i)
+                            + " Head packet: " + std::to_string(status.slowest_head())
+                            + " Power: " + std::to_string(status.current_edge_12v_a() * status.voltage_edge_12v_v() +
+                                                          status.current_edge_3p3v_a() * status.voltage_edge_3p3v_v())
+                            + " FPGA Temp: " + std::to_string(status.fpga_temp_degc())
+                            + " HBM Temp: " + std::to_string(status.hbm_temp())
+                            + " Stalls: " + std::to_string(status.stalls_hbm()));
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
     }
-#endif
 
     run_thread.join();
 

@@ -19,7 +19,9 @@ class RadialIntegration {
 public:
     RadialIntegration(const RadialIntegrationMapping& mapping);
     RadialIntegration(const std::vector<uint16_t>& mapping, uint16_t nbins);
+    void Clear();
     void Process(const int16_t *data, size_t npixel);
+    void ProcessOneImage(const int16_t *data, size_t npixel); // Process + Clear
     void GetResult(std::vector<float> &result) const;
     [[nodiscard]] float GetRangeValue(uint16_t min_bin, uint16_t max_bin);
     [[nodiscard]] const std::vector<int64_t>& GetSum() const;

@@ -1,0 +1,2 @@
+ADD_EXECUTABLE(RadialIntDataset RadialIntDataset.cpp)
+TARGET_LINK_LIBRARIES(RadialIntDataset CommonFunctions HDF5Wrappers)

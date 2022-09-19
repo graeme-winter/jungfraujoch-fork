@@ -26,17 +26,15 @@ OpenCAPIDevice::OpenCAPIDevice(std::string in_device_name, uint16_t data_stream,
     CheckVersion();
 
     max_modules = ReadMMIORegister(MMIORegion::HLS, ADDR_MAX_MODULES_FPGA);
-    max_modules_internal_packet_generator = ReadMMIORegister(MMIORegion::HLS, ADDR_MODS_INT_PKT_GEN);
 
+    if (max_modules == 0)
+        throw JFJochException(JFJochExceptionCategory::OpenCAPIError, "Max modules cannot be zero");
     MapBuffersStandard(in_frame_buffer_size_modules,
-                       (3+3*16) * max_modules + max_modules_internal_packet_generator,
+                       (3+3*16) * max_modules + 1,
                        numa_node);
 
-    for (int i = 0; i < max_modules * (3 + 3 * 16) + max_modules_internal_packet_generator; i++)
-        SetCalibrationInputLocation(i, (uint64_t) buffer_h2c[i]);
-
-    for (int module = 0; module < max_modules_internal_packet_generator; module++)
-        SetDefaultInternalGeneratorFrame((3+3*16) * max_modules + module);
+    for (int i = 0; i < max_modules * (3 + 3 * 16) + 1; i++)
+        SetCalibrationInputLocation(i, (uint64_t) buffer_device[i]);
 
     // Set Mailbox FIFOs, so interrupt threshold is 4 messages
     WriteMMIORegister(MMIORegion::MAILBOX, ADDR_MAILBOX_SIT, 251);
@@ -72,7 +70,7 @@ bool OpenCAPIDevice::HW_SendWorkRequest(uint32_t handle) {
         // The send FIFO level is greater than the SIT threshold
         return false;
 
-    uint64_t address = (handle == UINT32_MAX) ? 0 : (uint64_t) buffer_c2h.at(handle);
+    uint64_t address = (handle == UINT32_MAX) ? 0 : (uint64_t) buffer_device.at(handle);
     uint32_t parity = (std::bitset<32>(handle).count() + std::bitset<64>(address).count()) % 2;
 
     WriteMMIORegister(MMIORegion::MAILBOX, ADDR_MAILBOX_WRDATA, handle);
@@ -172,11 +170,17 @@ void OpenCAPIDevice::HW_GetEnvParams(ActionEnvParams *status) const {
     status->mailbox_status_reg   = ReadMMIORegister(MMIORegion::MAILBOX, 0x10);
     status->mailbox_err_reg      = ReadMMIORegister(MMIORegion::MAILBOX, 0x14);
 
-    status->fpga_temp            = ReadMMIORegister(MMIORegion::AD_BCI, 0xA28);
-    status->fpga_temp_2          = ReadMMIORegister(MMIORegion::AD_BCI, 0xA2C);
+    uint32_t temp = ReadMMIORegister(MMIORegion::AD_BCI, 0xA28);
+    status->fpga_temp_C = std::lround((temp >> 16)/16.0 - 273.15);
 
-    status->fpga_status_rail_12V  = ReadMMIORegister(MMIORegion::AD_BCI, 0xA08);
-    status->fpga_status_rail_3p3V = ReadMMIORegister(MMIORegion::AD_BCI, 0xA0C);
+    uint32_t fpga_status_rail_12V  = ReadMMIORegister(MMIORegion::AD_BCI, 0xA08);
+    uint32_t fpga_status_rail_3p3V = ReadMMIORegister(MMIORegion::AD_BCI, 0xA0C);
+
+    status->fpga_pcie_12V_I_mA     = std::lround((fpga_status_rail_12V >> 16) / 4096.0 * 1000.0);
+    status->fpga_pcie_3p3V_I_mA    = std::lround((fpga_status_rail_3p3V >> 16) / 4096.0 * 1000.0);
+
+    status->fpga_pcie_12V_V_mV     = std::lround((fpga_status_rail_12V & 0xFFFF) / 4096.0 * 1000.0);
+    status->fpga_pcie_3p3V_V_mV    = std::lround((fpga_status_rail_3p3V & 0xFFFF) / 4096.0 * 1000.0);
 }
 
 void OpenCAPIDevice::HW_WriteActionRegister(const ActionConfig *job) {
@@ -190,14 +194,6 @@ void OpenCAPIDevice::HW_ReadActionRegister(ActionConfig *job) {
     auto ptr = (uint32_t *) job;
     for (int i = 0; i < sizeof(ActionConfig)/4; i++)
         ptr[i] = ReadMMIORegister(MMIORegion::HLS, ADDR_IPV4_ADDR + i * 4);
-}
-
-uint32_t OpenCAPIDevice::HW_GetMaxModuleNum() {
-    return max_modules;
-}
-
-uint32_t OpenCAPIDevice::HW_GetInternalPacketGeneratorModuleNum() {
-    return max_modules_internal_packet_generator;
 }
 
 bool OpenCAPIDevice::IsOpticalModulePresent() {

@@ -38,7 +38,8 @@ TIFFGeneratorError,
 gRPCError,
 PreviewError,
 HardwareParityError,
-SpotFinderError
+SpotFinderError,
+PCIeError
 };
 
 class JFJochException : public std::exception {

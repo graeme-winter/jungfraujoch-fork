@@ -47,10 +47,20 @@ struct ActionStatus {
 struct ActionEnvParams {
     uint32_t mailbox_status_reg;
     uint32_t mailbox_err_reg;
-    uint32_t fpga_temp;
-    uint32_t fpga_temp_2;
-    uint32_t fpga_status_rail_12V;
-    uint32_t fpga_status_rail_3p3V;
+    uint32_t fpga_temp_C;
+
+    uint32_t fpga_pcie_12V_I_mA;
+    uint32_t fpga_pcie_3p3V_I_mA;
+    uint32_t fpga_pcie_12V_V_mV;
+    uint32_t fpga_pcie_3p3V_V_mV;
+
+    uint32_t pcie_h2c_descriptors;
+    uint32_t pcie_c2h_descriptors;
+    uint32_t pcie_h2c_beats;
+    uint32_t pcie_c2h_beats;
+
+    uint32_t pcie_h2c_status;
+    uint32_t pcie_c2h_status;
 };
 #pragma pack(pop)
 

@@ -32,8 +32,8 @@ function processGRPCError (err) {
 }
 
 function readGrpcPlot(input) {
-    if (input.getXList().length === 0)
-        return {x: [0 , 1], y: [0, 0]};
+    if ((typeof input != "object") || (input.getXList().length === 0))
+        return {x: [0], y: [0]};
     else
         return {x: input.getXList(), y: input.getYList()};
 }
@@ -81,7 +81,6 @@ class App extends Component {
                 state_map.meanSpotsPlot = readGrpcPlot(response.getReceiverStatus().getSpotCount());
                 state_map.bkgEstimatePlot = readGrpcPlot(response.getReceiverStatus().getBkgEstimate());
                 state_map.radialIntPlot = readGrpcPlot(response.getReceiverStatus().getRadialIntProfile());
-
                 state_map.currMasterFileName = response.getReceiverStatus().getMasterFileName();
             } else
                 state_map.currMasterFileName = "";

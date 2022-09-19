@@ -23,9 +23,6 @@ class OpenCAPIDevice  : public AcquisitionDevice {
     snap_card *card = nullptr;
     snap_action *action = nullptr;
 
-    uint32_t max_modules = 0;
-    uint32_t max_modules_internal_packet_generator = 0;
-
     bool internal_packet_gen = false;
 
     void SetCalibrationInputLocation(uint32_t location, uint64_t addr);
@@ -39,8 +36,6 @@ class OpenCAPIDevice  : public AcquisitionDevice {
     uint32_t ReadMMIORegister(MMIORegion offset, uint32_t addr) const;
     bool CheckRegister(MMIORegion offset, uint32_t addr, uint32_t expected_val);
 
-    uint32_t HW_GetInternalPacketGeneratorModuleNum() override;
-    uint32_t HW_GetMaxModuleNum() override;
     bool HW_ReadMailbox(uint32_t values[4]) override;
     void HW_SetCancelDataCollectionBit() override;
     bool HW_SendWorkRequest(uint32_t handle) override;

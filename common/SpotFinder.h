@@ -51,6 +51,8 @@ public:
                     std::vector<DiffractionSpot> &vec, int64_t image_number);
     static bool GPUPresent();
     void LoadMask(const std::vector<uint8_t> &mask);
+    void RegisterBuffer();
+    void UnregisterBuffer();
 };
 
 #endif //JUNGFRAUJOCH_SPOTFINDER_H

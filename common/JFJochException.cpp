@@ -84,6 +84,8 @@ std::string JFJochException::DecodeCategory(JFJochExceptionCategory category) {
             return "Parity error (HW)";
         case JFJochExceptionCategory::SpotFinderError:
             return "Spot finder";
+        case JFJochExceptionCategory::PCIeError:
+            return "PCIe driver error";
         default:
             return "";
     }

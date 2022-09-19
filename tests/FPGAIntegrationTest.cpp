@@ -28,7 +28,6 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator", "[FPGA][Full]") {
     REQUIRE(test.OutputStream().size() == 1);
 
     REQUIRE(test.GetPacketsOK() == 128 * nmodules * 4);
-    REQUIRE(test.GetInternalPacketGeneratorModuleNum() == MODULES_INTERNAL_PACKET_GEN);
 
     for (int j = 0; j < 4; j++) {
         for (int i = 0; i < nmodules; i++) {

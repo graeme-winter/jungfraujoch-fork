@@ -12,13 +12,15 @@ RadialIntegration::RadialIntegration(const RadialIntegrationMapping &mapping) :
         RadialIntegration(mapping.GetPixelToBinMapping(), mapping.GetBinNumber())
 {}
 
-void RadialIntegration::Process(const int16_t *data, size_t npixel) {
+void RadialIntegration::Clear() {
     for (auto &i : sum)
         i = 0;
 
     for (auto &i : count)
         i = 0;
+}
 
+void RadialIntegration::Process(const int16_t *data, size_t npixel) {
     if (npixel != pixel_to_bin.size())
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                               "Mismatch in size of pixel-to-bin mapping and image");
@@ -31,6 +33,11 @@ void RadialIntegration::Process(const int16_t *data, size_t npixel) {
             count[bin] += 1;
         }
     }
+}
+
+void RadialIntegration::ProcessOneImage(const int16_t *data, size_t npixel) {
+    Clear();
+    Process(data, npixel);
 }
 
 void RadialIntegration::GetResult(std::vector<float> &result) const {

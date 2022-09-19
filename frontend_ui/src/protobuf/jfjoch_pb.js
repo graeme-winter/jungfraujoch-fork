@@ -10273,7 +10273,13 @@ proto.JFJochProtoBuf.FPGAStatus.toObject = function(includeInstance, msg) {
     currentEdge12vA: jspb.Message.getFloatingPointFieldWithDefault(msg, 27, 0.0),
     voltageEdge12vV: jspb.Message.getFloatingPointFieldWithDefault(msg, 28, 0.0),
     currentEdge3p3vA: jspb.Message.getFloatingPointFieldWithDefault(msg, 29, 0.0),
-    voltageEdge3p3vV: jspb.Message.getFloatingPointFieldWithDefault(msg, 30, 0.0)
+    voltageEdge3p3vV: jspb.Message.getFloatingPointFieldWithDefault(msg, 30, 0.0),
+    pcieH2cDescriptors: jspb.Message.getFieldWithDefault(msg, 31, 0),
+    pcieC2hDescriptors: jspb.Message.getFieldWithDefault(msg, 32, 0),
+    pcieH2cBeats: jspb.Message.getFieldWithDefault(msg, 33, 0),
+    pcieC2hBeats: jspb.Message.getFieldWithDefault(msg, 34, 0),
+    pcieH2cStatus: jspb.Message.getFieldWithDefault(msg, 35, 0),
+    pcieC2hStatus: jspb.Message.getFieldWithDefault(msg, 36, 0)
   };
 
   if (includeInstance) {
@@ -10427,6 +10433,30 @@ proto.JFJochProtoBuf.FPGAStatus.deserializeBinaryFromReader = function(msg, read
     case 30:
       var value = /** @type {number} */ (reader.readDouble());
       msg.setVoltageEdge3p3vV(value);
+      break;
+    case 31:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPcieH2cDescriptors(value);
+      break;
+    case 32:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPcieC2hDescriptors(value);
+      break;
+    case 33:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPcieH2cBeats(value);
+      break;
+    case 34:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPcieC2hBeats(value);
+      break;
+    case 35:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPcieH2cStatus(value);
+      break;
+    case 36:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPcieC2hStatus(value);
       break;
     default:
       reader.skipField();
@@ -10654,6 +10684,48 @@ proto.JFJochProtoBuf.FPGAStatus.serializeBinaryToWriter = function(message, writ
   if (f !== 0.0) {
     writer.writeDouble(
       30,
+      f
+    );
+  }
+  f = message.getPcieH2cDescriptors();
+  if (f !== 0) {
+    writer.writeUint64(
+      31,
+      f
+    );
+  }
+  f = message.getPcieC2hDescriptors();
+  if (f !== 0) {
+    writer.writeUint64(
+      32,
+      f
+    );
+  }
+  f = message.getPcieH2cBeats();
+  if (f !== 0) {
+    writer.writeUint64(
+      33,
+      f
+    );
+  }
+  f = message.getPcieC2hBeats();
+  if (f !== 0) {
+    writer.writeUint64(
+      34,
+      f
+    );
+  }
+  f = message.getPcieH2cStatus();
+  if (f !== 0) {
+    writer.writeUint64(
+      35,
+      f
+    );
+  }
+  f = message.getPcieC2hStatus();
+  if (f !== 0) {
+    writer.writeUint64(
+      36,
       f
     );
   }
@@ -11186,6 +11258,114 @@ proto.JFJochProtoBuf.FPGAStatus.prototype.setVoltageEdge3p3vV = function(value) 
 };
 
 
+/**
+ * optional uint64 pcie_h2c_descriptors = 31;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.getPcieH2cDescriptors = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 31, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.FPGAStatus} returns this
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.setPcieH2cDescriptors = function(value) {
+  return jspb.Message.setProto3IntField(this, 31, value);
+};
+
+
+/**
+ * optional uint64 pcie_c2h_descriptors = 32;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.getPcieC2hDescriptors = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 32, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.FPGAStatus} returns this
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.setPcieC2hDescriptors = function(value) {
+  return jspb.Message.setProto3IntField(this, 32, value);
+};
+
+
+/**
+ * optional uint64 pcie_h2c_beats = 33;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.getPcieH2cBeats = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 33, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.FPGAStatus} returns this
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.setPcieH2cBeats = function(value) {
+  return jspb.Message.setProto3IntField(this, 33, value);
+};
+
+
+/**
+ * optional uint64 pcie_c2h_beats = 34;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.getPcieC2hBeats = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 34, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.FPGAStatus} returns this
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.setPcieC2hBeats = function(value) {
+  return jspb.Message.setProto3IntField(this, 34, value);
+};
+
+
+/**
+ * optional uint64 pcie_h2c_status = 35;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.getPcieH2cStatus = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 35, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.FPGAStatus} returns this
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.setPcieH2cStatus = function(value) {
+  return jspb.Message.setProto3IntField(this, 35, value);
+};
+
+
+/**
+ * optional uint64 pcie_c2h_status = 36;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.getPcieC2hStatus = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 36, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.FPGAStatus} returns this
+ */
+proto.JFJochProtoBuf.FPGAStatus.prototype.setPcieC2hStatus = function(value) {
+  return jspb.Message.setProto3IntField(this, 36, value);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
@@ -11440,7 +11620,8 @@ proto.JFJochProtoBuf.ReceiverStatus.toObject = function(includeInstance, msg) {
     idle: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
     bkgEstimate: (f = msg.getBkgEstimate()) && proto.JFJochProtoBuf.Plot.toObject(includeInstance, f),
     radialIntProfile: (f = msg.getRadialIntProfile()) && proto.JFJochProtoBuf.Plot.toObject(includeInstance, f),
-    spotCount: (f = msg.getSpotCount()) && proto.JFJochProtoBuf.Plot.toObject(includeInstance, f)
+    spotCount: (f = msg.getSpotCount()) && proto.JFJochProtoBuf.Plot.toObject(includeInstance, f),
+    masterFileName: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -11504,6 +11685,10 @@ proto.JFJochProtoBuf.ReceiverStatus.deserializeBinaryFromReader = function(msg, 
       var value = new proto.JFJochProtoBuf.Plot;
       reader.readMessage(value,proto.JFJochProtoBuf.Plot.deserializeBinaryFromReader);
       msg.setSpotCount(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMasterFileName(value);
       break;
     default:
       reader.skipField();
@@ -11578,6 +11763,13 @@ proto.JFJochProtoBuf.ReceiverStatus.serializeBinaryToWriter = function(message, 
       6,
       f,
       proto.JFJochProtoBuf.Plot.serializeBinaryToWriter
+    );
+  }
+  f = message.getMasterFileName();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
     );
   }
 };
@@ -11765,6 +11957,24 @@ proto.JFJochProtoBuf.ReceiverStatus.prototype.clearSpotCount = function() {
  */
 proto.JFJochProtoBuf.ReceiverStatus.prototype.hasSpotCount = function() {
   return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional string master_file_name = 7;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.ReceiverStatus.prototype.getMasterFileName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.ReceiverStatus} returns this
+ */
+proto.JFJochProtoBuf.ReceiverStatus.prototype.setMasterFileName = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 

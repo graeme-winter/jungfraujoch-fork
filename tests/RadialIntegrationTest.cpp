@@ -81,7 +81,7 @@ TEST_CASE("RadialIntegration_Process","[RadialIntegration]") {
     std::vector<float> result;
 
     RadialIntegration radial(pixel_to_bin, 4);
-    radial.Process(test_image.data(), 8);
+    radial.ProcessOneImage(test_image.data(), 8);
 
     REQUIRE(radial.GetCount().size() == 4);
     REQUIRE(radial.GetSum().size() == 4);
@@ -104,7 +104,7 @@ TEST_CASE("RadialIntegration_GetResult","[RadialIntegration]") {
     std::vector<float> result;
 
     RadialIntegration radial(pixel_to_bin, 4);
-    radial.Process(test_image.data(), 8);
+    radial.ProcessOneImage(test_image.data(), 8);
     radial.GetResult(result);
 
     REQUIRE(result.size() == 4);
@@ -121,7 +121,7 @@ TEST_CASE("RadialIntegration_GetRangeValue","[RadialIntegration]") {
     std::vector<float> result;
 
     RadialIntegration radial(pixel_to_bin, 4);
-    radial.Process(test_image.data(), 8);
+    radial.ProcessOneImage(test_image.data(), 8);
     REQUIRE(radial.GetRangeValue(0, 7) == Approx((0+1+2+3+5+6+7) / 7.0));
     REQUIRE(radial.GetRangeValue(2, 2) == Approx((5+1) / 2.0));
     REQUIRE(radial.GetRangeValue(2, 3) == Approx((5+3+1+0) / 4.0));

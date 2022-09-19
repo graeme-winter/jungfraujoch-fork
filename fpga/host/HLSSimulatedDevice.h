@@ -97,9 +97,8 @@ class HLSSimulatedDevice : public AcquisitionDevice {
     bool HW_ReadMailbox(uint32_t values[4]) override;
     void HW_SetCancelDataCollectionBit() override;
     bool HW_SendWorkRequest(uint32_t handle) override;
-    uint32_t HW_GetInternalPacketGeneratorModuleNum() override;
-    uint32_t HW_GetMaxModuleNum() override;
     uint64_t HW_GetMACAddress() const override;
+    void HW_GetStatus(ActionStatus *status) const override;
 public:
     HLSSimulatedDevice(uint16_t data_stream, size_t in_frame_buffer_size_modules, int16_t numa_node = -1);
     ~HLSSimulatedDevice();

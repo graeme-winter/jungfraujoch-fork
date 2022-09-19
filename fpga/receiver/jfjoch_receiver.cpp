@@ -44,13 +44,10 @@ AcquisitionDevice *SetupAcquisitionDevice(const nlohmann::json &input, uint16_t 
     }
 
     if (input.contains("custom_test_frame")) {
-        std::vector<uint16_t> tmp(ret->GetInternalPacketGeneratorModuleNum() * RAW_MODULE_SIZE);
-        for (int i = 0; i < ret->GetInternalPacketGeneratorModuleNum(); i++) {
-            auto filename = input["custom_test_frame"].get<std::string>();
-            std::fstream file(filename.c_str(), std::fstream::in | std::fstream::binary);
-            file.read(((char *) tmp.data()) + i * RAW_MODULE_SIZE * sizeof(uint16_t),
-                      RAW_MODULE_SIZE * sizeof(uint16_t));
-        }
+        std::vector<uint16_t> tmp(RAW_MODULE_SIZE);
+        auto filename = input["custom_test_frame"].get<std::string>();
+        std::fstream file(filename.c_str(), std::fstream::in | std::fstream::binary);
+        file.read((char *) tmp.data(),RAW_MODULE_SIZE * sizeof(uint16_t));
         ret->SetCustomInternalGeneratorFrame(tmp);
     }
 

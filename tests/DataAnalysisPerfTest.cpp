@@ -116,7 +116,7 @@ auto TestRadialIntegration(const DiffractionExperiment &experiment, const JFJoch
     auto start_time = std::chrono::system_clock::now();
     for (int redo = 0; redo < nredo; redo++) {
         for (int i = 0; i < nimages; i++) {
-            integration.Process(image + i * experiment.GetPixelsNum(), experiment.GetPixelsNum());
+            integration.ProcessOneImage(image + i * experiment.GetPixelsNum(), experiment.GetPixelsNum());
             //integration.GetResult(result);
         }
     }

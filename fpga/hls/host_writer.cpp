@@ -189,10 +189,10 @@ void host_writer(STREAM_512 &data_in,
 
         size_t out_frame_addr = curr_offset[id] + eth_packet * (4 * RAW_MODULE_COLS * sizeof(int16_t));
         if (out_frame_addr % 128 != 0) internal_err_reg[0] = 1;
-        setup_datamover(datamover_out_cmd, out_frame_addr, 64 * 128);
 
-        if (!addr_pedestal_flag(addr))
-            packets_processed = ++total_counter;
+        packets_processed = ++total_counter;
+
+        setup_datamover(datamover_out_cmd, out_frame_addr, 64 * 128);
 
         addr_in >> addr;
         err_reg = internal_err_reg;

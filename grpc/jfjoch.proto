@@ -330,6 +330,14 @@ message FPGAStatus {
   double voltage_edge_12V_V  = 28;
   double current_edge_3p3V_A = 29;
   double voltage_edge_3p3V_V = 30;
+
+  uint64 pcie_h2c_descriptors = 31;
+  uint64 pcie_c2h_descriptors = 32;
+  uint64 pcie_h2c_beats       = 33;
+  uint64 pcie_c2h_beats       = 34;
+
+  uint64 pcie_h2c_status      = 35;
+  uint64 pcie_c2h_status      = 36;
 }
 
 message Plot {

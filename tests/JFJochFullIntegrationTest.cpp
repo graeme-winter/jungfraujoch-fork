@@ -74,7 +74,6 @@ TEST_CASE("JFJochIntegrationTest_ZMQ", "[JFJochReceiver]") {
         for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
             for (int image_num = 1; image_num <= nimages; image_num++)
                 aq_devices[i]->AddModule(image_num, m, image.data());
-            aq_devices[i]->AddModule(PEDESTAL_FRAME_ID, m, image.data());
         }
         aq_devices[i]->Terminate();
     }
@@ -160,7 +159,6 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_RAW", "[JFJochReceiver]") {
         for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
             for (int image_num = 1; image_num <= nimages; image_num++)
                 aq_devices[i]->AddModule(image_num, m, image.data());
-            aq_devices[i]->AddModule(PEDESTAL_FRAME_ID, m, image.data());
         }
         aq_devices[i]->Terminate();
     }
@@ -255,9 +253,6 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_3Writers", "[JFJochReceiver]") {
             for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++)
                 aq_devices[i]->AddModule(image_num, m, image.data());
         }
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++)
-            aq_devices[i]->AddModule(PEDESTAL_FRAME_ID, m, image.data());
-
         aq_devices[i]->Terminate();
     }
 
@@ -310,12 +305,8 @@ TEST_CASE("JFJochIntegrationTest_Cancel", "[JFJochReceiver]") {
         test->EnableLogging(&logger);
         for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
             test->LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", m);
-            test->AddModule(1, m, image.data());
-            test->AddModule(2, m, image.data());
-            test->AddModule(3, m, image.data());
-            test->AddModule(4, m, image.data());
-            test->AddModule(7, m, image.data());
-            test->AddModule(PEDESTAL_FRAME_ID, m, image.data());
+            for (int frame = 1; frame <= nimages; frame ++)
+                test->AddModule(frame, m, image.data());
         }
         aq_devices.emplace_back(test);
     }
@@ -358,7 +349,7 @@ TEST_CASE("JFJochIntegrationTest_Cancel", "[JFJochReceiver]") {
     JFJochProtoBuf::JFJochReceiverOutput output;
     REQUIRE(broker.GetDetailedReceiverOutput(nullptr, nullptr, &output).ok());
 
-    REQUIRE(output.max_image_number_sent() == 6);
+    REQUIRE(output.max_image_number_sent() == 4);
     REQUIRE(output.images_sent() == 5);
 
     fpga_receiver_server->Shutdown();
@@ -391,7 +382,6 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview", "[JFJochReceiver]") {
             test->LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", m);
             for (int image_num = 1; image_num <= nimages; image_num++)
                 test->AddModule(image_num, m, image.data());
-            test->AddModule(PEDESTAL_FRAME_ID, m, image.data());
         }
         test->Terminate();
         aq_devices.emplace_back(test);
@@ -765,7 +755,6 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index", "[JFJochReceiver]
             test->AddModule(image_num, m, (uint16_t *) (image_raw_geom.data()
                                                         + (m + (image_num-1) * broker.Experiment().GetModulesNum(0))
                                                         * RAW_MODULE_SIZE));
-        test->AddModule(PEDESTAL_FRAME_ID, m, pedestal.data());
     }
     test->Terminate();
 
@@ -896,7 +885,6 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index_sum", "[JFJochRecei
             test->AddModule(image_num, m, (uint16_t *) (image_raw_geom.data()
                                                         + (m + (image_num-1) * broker.Experiment().GetModulesNum(0))
                                                           * RAW_MODULE_SIZE));
-        test->AddModule(PEDESTAL_FRAME_ID, m, pedestal.data());
     }
     test->Terminate();
 

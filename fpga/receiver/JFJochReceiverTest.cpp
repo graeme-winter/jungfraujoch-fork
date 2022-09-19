@@ -115,27 +115,18 @@ bool JFJochReceiverTest(JFJochProtoBuf::JFJochReceiverOutput &output, Logger &lo
                         uint16_t nthreads, const std::string &test_path, bool abort,
                         bool verbose, ZMQPreviewPublisher *in_preview_writer) {
 
-    std::vector<uint16_t> raw_expected_image(x.GetModulesNum() * RAW_MODULE_SIZE);
+    std::vector<uint16_t> raw_expected_image(x.GetModulesNum() * RAW_MODULE_SIZE, 0);
     for (int i = 0; i < x.GetDataStreamsNum(); i++) {
-
-        auto nmod_int_pkt_gen = aq_devices[i]->GetInternalPacketGeneratorModuleNum();
-        std::vector<uint16_t> input(nmod_int_pkt_gen * RAW_MODULE_SIZE);
-
-        for (int j = 0; j < nmod_int_pkt_gen; j++)
-            LoadBinaryFile(test_path + "tests/test_data/mod5_raw" + std::to_string(j) + ".bin",
-                           input.data() + j * RAW_MODULE_SIZE, RAW_MODULE_SIZE);
-
-        aq_devices[i]->SetCustomInternalGeneratorFrame((int16_t *) (input.data()),
-                                                       nmod_int_pkt_gen * RAW_MODULE_SIZE * sizeof(int16_t));
+        std::vector<uint16_t> input(RAW_MODULE_SIZE);
+        LoadBinaryFile(test_path + "tests/test_data/mod5_raw0.bin", input.data(), RAW_MODULE_SIZE);
+        aq_devices[i]->SetCustomInternalGeneratorFrame(input);
 
         uint32_t module0 = x.GetFirstModuleOfDataStream(i);
         for (int m = 0; m < x.GetModulesNum(i); m++) {
             memcpy(raw_expected_image.data() + (module0 + m) * RAW_MODULE_SIZE,
-                   input.data() + (m % nmod_int_pkt_gen) * RAW_MODULE_SIZE,
-                   RAW_MODULE_SIZE * sizeof(uint16_t));
+                   input.data(), RAW_MODULE_SIZE * sizeof(uint16_t));
         }
     }
-
 
     // Load gain file
     std::vector<double> gain(3 * RAW_MODULE_SIZE);

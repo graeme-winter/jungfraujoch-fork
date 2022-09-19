@@ -261,7 +261,8 @@ proc create_root_design { parentCell } {
   # Create interface ports
   set pcie0_mgt [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie_7x_mgt_rtl:1.0 pcie0_mgt ]
 
-  set pcie0_ref [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 pcie0_ref ]
+  # For Gen3 x16 need to use pcie1_ref clock
+  set pcie1_ref [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 pcie1_ref ]
 
   set qsfp0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:gt_rtl:1.0 qsfp0 ]
 
@@ -344,7 +345,7 @@ proc create_root_design { parentCell } {
   set smartconnect_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_1 ]
   set_property -dict [ list \
    CONFIG.NUM_CLKS {2} \
-   CONFIG.NUM_MI {6} \
+   CONFIG.NUM_MI {7} \
    CONFIG.NUM_SI {2} \
  ] $smartconnect_1
 
@@ -358,16 +359,17 @@ proc create_root_design { parentCell } {
  ] $zero
 
   # Create interface connections
+  connect_bd_intf_net -intf_net S_AXIS1_1 [get_bd_intf_pins jungfraujoch/m_axis_c2h_datamover_cmd] [get_bd_intf_pins pcie_dma/s_axis_c2h_datamover_cmd]
+  connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_pins jungfraujoch/m_axis_h2c_datamover_cmd] [get_bd_intf_pins pcie_dma/s_axis_h2c_datamover_cmd]
   connect_bd_intf_net -intf_net S_AXIS_100G_1 [get_bd_intf_pins jungfraujoch/eth_out] [get_bd_intf_pins mac_100g/s_axis_eth_out]
+  connect_bd_intf_net -intf_net S_AXIS_C2H_0_1 [get_bd_intf_pins jungfraujoch/m_axis_c2h_data] [get_bd_intf_pins pcie_dma/s_axis_c2h_data]
   connect_bd_intf_net -intf_net cms_subsystem_0_satellite_uart [get_bd_intf_ports satellite_uart_0] [get_bd_intf_pins cms_subsystem_0/satellite_uart]
   connect_bd_intf_net -intf_net eth_ctrl_M_AXI [get_bd_intf_pins jfjoch_ctrl/M_AXI] [get_bd_intf_pins smartconnect_1/S01_AXI]
-  connect_bd_intf_net -intf_net jungfraujoch_m_axis_c2h_data [get_bd_intf_pins jungfraujoch/m_axis_c2h_data] [get_bd_intf_pins pcie_dma/s_axis_c2h_data]
-  connect_bd_intf_net -intf_net jungfraujoch_m_axis_c2h_datamover_cmd [get_bd_intf_pins jungfraujoch/m_axis_c2h_datamover_cmd] [get_bd_intf_pins pcie_dma/s_axis_c2h_cmd]
-  connect_bd_intf_net -intf_net jungfraujoch_m_axis_h2c_datamover_cmd [get_bd_intf_pins jungfraujoch/m_axis_h2c_datamover_cmd] [get_bd_intf_pins pcie_dma/s_axis_h2c_cmd]
   connect_bd_intf_net -intf_net mac_100g_1_M_AXIS_100G [get_bd_intf_pins jungfraujoch/eth_in] [get_bd_intf_pins mac_100g/m_axis_eth_in]
   connect_bd_intf_net -intf_net mac_100g_1_qsfp0 [get_bd_intf_ports qsfp0] [get_bd_intf_pins mac_100g/qsfp]
-  connect_bd_intf_net -intf_net pcie0_ref_1 [get_bd_intf_ports pcie0_ref] [get_bd_intf_pins pcie_dma/pcie_refclk]
+  connect_bd_intf_net -intf_net pcie1_ref_1 [get_bd_intf_ports pcie1_ref] [get_bd_intf_pins pcie_dma/pcie_refclk]
   connect_bd_intf_net -intf_net pcie_dma_M_AXI [get_bd_intf_pins pcie_dma/m_axi_ctrl] [get_bd_intf_pins smartconnect_1/S00_AXI]
+  connect_bd_intf_net -intf_net pcie_dma_M_AXIS_H2C_0 [get_bd_intf_pins jungfraujoch/s_axis_h2c_data] [get_bd_intf_pins pcie_dma/m_axis_h2c_data]
   connect_bd_intf_net -intf_net pcie_dma_pcie0_mgt [get_bd_intf_ports pcie0_mgt] [get_bd_intf_pins pcie_dma/pcie_mgt]
   connect_bd_intf_net -intf_net qsfp0_ref_1 [get_bd_intf_ports qsfp0_ref] [get_bd_intf_pins mac_100g/qsfp_ref]
   connect_bd_intf_net -intf_net ref100_1 [get_bd_intf_ports ref100] [get_bd_intf_pins refclk_ibufds_inst/CLK_IN_D]
@@ -385,11 +387,11 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net s_axi_hbm_7_1 [get_bd_intf_pins hbm_infrastructure/s_axi_hbm_7] [get_bd_intf_pins jungfraujoch/m_axi_d_hbm_p7]
   connect_bd_intf_net -intf_net s_axi_hbm_8_1 [get_bd_intf_pins hbm_infrastructure/s_axi_hbm_8] [get_bd_intf_pins jungfraujoch/m_axi_d_hbm_p8]
   connect_bd_intf_net -intf_net s_axi_hbm_9_1 [get_bd_intf_pins hbm_infrastructure/s_axi_hbm_9] [get_bd_intf_pins jungfraujoch/m_axi_d_hbm_p9]
-  connect_bd_intf_net -intf_net s_axis_h2c_data_1 [get_bd_intf_pins jungfraujoch/s_axis_h2c_data] [get_bd_intf_pins pcie_dma/m_axis_h2c_data]
   connect_bd_intf_net -intf_net smartconnect_1_M01_AXI [get_bd_intf_pins cms_subsystem_0/s_axi_ctrl] [get_bd_intf_pins smartconnect_1/M01_AXI]
   connect_bd_intf_net -intf_net smartconnect_1_M03_AXI [get_bd_intf_pins axi_quad_spi_0/AXI_LITE] [get_bd_intf_pins smartconnect_1/M03_AXI]
   connect_bd_intf_net -intf_net smartconnect_1_M04_AXI [get_bd_intf_pins axi_intc_0/s_axi] [get_bd_intf_pins smartconnect_1/M04_AXI]
   connect_bd_intf_net -intf_net smartconnect_1_M05_AXI [get_bd_intf_pins jfjoch_ctrl/s_axi] [get_bd_intf_pins smartconnect_1/M05_AXI]
+  connect_bd_intf_net -intf_net smartconnect_1_M06_AXI [get_bd_intf_pins pcie_dma/s_axi_dma_ctrl] [get_bd_intf_pins smartconnect_1/M06_AXI]
 
   # Create port connections
   connect_bd_net -net axi_clk_1 [get_bd_pins axi_intc_0/s_axi_aclk] [get_bd_pins axi_quad_spi_0/s_axi_aclk] [get_bd_pins cms_subsystem_0/aclk_ctrl] [get_bd_pins hbm_infrastructure/axi_clk] [get_bd_pins jungfraujoch/axi_clk] [get_bd_pins mac_100g/axiclk] [get_bd_pins pcie_dma/axi_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins smartconnect_1/aclk]
@@ -400,10 +402,6 @@ proc create_root_design { parentCell } {
   connect_bd_net -net hbm_infrastructure_apb_complete_0 [get_bd_pins hbm_infrastructure/apb_complete_0] [get_bd_pins jungfraujoch/apb_complete]
   connect_bd_net -net hbm_infrastructure_hbm_temp_trip [get_bd_ports hbm_cattrip] [get_bd_pins cms_subsystem_0/interrupt_hbm_cattrip] [get_bd_pins hbm_infrastructure/hbm_temp_trip_0] [get_bd_pins jungfraujoch/hbm_temp_trip]
   connect_bd_net -net hbm_infrastructure_hbm_temperature [get_bd_pins cms_subsystem_0/hbm_temp_1] [get_bd_pins hbm_infrastructure/hbm_temperature_0] [get_bd_pins jungfraujoch/hbm_temperature]
-  connect_bd_net -net host_mem_cmd_fifo_empty_1 [get_bd_pins jungfraujoch/host_mem_cmd_fifo_empty] [get_bd_pins pcie_dma/host_mem_cmd_fifo_empty]
-  connect_bd_net -net host_mem_cmd_fifo_full_1 [get_bd_pins jungfraujoch/host_mem_cmd_fifo_full] [get_bd_pins pcie_dma/host_mem_cmd_fifo_full]
-  connect_bd_net -net host_mem_data_fifo_empty_1 [get_bd_pins jungfraujoch/host_mem_data_fifo_empty] [get_bd_pins pcie_dma/host_mem_data_fifo_empty]
-  connect_bd_net -net host_mem_data_fifo_full_1 [get_bd_pins jungfraujoch/host_mem_data_fifo_full] [get_bd_pins pcie_dma/host_mem_data_fifo_full]
   connect_bd_net -net mac_100g_1_eth_busy [get_bd_pins jungfraujoch/eth_busy] [get_bd_pins mac_100g/eth_busy]
   connect_bd_net -net mac_100g_1_stat_rx_aligned [get_bd_pins jfjoch_ctrl/stat_rx_aligned] [get_bd_pins jungfraujoch/eth_stat_rx_aligned] [get_bd_pins mac_100g/stat_rx_aligned]
   connect_bd_net -net mac_100g_1_stat_rx_packet_bad_fcs [get_bd_pins jungfraujoch/eth_stat_rx_packet_bad_fcs] [get_bd_pins mac_100g/stat_rx_packet_bad_fcs]
@@ -417,9 +415,11 @@ proc create_root_design { parentCell } {
   connect_bd_net -net satellite_gpio_0_1 [get_bd_ports satellite_gpio_0] [get_bd_pins cms_subsystem_0/satellite_gpio]
   connect_bd_net -net usr_irq_req_1 [get_bd_pins axi_intc_0/irq] [get_bd_pins pcie_dma/usr_irq_req]
   connect_bd_net -net xlconcat_irq_dout [get_bd_pins axi_intc_0/intr] [get_bd_pins xlconcat_irq/dout]
-  connect_bd_net -net zero_dout [get_bd_pins axi_quad_spi_0/usrcclkts] [get_bd_pins jungfraujoch/mm2s_error] [get_bd_pins jungfraujoch/s2mm_error] [get_bd_pins zero/dout]
+  connect_bd_net -net zero_dout [get_bd_pins axi_quad_spi_0/usrcclkts] [get_bd_pins jungfraujoch/mm2s_error] [get_bd_pins jungfraujoch/qsfpdd_modprs] [get_bd_pins jungfraujoch/s2mm_error] [get_bd_pins zero/dout]
 
   # Create address segments
+  assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Instruction] [get_bd_addr_segs jfjoch_ctrl/ilmb_bram_if_cntlr/SLMB/Mem] -force
+
   assign_bd_address -offset 0x00010000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs jungfraujoch/action_config_0/s_axi/reg0] -force
   assign_bd_address -offset 0x00060000 -range 0x00002000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs jungfraujoch/axi_bram_ctrl_0/S_AXI/Mem0] -force
   assign_bd_address -offset 0x00080000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs jfjoch_ctrl/axi_intc_0/S_AXI/Reg] -force
@@ -429,17 +429,20 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x000C0000 -range 0x00040000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs cms_subsystem_0/s_axi_ctrl/Mem] -force
   assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs jfjoch_ctrl/dlmb_bram_if_cntlr/SLMB/Mem] -force
   assign_bd_address -offset 0x00030000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs jungfraujoch/mailbox_0/S0_AXI/Reg] -force
-  assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Instruction] [get_bd_addr_segs jfjoch_ctrl/ilmb_bram_if_cntlr/SLMB/Mem] -force
+  assign_bd_address -offset 0x00090000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs pcie_dma/xdma_0/S_AXI_LITE/CTL0] -force
+  assign_bd_address -offset 0x000A0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jfjoch_ctrl/microblaze_0/Data] [get_bd_addr_segs pcie_dma/axi_gpio_0/S_AXI/Reg] -force
 
   assign_bd_address -offset 0x00010000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs jungfraujoch/action_config_0/s_axi/reg0] -force
+  assign_bd_address -offset 0x00020000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs axi_quad_spi_0/AXI_LITE/Reg] -force
+  assign_bd_address -offset 0x00030000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs jungfraujoch/mailbox_0/S0_AXI/Reg] -force
+  assign_bd_address -offset 0x00040000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs mac_100g/cmac_usplus_0/s_axi/Reg] -force
+  assign_bd_address -offset 0x00050000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs axi_intc_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x00060000 -range 0x00002000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs jungfraujoch/axi_bram_ctrl_0/S_AXI/Mem0] -force
   assign_bd_address -offset 0x00070000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs pcie_dma/axi_firewall_0/S_AXI_CTL/Control] -force
-  assign_bd_address -offset 0x00050000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs axi_intc_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x00080000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs jfjoch_ctrl/axi_intc_0/S_AXI/Reg] -force
-  assign_bd_address -offset 0x00020000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs axi_quad_spi_0/AXI_LITE/Reg] -force
-  assign_bd_address -offset 0x00040000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs mac_100g/cmac_usplus_0/s_axi/Reg] -force
+  assign_bd_address -offset 0x00090000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs pcie_dma/xdma_0/S_AXI_LITE/CTL0] -force
+  assign_bd_address -offset 0x000A0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs pcie_dma/axi_gpio_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x000C0000 -range 0x00040000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs cms_subsystem_0/s_axi_ctrl/Mem] -force
-  assign_bd_address -offset 0x00030000 -range 0x00010000 -target_address_space [get_bd_addr_spaces pcie_dma/xdma_0/M_AXI_LITE] [get_bd_addr_segs jungfraujoch/mailbox_0/S0_AXI/Reg] -force
 
   assign_bd_address
 

@@ -33,18 +33,17 @@ HLSSimulatedDevice::HLSSimulatedDevice(uint16_t data_stream, size_t in_frame_buf
           datamover_out(Direction::Output, nullptr, 256),
           idle(true) {
 
+    max_modules = MAX_MODULES_FPGA;
+
     MapBuffersStandard(in_frame_buffer_size_modules,
-                       (3 + 3 * 16)  * MAX_MODULES_FPGA + MODULES_INTERNAL_PACKET_GEN, numa_node);
+                       (3 + 3 * 16)  * max_modules + MODULES_INTERNAL_PACKET_GEN, numa_node);
 
     auto in_mem_location32 = (uint32_t *) in_mem_location;
 
-    for (int i = 0; i < MAX_MODULES_FPGA * (3 + 3 * 16) + MODULES_INTERNAL_PACKET_GEN; i++) {
-        in_mem_location32[2 * i    ] = ((uint64_t) buffer_h2c[i]) & UINT32_MAX;
-        in_mem_location32[2 * i + 1] = ((uint64_t) buffer_h2c[i]) >> 32;
+    for (int i = 0; i < max_modules * (3 + 3 * 16) + MODULES_INTERNAL_PACKET_GEN; i++) {
+        in_mem_location32[2 * i    ] = ((uint64_t) buffer_device[i]) & UINT32_MAX;
+        in_mem_location32[2 * i + 1] = ((uint64_t) buffer_device[i]) >> 32;
     }
-
-    for (int m = 0; m < MODULES_INTERNAL_PACKET_GEN; m++)
-        SetDefaultInternalGeneratorFrame((3+3*16) * MAX_MODULES_FPGA + m);
 
     for (auto &i: hbm_memory)
         // i.resize(SIZE_OF_HBM_BLOCK_IN_BYTES);
@@ -194,7 +193,7 @@ bool HLSSimulatedDevice::HW_IsIdle() const {
 
 
 bool HLSSimulatedDevice::HW_SendWorkRequest(uint32_t handle) {
-    uint64_t address = (handle == UINT32_MAX) ? 0 : (uint64_t) buffer_c2h.at(handle);
+    uint64_t address = (handle == UINT32_MAX) ? 0 : (uint64_t) buffer_device.at(handle);
     uint32_t parity = (std::bitset<32>(handle).count() + std::bitset<64>(address).count()) % 2;
 
     work_request_stream.write(handle);
@@ -202,14 +201,6 @@ bool HLSSimulatedDevice::HW_SendWorkRequest(uint32_t handle) {
     work_request_stream.write(address & UINT32_MAX);
     work_request_stream.write(parity);
     return true;
-}
-
-uint32_t HLSSimulatedDevice::HW_GetInternalPacketGeneratorModuleNum() {
-    return MODULES_INTERNAL_PACKET_GEN;
-}
-
-uint32_t HLSSimulatedDevice::HW_GetMaxModuleNum() {
-    return MAX_MODULES_FPGA;
 }
 
 void hls_action(hls::stream<axis_datamover_ctrl> &in_datamover_cmd_stream,
@@ -405,4 +396,11 @@ void hls_action(hls::stream<axis_datamover_ctrl> &in_datamover_cmd_stream,
 
 uint64_t HLSSimulatedDevice::HW_GetMACAddress() const {
     return fpga_mac_addr;
+}
+
+void HLSSimulatedDevice::HW_GetStatus(ActionStatus *status) const {
+    memset(status, 0, sizeof(ActionStatus));
+
+    status->modules_internal_packet_generator = 1;
+    status->max_modules = max_modules;
 }

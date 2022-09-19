@@ -36,7 +36,7 @@ class AcquisitionDevice {
     std::chrono::time_point<std::chrono::system_clock> start_time;
     std::chrono::time_point<std::chrono::system_clock> end_time;
 
-    void UnmapBuffers();
+
     void FillActionRegister(const DiffractionExperiment& x, ActionConfig& job);
 
     AcquisitionDeviceFilter filter;
@@ -58,29 +58,29 @@ class AcquisitionDevice {
     virtual void HW_WriteActionRegister(const ActionConfig *job) = 0;
     virtual void HW_ReadActionRegister(ActionConfig *job) = 0;
     virtual void HW_StartAction() = 0;
+
     virtual bool HW_IsIdle() const = 0;
     virtual bool HW_ReadMailbox(uint32_t values[4]) = 0;
     virtual void HW_SetCancelDataCollectionBit() = 0;
     virtual bool HW_SendWorkRequest(uint32_t handle) = 0;
-    virtual uint32_t HW_GetMaxModuleNum() = 0;
-    virtual uint32_t HW_GetInternalPacketGeneratorModuleNum() = 0;
-    virtual void HW_GetStatus(ActionStatus *status) const {
-        memset(status, 0, sizeof(ActionStatus));
-    };
+    virtual void HW_GetStatus(ActionStatus *status) const = 0;
     virtual void HW_GetEnvParams(ActionEnvParams *status) const {
         memset(status, 0, sizeof(ActionEnvParams));
     }
     virtual uint64_t HW_GetMACAddress() const = 0;
+    virtual void HW_EndAction() {}; // do clean-up after action is done
+    virtual void CopyInternalPacketGenFrameToDeviceBuffer();
 protected:
-    std::vector<int16_t *> buffer_c2h;
-    std::vector<uint16_t *> buffer_h2c;
+    std::vector<uint16_t *> buffer_device;
+    std::vector<uint16_t> internal_pkt_gen_frame;
 
     uint16_t data_stream;
     Logger *logger;
+    uint32_t max_modules = 1;
 
     AcquisitionDevice(uint16_t data_stream);
 
-    void SetDefaultInternalGeneratorFrame(size_t buf_h2c_number);
+    void UnmapBuffers();
     void MapBuffersStandard(size_t c2h_buffer_count, size_t h2c_buffer_count, int16_t numa_node);
 public:
     static const uint16_t HandleNotValid = UINT16_MAX;
@@ -103,17 +103,16 @@ public:
     JFJochProtoBuf::FPGAStatus GetStatus() const;
 
     // Internal frame generator
-    void SetCustomInternalGeneratorFrame(const void *input, size_t input_size);
-    template <class T> void SetCustomInternalGeneratorFrame(const std::vector<T> &v) {
-        SetCustomInternalGeneratorFrame(v.data(), v.size() * sizeof(T));
-    }
+    void SetCustomInternalGeneratorFrame(const std::vector<uint16_t> &v);
 
     const int16_t *GetFrameBuffer(size_t frame_number, uint16_t module) const;
     void FrameBufferRelease(size_t frame_number, uint16_t module);
     const int16_t *GetPacketBuffer(size_t frame_number, uint16_t module, uint16_t packet);
 
+    int16_t *GetDeviceBuffer(size_t handle);
+
     // Calibration
-    void InitializeCalibration(const DiffractionExperiment &experiment, const JFCalibration &calib);
+    virtual void InitializeCalibration(const DiffractionExperiment &experiment, const JFCalibration &calib);
 
     template<class T> void LoadModuleGain(const std::vector<T> &vector, uint16_t module);
     void LoadModuleGain(const std::string &filename, uint16_t module);
@@ -129,8 +128,6 @@ public:
     bool GetTriggerField(size_t frame, uint8_t module) const;
     ActionConfig ReadActionRegister();
     bool IsDone() const;
-
-    uint32_t GetInternalPacketGeneratorModuleNum();
 
     std::string GetMACAddress() const;
 };

@@ -13,7 +13,6 @@ class MockAcquisitionDevice : public AcquisitionDevice {
     uint32_t max_handle = 0;
     ActionConfig cfg;
 
-    constexpr static const uint32_t max_modules = 16;
     constexpr static const uint32_t frames_int_pkt_gen = 1;
     void HW_ReadActionRegister(ActionConfig *job) override;
     void HW_WriteActionRegister(const ActionConfig *job) override;
@@ -23,12 +22,13 @@ class MockAcquisitionDevice : public AcquisitionDevice {
     bool HW_SendWorkRequest(uint32_t handle) override;
     bool HW_IsIdle() const override;
     uint64_t HW_GetMACAddress() const override;
-    uint32_t HW_GetInternalPacketGeneratorModuleNum() override;
-    uint32_t HW_GetMaxModuleNum() override;
+    void HW_GetStatus(ActionStatus *status) const override;
+    void CopyInternalPacketGenFrameToDeviceBuffer() override;
 public:
     MockAcquisitionDevice(uint16_t data_stream, size_t in_frame_buffer_size_modules);
     void AddModule(uint64_t frame, uint16_t module, const uint16_t *data);
     void Terminate();
+    void InitializeCalibration(const DiffractionExperiment &experiment, const JFCalibration &calib) override;
 };
 
 #endif //JUNGFRAUJOCH_MOCKACQUISITIONDEVICE_H

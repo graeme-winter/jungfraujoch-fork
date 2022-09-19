@@ -2,7 +2,7 @@
 # but it helps in code completion in CLion IDE
 
 ADD_LIBRARY(jfjoch_kernel_module STATIC
-        ioctl.h jfjoch_dev.c jfjoch_dev.h ioctl.h)
+        jfjoch_ioctl.h jfjoch_drv.c jfjoch_drv.h jfjoch_ioctl.h jfjoch_pcie_setup.c jfjoch_memory.c jfjoch_ioctl.c jfjoch_function.c jfjoch_miscdev.c)
 
 EXECUTE_PROCESS(COMMAND uname -r
         OUTPUT_VARIABLE KERNEL_RELEASE
