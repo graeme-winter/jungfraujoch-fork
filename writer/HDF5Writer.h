@@ -6,21 +6,18 @@
 
 #include <numeric>
 
-#include "../common/DiffractionExperiment.h"
 #include "HDF5DataFile.h"
 #include "HDF5MasterFile.h"
 
 class HDF5Writer {
     std::vector<std::unique_ptr<HDF5DataFile> > files;
-    DiffractionExperiment experiment;
-
     std::vector<size_t> images_remaining;
     size_t total_images;
     static void ErrorIfFileExists(const std::string &path);
 public:
-    explicit HDF5Writer(const DiffractionExperiment &in_experiment);
-    void WriteFromStream(const uint8_t *data, int64_t data_size);
-    void Write(const void *data, size_t data_size, size_t image_number);
+    explicit HDF5Writer(const JFJochProtoBuf::WriterInput &request);
+    void Write(const void *data, size_t data_size, const std::vector<SpotToSave>& spots,
+               int64_t file_number, int64_t image_number_in_file);
     size_t GetRemainingImageCount() const;
 };
 

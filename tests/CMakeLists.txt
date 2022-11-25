@@ -8,14 +8,13 @@ add_executable(CatchTest
         FPGAIntegrationTest.cpp
         SpotFinderIntegration.cpp
         SpotAnalyzeUnitTest.cpp
-        CommunicationBufferTest.cpp
         ZSTDCompressorTest.cpp
         FrameTransformationTest.cpp
         HDF5WritingTest.cpp PedestalCalcTest.cpp
         ZMQImagePusherTest.cpp JFJochWriterTest.cpp
         CoordTest.cpp JFJochBrokerTest.cpp gRPCServerTest.cpp
         JFJochReceiverIntegrationTest.cpp
-        AcquisitionDeviceFilterTest.cpp AcquisitionDeviceCountersTest.cpp
+        AcquisitionCountersTest.cpp
         JFJochFullIntegrationTest.cpp
         XgandalfUnitTest.cpp
         MockAcquisitionDeviceTest.cpp ThreadSafeFIFOSetTest.cpp
@@ -26,7 +25,8 @@ add_executable(CatchTest
         JFPedestalTest.cpp
         JFCalibrationTest.cpp
         RadialIntegrationTest.cpp
-        StatusVectorTest.cpp)
+        StatusVectorTest.cpp
+        CBORTest.cpp)
 
 target_link_libraries(CatchTest JFJochBroker JFJochReceiver JFJochWriter DataProcessing CommonFunctions HLSSimulation -pthread -ldl -lz)
 target_include_directories(CatchTest PRIVATE .)
@@ -46,10 +46,4 @@ TARGET_LINK_LIBRARIES(PedestalPerfTest CommonFunctions)
 ADD_EXECUTABLE(PreviewTest PreviewTest.cpp)
 TARGET_LINK_LIBRARIES(PreviewTest JFJochWriter CommonFunctions -pthread -ldl -lz)
 
-ADD_EXECUTABLE(ZMQTestPuller ZMQTestPuller.cpp)
-TARGET_LINK_LIBRARIES(ZMQTestPuller JFJochWriter CommonFunctions)
-
-ADD_EXECUTABLE(ZMQTestPusher ZMQTestPusher.cpp)
-TARGET_LINK_LIBRARIES(ZMQTestPusher JFJochWriter CommonFunctions)
-
-INSTALL(TARGETS CatchTest CompressionBenchmark DataAnalysisPerfTest PreviewTest ZMQTestPuller ZMQTestPusher RUNTIME)
+INSTALL(TARGETS CatchTest CompressionBenchmark DataAnalysisPerfTest PreviewTest RUNTIME)

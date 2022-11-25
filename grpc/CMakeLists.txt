@@ -20,10 +20,11 @@ ELSE()
     FetchContent_Declare(
             gRPC
             GIT_REPOSITORY https://github.com/grpc/grpc
-            GIT_TAG        v1.46.3
+            GIT_TAG        v1.46.5
     )
     SET(FETCHCONTENT_QUIET OFF)
     SET(gRPC_ZLIB_PROVIDER "package")
+    SET(gRPC_INSTALL OFF)
     FetchContent_MakeAvailable(gRPC)
     SET(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
     SET(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)

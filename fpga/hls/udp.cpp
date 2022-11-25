@@ -14,7 +14,7 @@ void udp(AXI_STREAM &eth_in,
 #pragma HLS INTERFACE axis register both port=udp_metadata_out
 #pragma HLS INTERFACE ap_vld port=counter
 
-#pragma HLS pipeline II=1 enable_flush
+#pragma HLS pipeline II=1 style=flp
 
     enum   udp_state {INSPECT_HEADER, FORWARD, DISCARD};
     static udp_state state = INSPECT_HEADER;
@@ -43,7 +43,7 @@ void udp(AXI_STREAM &eth_in,
             udp_len = get_header_field_16(packet_in.data, ipv4_payload_pos + 32);
             udp_dest_port = get_header_field_16(packet_in.data, ipv4_payload_pos + 16);
 
-            udp_metadata_len(udp_metadata) = udp_len;
+            udp_metadata_payload_size(udp_metadata) = udp_len - 8; // only payload
             udp_metadata_dest_port(udp_metadata) = udp_dest_port;
 
             eth_packets_expected = (udp_payload_pos/8 + udp_len) / 64 + ((udp_payload_pos/8 + udp_len) % 64 ? 1 : 0);

@@ -6,9 +6,10 @@
 
 #include <string>
 
-#include "jfjoch.pb.h"
+#include <jfjoch.pb.h>
+
 #include "HDF5Objects.h"
 
-void WriteHDF5MasterFile(const JFJochProtoBuf::JFJochWriterMetadataInput &output);
+void WriteHDF5MasterFile(const JFJochProtoBuf::WriterMetadataInput &output);
 
 #endif //JUNGFRAUJOCH_HDF5MASTERFILE_H

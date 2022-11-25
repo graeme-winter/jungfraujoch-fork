@@ -40,7 +40,6 @@ class SpotFinder {
 public:
 
     SpotFinder(int32_t xpixels, int32_t ypixels, int32_t gpu_device = -1);
-    explicit SpotFinder(const DiffractionExperiment& experiment, int32_t gpu_device = -1);
     ~SpotFinder();
 
     void SetInputBuffer(void *host_in);

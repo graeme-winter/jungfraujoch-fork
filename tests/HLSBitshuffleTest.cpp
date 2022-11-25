@@ -41,7 +41,7 @@ TEST_CASE("HLS_bitshuffle") {
         data_out >> packet_out;
         unpack32(packet_out.data, image_out_shuf + 32 * i);
     }
-    bshuf_bitunshuffle(image_out_shuf, image_out, 128*32, 2, 128*32);
+    bshuf_bitunshuffle(image_out_shuf, image_out, 128*32, 2, 2048);
 
     int diff = 0;
     for (int i = 0; i < 128*32; i++) {

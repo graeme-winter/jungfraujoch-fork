@@ -20,7 +20,7 @@
 #include "../../common/Definitions.h"
 
 // Number of modules that can be simultaneously handled by the FPGA
-#define MAX_MODULES_FPGA  4
+#define MAX_MODULES_FPGA  10
 
 // Number of modules to include in the internal packet generator
 #define MODULES_INTERNAL_PACKET_GEN 1
@@ -57,17 +57,15 @@ typedef hls::stream<packet_512_t> AXI_STREAM;
 typedef hls::stream<packet_512_t> STREAM_512;
 
 #define addr_frame_number(x)  x(63,  0)
-#define addr_eth_packet(x)    x(70, 64)
-#define addr_module(x)        x(75, 71)
-#define addr_pedestal_flag(x) x[76]
-#define addr_trigger_flag(x)  x[77]
+#define addr_eth_packet(x)    x(71, 64)
+#define addr_module(x)        x(76, 72)
 #define addr_last_flag(x)     x[79]
+#define addr_flag_8kb(x)      x[80]
 #define addr_jf_debug(x)      x(127, 96)
 #define addr_timestamp(x)     x(191,128)
 #define addr_bunch_id(x)      x(255,192)
 
 #define ACT_REG_MODE(x)                   ((x)(63,0))    // 64 bit
-#define ACT_REG_MODE_SHORT(x)             ((x)(7,0))     // only first 8 bits of mode
 #define ACT_REG_ONE_OVER_ENERGY(x)        ((x)(95,64))   // 32 bit
 #define ACT_REG_FRAMES_PER_TRIGGER(x)     ((x)(127,96))  // 32 bit
 #define ACT_REG_NMODULES(x)               ((x)(132,128)) // 5 bit (0..31)
@@ -147,7 +145,12 @@ void host_writer(STREAM_512 &data_in,
                  hls::stream<ap_uint<32> > &s_axis_work_request,
                  hls::stream<ap_uint<32> > &m_axis_completion,
                  volatile uint64_t &packets_processed,
-                 ap_uint<4> &err_reg);
+                 ap_uint<8> &err_reg);
+
+void data_and_cmd_stream_sync(hls::stream<ap_axiu<512,1,1,1> > &data_in,
+                              hls::stream<ap_axiu<512,1,1,1> > &data_out,
+                              hls::stream<axis_datamover_ctrl> &cmd_in,
+                              hls::stream<axis_datamover_ctrl> &cmd_out);
 
 void timer_hbm(STREAM_512 &in, STREAM_512 &data_out, uint64_t &counter);
 void timer_host(STREAM_512 &data_in, STREAM_512 &data_out, uint64_t &counter);
@@ -186,24 +189,22 @@ inline void setup_datamover (hls::stream<axis_datamover_ctrl> &datamover_cmd_str
     datamover_cmd_stream << msg;
 }
 
-inline ap_uint<ADDR_STREAM_WIDTH> addr_packet(ap_uint<7> eth_packet,
+inline ap_uint<ADDR_STREAM_WIDTH> addr_packet(ap_uint<8> eth_packet,
                                               ap_uint<5> module,
                                               ap_uint<64> frame,
-                                              ap_uint<1> pedestal,
-                                              ap_uint<1> trigger,
                                               ap_uint<32> jf_debug,
                                               ap_uint<64> timestamp,
-                                              ap_uint<64> bunchid) {
+                                              ap_uint<64> bunchid,
+                                              ap_uint<1> packet_8kb) {
 #pragma HLS INLINE
     ap_uint<ADDR_STREAM_WIDTH> retval = 0;
     addr_eth_packet(retval) = eth_packet;
     addr_module(retval) = module;
     addr_frame_number(retval) = frame;
-    addr_pedestal_flag(retval) = pedestal;
-    addr_trigger_flag(retval) = trigger;
     addr_jf_debug(retval) = jf_debug;
     addr_timestamp(retval) = timestamp;
     addr_bunch_id(retval) = bunchid;
+    addr_flag_8kb(retval) = packet_8kb;
     return retval;
 }
 
@@ -239,10 +240,10 @@ static const uint32_t udp_payload_pos = ipv4_payload_pos + 64; // 112 + 160 + 64
 
 // Network cores
 #define UDP_METADATA_STREAM_WIDTH 34
-#define udp_metadata_dest_port(x)    x(15,  0)
-#define udp_metadata_len(x)          x(31, 16)
-#define udp_metadata_eth_err(x)      x[32]
-#define udp_metadata_len_err(x)      x[33]
+#define udp_metadata_dest_port(x)     x(15,  0)
+#define udp_metadata_payload_size(x)  x(31, 16)
+#define udp_metadata_eth_err(x)       x[32]
+#define udp_metadata_len_err(x)       x[33]
 
 void ethernet(AXI_STREAM &eth_in,
               AXI_STREAM &ip_out,

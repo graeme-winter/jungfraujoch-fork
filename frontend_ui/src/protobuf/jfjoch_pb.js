@@ -22,62 +22,136 @@ var global = (function() {
 }.call(null));
 
 goog.exportSymbol('proto.JFJochProtoBuf.AcquisitionDeviceStatistics', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.BeamMetadata', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.BeamlineMetadataSettings', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.BrokerFullStatus', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.BrokerPersistentSettings', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.BrokerPersistentTimingSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.BrokerSetup', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.BrokerStatistics', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.BrokerStatus', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.BrokerStatus.State', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.CalibrationMetadata', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.Compression', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.CompressionSettings', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.CompressionSettings.Compression', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.ConversionSettings', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DataFile', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.DataProcessingSettings', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DetectorConfig', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DetectorInput', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DetectorMetadata', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.DetectorMode', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DetectorModuleConfig', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DetectorOutput', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.DetectorSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.DetectorStatus', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DetectorStatusEnum', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.DetectorType', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.DiffractionGeometrySettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.Empty', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.ExperimentGeometry', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.FPGAFIFOStatus', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.FPGAStatus', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.FacilityMetadata', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.FrameCountSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.Image', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.ImageSavingSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.IndexerImageOutput', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.IndexerInput', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.IndexerOutput', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.IndexerStatus', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.JFCalibration', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.JFCalibrationStatistics', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochDetectorConfig', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochDetectorInput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochDetectorModuleConfig', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochDetectorOutput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochIndexerInput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochIndexerOutput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochReceiverInput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochReceiverNetworkConfig', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochReceiverOutput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochWriterInput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochWriterMetadataInput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.JFJochWriterOutput', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.JFPedestal', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.JungfraujochInternalSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.JungfraujochSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.MaskToLoad', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.MeasurementStatistics', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.ModuleStatistics', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.OnlineProcessingRequest', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.ParameterValue', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.ParameterValue.ValueCase', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.PedestalSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.Plot', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.PreviewFrame', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.PreviewSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.RadialIntegrationSettings', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.ReceiverInput', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.ReceiverNetworkConfig', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.ReceiverOutput', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.ReceiverStatus', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.RotationSettings', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.SampleMetadata', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.SampleSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.SpotFinderImageOutput', null, global);
-goog.exportSymbol('proto.JFJochProtoBuf.SpotFindingAlgorithm', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.TimingSettings', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.UnitCell', null, global);
 goog.exportSymbol('proto.JFJochProtoBuf.Vector', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.WriterFrame', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.WriterFrameType', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.WriterInput', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.WriterMetadataInput', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.WriterOutput', null, global);
+goog.exportSymbol('proto.JFJochProtoBuf.WriterSpot', null, global);
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.Empty = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.Empty, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.Empty.displayName = 'proto.JFJochProtoBuf.Empty';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.UnitCell = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.UnitCell, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.UnitCell.displayName = 'proto.JFJochProtoBuf.UnitCell';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.Vector = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.Vector, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.Vector.displayName = 'proto.JFJochProtoBuf.Vector';
+}
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -140,6 +214,27 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.JFJochProtoBuf.DiffractionGeometrySettings.displayName = 'proto.JFJochProtoBuf.DiffractionGeometrySettings';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.RotationSettings = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.RotationSettings, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.RotationSettings.displayName = 'proto.JFJochProtoBuf.RotationSettings';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -466,16 +561,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochReceiverInput = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.JFJochReceiverInput.repeatedFields_, null);
+proto.JFJochProtoBuf.ReceiverInput = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.ReceiverInput.repeatedFields_, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochReceiverInput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.ReceiverInput, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochReceiverInput.displayName = 'proto.JFJochProtoBuf.JFJochReceiverInput';
+  proto.JFJochProtoBuf.ReceiverInput.displayName = 'proto.JFJochProtoBuf.ReceiverInput';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -487,16 +582,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.JFJochReceiverOutput.repeatedFields_, null);
+proto.JFJochProtoBuf.ReceiverOutput = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.ReceiverOutput.repeatedFields_, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochReceiverOutput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.ReceiverOutput, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochReceiverOutput.displayName = 'proto.JFJochProtoBuf.JFJochReceiverOutput';
+  proto.JFJochProtoBuf.ReceiverOutput.displayName = 'proto.JFJochProtoBuf.ReceiverOutput';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -508,16 +603,37 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput = function(opt_data) {
+proto.JFJochProtoBuf.ReceiverNetworkConfig = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.ReceiverNetworkConfig.repeatedFields_, null);
+};
+goog.inherits(proto.JFJochProtoBuf.ReceiverNetworkConfig, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.ReceiverNetworkConfig.displayName = 'proto.JFJochProtoBuf.ReceiverNetworkConfig';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.DataFile = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochWriterMetadataInput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.DataFile, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochWriterMetadataInput.displayName = 'proto.JFJochProtoBuf.JFJochWriterMetadataInput';
+  proto.JFJochProtoBuf.DataFile.displayName = 'proto.JFJochProtoBuf.DataFile';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -529,16 +645,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.repeatedFields_, null);
+proto.JFJochProtoBuf.WriterInput = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.WriterInput.repeatedFields_, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochReceiverNetworkConfig, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.WriterInput, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.displayName = 'proto.JFJochProtoBuf.JFJochReceiverNetworkConfig';
+  proto.JFJochProtoBuf.WriterInput.displayName = 'proto.JFJochProtoBuf.WriterInput';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -550,16 +666,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochWriterInput = function(opt_data) {
+proto.JFJochProtoBuf.WriterOutput = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochWriterInput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.WriterOutput, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochWriterInput.displayName = 'proto.JFJochProtoBuf.JFJochWriterInput';
+  proto.JFJochProtoBuf.WriterOutput.displayName = 'proto.JFJochProtoBuf.WriterOutput';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -571,16 +687,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochWriterOutput = function(opt_data) {
+proto.JFJochProtoBuf.FacilityMetadata = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochWriterOutput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.FacilityMetadata, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochWriterOutput.displayName = 'proto.JFJochProtoBuf.JFJochWriterOutput';
+  proto.JFJochProtoBuf.FacilityMetadata.displayName = 'proto.JFJochProtoBuf.FacilityMetadata';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -592,16 +708,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig = function(opt_data) {
+proto.JFJochProtoBuf.ExperimentGeometry = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochDetectorModuleConfig, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.ExperimentGeometry, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochDetectorModuleConfig.displayName = 'proto.JFJochProtoBuf.JFJochDetectorModuleConfig';
+  proto.JFJochProtoBuf.ExperimentGeometry.displayName = 'proto.JFJochProtoBuf.ExperimentGeometry';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -613,37 +729,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.JFJochDetectorConfig.repeatedFields_, null);
-};
-goog.inherits(proto.JFJochProtoBuf.JFJochDetectorConfig, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.JFJochProtoBuf.JFJochDetectorConfig.displayName = 'proto.JFJochProtoBuf.JFJochDetectorConfig';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.JFJochProtoBuf.JFJochDetectorInput = function(opt_data) {
+proto.JFJochProtoBuf.DetectorMetadata = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochDetectorInput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.DetectorMetadata, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochDetectorInput.displayName = 'proto.JFJochProtoBuf.JFJochDetectorInput';
+  proto.JFJochProtoBuf.DetectorMetadata.displayName = 'proto.JFJochProtoBuf.DetectorMetadata';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -655,16 +750,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochDetectorOutput = function(opt_data) {
+proto.JFJochProtoBuf.BeamMetadata = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochDetectorOutput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.BeamMetadata, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochDetectorOutput.displayName = 'proto.JFJochProtoBuf.JFJochDetectorOutput';
+  proto.JFJochProtoBuf.BeamMetadata.displayName = 'proto.JFJochProtoBuf.BeamMetadata';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -676,16 +771,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.Empty = function(opt_data) {
+proto.JFJochProtoBuf.SampleMetadata = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.Empty, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.SampleMetadata, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.Empty.displayName = 'proto.JFJochProtoBuf.Empty';
+  proto.JFJochProtoBuf.SampleMetadata.displayName = 'proto.JFJochProtoBuf.SampleMetadata';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -697,16 +792,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.UnitCell = function(opt_data) {
+proto.JFJochProtoBuf.CalibrationMetadata = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.UnitCell, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.CalibrationMetadata, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.UnitCell.displayName = 'proto.JFJochProtoBuf.UnitCell';
+  proto.JFJochProtoBuf.CalibrationMetadata.displayName = 'proto.JFJochProtoBuf.CalibrationMetadata';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -718,16 +813,37 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.Vector = function(opt_data) {
+proto.JFJochProtoBuf.WriterMetadataInput = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.WriterMetadataInput.repeatedFields_, null);
+};
+goog.inherits(proto.JFJochProtoBuf.WriterMetadataInput, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.WriterMetadataInput.displayName = 'proto.JFJochProtoBuf.WriterMetadataInput';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.WriterSpot = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.Vector, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.WriterSpot, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.Vector.displayName = 'proto.JFJochProtoBuf.Vector';
+  proto.JFJochProtoBuf.WriterSpot.displayName = 'proto.JFJochProtoBuf.WriterSpot';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -739,16 +855,121 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.ParameterValue = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.JFJochProtoBuf.ParameterValue.oneofGroups_);
+proto.JFJochProtoBuf.WriterFrame = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.WriterFrame.repeatedFields_, null);
 };
-goog.inherits(proto.JFJochProtoBuf.ParameterValue, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.WriterFrame, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.ParameterValue.displayName = 'proto.JFJochProtoBuf.ParameterValue';
+  proto.JFJochProtoBuf.WriterFrame.displayName = 'proto.JFJochProtoBuf.WriterFrame';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.DetectorModuleConfig = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.DetectorModuleConfig, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.DetectorModuleConfig.displayName = 'proto.JFJochProtoBuf.DetectorModuleConfig';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.DetectorConfig = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.DetectorConfig.repeatedFields_, null);
+};
+goog.inherits(proto.JFJochProtoBuf.DetectorConfig, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.DetectorConfig.displayName = 'proto.JFJochProtoBuf.DetectorConfig';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.DetectorInput = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.DetectorInput, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.DetectorInput.displayName = 'proto.JFJochProtoBuf.DetectorInput';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.DetectorOutput = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.DetectorOutput, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.DetectorOutput.displayName = 'proto.JFJochProtoBuf.DetectorOutput';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.DetectorStatus = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.DetectorStatus, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.DetectorStatus.displayName = 'proto.JFJochProtoBuf.DetectorStatus';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -886,27 +1107,6 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.IndexerImageOutput = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.JFJochProtoBuf.IndexerImageOutput, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.JFJochProtoBuf.IndexerImageOutput.displayName = 'proto.JFJochProtoBuf.IndexerImageOutput';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.JFJochProtoBuf.IndexerStatus = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -928,16 +1128,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.OnlineProcessingRequest = function(opt_data) {
+proto.JFJochProtoBuf.IndexerInput = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.OnlineProcessingRequest, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.IndexerInput, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.OnlineProcessingRequest.displayName = 'proto.JFJochProtoBuf.OnlineProcessingRequest';
+  proto.JFJochProtoBuf.IndexerInput.displayName = 'proto.JFJochProtoBuf.IndexerInput';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -949,16 +1149,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochIndexerInput = function(opt_data) {
+proto.JFJochProtoBuf.IndexerImageOutput = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochIndexerInput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.IndexerImageOutput, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochIndexerInput.displayName = 'proto.JFJochProtoBuf.JFJochIndexerInput';
+  proto.JFJochProtoBuf.IndexerImageOutput.displayName = 'proto.JFJochProtoBuf.IndexerImageOutput';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -970,37 +1170,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.JFJochIndexerOutput.repeatedFields_, null);
+proto.JFJochProtoBuf.IndexerOutput = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.IndexerOutput.repeatedFields_, null);
 };
-goog.inherits(proto.JFJochProtoBuf.JFJochIndexerOutput, jspb.Message);
+goog.inherits(proto.JFJochProtoBuf.IndexerOutput, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JFJochProtoBuf.JFJochIndexerOutput.displayName = 'proto.JFJochProtoBuf.JFJochIndexerOutput';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.JFJochProtoBuf.BrokerStatus = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.JFJochProtoBuf.BrokerStatus, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.JFJochProtoBuf.BrokerStatus.displayName = 'proto.JFJochProtoBuf.BrokerStatus';
+  proto.JFJochProtoBuf.IndexerOutput.displayName = 'proto.JFJochProtoBuf.IndexerOutput';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1022,69 +1201,6 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.JFJochProtoBuf.ModuleStatistics.displayName = 'proto.JFJochProtoBuf.ModuleStatistics';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.JFJochProtoBuf.BrokerStatistics = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.JFJochProtoBuf.BrokerStatistics, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.JFJochProtoBuf.BrokerStatistics.displayName = 'proto.JFJochProtoBuf.BrokerStatistics';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.JFJochProtoBuf.DetectorStatus = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.JFJochProtoBuf.DetectorStatus, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.JFJochProtoBuf.DetectorStatus.displayName = 'proto.JFJochProtoBuf.DetectorStatus';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.JFJochProtoBuf.BrokerSetup = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.JFJochProtoBuf.BrokerSetup, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.JFJochProtoBuf.BrokerSetup.displayName = 'proto.JFJochProtoBuf.BrokerSetup';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1138,6 +1254,48 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.JFJochProtoBuf.BrokerSetup = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.BrokerSetup, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.BrokerSetup.displayName = 'proto.JFJochProtoBuf.BrokerSetup';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.BrokerPersistentTimingSettings, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.BrokerPersistentTimingSettings.displayName = 'proto.JFJochProtoBuf.BrokerPersistentTimingSettings';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.JFJochProtoBuf.BrokerPersistentSettings = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1149,6 +1307,640 @@ if (goog.DEBUG && !COMPILED) {
    */
   proto.JFJochProtoBuf.BrokerPersistentSettings.displayName = 'proto.JFJochProtoBuf.BrokerPersistentSettings';
 }
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.MeasurementStatistics = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.MeasurementStatistics, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.MeasurementStatistics.displayName = 'proto.JFJochProtoBuf.MeasurementStatistics';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.BrokerStatus = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.JFJochProtoBuf.BrokerStatus, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.BrokerStatus.displayName = 'proto.JFJochProtoBuf.BrokerStatus';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.JFJochProtoBuf.BrokerFullStatus = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.JFJochProtoBuf.BrokerFullStatus.repeatedFields_, null);
+};
+goog.inherits(proto.JFJochProtoBuf.BrokerFullStatus, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.JFJochProtoBuf.BrokerFullStatus.displayName = 'proto.JFJochProtoBuf.BrokerFullStatus';
+}
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.Empty.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.Empty.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.Empty} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.Empty.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.Empty}
+ */
+proto.JFJochProtoBuf.Empty.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.Empty;
+  return proto.JFJochProtoBuf.Empty.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.Empty} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.Empty}
+ */
+proto.JFJochProtoBuf.Empty.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.Empty.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.Empty.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.Empty} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.Empty.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.UnitCell.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.UnitCell} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.UnitCell.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    a: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    b: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    c: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+    alpha: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    beta: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+    gamma: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.UnitCell}
+ */
+proto.JFJochProtoBuf.UnitCell.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.UnitCell;
+  return proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.UnitCell} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.UnitCell}
+ */
+proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setA(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setB(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setC(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setAlpha(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBeta(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setGamma(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.UnitCell} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getA();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      1,
+      f
+    );
+  }
+  f = message.getB();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      2,
+      f
+    );
+  }
+  f = message.getC();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      3,
+      f
+    );
+  }
+  f = message.getAlpha();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      4,
+      f
+    );
+  }
+  f = message.getBeta();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      5,
+      f
+    );
+  }
+  f = message.getGamma();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      6,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional double a = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.getA = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.UnitCell} returns this
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.setA = function(value) {
+  return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional double b = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.getB = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.UnitCell} returns this
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.setB = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional double c = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.getC = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.UnitCell} returns this
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.setC = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+/**
+ * optional double alpha = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.getAlpha = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.UnitCell} returns this
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.setAlpha = function(value) {
+  return jspb.Message.setProto3FloatField(this, 4, value);
+};
+
+
+/**
+ * optional double beta = 5;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.getBeta = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.UnitCell} returns this
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.setBeta = function(value) {
+  return jspb.Message.setProto3FloatField(this, 5, value);
+};
+
+
+/**
+ * optional double gamma = 6;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.getGamma = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.UnitCell} returns this
+ */
+proto.JFJochProtoBuf.UnitCell.prototype.setGamma = function(value) {
+  return jspb.Message.setProto3FloatField(this, 6, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.Vector.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.Vector.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.Vector} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.Vector.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    x: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    y: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    z: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.Vector}
+ */
+proto.JFJochProtoBuf.Vector.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.Vector;
+  return proto.JFJochProtoBuf.Vector.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.Vector} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.Vector}
+ */
+proto.JFJochProtoBuf.Vector.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setX(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setY(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setZ(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.Vector.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.Vector.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.Vector} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.Vector.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getX();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      1,
+      f
+    );
+  }
+  f = message.getY();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      2,
+      f
+    );
+  }
+  f = message.getZ();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional double x = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.Vector.prototype.getX = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.Vector} returns this
+ */
+proto.JFJochProtoBuf.Vector.prototype.setX = function(value) {
+  return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional double y = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.Vector.prototype.getY = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.Vector} returns this
+ */
+proto.JFJochProtoBuf.Vector.prototype.setY = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional double z = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.Vector.prototype.getZ = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.Vector} returns this
+ */
+proto.JFJochProtoBuf.Vector.prototype.setZ = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
 
 
 
@@ -1342,11 +2134,9 @@ proto.JFJochProtoBuf.TimingSettings.prototype.toObject = function(opt_includeIns
 proto.JFJochProtoBuf.TimingSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     frameTimePedestalg1g2Us: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    requestedImageTimeUs: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    frameTimeUs: jspb.Message.getFieldWithDefault(msg, 3, 0),
     countTimeUs: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    laserStartUs: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    laserStopUs: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    useOptimalFrameTime: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
+    summation: jspb.Message.getFieldWithDefault(msg, 5, 0),
     timeResolvedMode: jspb.Message.getBooleanFieldWithDefault(msg, 13, false)
   };
 
@@ -1390,23 +2180,15 @@ proto.JFJochProtoBuf.TimingSettings.deserializeBinaryFromReader = function(msg, 
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setRequestedImageTimeUs(value);
+      msg.setFrameTimeUs(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setCountTimeUs(value);
       break;
-    case 6:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setLaserStartUs(value);
-      break;
-    case 7:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setLaserStopUs(value);
-      break;
-    case 12:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setUseOptimalFrameTime(value);
+      msg.setSummation(value);
       break;
     case 13:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -1448,7 +2230,7 @@ proto.JFJochProtoBuf.TimingSettings.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getRequestedImageTimeUs();
+  f = message.getFrameTimeUs();
   if (f !== 0) {
     writer.writeInt64(
       3,
@@ -1462,24 +2244,10 @@ proto.JFJochProtoBuf.TimingSettings.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getLaserStartUs();
+  f = message.getSummation();
   if (f !== 0) {
     writer.writeInt64(
-      6,
-      f
-    );
-  }
-  f = message.getLaserStopUs();
-  if (f !== 0) {
-    writer.writeInt64(
-      7,
-      f
-    );
-  }
-  f = message.getUseOptimalFrameTime();
-  if (f) {
-    writer.writeBool(
-      12,
+      5,
       f
     );
   }
@@ -1512,10 +2280,10 @@ proto.JFJochProtoBuf.TimingSettings.prototype.setFrameTimePedestalg1g2Us = funct
 
 
 /**
- * optional int64 requested_image_time_us = 3;
+ * optional int64 frame_time_us = 3;
  * @return {number}
  */
-proto.JFJochProtoBuf.TimingSettings.prototype.getRequestedImageTimeUs = function() {
+proto.JFJochProtoBuf.TimingSettings.prototype.getFrameTimeUs = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -1524,7 +2292,7 @@ proto.JFJochProtoBuf.TimingSettings.prototype.getRequestedImageTimeUs = function
  * @param {number} value
  * @return {!proto.JFJochProtoBuf.TimingSettings} returns this
  */
-proto.JFJochProtoBuf.TimingSettings.prototype.setRequestedImageTimeUs = function(value) {
+proto.JFJochProtoBuf.TimingSettings.prototype.setFrameTimeUs = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -1548,11 +2316,11 @@ proto.JFJochProtoBuf.TimingSettings.prototype.setCountTimeUs = function(value) {
 
 
 /**
- * optional int64 laser_start_us = 6;
+ * optional int64 summation = 5;
  * @return {number}
  */
-proto.JFJochProtoBuf.TimingSettings.prototype.getLaserStartUs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+proto.JFJochProtoBuf.TimingSettings.prototype.getSummation = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -1560,44 +2328,8 @@ proto.JFJochProtoBuf.TimingSettings.prototype.getLaserStartUs = function() {
  * @param {number} value
  * @return {!proto.JFJochProtoBuf.TimingSettings} returns this
  */
-proto.JFJochProtoBuf.TimingSettings.prototype.setLaserStartUs = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
-};
-
-
-/**
- * optional int64 laser_stop_us = 7;
- * @return {number}
- */
-proto.JFJochProtoBuf.TimingSettings.prototype.getLaserStopUs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.TimingSettings} returns this
- */
-proto.JFJochProtoBuf.TimingSettings.prototype.setLaserStopUs = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
-};
-
-
-/**
- * optional bool use_optimal_frame_time = 12;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.TimingSettings.prototype.getUseOptimalFrameTime = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.TimingSettings} returns this
- */
-proto.JFJochProtoBuf.TimingSettings.prototype.setUseOptimalFrameTime = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 12, value);
+proto.JFJochProtoBuf.TimingSettings.prototype.setSummation = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -1661,8 +2393,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.toObject = function(includeInst
     beamXPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     beamYPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
     detectorDistanceMm: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    omegaStartDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    omegaAnglePerImageDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     detectorSizeXPxl: jspb.Message.getFieldWithDefault(msg, 6, 0),
     detectorSizeYPxl: jspb.Message.getFieldWithDefault(msg, 7, 0),
     gapXPxl: jspb.Message.getFieldWithDefault(msg, 8, 0),
@@ -1670,7 +2400,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.toObject = function(includeInst
     dataStreamModulesList: (f = jspb.Message.getRepeatedField(msg, 10)) == null ? undefined : f,
     firstPixelOfModuleList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
     horizontalModuleStacking: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    rotationAxis: (f = msg.getRotationAxis()) && proto.JFJochProtoBuf.Vector.toObject(includeInstance, f),
     scatteringVector: (f = msg.getScatteringVector()) && proto.JFJochProtoBuf.Vector.toObject(includeInstance, f),
     photonEnergyKev: jspb.Message.getFloatingPointFieldWithDefault(msg, 16, 0.0)
   };
@@ -1721,14 +2450,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.deserializeBinaryFromReader = f
       var value = /** @type {number} */ (reader.readDouble());
       msg.setDetectorDistanceMm(value);
       break;
-    case 4:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setOmegaStartDeg(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setOmegaAnglePerImageDeg(value);
-      break;
     case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setDetectorSizeXPxl(value);
@@ -1760,11 +2481,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.deserializeBinaryFromReader = f
     case 12:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setHorizontalModuleStacking(value);
-      break;
-    case 13:
-      var value = new proto.JFJochProtoBuf.Vector;
-      reader.readMessage(value,proto.JFJochProtoBuf.Vector.deserializeBinaryFromReader);
-      msg.setRotationAxis(value);
       break;
     case 14:
       var value = new proto.JFJochProtoBuf.Vector;
@@ -1825,20 +2541,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.serializeBinaryToWriter = funct
       f
     );
   }
-  f = message.getOmegaStartDeg();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      4,
-      f
-    );
-  }
-  f = message.getOmegaAnglePerImageDeg();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      5,
-      f
-    );
-  }
   f = message.getDetectorSizeXPxl();
   if (f !== 0) {
     writer.writeInt64(
@@ -1886,14 +2588,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.serializeBinaryToWriter = funct
     writer.writeInt64(
       12,
       f
-    );
-  }
-  f = message.getRotationAxis();
-  if (f != null) {
-    writer.writeMessage(
-      13,
-      f,
-      proto.JFJochProtoBuf.Vector.serializeBinaryToWriter
     );
   }
   f = message.getScatteringVector();
@@ -1965,42 +2659,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.getDetectorDistanceMm
  */
 proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.setDetectorDistanceMm = function(value) {
   return jspb.Message.setProto3FloatField(this, 3, value);
-};
-
-
-/**
- * optional double omega_start_deg = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.getOmegaStartDeg = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.DiffractionGeometrySettings} returns this
- */
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.setOmegaStartDeg = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
-};
-
-
-/**
- * optional double omega_angle_per_image_deg = 5;
- * @return {number}
- */
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.getOmegaAnglePerImageDeg = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.DiffractionGeometrySettings} returns this
- */
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.setOmegaAnglePerImageDeg = function(value) {
-  return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
 
@@ -2169,43 +2827,6 @@ proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.setHorizontalModuleSt
 
 
 /**
- * optional Vector rotation_axis = 13;
- * @return {?proto.JFJochProtoBuf.Vector}
- */
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.getRotationAxis = function() {
-  return /** @type{?proto.JFJochProtoBuf.Vector} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.Vector, 13));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.Vector|undefined} value
- * @return {!proto.JFJochProtoBuf.DiffractionGeometrySettings} returns this
-*/
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.setRotationAxis = function(value) {
-  return jspb.Message.setWrapperField(this, 13, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.DiffractionGeometrySettings} returns this
- */
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.clearRotationAxis = function() {
-  return this.setRotationAxis(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.DiffractionGeometrySettings.prototype.hasRotationAxis = function() {
-  return jspb.Message.getField(this, 13) != null;
-};
-
-
-/**
  * optional Vector scattering_vector = 14;
  * @return {?proto.JFJochProtoBuf.Vector}
  */
@@ -2276,6 +2897,217 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
+proto.JFJochProtoBuf.RotationSettings.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.RotationSettings.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.RotationSettings} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.RotationSettings.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    startAngleDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    angleIncrPerImageDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    rotationAxis: (f = msg.getRotationAxis()) && proto.JFJochProtoBuf.Vector.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.RotationSettings}
+ */
+proto.JFJochProtoBuf.RotationSettings.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.RotationSettings;
+  return proto.JFJochProtoBuf.RotationSettings.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.RotationSettings} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.RotationSettings}
+ */
+proto.JFJochProtoBuf.RotationSettings.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setStartAngleDeg(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setAngleIncrPerImageDeg(value);
+      break;
+    case 3:
+      var value = new proto.JFJochProtoBuf.Vector;
+      reader.readMessage(value,proto.JFJochProtoBuf.Vector.deserializeBinaryFromReader);
+      msg.setRotationAxis(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.RotationSettings.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.RotationSettings} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.RotationSettings.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getStartAngleDeg();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      1,
+      f
+    );
+  }
+  f = message.getAngleIncrPerImageDeg();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      2,
+      f
+    );
+  }
+  f = message.getRotationAxis();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      proto.JFJochProtoBuf.Vector.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional double start_angle_deg = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.getStartAngleDeg = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.RotationSettings} returns this
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.setStartAngleDeg = function(value) {
+  return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional double angle_incr_per_image_deg = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.getAngleIncrPerImageDeg = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.RotationSettings} returns this
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.setAngleIncrPerImageDeg = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional Vector rotation_axis = 3;
+ * @return {?proto.JFJochProtoBuf.Vector}
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.getRotationAxis = function() {
+  return /** @type{?proto.JFJochProtoBuf.Vector} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.Vector, 3));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.Vector|undefined} value
+ * @return {!proto.JFJochProtoBuf.RotationSettings} returns this
+*/
+proto.JFJochProtoBuf.RotationSettings.prototype.setRotationAxis = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.RotationSettings} returns this
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.clearRotationAxis = function() {
+  return this.setRotationAxis(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.RotationSettings.prototype.hasRotationAxis = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
 proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.toObject = function(opt_includeInstance) {
   return proto.JFJochProtoBuf.BeamlineMetadataSettings.toObject(opt_includeInstance, this);
 };
@@ -2292,16 +3124,7 @@ proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.toObject = function(opt_
  */
 proto.JFJochProtoBuf.BeamlineMetadataSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    transmission: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    totalFlux: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
-    beamSizeXUm: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    beamSizeYUm: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    sampleTemperatureK: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    detectorName: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    sourceNameShort: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    sourceName: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    instrumentName: jspb.Message.getFieldWithDefault(msg, 12, ""),
-    instrumentNameShort: jspb.Message.getFieldWithDefault(msg, 13, "")
+    detectorName: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -2338,45 +3161,9 @@ proto.JFJochProtoBuf.BeamlineMetadataSettings.deserializeBinaryFromReader = func
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setTransmission(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setTotalFlux(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setBeamSizeXUm(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setBeamSizeYUm(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setSampleTemperatureK(value);
-      break;
     case 9:
       var value = /** @type {string} */ (reader.readString());
       msg.setDetectorName(value);
-      break;
-    case 10:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSourceNameShort(value);
-      break;
-    case 11:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSourceName(value);
-      break;
-    case 12:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setInstrumentName(value);
-      break;
-    case 13:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setInstrumentNameShort(value);
       break;
     default:
       reader.skipField();
@@ -2407,41 +3194,6 @@ proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.serializeBinary = functi
  */
 proto.JFJochProtoBuf.BeamlineMetadataSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getTransmission();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      1,
-      f
-    );
-  }
-  f = message.getTotalFlux();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      2,
-      f
-    );
-  }
-  f = message.getBeamSizeXUm();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      3,
-      f
-    );
-  }
-  f = message.getBeamSizeYUm();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      4,
-      f
-    );
-  }
-  f = message.getSampleTemperatureK();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      5,
-      f
-    );
-  }
   f = message.getDetectorName();
   if (f.length > 0) {
     writer.writeString(
@@ -2449,124 +3201,6 @@ proto.JFJochProtoBuf.BeamlineMetadataSettings.serializeBinaryToWriter = function
       f
     );
   }
-  f = message.getSourceNameShort();
-  if (f.length > 0) {
-    writer.writeString(
-      10,
-      f
-    );
-  }
-  f = message.getSourceName();
-  if (f.length > 0) {
-    writer.writeString(
-      11,
-      f
-    );
-  }
-  f = message.getInstrumentName();
-  if (f.length > 0) {
-    writer.writeString(
-      12,
-      f
-    );
-  }
-  f = message.getInstrumentNameShort();
-  if (f.length > 0) {
-    writer.writeString(
-      13,
-      f
-    );
-  }
-};
-
-
-/**
- * optional double transmission = 1;
- * @return {number}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getTransmission = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setTransmission = function(value) {
-  return jspb.Message.setProto3FloatField(this, 1, value);
-};
-
-
-/**
- * optional double total_flux = 2;
- * @return {number}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getTotalFlux = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setTotalFlux = function(value) {
-  return jspb.Message.setProto3FloatField(this, 2, value);
-};
-
-
-/**
- * optional double beam_size_x_um = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getBeamSizeXUm = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setBeamSizeXUm = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
-};
-
-
-/**
- * optional double beam_size_y_um = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getBeamSizeYUm = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setBeamSizeYUm = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
-};
-
-
-/**
- * optional double sample_temperature_K = 5;
- * @return {number}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getSampleTemperatureK = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setSampleTemperatureK = function(value) {
-  return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
 
@@ -2585,78 +3219,6 @@ proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getDetectorName = functi
  */
 proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setDetectorName = function(value) {
   return jspb.Message.setProto3StringField(this, 9, value);
-};
-
-
-/**
- * optional string source_name_short = 10;
- * @return {string}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getSourceNameShort = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setSourceNameShort = function(value) {
-  return jspb.Message.setProto3StringField(this, 10, value);
-};
-
-
-/**
- * optional string source_name = 11;
- * @return {string}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getSourceName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setSourceName = function(value) {
-  return jspb.Message.setProto3StringField(this, 11, value);
-};
-
-
-/**
- * optional string instrument_name = 12;
- * @return {string}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getInstrumentName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setInstrumentName = function(value) {
-  return jspb.Message.setProto3StringField(this, 12, value);
-};
-
-
-/**
- * optional string instrument_name_short = 13;
- * @return {string}
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.getInstrumentNameShort = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BeamlineMetadataSettings} returns this
- */
-proto.JFJochProtoBuf.BeamlineMetadataSettings.prototype.setInstrumentNameShort = function(value) {
-  return jspb.Message.setProto3StringField(this, 13, value);
 };
 
 
@@ -2692,9 +3254,9 @@ proto.JFJochProtoBuf.CompressionSettings.prototype.toObject = function(opt_inclu
  */
 proto.JFJochProtoBuf.CompressionSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    algorithm: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    level: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    blockSize: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    algorithm: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    level: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    blockSize: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -2731,15 +3293,15 @@ proto.JFJochProtoBuf.CompressionSettings.deserializeBinaryFromReader = function(
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 4:
-      var value = /** @type {!proto.JFJochProtoBuf.CompressionSettings.Compression} */ (reader.readEnum());
+    case 1:
+      var value = /** @type {!proto.JFJochProtoBuf.Compression} */ (reader.readEnum());
       msg.setAlgorithm(value);
       break;
-    case 5:
+    case 2:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setLevel(value);
       break;
-    case 6:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setBlockSize(value);
       break;
@@ -2775,21 +3337,21 @@ proto.JFJochProtoBuf.CompressionSettings.serializeBinaryToWriter = function(mess
   f = message.getAlgorithm();
   if (f !== 0.0) {
     writer.writeEnum(
-      4,
+      1,
       f
     );
   }
   f = message.getLevel();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      2,
       f
     );
   }
   f = message.getBlockSize();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      3,
       f
     );
   }
@@ -2797,38 +3359,29 @@ proto.JFJochProtoBuf.CompressionSettings.serializeBinaryToWriter = function(mess
 
 
 /**
- * @enum {number}
- */
-proto.JFJochProtoBuf.CompressionSettings.Compression = {
-  BSHUF_LZ4: 0,
-  BSHUF_ZSTD: 1,
-  NONE: 2
-};
-
-/**
- * optional Compression algorithm = 4;
- * @return {!proto.JFJochProtoBuf.CompressionSettings.Compression}
+ * optional Compression algorithm = 1;
+ * @return {!proto.JFJochProtoBuf.Compression}
  */
 proto.JFJochProtoBuf.CompressionSettings.prototype.getAlgorithm = function() {
-  return /** @type {!proto.JFJochProtoBuf.CompressionSettings.Compression} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {!proto.JFJochProtoBuf.Compression} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
- * @param {!proto.JFJochProtoBuf.CompressionSettings.Compression} value
+ * @param {!proto.JFJochProtoBuf.Compression} value
  * @return {!proto.JFJochProtoBuf.CompressionSettings} returns this
  */
 proto.JFJochProtoBuf.CompressionSettings.prototype.setAlgorithm = function(value) {
-  return jspb.Message.setProto3EnumField(this, 4, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * optional int64 level = 5;
+ * optional int64 level = 2;
  * @return {number}
  */
 proto.JFJochProtoBuf.CompressionSettings.prototype.getLevel = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -2837,16 +3390,16 @@ proto.JFJochProtoBuf.CompressionSettings.prototype.getLevel = function() {
  * @return {!proto.JFJochProtoBuf.CompressionSettings} returns this
  */
 proto.JFJochProtoBuf.CompressionSettings.prototype.setLevel = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 block_size = 6;
+ * optional int64 block_size = 3;
  * @return {number}
  */
 proto.JFJochProtoBuf.CompressionSettings.prototype.getBlockSize = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -2855,7 +3408,7 @@ proto.JFJochProtoBuf.CompressionSettings.prototype.getBlockSize = function() {
  * @return {!proto.JFJochProtoBuf.CompressionSettings} returns this
  */
 proto.JFJochProtoBuf.CompressionSettings.prototype.setBlockSize = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -2892,10 +3445,8 @@ proto.JFJochProtoBuf.ImageSavingSettings.prototype.toObject = function(opt_inclu
 proto.JFJochProtoBuf.ImageSavingSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     filePrefix: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    trackingId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    imagePerFile: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    measurementSequenceNum: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    errorWhenOverwritting: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
+    imagesPerFile: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    errorWhenOverwritting: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -2937,18 +3488,10 @@ proto.JFJochProtoBuf.ImageSavingSettings.deserializeBinaryFromReader = function(
       msg.setFilePrefix(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTrackingId(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImagesPerFile(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setImagePerFile(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setMeasurementSequenceNum(value);
-      break;
-    case 5:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setErrorWhenOverwritting(value);
       break;
@@ -2988,31 +3531,17 @@ proto.JFJochProtoBuf.ImageSavingSettings.serializeBinaryToWriter = function(mess
       f
     );
   }
-  f = message.getTrackingId();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getImagesPerFile();
+  if (f !== 0) {
+    writer.writeInt64(
       2,
-      f
-    );
-  }
-  f = message.getImagePerFile();
-  if (f !== 0) {
-    writer.writeInt64(
-      3,
-      f
-    );
-  }
-  f = message.getMeasurementSequenceNum();
-  if (f !== 0) {
-    writer.writeInt64(
-      4,
       f
     );
   }
   f = message.getErrorWhenOverwritting();
   if (f) {
     writer.writeBool(
-      5,
+      3,
       f
     );
   }
@@ -3038,29 +3567,11 @@ proto.JFJochProtoBuf.ImageSavingSettings.prototype.setFilePrefix = function(valu
 
 
 /**
- * optional string tracking_id = 2;
- * @return {string}
- */
-proto.JFJochProtoBuf.ImageSavingSettings.prototype.getTrackingId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.ImageSavingSettings} returns this
- */
-proto.JFJochProtoBuf.ImageSavingSettings.prototype.setTrackingId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional int64 image_per_file = 3;
+ * optional int64 images_per_file = 2;
  * @return {number}
  */
-proto.JFJochProtoBuf.ImageSavingSettings.prototype.getImagePerFile = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.JFJochProtoBuf.ImageSavingSettings.prototype.getImagesPerFile = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -3068,35 +3579,17 @@ proto.JFJochProtoBuf.ImageSavingSettings.prototype.getImagePerFile = function() 
  * @param {number} value
  * @return {!proto.JFJochProtoBuf.ImageSavingSettings} returns this
  */
-proto.JFJochProtoBuf.ImageSavingSettings.prototype.setImagePerFile = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
+proto.JFJochProtoBuf.ImageSavingSettings.prototype.setImagesPerFile = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 measurement_sequence_num = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.ImageSavingSettings.prototype.getMeasurementSequenceNum = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.ImageSavingSettings} returns this
- */
-proto.JFJochProtoBuf.ImageSavingSettings.prototype.setMeasurementSequenceNum = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional bool error_when_overwritting = 5;
+ * optional bool error_when_overwritting = 3;
  * @return {boolean}
  */
 proto.JFJochProtoBuf.ImageSavingSettings.prototype.getErrorWhenOverwritting = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
 };
 
 
@@ -3105,7 +3598,7 @@ proto.JFJochProtoBuf.ImageSavingSettings.prototype.getErrorWhenOverwritting = fu
  * @return {!proto.JFJochProtoBuf.ImageSavingSettings} returns this
  */
 proto.JFJochProtoBuf.ImageSavingSettings.prototype.setErrorWhenOverwritting = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 5, value);
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -3145,7 +3638,8 @@ proto.JFJochProtoBuf.DetectorSettings.toObject = function(includeInstance, msg) 
     internalFpgaPacketGenerator: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     storageCells: jspb.Message.getFieldWithDefault(msg, 3, 0),
     storageCellStart: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    delayAfterTriggerUs: jspb.Message.getFieldWithDefault(msg, 5, 0)
+    delayAfterTriggerUs: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    softTrigger: jspb.Message.getBooleanFieldWithDefault(msg, 6, false)
   };
 
   if (includeInstance) {
@@ -3201,6 +3695,10 @@ proto.JFJochProtoBuf.DetectorSettings.deserializeBinaryFromReader = function(msg
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setDelayAfterTriggerUs(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSoftTrigger(value);
       break;
     default:
       reader.skipField();
@@ -3263,6 +3761,13 @@ proto.JFJochProtoBuf.DetectorSettings.serializeBinaryToWriter = function(message
   if (f !== 0) {
     writer.writeInt64(
       5,
+      f
+    );
+  }
+  f = message.getSoftTrigger();
+  if (f) {
+    writer.writeBool(
+      6,
       f
     );
   }
@@ -3356,6 +3861,24 @@ proto.JFJochProtoBuf.DetectorSettings.prototype.getDelayAfterTriggerUs = functio
  */
 proto.JFJochProtoBuf.DetectorSettings.prototype.setDelayAfterTriggerUs = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional bool soft_trigger = 6;
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.DetectorSettings.prototype.getSoftTrigger = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.JFJochProtoBuf.DetectorSettings} returns this
+ */
+proto.JFJochProtoBuf.DetectorSettings.prototype.setSoftTrigger = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
 
@@ -3583,8 +4106,7 @@ proto.JFJochProtoBuf.PedestalSettings.toObject = function(includeInstance, msg) 
   var f, obj = {
     g0Frames: jspb.Message.getFieldWithDefault(msg, 1, 0),
     g1Frames: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    g2Frames: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    saved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
+    g2Frames: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -3633,10 +4155,6 @@ proto.JFJochProtoBuf.PedestalSettings.deserializeBinaryFromReader = function(msg
       var value = /** @type {number} */ (reader.readInt64());
       msg.setG2Frames(value);
       break;
-    case 4:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setSaved(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -3684,13 +4202,6 @@ proto.JFJochProtoBuf.PedestalSettings.serializeBinaryToWriter = function(message
   if (f !== 0) {
     writer.writeInt64(
       3,
-      f
-    );
-  }
-  f = message.getSaved();
-  if (f) {
-    writer.writeBool(
-      4,
       f
     );
   }
@@ -3751,24 +4262,6 @@ proto.JFJochProtoBuf.PedestalSettings.prototype.setG2Frames = function(value) {
 };
 
 
-/**
- * optional bool saved = 4;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.PedestalSettings.prototype.getSaved = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.PedestalSettings} returns this
- */
-proto.JFJochProtoBuf.PedestalSettings.prototype.setSaved = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 4, value);
-};
-
-
 
 
 
@@ -3801,6 +4294,7 @@ proto.JFJochProtoBuf.ConversionSettings.prototype.toObject = function(opt_includ
  */
 proto.JFJochProtoBuf.ConversionSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
+    type: jspb.Message.getFieldWithDefault(msg, 5, 0),
     mode: jspb.Message.getFieldWithDefault(msg, 1, 0),
     upsideDown: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     maskModuleEdges: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
@@ -3841,6 +4335,10 @@ proto.JFJochProtoBuf.ConversionSettings.deserializeBinaryFromReader = function(m
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 5:
+      var value = /** @type {!proto.JFJochProtoBuf.DetectorType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
     case 1:
       var value = /** @type {!proto.JFJochProtoBuf.DetectorMode} */ (reader.readEnum());
       msg.setMode(value);
@@ -3886,6 +4384,13 @@ proto.JFJochProtoBuf.ConversionSettings.prototype.serializeBinary = function() {
  */
 proto.JFJochProtoBuf.ConversionSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      5,
+      f
+    );
+  }
   f = message.getMode();
   if (f !== 0.0) {
     writer.writeEnum(
@@ -3914,6 +4419,24 @@ proto.JFJochProtoBuf.ConversionSettings.serializeBinaryToWriter = function(messa
       f
     );
   }
+};
+
+
+/**
+ * optional DetectorType type = 5;
+ * @return {!proto.JFJochProtoBuf.DetectorType}
+ */
+proto.JFJochProtoBuf.ConversionSettings.prototype.getType = function() {
+  return /** @type {!proto.JFJochProtoBuf.DetectorType} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.DetectorType} value
+ * @return {!proto.JFJochProtoBuf.ConversionSettings} returns this
+ */
+proto.JFJochProtoBuf.ConversionSettings.prototype.setType = function(value) {
+  return jspb.Message.setProto3EnumField(this, 5, value);
 };
 
 
@@ -4241,7 +4764,6 @@ proto.JFJochProtoBuf.SampleSettings.prototype.toObject = function(opt_includeIns
  */
 proto.JFJochProtoBuf.SampleSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     unitCell: (f = msg.getUnitCell()) && proto.JFJochProtoBuf.UnitCell.toObject(includeInstance, f),
     spaceGroupNumber: jspb.Message.getFieldWithDefault(msg, 3, 0),
     runNumber: jspb.Message.getFieldWithDefault(msg, 4, 0)
@@ -4281,10 +4803,6 @@ proto.JFJochProtoBuf.SampleSettings.deserializeBinaryFromReader = function(msg, 
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
-      break;
     case 2:
       var value = new proto.JFJochProtoBuf.UnitCell;
       reader.readMessage(value,proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader);
@@ -4327,13 +4845,6 @@ proto.JFJochProtoBuf.SampleSettings.prototype.serializeBinary = function() {
  */
 proto.JFJochProtoBuf.SampleSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getName();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
   f = message.getUnitCell();
   if (f != null) {
     writer.writeMessage(
@@ -4356,24 +4867,6 @@ proto.JFJochProtoBuf.SampleSettings.serializeBinaryToWriter = function(message, 
       f
     );
   }
-};
-
-
-/**
- * optional string name = 1;
- * @return {string}
- */
-proto.JFJochProtoBuf.SampleSettings.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.SampleSettings} returns this
- */
-proto.JFJochProtoBuf.SampleSettings.prototype.setName = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -6225,7 +6718,7 @@ proto.JFJochProtoBuf.JFCalibrationStatistics.prototype.clearModuleStatisticsList
  * @private {!Array<number>}
  * @const
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.repeatedFields_ = [3,9,10,12];
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.repeatedFields_ = [3,10,13,14,15];
 
 
 
@@ -6259,17 +6752,20 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.toObject = function(o
 proto.JFJochProtoBuf.AcquisitionDeviceStatistics.toObject = function(includeInstance, msg) {
   var f, obj = {
     goodPackets: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    packetsExpectedPerImage: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    packetsReceivedPerImageList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+    packetsExpectedPerModule: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    packetsReceivedPerModuleList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
     efficiency: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    okEthPackets: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    bytesReceived: jspb.Message.getFieldWithDefault(msg, 5, 0),
     startTimestamp: jspb.Message.getFieldWithDefault(msg, 6, 0),
     endTimestamp: jspb.Message.getFieldWithDefault(msg, 7, 0),
     fpgaStatus: (f = msg.getFpgaStatus()) && proto.JFJochProtoBuf.FPGAStatus.toObject(includeInstance, f),
-    triggerSequenceFrameNumbersList: (f = jspb.Message.getRepeatedField(msg, 9)) == null ? undefined : f,
-    packetMaskHalfModuleList: (f = jspb.Message.getRepeatedField(msg, 10)) == null ? undefined : f,
-    packetsExpected: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    timestampList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f
+    nmodules: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    packetMaskList: (f = jspb.Message.getRepeatedField(msg, 10)) == null ? undefined : f,
+    maskEntriesPerModule: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    packetsExpected: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    timestampList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
+    detectorDebugList: (f = jspb.Message.getRepeatedField(msg, 14)) == null ? undefined : f,
+    bunchidList: (f = jspb.Message.getRepeatedField(msg, 15)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -6312,12 +6808,12 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.deserializeBinaryFromReader = f
       break;
     case 2:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setPacketsExpectedPerImage(value);
+      msg.setPacketsExpectedPerModule(value);
       break;
     case 3:
       var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
       for (var i = 0; i < values.length; i++) {
-        msg.addPacketsReceivedPerImage(values[i]);
+        msg.addPacketsReceivedPerModule(values[i]);
       }
       break;
     case 4:
@@ -6326,7 +6822,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.deserializeBinaryFromReader = f
       break;
     case 5:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setOkEthPackets(value);
+      msg.setBytesReceived(value);
       break;
     case 6:
       var value = /** @type {number} */ (reader.readUint64());
@@ -6342,25 +6838,39 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.deserializeBinaryFromReader = f
       msg.setFpgaStatus(value);
       break;
     case 9:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt64() : [reader.readInt64()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addTriggerSequenceFrameNumbers(values[i]);
-      }
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setNmodules(value);
       break;
     case 10:
       var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
       for (var i = 0; i < values.length; i++) {
-        msg.addPacketMaskHalfModule(values[i]);
+        msg.addPacketMask(values[i]);
       }
       break;
     case 11:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setPacketsExpected(value);
+      msg.setMaskEntriesPerModule(value);
       break;
     case 12:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPacketsExpected(value);
+      break;
+    case 13:
       var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
       for (var i = 0; i < values.length; i++) {
         msg.addTimestamp(values[i]);
+      }
+      break;
+    case 14:
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addDetectorDebug(values[i]);
+      }
+      break;
+    case 15:
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addBunchid(values[i]);
       }
       break;
     default:
@@ -6399,14 +6909,14 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.serializeBinaryToWriter = funct
       f
     );
   }
-  f = message.getPacketsExpectedPerImage();
+  f = message.getPacketsExpectedPerModule();
   if (f !== 0) {
     writer.writeUint64(
       2,
       f
     );
   }
-  f = message.getPacketsReceivedPerImageList();
+  f = message.getPacketsReceivedPerModuleList();
   if (f.length > 0) {
     writer.writePackedUint64(
       3,
@@ -6420,7 +6930,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.serializeBinaryToWriter = funct
       f
     );
   }
-  f = message.getOkEthPackets();
+  f = message.getBytesReceived();
   if (f !== 0) {
     writer.writeUint64(
       5,
@@ -6449,31 +6959,52 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.serializeBinaryToWriter = funct
       proto.JFJochProtoBuf.FPGAStatus.serializeBinaryToWriter
     );
   }
-  f = message.getTriggerSequenceFrameNumbersList();
-  if (f.length > 0) {
-    writer.writePackedInt64(
+  f = message.getNmodules();
+  if (f !== 0) {
+    writer.writeUint64(
       9,
       f
     );
   }
-  f = message.getPacketMaskHalfModuleList();
+  f = message.getPacketMaskList();
   if (f.length > 0) {
     writer.writePackedUint64(
       10,
       f
     );
   }
-  f = message.getPacketsExpected();
+  f = message.getMaskEntriesPerModule();
   if (f !== 0) {
     writer.writeUint64(
       11,
       f
     );
   }
+  f = message.getPacketsExpected();
+  if (f !== 0) {
+    writer.writeUint64(
+      12,
+      f
+    );
+  }
   f = message.getTimestampList();
   if (f.length > 0) {
     writer.writePackedUint32(
-      12,
+      13,
+      f
+    );
+  }
+  f = message.getDetectorDebugList();
+  if (f.length > 0) {
+    writer.writePackedUint32(
+      14,
+      f
+    );
+  }
+  f = message.getBunchidList();
+  if (f.length > 0) {
+    writer.writePackedUint64(
+      15,
       f
     );
   }
@@ -6499,10 +7030,10 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setGoodPackets = func
 
 
 /**
- * optional uint64 packets_expected_per_image = 2;
+ * optional uint64 packets_expected_per_module = 2;
  * @return {number}
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsExpectedPerImage = function() {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsExpectedPerModule = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -6511,16 +7042,16 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsExpectedPer
  * @param {number} value
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketsExpectedPerImage = function(value) {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketsExpectedPerModule = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * repeated uint64 packets_received_per_image = 3;
+ * repeated uint64 packets_received_per_module = 3;
  * @return {!Array<number>}
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsReceivedPerImageList = function() {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsReceivedPerModuleList = function() {
   return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
@@ -6529,7 +7060,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsReceivedPer
  * @param {!Array<number>} value
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketsReceivedPerImageList = function(value) {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketsReceivedPerModuleList = function(value) {
   return jspb.Message.setField(this, 3, value || []);
 };
 
@@ -6539,7 +7070,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketsReceivedPer
  * @param {number=} opt_index
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addPacketsReceivedPerImage = function(value, opt_index) {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addPacketsReceivedPerModule = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
 };
 
@@ -6548,8 +7079,8 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addPacketsReceivedPer
  * Clears the list making it empty but non-null.
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearPacketsReceivedPerImageList = function() {
-  return this.setPacketsReceivedPerImageList([]);
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearPacketsReceivedPerModuleList = function() {
+  return this.setPacketsReceivedPerModuleList([]);
 };
 
 
@@ -6572,10 +7103,10 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setEfficiency = funct
 
 
 /**
- * optional uint64 ok_eth_packets = 5;
+ * optional uint64 bytes_received = 5;
  * @return {number}
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getOkEthPackets = function() {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getBytesReceived = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
@@ -6584,7 +7115,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getOkEthPackets = fun
  * @param {number} value
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setOkEthPackets = function(value) {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setBytesReceived = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
@@ -6663,47 +7194,28 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.hasFpgaStatus = funct
 
 
 /**
- * repeated int64 trigger_sequence_frame_numbers = 9;
- * @return {!Array<number>}
+ * optional uint64 nmodules = 9;
+ * @return {number}
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getTriggerSequenceFrameNumbersList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 9));
-};
-
-
-/**
- * @param {!Array<number>} value
- * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
- */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setTriggerSequenceFrameNumbersList = function(value) {
-  return jspb.Message.setField(this, 9, value || []);
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getNmodules = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
 
 /**
  * @param {number} value
- * @param {number=} opt_index
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addTriggerSequenceFrameNumbers = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 9, value, opt_index);
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setNmodules = function(value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * Clears the list making it empty but non-null.
- * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
- */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearTriggerSequenceFrameNumbersList = function() {
-  return this.setTriggerSequenceFrameNumbersList([]);
-};
-
-
-/**
- * repeated uint64 packet_mask_half_module = 10;
+ * repeated uint64 packet_mask = 10;
  * @return {!Array<number>}
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketMaskHalfModuleList = function() {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketMaskList = function() {
   return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 10));
 };
 
@@ -6712,7 +7224,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketMaskHalfModu
  * @param {!Array<number>} value
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketMaskHalfModuleList = function(value) {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketMaskList = function(value) {
   return jspb.Message.setField(this, 10, value || []);
 };
 
@@ -6722,7 +7234,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketMaskHalfModu
  * @param {number=} opt_index
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addPacketMaskHalfModule = function(value, opt_index) {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addPacketMask = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 10, value, opt_index);
 };
 
@@ -6731,16 +7243,16 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addPacketMaskHalfModu
  * Clears the list making it empty but non-null.
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearPacketMaskHalfModuleList = function() {
-  return this.setPacketMaskHalfModuleList([]);
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearPacketMaskList = function() {
+  return this.setPacketMaskList([]);
 };
 
 
 /**
- * optional uint64 packets_expected = 11;
+ * optional uint64 mask_entries_per_module = 11;
  * @return {number}
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsExpected = function() {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getMaskEntriesPerModule = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
 };
 
@@ -6749,17 +7261,35 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsExpected = 
  * @param {number} value
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
-proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketsExpected = function(value) {
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setMaskEntriesPerModule = function(value) {
   return jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
 /**
- * repeated uint32 timestamp = 12;
+ * optional uint64 packets_expected = 12;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getPacketsExpected = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setPacketsExpected = function(value) {
+  return jspb.Message.setProto3IntField(this, 12, value);
+};
+
+
+/**
+ * repeated uint32 timestamp = 13;
  * @return {!Array<number>}
  */
 proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getTimestampList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 12));
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 13));
 };
 
 
@@ -6768,7 +7298,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getTimestampList = fu
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
 proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setTimestampList = function(value) {
-  return jspb.Message.setField(this, 12, value || []);
+  return jspb.Message.setField(this, 13, value || []);
 };
 
 
@@ -6778,7 +7308,7 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setTimestampList = fu
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
  */
 proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addTimestamp = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 12, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 13, value, opt_index);
 };
 
 
@@ -6791,13 +7321,87 @@ proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearTimestampList = 
 };
 
 
+/**
+ * repeated uint32 detector_debug = 14;
+ * @return {!Array<number>}
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getDetectorDebugList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 14));
+};
+
+
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setDetectorDebugList = function(value) {
+  return jspb.Message.setField(this, 14, value || []);
+};
+
+
+/**
+ * @param {number} value
+ * @param {number=} opt_index
+ * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addDetectorDebug = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 14, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearDetectorDebugList = function() {
+  return this.setDetectorDebugList([]);
+};
+
+
+/**
+ * repeated uint64 bunchid = 15;
+ * @return {!Array<number>}
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.getBunchidList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 15));
+};
+
+
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.setBunchidList = function(value) {
+  return jspb.Message.setField(this, 15, value || []);
+};
+
+
+/**
+ * @param {number} value
+ * @param {number=} opt_index
+ * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.addBunchid = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 15, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics} returns this
+ */
+proto.JFJochProtoBuf.AcquisitionDeviceStatistics.prototype.clearBunchidList = function() {
+  return this.setBunchidList([]);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.repeatedFields_ = [3];
+proto.JFJochProtoBuf.ReceiverInput.repeatedFields_ = [3];
 
 
 
@@ -6814,8 +7418,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochReceiverInput.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.ReceiverInput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.ReceiverInput.toObject(opt_includeInstance, this);
 };
 
 
@@ -6824,11 +7428,11 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.toObject = function(opt_inclu
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochReceiverInput} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.ReceiverInput} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.ReceiverInput.toObject = function(includeInstance, msg) {
   var f, obj = {
     jungfraujochSettings: (f = msg.getJungfraujochSettings()) && proto.JFJochProtoBuf.JungfraujochSettings.toObject(includeInstance, f),
     calibration: (f = msg.getCalibration()) && proto.JFJochProtoBuf.JFCalibration.toObject(includeInstance, f),
@@ -6846,23 +7450,23 @@ proto.JFJochProtoBuf.JFJochReceiverInput.toObject = function(includeInstance, ms
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput}
+ * @return {!proto.JFJochProtoBuf.ReceiverInput}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.ReceiverInput.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochReceiverInput;
-  return proto.JFJochProtoBuf.JFJochReceiverInput.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.ReceiverInput;
+  return proto.JFJochProtoBuf.ReceiverInput.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochReceiverInput} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.ReceiverInput} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput}
+ * @return {!proto.JFJochProtoBuf.ReceiverInput}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.ReceiverInput.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6896,9 +7500,9 @@ proto.JFJochProtoBuf.JFJochReceiverInput.deserializeBinaryFromReader = function(
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochReceiverInput.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.ReceiverInput.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6906,11 +7510,11 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.serializeBinary = function() 
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochReceiverInput} message
+ * @param {!proto.JFJochProtoBuf.ReceiverInput} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.ReceiverInput.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getJungfraujochSettings();
   if (f != null) {
@@ -6942,7 +7546,7 @@ proto.JFJochProtoBuf.JFJochReceiverInput.serializeBinaryToWriter = function(mess
  * optional JungfraujochSettings jungfraujoch_settings = 1;
  * @return {?proto.JFJochProtoBuf.JungfraujochSettings}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.getJungfraujochSettings = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.getJungfraujochSettings = function() {
   return /** @type{?proto.JFJochProtoBuf.JungfraujochSettings} */ (
     jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JungfraujochSettings, 1));
 };
@@ -6950,18 +7554,18 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.getJungfraujochSettings = fun
 
 /**
  * @param {?proto.JFJochProtoBuf.JungfraujochSettings|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverInput} returns this
 */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.setJungfraujochSettings = function(value) {
+proto.JFJochProtoBuf.ReceiverInput.prototype.setJungfraujochSettings = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverInput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.clearJungfraujochSettings = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.clearJungfraujochSettings = function() {
   return this.setJungfraujochSettings(undefined);
 };
 
@@ -6970,7 +7574,7 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.clearJungfraujochSettings = f
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.hasJungfraujochSettings = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.hasJungfraujochSettings = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -6979,7 +7583,7 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.hasJungfraujochSettings = fun
  * optional JFCalibration calibration = 2;
  * @return {?proto.JFJochProtoBuf.JFCalibration}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.getCalibration = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.getCalibration = function() {
   return /** @type{?proto.JFJochProtoBuf.JFCalibration} */ (
     jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JFCalibration, 2));
 };
@@ -6987,18 +7591,18 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.getCalibration = function() {
 
 /**
  * @param {?proto.JFJochProtoBuf.JFCalibration|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverInput} returns this
 */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.setCalibration = function(value) {
+proto.JFJochProtoBuf.ReceiverInput.prototype.setCalibration = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverInput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.clearCalibration = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.clearCalibration = function() {
   return this.setCalibration(undefined);
 };
 
@@ -7007,7 +7611,7 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.clearCalibration = function()
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.hasCalibration = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.hasCalibration = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -7016,16 +7620,16 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.hasCalibration = function() {
  * repeated string writer_zmq_address = 3;
  * @return {!Array<string>}
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.getWriterZmqAddressList = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.getWriterZmqAddressList = function() {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
 /**
  * @param {!Array<string>} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverInput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.setWriterZmqAddressList = function(value) {
+proto.JFJochProtoBuf.ReceiverInput.prototype.setWriterZmqAddressList = function(value) {
   return jspb.Message.setField(this, 3, value || []);
 };
 
@@ -7033,18 +7637,18 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.setWriterZmqAddressList = fun
 /**
  * @param {string} value
  * @param {number=} opt_index
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverInput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.addWriterZmqAddress = function(value, opt_index) {
+proto.JFJochProtoBuf.ReceiverInput.prototype.addWriterZmqAddress = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverInput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverInput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverInput.prototype.clearWriterZmqAddressList = function() {
+proto.JFJochProtoBuf.ReceiverInput.prototype.clearWriterZmqAddressList = function() {
   return this.setWriterZmqAddressList([]);
 };
 
@@ -7055,7 +7659,7 @@ proto.JFJochProtoBuf.JFJochReceiverInput.prototype.clearWriterZmqAddressList = f
  * @private {!Array<number>}
  * @const
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.repeatedFields_ = [1,17];
+proto.JFJochProtoBuf.ReceiverOutput.repeatedFields_ = [1,17];
 
 
 
@@ -7072,8 +7676,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochReceiverOutput.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.ReceiverOutput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.ReceiverOutput.toObject(opt_includeInstance, this);
 };
 
 
@@ -7082,11 +7686,11 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.toObject = function(opt_incl
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochReceiverOutput} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.ReceiverOutput} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.ReceiverOutput.toObject = function(includeInstance, msg) {
   var f, obj = {
     deviceStatisticsList: jspb.Message.toObjectList(msg.getDeviceStatisticsList(),
     proto.JFJochProtoBuf.AcquisitionDeviceStatistics.toObject, includeInstance),
@@ -7099,7 +7703,7 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.toObject = function(includeInstance, m
     efficiency: jspb.Message.getFloatingPointFieldWithDefault(msg, 9, 0.0),
     maxImageNumberSent: jspb.Message.getFieldWithDefault(msg, 10, 0),
     jungfraujochSettings: (f = msg.getJungfraujochSettings()) && proto.JFJochProtoBuf.JungfraujochSettings.toObject(includeInstance, f),
-    indexerOutput: (f = msg.getIndexerOutput()) && proto.JFJochProtoBuf.JFJochIndexerOutput.toObject(includeInstance, f),
+    indexerOutput: (f = msg.getIndexerOutput()) && proto.JFJochProtoBuf.IndexerOutput.toObject(includeInstance, f),
     pedestalResultList: jspb.Message.toObjectList(msg.getPedestalResultList(),
     proto.JFJochProtoBuf.JFPedestal.toObject, includeInstance),
     masterFileName: jspb.Message.getFieldWithDefault(msg, 18, "")
@@ -7116,23 +7720,23 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.toObject = function(includeInstance, m
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput}
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.ReceiverOutput.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochReceiverOutput;
-  return proto.JFJochProtoBuf.JFJochReceiverOutput.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.ReceiverOutput;
+  return proto.JFJochProtoBuf.ReceiverOutput.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochReceiverOutput} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.ReceiverOutput} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput}
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.ReceiverOutput.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7182,8 +7786,8 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.deserializeBinaryFromReader = function
       msg.setJungfraujochSettings(value);
       break;
     case 16:
-      var value = new proto.JFJochProtoBuf.JFJochIndexerOutput;
-      reader.readMessage(value,proto.JFJochProtoBuf.JFJochIndexerOutput.deserializeBinaryFromReader);
+      var value = new proto.JFJochProtoBuf.IndexerOutput;
+      reader.readMessage(value,proto.JFJochProtoBuf.IndexerOutput.deserializeBinaryFromReader);
       msg.setIndexerOutput(value);
       break;
     case 17:
@@ -7208,9 +7812,9 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.deserializeBinaryFromReader = function
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochReceiverOutput.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.ReceiverOutput.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7218,11 +7822,11 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.serializeBinary = function()
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochReceiverOutput} message
+ * @param {!proto.JFJochProtoBuf.ReceiverOutput} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.ReceiverOutput.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getDeviceStatisticsList();
   if (f.length > 0) {
@@ -7301,7 +7905,7 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.serializeBinaryToWriter = function(mes
     writer.writeMessage(
       16,
       f,
-      proto.JFJochProtoBuf.JFJochIndexerOutput.serializeBinaryToWriter
+      proto.JFJochProtoBuf.IndexerOutput.serializeBinaryToWriter
     );
   }
   f = message.getPedestalResultList();
@@ -7326,7 +7930,7 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.serializeBinaryToWriter = function(mes
  * repeated AcquisitionDeviceStatistics device_statistics = 1;
  * @return {!Array<!proto.JFJochProtoBuf.AcquisitionDeviceStatistics>}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getDeviceStatisticsList = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getDeviceStatisticsList = function() {
   return /** @type{!Array<!proto.JFJochProtoBuf.AcquisitionDeviceStatistics>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.AcquisitionDeviceStatistics, 1));
 };
@@ -7334,9 +7938,9 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getDeviceStatisticsList = fu
 
 /**
  * @param {!Array<!proto.JFJochProtoBuf.AcquisitionDeviceStatistics>} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
 */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setDeviceStatisticsList = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setDeviceStatisticsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
@@ -7346,16 +7950,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setDeviceStatisticsList = fu
  * @param {number=} opt_index
  * @return {!proto.JFJochProtoBuf.AcquisitionDeviceStatistics}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.addDeviceStatistics = function(opt_value, opt_index) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.addDeviceStatistics = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.JFJochProtoBuf.AcquisitionDeviceStatistics, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearDeviceStatisticsList = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.clearDeviceStatisticsList = function() {
   return this.setDeviceStatisticsList([]);
 };
 
@@ -7364,16 +7968,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearDeviceStatisticsList = 
  * optional uint64 max_receive_delay = 2;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getMaxReceiveDelay = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getMaxReceiveDelay = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setMaxReceiveDelay = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setMaxReceiveDelay = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -7382,16 +7986,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setMaxReceiveDelay = functio
  * optional uint64 compressed_size = 3;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getCompressedSize = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getCompressedSize = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setCompressedSize = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setCompressedSize = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -7400,16 +8004,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setCompressedSize = function
  * optional double compressed_ratio = 4;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getCompressedRatio = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getCompressedRatio = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setCompressedRatio = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setCompressedRatio = function(value) {
   return jspb.Message.setProto3FloatField(this, 4, value);
 };
 
@@ -7418,16 +8022,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setCompressedRatio = functio
  * optional uint64 images_sent = 5;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getImagesSent = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getImagesSent = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setImagesSent = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setImagesSent = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
@@ -7436,16 +8040,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setImagesSent = function(val
  * optional uint64 start_time_ms = 6;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getStartTimeMs = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getStartTimeMs = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setStartTimeMs = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setStartTimeMs = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
@@ -7454,16 +8058,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setStartTimeMs = function(va
  * optional uint64 end_time_ms = 7;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getEndTimeMs = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getEndTimeMs = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setEndTimeMs = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setEndTimeMs = function(value) {
   return jspb.Message.setProto3IntField(this, 7, value);
 };
 
@@ -7472,16 +8076,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setEndTimeMs = function(valu
  * optional double efficiency = 9;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getEfficiency = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getEfficiency = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 9, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setEfficiency = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setEfficiency = function(value) {
   return jspb.Message.setProto3FloatField(this, 9, value);
 };
 
@@ -7490,16 +8094,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setEfficiency = function(val
  * optional uint64 max_image_number_sent = 10;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getMaxImageNumberSent = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getMaxImageNumberSent = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setMaxImageNumberSent = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setMaxImageNumberSent = function(value) {
   return jspb.Message.setProto3IntField(this, 10, value);
 };
 
@@ -7508,7 +8112,7 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setMaxImageNumberSent = func
  * optional JungfraujochSettings jungfraujoch_settings = 15;
  * @return {?proto.JFJochProtoBuf.JungfraujochSettings}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getJungfraujochSettings = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getJungfraujochSettings = function() {
   return /** @type{?proto.JFJochProtoBuf.JungfraujochSettings} */ (
     jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JungfraujochSettings, 15));
 };
@@ -7516,18 +8120,18 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getJungfraujochSettings = fu
 
 /**
  * @param {?proto.JFJochProtoBuf.JungfraujochSettings|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
 */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setJungfraujochSettings = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setJungfraujochSettings = function(value) {
   return jspb.Message.setWrapperField(this, 15, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearJungfraujochSettings = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.clearJungfraujochSettings = function() {
   return this.setJungfraujochSettings(undefined);
 };
 
@@ -7536,35 +8140,35 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearJungfraujochSettings = 
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.hasJungfraujochSettings = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.hasJungfraujochSettings = function() {
   return jspb.Message.getField(this, 15) != null;
 };
 
 
 /**
- * optional JFJochIndexerOutput indexer_output = 16;
- * @return {?proto.JFJochProtoBuf.JFJochIndexerOutput}
+ * optional IndexerOutput indexer_output = 16;
+ * @return {?proto.JFJochProtoBuf.IndexerOutput}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getIndexerOutput = function() {
-  return /** @type{?proto.JFJochProtoBuf.JFJochIndexerOutput} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JFJochIndexerOutput, 16));
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getIndexerOutput = function() {
+  return /** @type{?proto.JFJochProtoBuf.IndexerOutput} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.IndexerOutput, 16));
 };
 
 
 /**
- * @param {?proto.JFJochProtoBuf.JFJochIndexerOutput|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @param {?proto.JFJochProtoBuf.IndexerOutput|undefined} value
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
 */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setIndexerOutput = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setIndexerOutput = function(value) {
   return jspb.Message.setWrapperField(this, 16, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearIndexerOutput = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.clearIndexerOutput = function() {
   return this.setIndexerOutput(undefined);
 };
 
@@ -7573,7 +8177,7 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearIndexerOutput = functio
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.hasIndexerOutput = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.hasIndexerOutput = function() {
   return jspb.Message.getField(this, 16) != null;
 };
 
@@ -7582,7 +8186,7 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.hasIndexerOutput = function(
  * repeated JFPedestal pedestal_result = 17;
  * @return {!Array<!proto.JFJochProtoBuf.JFPedestal>}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getPedestalResultList = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getPedestalResultList = function() {
   return /** @type{!Array<!proto.JFJochProtoBuf.JFPedestal>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.JFPedestal, 17));
 };
@@ -7590,9 +8194,9 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getPedestalResultList = func
 
 /**
  * @param {!Array<!proto.JFJochProtoBuf.JFPedestal>} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
 */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setPedestalResultList = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setPedestalResultList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 17, value);
 };
 
@@ -7602,16 +8206,16 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setPedestalResultList = func
  * @param {number=} opt_index
  * @return {!proto.JFJochProtoBuf.JFPedestal}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.addPedestalResult = function(opt_value, opt_index) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.addPedestalResult = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 17, opt_value, proto.JFJochProtoBuf.JFPedestal, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearPedestalResultList = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.clearPedestalResultList = function() {
   return this.setPedestalResultList([]);
 };
 
@@ -7620,219 +8224,17 @@ proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.clearPedestalResultList = fu
  * optional string master_file_name = 18;
  * @return {string}
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.getMasterFileName = function() {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.getMasterFileName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverOutput} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverOutput.prototype.setMasterFileName = function(value) {
+proto.JFJochProtoBuf.ReceiverOutput.prototype.setMasterFileName = function(value) {
   return jspb.Message.setProto3StringField(this, 18, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochWriterMetadataInput.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    receiverOutput: (f = msg.getReceiverOutput()) && proto.JFJochProtoBuf.JFJochReceiverOutput.toObject(includeInstance, f),
-    calibration: (f = msg.getCalibration()) && proto.JFJochProtoBuf.JFCalibration.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochWriterMetadataInput}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochWriterMetadataInput;
-  return proto.JFJochProtoBuf.JFJochWriterMetadataInput.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochWriterMetadataInput}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = new proto.JFJochProtoBuf.JFJochReceiverOutput;
-      reader.readMessage(value,proto.JFJochProtoBuf.JFJochReceiverOutput.deserializeBinaryFromReader);
-      msg.setReceiverOutput(value);
-      break;
-    case 2:
-      var value = new proto.JFJochProtoBuf.JFCalibration;
-      reader.readMessage(value,proto.JFJochProtoBuf.JFCalibration.deserializeBinaryFromReader);
-      msg.setCalibration(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochWriterMetadataInput.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getReceiverOutput();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.JFJochProtoBuf.JFJochReceiverOutput.serializeBinaryToWriter
-    );
-  }
-  f = message.getCalibration();
-  if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.JFJochProtoBuf.JFCalibration.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional JFJochReceiverOutput receiver_output = 1;
- * @return {?proto.JFJochProtoBuf.JFJochReceiverOutput}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.getReceiverOutput = function() {
-  return /** @type{?proto.JFJochProtoBuf.JFJochReceiverOutput} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JFJochReceiverOutput, 1));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.JFJochReceiverOutput|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} returns this
-*/
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.setReceiverOutput = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} returns this
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.clearReceiverOutput = function() {
-  return this.setReceiverOutput(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.hasReceiverOutput = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional JFCalibration calibration = 2;
- * @return {?proto.JFJochProtoBuf.JFCalibration}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.getCalibration = function() {
-  return /** @type{?proto.JFJochProtoBuf.JFCalibration} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JFCalibration, 2));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.JFCalibration|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} returns this
-*/
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.setCalibration = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochWriterMetadataInput} returns this
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.clearCalibration = function() {
-  return this.setCalibration(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.hasCalibration = function() {
-  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -7842,7 +8244,7 @@ proto.JFJochProtoBuf.JFJochWriterMetadataInput.prototype.hasCalibration = functi
  * @private {!Array<number>}
  * @const
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.repeatedFields_ = [1];
+proto.JFJochProtoBuf.ReceiverNetworkConfig.repeatedFields_ = [1];
 
 
 
@@ -7859,8 +8261,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.ReceiverNetworkConfig.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.ReceiverNetworkConfig.toObject(opt_includeInstance, this);
 };
 
 
@@ -7869,11 +8271,11 @@ proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.toObject = function(o
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.ReceiverNetworkConfig} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.toObject = function(includeInstance, msg) {
   var f, obj = {
     fpgaMacAddrList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
   };
@@ -7889,23 +8291,23 @@ proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.toObject = function(includeInst
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig}
+ * @return {!proto.JFJochProtoBuf.ReceiverNetworkConfig}
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochReceiverNetworkConfig;
-  return proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.ReceiverNetworkConfig;
+  return proto.JFJochProtoBuf.ReceiverNetworkConfig.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.ReceiverNetworkConfig} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig}
+ * @return {!proto.JFJochProtoBuf.ReceiverNetworkConfig}
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7929,9 +8331,9 @@ proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.deserializeBinaryFromReader = f
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.ReceiverNetworkConfig.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7939,11 +8341,11 @@ proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.serializeBinary = fun
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig} message
+ * @param {!proto.JFJochProtoBuf.ReceiverNetworkConfig} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFpgaMacAddrList();
   if (f.length > 0) {
@@ -7959,16 +8361,16 @@ proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.serializeBinaryToWriter = funct
  * repeated string fpga_mac_addr = 1;
  * @return {!Array<string>}
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.getFpgaMacAddrList = function() {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.prototype.getFpgaMacAddrList = function() {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
 /**
  * @param {!Array<string>} value
- * @return {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverNetworkConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.setFpgaMacAddrList = function(value) {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.prototype.setFpgaMacAddrList = function(value) {
   return jspb.Message.setField(this, 1, value || []);
 };
 
@@ -7976,18 +8378,18 @@ proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.setFpgaMacAddrList = 
 /**
  * @param {string} value
  * @param {number=} opt_index
- * @return {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverNetworkConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.addFpgaMacAddr = function(value, opt_index) {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.prototype.addFpgaMacAddr = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.JFJochProtoBuf.JFJochReceiverNetworkConfig} returns this
+ * @return {!proto.JFJochProtoBuf.ReceiverNetworkConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochReceiverNetworkConfig.prototype.clearFpgaMacAddrList = function() {
+proto.JFJochProtoBuf.ReceiverNetworkConfig.prototype.clearFpgaMacAddrList = function() {
   return this.setFpgaMacAddrList([]);
 };
 
@@ -8008,8 +8410,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochWriterInput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochWriterInput.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.DataFile.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.DataFile.toObject(opt_includeInstance, this);
 };
 
 
@@ -8018,13 +8420,15 @@ proto.JFJochProtoBuf.JFJochWriterInput.prototype.toObject = function(opt_include
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochWriterInput} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.DataFile} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochWriterInput.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.DataFile.toObject = function(includeInstance, msg) {
   var f, obj = {
-    jungfraujochSettings: (f = msg.getJungfraujochSettings()) && proto.JFJochProtoBuf.JungfraujochSettings.toObject(includeInstance, f)
+    filename: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    imageCount: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    image0: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -8038,23 +8442,23 @@ proto.JFJochProtoBuf.JFJochWriterInput.toObject = function(includeInstance, msg)
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochWriterInput}
+ * @return {!proto.JFJochProtoBuf.DataFile}
  */
-proto.JFJochProtoBuf.JFJochWriterInput.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.DataFile.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochWriterInput;
-  return proto.JFJochProtoBuf.JFJochWriterInput.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.DataFile;
+  return proto.JFJochProtoBuf.DataFile.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochWriterInput} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.DataFile} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochWriterInput}
+ * @return {!proto.JFJochProtoBuf.DataFile}
  */
-proto.JFJochProtoBuf.JFJochWriterInput.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.DataFile.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8062,9 +8466,16 @@ proto.JFJochProtoBuf.JFJochWriterInput.deserializeBinaryFromReader = function(ms
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.JFJochProtoBuf.JungfraujochSettings;
-      reader.readMessage(value,proto.JFJochProtoBuf.JungfraujochSettings.deserializeBinaryFromReader);
-      msg.setJungfraujochSettings(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFilename(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImageCount(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImage0(value);
       break;
     default:
       reader.skipField();
@@ -8079,9 +8490,9 @@ proto.JFJochProtoBuf.JFJochWriterInput.deserializeBinaryFromReader = function(ms
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochWriterInput.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.DataFile.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochWriterInput.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.DataFile.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8089,60 +8500,97 @@ proto.JFJochProtoBuf.JFJochWriterInput.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochWriterInput} message
+ * @param {!proto.JFJochProtoBuf.DataFile} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochWriterInput.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.DataFile.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getJungfraujochSettings();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getFilename();
+  if (f.length > 0) {
+    writer.writeString(
       1,
-      f,
-      proto.JFJochProtoBuf.JungfraujochSettings.serializeBinaryToWriter
+      f
+    );
+  }
+  f = message.getImageCount();
+  if (f !== 0) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = message.getImage0();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
     );
   }
 };
 
 
 /**
- * optional JungfraujochSettings jungfraujoch_settings = 1;
- * @return {?proto.JFJochProtoBuf.JungfraujochSettings}
+ * optional string filename = 1;
+ * @return {string}
  */
-proto.JFJochProtoBuf.JFJochWriterInput.prototype.getJungfraujochSettings = function() {
-  return /** @type{?proto.JFJochProtoBuf.JungfraujochSettings} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JungfraujochSettings, 1));
+proto.JFJochProtoBuf.DataFile.prototype.getFilename = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * @param {?proto.JFJochProtoBuf.JungfraujochSettings|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochWriterInput} returns this
-*/
-proto.JFJochProtoBuf.JFJochWriterInput.prototype.setJungfraujochSettings = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.DataFile} returns this
+ */
+proto.JFJochProtoBuf.DataFile.prototype.setFilename = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochWriterInput} returns this
+ * optional int64 image_count = 2;
+ * @return {number}
  */
-proto.JFJochProtoBuf.JFJochWriterInput.prototype.clearJungfraujochSettings = function() {
-  return this.setJungfraujochSettings(undefined);
+proto.JFJochProtoBuf.DataFile.prototype.getImageCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DataFile} returns this
  */
-proto.JFJochProtoBuf.JFJochWriterInput.prototype.hasJungfraujochSettings = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.JFJochProtoBuf.DataFile.prototype.setImageCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
+/**
+ * optional int64 image0 = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DataFile.prototype.getImage0 = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DataFile} returns this
+ */
+proto.JFJochProtoBuf.DataFile.prototype.setImage0 = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.JFJochProtoBuf.WriterInput.repeatedFields_ = [2];
 
 
 
@@ -8159,8 +8607,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochWriterOutput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochWriterOutput.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.WriterInput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.WriterInput.toObject(opt_includeInstance, this);
 };
 
 
@@ -8169,13 +8617,25 @@ proto.JFJochProtoBuf.JFJochWriterOutput.prototype.toObject = function(opt_includ
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochWriterOutput} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.WriterInput} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochWriterOutput.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.WriterInput.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    zmqReceiverAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    dataFilesList: jspb.Message.toObjectList(msg.getDataFilesList(),
+    proto.JFJochProtoBuf.DataFile.toObject, includeInstance),
+    width: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    imagesPerFile: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    pixelDepthBytes: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    signedPxl: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+    errorWhenOverwriting: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+    compressionAlgorithm: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    compressionBlockSize: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    imageUnits: jspb.Message.getFieldWithDefault(msg, 11, ""),
+    maxSpotCount: jspb.Message.getFieldWithDefault(msg, 12, 0)
   };
 
   if (includeInstance) {
@@ -8189,29 +8649,78 @@ proto.JFJochProtoBuf.JFJochWriterOutput.toObject = function(includeInstance, msg
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochWriterOutput}
+ * @return {!proto.JFJochProtoBuf.WriterInput}
  */
-proto.JFJochProtoBuf.JFJochWriterOutput.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.WriterInput.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochWriterOutput;
-  return proto.JFJochProtoBuf.JFJochWriterOutput.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.WriterInput;
+  return proto.JFJochProtoBuf.WriterInput.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochWriterOutput} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.WriterInput} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochWriterOutput}
+ * @return {!proto.JFJochProtoBuf.WriterInput}
  */
-proto.JFJochProtoBuf.JFJochWriterOutput.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.WriterInput.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setZmqReceiverAddress(value);
+      break;
+    case 2:
+      var value = new proto.JFJochProtoBuf.DataFile;
+      reader.readMessage(value,proto.JFJochProtoBuf.DataFile.deserializeBinaryFromReader);
+      msg.addDataFiles(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setWidth(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setHeight(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImagesPerFile(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPixelDepthBytes(value);
+      break;
+    case 7:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSignedPxl(value);
+      break;
+    case 8:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setErrorWhenOverwriting(value);
+      break;
+    case 9:
+      var value = /** @type {!proto.JFJochProtoBuf.Compression} */ (reader.readEnum());
+      msg.setCompressionAlgorithm(value);
+      break;
+    case 10:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCompressionBlockSize(value);
+      break;
+    case 11:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setImageUnits(value);
+      break;
+    case 12:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setMaxSpotCount(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8225,9 +8734,9 @@ proto.JFJochProtoBuf.JFJochWriterOutput.deserializeBinaryFromReader = function(m
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochWriterOutput.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.WriterInput.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochWriterOutput.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.WriterInput.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8235,12 +8744,333 @@ proto.JFJochProtoBuf.JFJochWriterOutput.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochWriterOutput} message
+ * @param {!proto.JFJochProtoBuf.WriterInput} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochWriterOutput.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.WriterInput.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getZmqReceiverAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getDataFilesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      2,
+      f,
+      proto.JFJochProtoBuf.DataFile.serializeBinaryToWriter
+    );
+  }
+  f = message.getWidth();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = message.getHeight();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+  f = message.getImagesPerFile();
+  if (f !== 0) {
+    writer.writeInt64(
+      5,
+      f
+    );
+  }
+  f = message.getPixelDepthBytes();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
+      f
+    );
+  }
+  f = message.getSignedPxl();
+  if (f) {
+    writer.writeBool(
+      7,
+      f
+    );
+  }
+  f = message.getErrorWhenOverwriting();
+  if (f) {
+    writer.writeBool(
+      8,
+      f
+    );
+  }
+  f = message.getCompressionAlgorithm();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      9,
+      f
+    );
+  }
+  f = message.getCompressionBlockSize();
+  if (f !== 0) {
+    writer.writeInt64(
+      10,
+      f
+    );
+  }
+  f = message.getImageUnits();
+  if (f.length > 0) {
+    writer.writeString(
+      11,
+      f
+    );
+  }
+  f = message.getMaxSpotCount();
+  if (f !== 0) {
+    writer.writeInt64(
+      12,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string zmq_receiver_address = 1;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getZmqReceiverAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setZmqReceiverAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * repeated DataFile data_files = 2;
+ * @return {!Array<!proto.JFJochProtoBuf.DataFile>}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getDataFilesList = function() {
+  return /** @type{!Array<!proto.JFJochProtoBuf.DataFile>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.DataFile, 2));
+};
+
+
+/**
+ * @param {!Array<!proto.JFJochProtoBuf.DataFile>} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+*/
+proto.JFJochProtoBuf.WriterInput.prototype.setDataFilesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 2, value);
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.DataFile=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.JFJochProtoBuf.DataFile}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.addDataFiles = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.JFJochProtoBuf.DataFile, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.clearDataFilesList = function() {
+  return this.setDataFilesList([]);
+};
+
+
+/**
+ * optional int64 width = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getWidth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setWidth = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int64 height = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setHeight = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional int64 images_per_file = 5;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getImagesPerFile = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setImagesPerFile = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional int64 pixel_depth_bytes = 6;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getPixelDepthBytes = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setPixelDepthBytes = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional bool signed_pxl = 7;
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getSignedPxl = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setSignedPxl = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 7, value);
+};
+
+
+/**
+ * optional bool error_when_overwriting = 8;
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getErrorWhenOverwriting = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setErrorWhenOverwriting = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 8, value);
+};
+
+
+/**
+ * optional Compression compression_algorithm = 9;
+ * @return {!proto.JFJochProtoBuf.Compression}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getCompressionAlgorithm = function() {
+  return /** @type {!proto.JFJochProtoBuf.Compression} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.Compression} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setCompressionAlgorithm = function(value) {
+  return jspb.Message.setProto3EnumField(this, 9, value);
+};
+
+
+/**
+ * optional int64 compression_block_size = 10;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getCompressionBlockSize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setCompressionBlockSize = function(value) {
+  return jspb.Message.setProto3IntField(this, 10, value);
+};
+
+
+/**
+ * optional string image_units = 11;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getImageUnits = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setImageUnits = function(value) {
+  return jspb.Message.setProto3StringField(this, 11, value);
+};
+
+
+/**
+ * optional int64 max_spot_count = 12;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.getMaxSpotCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterInput} returns this
+ */
+proto.JFJochProtoBuf.WriterInput.prototype.setMaxSpotCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
@@ -8260,8 +9090,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochDetectorModuleConfig.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.WriterOutput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.WriterOutput.toObject(opt_includeInstance, this);
 };
 
 
@@ -8270,18 +9100,3076 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.toObject = function(op
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.WriterOutput} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.WriterOutput.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    nimages: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    performanceMbs: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    performanceHz: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.WriterOutput}
+ */
+proto.JFJochProtoBuf.WriterOutput.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.WriterOutput;
+  return proto.JFJochProtoBuf.WriterOutput.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.WriterOutput} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.WriterOutput}
+ */
+proto.JFJochProtoBuf.WriterOutput.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setNimages(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setPerformanceMbs(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setPerformanceHz(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.WriterOutput.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.WriterOutput.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.WriterOutput} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.WriterOutput.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getNimages();
+  if (f !== 0) {
+    writer.writeInt64(
+      1,
+      f
+    );
+  }
+  f = message.getPerformanceMbs();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
+  f = message.getPerformanceHz();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int64 nimages = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterOutput.prototype.getNimages = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterOutput} returns this
+ */
+proto.JFJochProtoBuf.WriterOutput.prototype.setNimages = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional float performance_MBs = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterOutput.prototype.getPerformanceMbs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterOutput} returns this
+ */
+proto.JFJochProtoBuf.WriterOutput.prototype.setPerformanceMbs = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional float performance_Hz = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterOutput.prototype.getPerformanceHz = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterOutput} returns this
+ */
+proto.JFJochProtoBuf.WriterOutput.prototype.setPerformanceHz = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.FacilityMetadata.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.FacilityMetadata} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.FacilityMetadata.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    sourceNameShort: jspb.Message.getFieldWithDefault(msg, 10, ""),
+    sourceName: jspb.Message.getFieldWithDefault(msg, 11, ""),
+    instrumentName: jspb.Message.getFieldWithDefault(msg, 12, ""),
+    instrumentNameShort: jspb.Message.getFieldWithDefault(msg, 13, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.FacilityMetadata}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.FacilityMetadata;
+  return proto.JFJochProtoBuf.FacilityMetadata.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.FacilityMetadata} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.FacilityMetadata}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSourceNameShort(value);
+      break;
+    case 11:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSourceName(value);
+      break;
+    case 12:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setInstrumentName(value);
+      break;
+    case 13:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setInstrumentNameShort(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.FacilityMetadata.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.FacilityMetadata} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.FacilityMetadata.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getSourceNameShort();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
+      f
+    );
+  }
+  f = message.getSourceName();
+  if (f.length > 0) {
+    writer.writeString(
+      11,
+      f
+    );
+  }
+  f = message.getInstrumentName();
+  if (f.length > 0) {
+    writer.writeString(
+      12,
+      f
+    );
+  }
+  f = message.getInstrumentNameShort();
+  if (f.length > 0) {
+    writer.writeString(
+      13,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string source_name_short = 10;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.getSourceNameShort = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.FacilityMetadata} returns this
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.setSourceNameShort = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
+};
+
+
+/**
+ * optional string source_name = 11;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.getSourceName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.FacilityMetadata} returns this
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.setSourceName = function(value) {
+  return jspb.Message.setProto3StringField(this, 11, value);
+};
+
+
+/**
+ * optional string instrument_name = 12;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.getInstrumentName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.FacilityMetadata} returns this
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.setInstrumentName = function(value) {
+  return jspb.Message.setProto3StringField(this, 12, value);
+};
+
+
+/**
+ * optional string instrument_name_short = 13;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.getInstrumentNameShort = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.FacilityMetadata} returns this
+ */
+proto.JFJochProtoBuf.FacilityMetadata.prototype.setInstrumentNameShort = function(value) {
+  return jspb.Message.setProto3StringField(this, 13, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.ExperimentGeometry.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.ExperimentGeometry} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    beamXPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    beamYPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    distanceMm: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.ExperimentGeometry}
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.ExperimentGeometry;
+  return proto.JFJochProtoBuf.ExperimentGeometry.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.ExperimentGeometry} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.ExperimentGeometry}
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBeamXPxl(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBeamYPxl(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setDistanceMm(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.ExperimentGeometry.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.ExperimentGeometry} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getBeamXPxl();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      1,
+      f
+    );
+  }
+  f = message.getBeamYPxl();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      2,
+      f
+    );
+  }
+  f = message.getDistanceMm();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional double beam_x_pxl = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.getBeamXPxl = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.ExperimentGeometry} returns this
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.setBeamXPxl = function(value) {
+  return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional double beam_y_pxl = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.getBeamYPxl = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.ExperimentGeometry} returns this
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.setBeamYPxl = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional double distance_mm = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.getDistanceMm = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.ExperimentGeometry} returns this
+ */
+proto.JFJochProtoBuf.ExperimentGeometry.prototype.setDistanceMm = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.DetectorMetadata.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.DetectorMetadata} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.DetectorMetadata.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    widthPxl: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    heightPxl: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    pixelDepthByte: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    signedPxl: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    compression: (f = msg.getCompression()) && proto.JFJochProtoBuf.CompressionSettings.toObject(includeInstance, f),
+    imageTimeUs: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
+    countTimeUs: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
+    geometry: (f = msg.getGeometry()) && proto.JFJochProtoBuf.ExperimentGeometry.toObject(includeInstance, f),
+    overload: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    underload: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    delayAfterTriggerUs: jspb.Message.getFloatingPointFieldWithDefault(msg, 12, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.DetectorMetadata;
+  return proto.JFJochProtoBuf.DetectorMetadata.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.DetectorMetadata} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.JFJochProtoBuf.DetectorType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setWidthPxl(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setHeightPxl(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPixelDepthByte(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSignedPxl(value);
+      break;
+    case 6:
+      var value = new proto.JFJochProtoBuf.CompressionSettings;
+      reader.readMessage(value,proto.JFJochProtoBuf.CompressionSettings.deserializeBinaryFromReader);
+      msg.setCompression(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setImageTimeUs(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setCountTimeUs(value);
+      break;
+    case 9:
+      var value = new proto.JFJochProtoBuf.ExperimentGeometry;
+      reader.readMessage(value,proto.JFJochProtoBuf.ExperimentGeometry.deserializeBinaryFromReader);
+      msg.setGeometry(value);
+      break;
+    case 10:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setOverload(value);
+      break;
+    case 11:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUnderload(value);
+      break;
+    case 12:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setDelayAfterTriggerUs(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.DetectorMetadata.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.DetectorMetadata} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.DetectorMetadata.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getWidthPxl();
+  if (f !== 0) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = message.getHeightPxl();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = message.getPixelDepthByte();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+  f = message.getSignedPxl();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = message.getCompression();
+  if (f != null) {
+    writer.writeMessage(
+      6,
+      f,
+      proto.JFJochProtoBuf.CompressionSettings.serializeBinaryToWriter
+    );
+  }
+  f = message.getImageTimeUs();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      7,
+      f
+    );
+  }
+  f = message.getCountTimeUs();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      8,
+      f
+    );
+  }
+  f = message.getGeometry();
+  if (f != null) {
+    writer.writeMessage(
+      9,
+      f,
+      proto.JFJochProtoBuf.ExperimentGeometry.serializeBinaryToWriter
+    );
+  }
+  f = message.getOverload();
+  if (f !== 0) {
+    writer.writeInt64(
+      10,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 11));
+  if (f != null) {
+    writer.writeInt64(
+      11,
+      f
+    );
+  }
+  f = message.getDelayAfterTriggerUs();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      12,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional DetectorType type = 1;
+ * @return {!proto.JFJochProtoBuf.DetectorType}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getType = function() {
+  return /** @type {!proto.JFJochProtoBuf.DetectorType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.DetectorType} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setType = function(value) {
+  return jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional int64 width_pxl = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getWidthPxl = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setWidthPxl = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional int64 height_pxl = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getHeightPxl = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setHeightPxl = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int64 pixel_depth_byte = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getPixelDepthByte = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setPixelDepthByte = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional bool signed_pxl = 5;
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getSignedPxl = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setSignedPxl = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * optional CompressionSettings compression = 6;
+ * @return {?proto.JFJochProtoBuf.CompressionSettings}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getCompression = function() {
+  return /** @type{?proto.JFJochProtoBuf.CompressionSettings} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.CompressionSettings, 6));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.CompressionSettings|undefined} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+*/
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setCompression = function(value) {
+  return jspb.Message.setWrapperField(this, 6, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.clearCompression = function() {
+  return this.setCompression(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.hasCompression = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional double image_time_us = 7;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getImageTimeUs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 7, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setImageTimeUs = function(value) {
+  return jspb.Message.setProto3FloatField(this, 7, value);
+};
+
+
+/**
+ * optional double count_time_us = 8;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getCountTimeUs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 8, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setCountTimeUs = function(value) {
+  return jspb.Message.setProto3FloatField(this, 8, value);
+};
+
+
+/**
+ * optional ExperimentGeometry geometry = 9;
+ * @return {?proto.JFJochProtoBuf.ExperimentGeometry}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getGeometry = function() {
+  return /** @type{?proto.JFJochProtoBuf.ExperimentGeometry} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.ExperimentGeometry, 9));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.ExperimentGeometry|undefined} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+*/
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setGeometry = function(value) {
+  return jspb.Message.setWrapperField(this, 9, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.clearGeometry = function() {
+  return this.setGeometry(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.hasGeometry = function() {
+  return jspb.Message.getField(this, 9) != null;
+};
+
+
+/**
+ * optional int64 overload = 10;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getOverload = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setOverload = function(value) {
+  return jspb.Message.setProto3IntField(this, 10, value);
+};
+
+
+/**
+ * optional int64 underload = 11;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getUnderload = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setUnderload = function(value) {
+  return jspb.Message.setField(this, 11, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.clearUnderload = function() {
+  return jspb.Message.setField(this, 11, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.hasUnderload = function() {
+  return jspb.Message.getField(this, 11) != null;
+};
+
+
+/**
+ * optional double delay_after_trigger_us = 12;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.getDelayAfterTriggerUs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 12, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorMetadata} returns this
+ */
+proto.JFJochProtoBuf.DetectorMetadata.prototype.setDelayAfterTriggerUs = function(value) {
+  return jspb.Message.setProto3FloatField(this, 12, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.BeamMetadata.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.BeamMetadata} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BeamMetadata.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    energyKev: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    transmission: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    totalFluxPhs: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+    beamSizeXUm: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    beamSizeYUm: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.BeamMetadata}
+ */
+proto.JFJochProtoBuf.BeamMetadata.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.BeamMetadata;
+  return proto.JFJochProtoBuf.BeamMetadata.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.BeamMetadata} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.BeamMetadata}
+ */
+proto.JFJochProtoBuf.BeamMetadata.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setEnergyKev(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setTransmission(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setTotalFluxPhs(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBeamSizeXUm(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBeamSizeYUm(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.BeamMetadata.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.BeamMetadata} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BeamMetadata.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getEnergyKev();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeDouble(
+      2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeDouble(
+      3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeDouble(
+      4,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeDouble(
+      5,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional double energy_kev = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.getEnergyKev = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.setEnergyKev = function(value) {
+  return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional double transmission = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.getTransmission = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.setTransmission = function(value) {
+  return jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.clearTransmission = function() {
+  return jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.hasTransmission = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional double total_flux_phs = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.getTotalFluxPhs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.setTotalFluxPhs = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.clearTotalFluxPhs = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.hasTotalFluxPhs = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional double beam_size_x_um = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.getBeamSizeXUm = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.setBeamSizeXUm = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.clearBeamSizeXUm = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.hasBeamSizeXUm = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional double beam_size_y_um = 5;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.getBeamSizeYUm = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.setBeamSizeYUm = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BeamMetadata} returns this
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.clearBeamSizeYUm = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BeamMetadata.prototype.hasBeamSizeYUm = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.SampleMetadata.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.SampleMetadata} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.SampleMetadata.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    unitCell: (f = msg.getUnitCell()) && proto.JFJochProtoBuf.UnitCell.toObject(includeInstance, f),
+    spaceGroup: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    temperatureK: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    omega: (f = msg.getOmega()) && proto.JFJochProtoBuf.RotationSettings.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.SampleMetadata}
+ */
+proto.JFJochProtoBuf.SampleMetadata.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.SampleMetadata;
+  return proto.JFJochProtoBuf.SampleMetadata.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.SampleMetadata} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.SampleMetadata}
+ */
+proto.JFJochProtoBuf.SampleMetadata.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 2:
+      var value = new proto.JFJochProtoBuf.UnitCell;
+      reader.readMessage(value,proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader);
+      msg.setUnitCell(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSpaceGroup(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setTemperatureK(value);
+      break;
+    case 5:
+      var value = new proto.JFJochProtoBuf.RotationSettings;
+      reader.readMessage(value,proto.JFJochProtoBuf.RotationSettings.deserializeBinaryFromReader);
+      msg.setOmega(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.SampleMetadata.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.SampleMetadata} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.SampleMetadata.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getUnitCell();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeDouble(
+      4,
+      f
+    );
+  }
+  f = message.getOmega();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.JFJochProtoBuf.RotationSettings.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional string name = 1;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional UnitCell unit_cell = 2;
+ * @return {?proto.JFJochProtoBuf.UnitCell}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.getUnitCell = function() {
+  return /** @type{?proto.JFJochProtoBuf.UnitCell} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.UnitCell, 2));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.UnitCell|undefined} value
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+*/
+proto.JFJochProtoBuf.SampleMetadata.prototype.setUnitCell = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.clearUnitCell = function() {
+  return this.setUnitCell(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.hasUnitCell = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 space_group = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.getSpaceGroup = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.setSpaceGroup = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.clearSpaceGroup = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.hasSpaceGroup = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional double temperature_K = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.getTemperatureK = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.setTemperatureK = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.clearTemperatureK = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.hasTemperatureK = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional RotationSettings omega = 5;
+ * @return {?proto.JFJochProtoBuf.RotationSettings}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.getOmega = function() {
+  return /** @type{?proto.JFJochProtoBuf.RotationSettings} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.RotationSettings, 5));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.RotationSettings|undefined} value
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+*/
+proto.JFJochProtoBuf.SampleMetadata.prototype.setOmega = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.SampleMetadata} returns this
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.clearOmega = function() {
+  return this.setOmega(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.SampleMetadata.prototype.hasOmega = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.CalibrationMetadata.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.CalibrationMetadata} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    maskBshufLz4: msg.getMaskBshufLz4_asB64(),
+    calibrationMap: (f = msg.getCalibrationMap()) ? f.toObject(includeInstance, undefined) : []
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.CalibrationMetadata}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.CalibrationMetadata;
+  return proto.JFJochProtoBuf.CalibrationMetadata.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.CalibrationMetadata} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.CalibrationMetadata}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setMaskBshufLz4(value);
+      break;
+    case 2:
+      var value = msg.getCalibrationMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readBytes, null, "", "");
+         });
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.CalibrationMetadata.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.CalibrationMetadata} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getMaskBshufLz4_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      1,
+      f
+    );
+  }
+  f = message.getCalibrationMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeBytes);
+  }
+};
+
+
+/**
+ * optional bytes mask_bshuf_lz4 = 1;
+ * @return {!(string|Uint8Array)}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.getMaskBshufLz4 = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * optional bytes mask_bshuf_lz4 = 1;
+ * This is a type-conversion wrapper around `getMaskBshufLz4()`
+ * @return {string}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.getMaskBshufLz4_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getMaskBshufLz4()));
+};
+
+
+/**
+ * optional bytes mask_bshuf_lz4 = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getMaskBshufLz4()`
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.getMaskBshufLz4_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getMaskBshufLz4()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.JFJochProtoBuf.CalibrationMetadata} returns this
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.setMaskBshufLz4 = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * map<string, bytes> calibration = 2;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<string,!(string|Uint8Array)>}
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.getCalibrationMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,!(string|Uint8Array)>} */ (
+      jspb.Message.getMapField(this, 2, opt_noLazyCreate,
+      null));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.JFJochProtoBuf.CalibrationMetadata} returns this
+ */
+proto.JFJochProtoBuf.CalibrationMetadata.prototype.clearCalibrationMap = function() {
+  this.getCalibrationMap().clear();
+  return this;};
+
+
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.repeatedFields_ = [10];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.WriterMetadataInput.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.WriterMetadataInput} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    facilityMetadata: (f = msg.getFacilityMetadata()) && proto.JFJochProtoBuf.FacilityMetadata.toObject(includeInstance, f),
+    detectorMetadata: (f = msg.getDetectorMetadata()) && proto.JFJochProtoBuf.DetectorMetadata.toObject(includeInstance, f),
+    beamMetadata: (f = msg.getBeamMetadata()) && proto.JFJochProtoBuf.BeamMetadata.toObject(includeInstance, f),
+    sampleMetadata: (f = msg.getSampleMetadata()) && proto.JFJochProtoBuf.SampleMetadata.toObject(includeInstance, f),
+    calibrationMetadata: (f = msg.getCalibrationMetadata()) && proto.JFJochProtoBuf.CalibrationMetadata.toObject(includeInstance, f),
+    imageNumber: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    startTimeMs: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    endTimeMs: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    fileName: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    dataFilesList: jspb.Message.toObjectList(msg.getDataFilesList(),
+    proto.JFJochProtoBuf.DataFile.toObject, includeInstance)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.WriterMetadataInput;
+  return proto.JFJochProtoBuf.WriterMetadataInput.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.WriterMetadataInput} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.JFJochProtoBuf.FacilityMetadata;
+      reader.readMessage(value,proto.JFJochProtoBuf.FacilityMetadata.deserializeBinaryFromReader);
+      msg.setFacilityMetadata(value);
+      break;
+    case 2:
+      var value = new proto.JFJochProtoBuf.DetectorMetadata;
+      reader.readMessage(value,proto.JFJochProtoBuf.DetectorMetadata.deserializeBinaryFromReader);
+      msg.setDetectorMetadata(value);
+      break;
+    case 3:
+      var value = new proto.JFJochProtoBuf.BeamMetadata;
+      reader.readMessage(value,proto.JFJochProtoBuf.BeamMetadata.deserializeBinaryFromReader);
+      msg.setBeamMetadata(value);
+      break;
+    case 4:
+      var value = new proto.JFJochProtoBuf.SampleMetadata;
+      reader.readMessage(value,proto.JFJochProtoBuf.SampleMetadata.deserializeBinaryFromReader);
+      msg.setSampleMetadata(value);
+      break;
+    case 5:
+      var value = new proto.JFJochProtoBuf.CalibrationMetadata;
+      reader.readMessage(value,proto.JFJochProtoBuf.CalibrationMetadata.deserializeBinaryFromReader);
+      msg.setCalibrationMetadata(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImageNumber(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setStartTimeMs(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setEndTimeMs(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFileName(value);
+      break;
+    case 10:
+      var value = new proto.JFJochProtoBuf.DataFile;
+      reader.readMessage(value,proto.JFJochProtoBuf.DataFile.deserializeBinaryFromReader);
+      msg.addDataFiles(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.WriterMetadataInput.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.WriterMetadataInput} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getFacilityMetadata();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.JFJochProtoBuf.FacilityMetadata.serializeBinaryToWriter
+    );
+  }
+  f = message.getDetectorMetadata();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      proto.JFJochProtoBuf.DetectorMetadata.serializeBinaryToWriter
+    );
+  }
+  f = message.getBeamMetadata();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      proto.JFJochProtoBuf.BeamMetadata.serializeBinaryToWriter
+    );
+  }
+  f = message.getSampleMetadata();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      proto.JFJochProtoBuf.SampleMetadata.serializeBinaryToWriter
+    );
+  }
+  f = message.getCalibrationMetadata();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.JFJochProtoBuf.CalibrationMetadata.serializeBinaryToWriter
+    );
+  }
+  f = message.getImageNumber();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
+      f
+    );
+  }
+  f = message.getStartTimeMs();
+  if (f !== 0) {
+    writer.writeUint64(
+      7,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 8));
+  if (f != null) {
+    writer.writeUint64(
+      8,
+      f
+    );
+  }
+  f = message.getFileName();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getDataFilesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      10,
+      f,
+      proto.JFJochProtoBuf.DataFile.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional FacilityMetadata facility_metadata = 1;
+ * @return {?proto.JFJochProtoBuf.FacilityMetadata}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getFacilityMetadata = function() {
+  return /** @type{?proto.JFJochProtoBuf.FacilityMetadata} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.FacilityMetadata, 1));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.FacilityMetadata|undefined} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+*/
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setFacilityMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.clearFacilityMetadata = function() {
+  return this.setFacilityMetadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.hasFacilityMetadata = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional DetectorMetadata detector_metadata = 2;
+ * @return {?proto.JFJochProtoBuf.DetectorMetadata}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getDetectorMetadata = function() {
+  return /** @type{?proto.JFJochProtoBuf.DetectorMetadata} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.DetectorMetadata, 2));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.DetectorMetadata|undefined} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+*/
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setDetectorMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.clearDetectorMetadata = function() {
+  return this.setDetectorMetadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.hasDetectorMetadata = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional BeamMetadata beam_metadata = 3;
+ * @return {?proto.JFJochProtoBuf.BeamMetadata}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getBeamMetadata = function() {
+  return /** @type{?proto.JFJochProtoBuf.BeamMetadata} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.BeamMetadata, 3));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.BeamMetadata|undefined} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+*/
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setBeamMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.clearBeamMetadata = function() {
+  return this.setBeamMetadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.hasBeamMetadata = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional SampleMetadata sample_metadata = 4;
+ * @return {?proto.JFJochProtoBuf.SampleMetadata}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getSampleMetadata = function() {
+  return /** @type{?proto.JFJochProtoBuf.SampleMetadata} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.SampleMetadata, 4));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.SampleMetadata|undefined} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+*/
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setSampleMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.clearSampleMetadata = function() {
+  return this.setSampleMetadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.hasSampleMetadata = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional CalibrationMetadata calibration_metadata = 5;
+ * @return {?proto.JFJochProtoBuf.CalibrationMetadata}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getCalibrationMetadata = function() {
+  return /** @type{?proto.JFJochProtoBuf.CalibrationMetadata} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.CalibrationMetadata, 5));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.CalibrationMetadata|undefined} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+*/
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setCalibrationMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.clearCalibrationMetadata = function() {
+  return this.setCalibrationMetadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.hasCalibrationMetadata = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional int64 image_number = 6;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getImageNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setImageNumber = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional uint64 start_time_ms = 7;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getStartTimeMs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setStartTimeMs = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional uint64 end_time_ms = 8;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getEndTimeMs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setEndTimeMs = function(value) {
+  return jspb.Message.setField(this, 8, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.clearEndTimeMs = function() {
+  return jspb.Message.setField(this, 8, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.hasEndTimeMs = function() {
+  return jspb.Message.getField(this, 8) != null;
+};
+
+
+/**
+ * optional string file_name = 9;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getFileName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setFileName = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * repeated DataFile data_files = 10;
+ * @return {!Array<!proto.JFJochProtoBuf.DataFile>}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.getDataFilesList = function() {
+  return /** @type{!Array<!proto.JFJochProtoBuf.DataFile>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.DataFile, 10));
+};
+
+
+/**
+ * @param {!Array<!proto.JFJochProtoBuf.DataFile>} value
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+*/
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.setDataFilesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 10, value);
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.DataFile=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.JFJochProtoBuf.DataFile}
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.addDataFiles = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 10, opt_value, proto.JFJochProtoBuf.DataFile, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.JFJochProtoBuf.WriterMetadataInput} returns this
+ */
+proto.JFJochProtoBuf.WriterMetadataInput.prototype.clearDataFilesList = function() {
+  return this.setDataFilesList([]);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.WriterSpot.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.WriterSpot} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.WriterSpot.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    x: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    y: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    intensity: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.WriterSpot}
+ */
+proto.JFJochProtoBuf.WriterSpot.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.WriterSpot;
+  return proto.JFJochProtoBuf.WriterSpot.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.WriterSpot} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.WriterSpot}
+ */
+proto.JFJochProtoBuf.WriterSpot.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setX(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setY(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setIntensity(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.WriterSpot.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.WriterSpot} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.WriterSpot.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getX();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      1,
+      f
+    );
+  }
+  f = message.getY();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
+  f = message.getIntensity();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional float x = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.getX = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterSpot} returns this
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.setX = function(value) {
+  return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional float y = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.getY = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterSpot} returns this
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.setY = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional float intensity = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.getIntensity = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterSpot} returns this
+ */
+proto.JFJochProtoBuf.WriterSpot.prototype.setIntensity = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.JFJochProtoBuf.WriterFrame.repeatedFields_ = [4];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.WriterFrame.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.WriterFrame} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.WriterFrame.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    fileNumber: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    imageNumber: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    spotCoordList: jspb.Message.toObjectList(msg.getSpotCoordList(),
+    proto.JFJochProtoBuf.WriterSpot.toObject, includeInstance),
+    data: msg.getData_asB64()
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.WriterFrame}
+ */
+proto.JFJochProtoBuf.WriterFrame.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.WriterFrame;
+  return proto.JFJochProtoBuf.WriterFrame.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.WriterFrame} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.WriterFrame}
+ */
+proto.JFJochProtoBuf.WriterFrame.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.JFJochProtoBuf.WriterFrameType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFileNumber(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImageNumber(value);
+      break;
+    case 4:
+      var value = new proto.JFJochProtoBuf.WriterSpot;
+      reader.readMessage(value,proto.JFJochProtoBuf.WriterSpot.deserializeBinaryFromReader);
+      msg.addSpotCoord(value);
+      break;
+    case 5:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setData(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.WriterFrame.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.WriterFrame} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.WriterFrame.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = message.getSpotCoordList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      4,
+      f,
+      proto.JFJochProtoBuf.WriterSpot.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeBytes(
+      5,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional WriterFrameType type = 1;
+ * @return {!proto.JFJochProtoBuf.WriterFrameType}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.getType = function() {
+  return /** @type {!proto.JFJochProtoBuf.WriterFrameType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.WriterFrameType} value
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.setType = function(value) {
+  return jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional int64 file_number = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.getFileNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.setFileNumber = function(value) {
+  return jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.clearFileNumber = function() {
+  return jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.hasFileNumber = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 image_number = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.getImageNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.setImageNumber = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.clearImageNumber = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.hasImageNumber = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * repeated WriterSpot spot_coord = 4;
+ * @return {!Array<!proto.JFJochProtoBuf.WriterSpot>}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.getSpotCoordList = function() {
+  return /** @type{!Array<!proto.JFJochProtoBuf.WriterSpot>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.WriterSpot, 4));
+};
+
+
+/**
+ * @param {!Array<!proto.JFJochProtoBuf.WriterSpot>} value
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+*/
+proto.JFJochProtoBuf.WriterFrame.prototype.setSpotCoordList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.WriterSpot=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.JFJochProtoBuf.WriterSpot}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.addSpotCoord = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.JFJochProtoBuf.WriterSpot, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.clearSpotCoordList = function() {
+  return this.setSpotCoordList([]);
+};
+
+
+/**
+ * optional bytes data = 5;
+ * @return {!(string|Uint8Array)}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.getData = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * optional bytes data = 5;
+ * This is a type-conversion wrapper around `getData()`
+ * @return {string}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.getData_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getData()));
+};
+
+
+/**
+ * optional bytes data = 5;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getData()`
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.getData_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getData()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.setData = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.WriterFrame} returns this
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.clearData = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.WriterFrame.prototype.hasData = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.DetectorModuleConfig.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.DetectorModuleConfig} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.DetectorModuleConfig.toObject = function(includeInstance, msg) {
   var f, obj = {
     udpDestPort1: jspb.Message.getFieldWithDefault(msg, 1, 0),
     udpDestPort2: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    ipv4SrcAddr1: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    ipv4SrcAddr2: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    ipv4DestAddr1: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    ipv4DestAddr2: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    ipv4SrcAddr1: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    ipv4SrcAddr2: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    ipv4DestAddr1: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    ipv4DestAddr2: jspb.Message.getFieldWithDefault(msg, 6, ""),
     macAddrDest1: jspb.Message.getFieldWithDefault(msg, 7, ""),
     macAddrDest2: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
@@ -8297,23 +12185,23 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.toObject = function(includeInsta
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig}
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.DetectorModuleConfig.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochDetectorModuleConfig;
-  return proto.JFJochProtoBuf.JFJochDetectorModuleConfig.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.DetectorModuleConfig;
+  return proto.JFJochProtoBuf.DetectorModuleConfig.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.DetectorModuleConfig} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig}
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.DetectorModuleConfig.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8329,19 +12217,19 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.deserializeBinaryFromReader = fu
       msg.setUdpDestPort2(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setIpv4SrcAddr1(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setIpv4SrcAddr2(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setIpv4DestAddr1(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setIpv4DestAddr2(value);
       break;
     case 7:
@@ -8365,9 +12253,9 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.deserializeBinaryFromReader = fu
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochDetectorModuleConfig.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.DetectorModuleConfig.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8375,11 +12263,11 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.serializeBinary = func
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} message
+ * @param {!proto.JFJochProtoBuf.DetectorModuleConfig} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.DetectorModuleConfig.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getUdpDestPort1();
   if (f !== 0) {
@@ -8396,29 +12284,29 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.serializeBinaryToWriter = functi
     );
   }
   f = message.getIpv4SrcAddr1();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       3,
       f
     );
   }
   f = message.getIpv4SrcAddr2();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       4,
       f
     );
   }
   f = message.getIpv4DestAddr1();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       5,
       f
     );
   }
   f = message.getIpv4DestAddr2();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       6,
       f
     );
@@ -8444,16 +12332,16 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.serializeBinaryToWriter = functi
  * optional uint64 udp_dest_port_1 = 1;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getUdpDestPort1 = function() {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getUdpDestPort1 = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setUdpDestPort1 = function(value) {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setUdpDestPort1 = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -8462,89 +12350,89 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setUdpDestPort1 = func
  * optional uint64 udp_dest_port_2 = 2;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getUdpDestPort2 = function() {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getUdpDestPort2 = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setUdpDestPort2 = function(value) {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setUdpDestPort2 = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional uint64 ipv4_src_addr_1 = 3;
- * @return {number}
+ * optional string ipv4_src_addr_1 = 3;
+ * @return {string}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getIpv4SrcAddr1 = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getIpv4SrcAddr1 = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setIpv4SrcAddr1 = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setIpv4SrcAddr1 = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional uint64 ipv4_src_addr_2 = 4;
- * @return {number}
+ * optional string ipv4_src_addr_2 = 4;
+ * @return {string}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getIpv4SrcAddr2 = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getIpv4SrcAddr2 = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setIpv4SrcAddr2 = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setIpv4SrcAddr2 = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * optional uint64 ipv4_dest_addr_1 = 5;
- * @return {number}
+ * optional string ipv4_dest_addr_1 = 5;
+ * @return {string}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getIpv4DestAddr1 = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getIpv4DestAddr1 = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setIpv4DestAddr1 = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setIpv4DestAddr1 = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
 /**
- * optional uint64 ipv4_dest_addr_2 = 6;
- * @return {number}
+ * optional string ipv4_dest_addr_2 = 6;
+ * @return {string}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getIpv4DestAddr2 = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getIpv4DestAddr2 = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setIpv4DestAddr2 = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setIpv4DestAddr2 = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
@@ -8552,16 +12440,16 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setIpv4DestAddr2 = fun
  * optional string mac_addr_dest_1 = 7;
  * @return {string}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getMacAddrDest1 = function() {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getMacAddrDest1 = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setMacAddrDest1 = function(value) {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setMacAddrDest1 = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
 };
 
@@ -8570,16 +12458,16 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setMacAddrDest1 = func
  * optional string mac_addr_dest_2 = 8;
  * @return {string}
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.getMacAddrDest2 = function() {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.getMacAddrDest2 = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setMacAddrDest2 = function(value) {
+proto.JFJochProtoBuf.DetectorModuleConfig.prototype.setMacAddrDest2 = function(value) {
   return jspb.Message.setProto3StringField(this, 8, value);
 };
 
@@ -8590,7 +12478,7 @@ proto.JFJochProtoBuf.JFJochDetectorModuleConfig.prototype.setMacAddrDest2 = func
  * @private {!Array<number>}
  * @const
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.repeatedFields_ = [1];
+proto.JFJochProtoBuf.DetectorConfig.repeatedFields_ = [1];
 
 
 
@@ -8607,8 +12495,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochDetectorConfig.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.DetectorConfig.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.DetectorConfig.toObject(opt_includeInstance, this);
 };
 
 
@@ -8617,14 +12505,14 @@ proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.toObject = function(opt_incl
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochDetectorConfig} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.DetectorConfig} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.DetectorConfig.toObject = function(includeInstance, msg) {
   var f, obj = {
     modulesList: jspb.Message.toObjectList(msg.getModulesList(),
-    proto.JFJochProtoBuf.JFJochDetectorModuleConfig.toObject, includeInstance)
+    proto.JFJochProtoBuf.DetectorModuleConfig.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -8638,23 +12526,23 @@ proto.JFJochProtoBuf.JFJochDetectorConfig.toObject = function(includeInstance, m
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorConfig}
+ * @return {!proto.JFJochProtoBuf.DetectorConfig}
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.DetectorConfig.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochDetectorConfig;
-  return proto.JFJochProtoBuf.JFJochDetectorConfig.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.DetectorConfig;
+  return proto.JFJochProtoBuf.DetectorConfig.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorConfig} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.DetectorConfig} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorConfig}
+ * @return {!proto.JFJochProtoBuf.DetectorConfig}
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.DetectorConfig.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8662,8 +12550,8 @@ proto.JFJochProtoBuf.JFJochDetectorConfig.deserializeBinaryFromReader = function
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.JFJochProtoBuf.JFJochDetectorModuleConfig;
-      reader.readMessage(value,proto.JFJochProtoBuf.JFJochDetectorModuleConfig.deserializeBinaryFromReader);
+      var value = new proto.JFJochProtoBuf.DetectorModuleConfig;
+      reader.readMessage(value,proto.JFJochProtoBuf.DetectorModuleConfig.deserializeBinaryFromReader);
       msg.addModules(value);
       break;
     default:
@@ -8679,9 +12567,9 @@ proto.JFJochProtoBuf.JFJochDetectorConfig.deserializeBinaryFromReader = function
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.DetectorConfig.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochDetectorConfig.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.DetectorConfig.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8689,57 +12577,57 @@ proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.serializeBinary = function()
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorConfig} message
+ * @param {!proto.JFJochProtoBuf.DetectorConfig} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.DetectorConfig.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getModulesList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.JFJochProtoBuf.JFJochDetectorModuleConfig.serializeBinaryToWriter
+      proto.JFJochProtoBuf.DetectorModuleConfig.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * repeated JFJochDetectorModuleConfig modules = 1;
- * @return {!Array<!proto.JFJochProtoBuf.JFJochDetectorModuleConfig>}
+ * repeated DetectorModuleConfig modules = 1;
+ * @return {!Array<!proto.JFJochProtoBuf.DetectorModuleConfig>}
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.getModulesList = function() {
-  return /** @type{!Array<!proto.JFJochProtoBuf.JFJochDetectorModuleConfig>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.JFJochDetectorModuleConfig, 1));
+proto.JFJochProtoBuf.DetectorConfig.prototype.getModulesList = function() {
+  return /** @type{!Array<!proto.JFJochProtoBuf.DetectorModuleConfig>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.DetectorModuleConfig, 1));
 };
 
 
 /**
- * @param {!Array<!proto.JFJochProtoBuf.JFJochDetectorModuleConfig>} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorConfig} returns this
+ * @param {!Array<!proto.JFJochProtoBuf.DetectorModuleConfig>} value
+ * @return {!proto.JFJochProtoBuf.DetectorConfig} returns this
 */
-proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.setModulesList = function(value) {
+proto.JFJochProtoBuf.DetectorConfig.prototype.setModulesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig=} opt_value
+ * @param {!proto.JFJochProtoBuf.DetectorModuleConfig=} opt_value
  * @param {number=} opt_index
- * @return {!proto.JFJochProtoBuf.JFJochDetectorModuleConfig}
+ * @return {!proto.JFJochProtoBuf.DetectorModuleConfig}
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.addModules = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.JFJochProtoBuf.JFJochDetectorModuleConfig, opt_index);
+proto.JFJochProtoBuf.DetectorConfig.prototype.addModules = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.JFJochProtoBuf.DetectorModuleConfig, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorConfig} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorConfig} returns this
  */
-proto.JFJochProtoBuf.JFJochDetectorConfig.prototype.clearModulesList = function() {
+proto.JFJochProtoBuf.DetectorConfig.prototype.clearModulesList = function() {
   return this.setModulesList([]);
 };
 
@@ -8760,8 +12648,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochDetectorInput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochDetectorInput.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.DetectorInput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.DetectorInput.toObject(opt_includeInstance, this);
 };
 
 
@@ -8770,13 +12658,23 @@ proto.JFJochProtoBuf.JFJochDetectorInput.prototype.toObject = function(opt_inclu
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochDetectorInput} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.DetectorInput} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochDetectorInput.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.DetectorInput.toObject = function(includeInstance, msg) {
   var f, obj = {
-    jungfraujochSettings: (f = msg.getJungfraujochSettings()) && proto.JFJochProtoBuf.JungfraujochSettings.toObject(includeInstance, f)
+    modulesNum: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    mode: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    numFrames: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    numTriggers: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    storageCellNumber: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    storageCellStart: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    storageCellDelay: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    periodUs: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    countTimeUs: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    delayUs: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    softTrigger: jspb.Message.getBooleanFieldWithDefault(msg, 12, false)
   };
 
   if (includeInstance) {
@@ -8790,23 +12688,23 @@ proto.JFJochProtoBuf.JFJochDetectorInput.toObject = function(includeInstance, ms
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorInput}
+ * @return {!proto.JFJochProtoBuf.DetectorInput}
  */
-proto.JFJochProtoBuf.JFJochDetectorInput.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.DetectorInput.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochDetectorInput;
-  return proto.JFJochProtoBuf.JFJochDetectorInput.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.DetectorInput;
+  return proto.JFJochProtoBuf.DetectorInput.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorInput} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.DetectorInput} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorInput}
+ * @return {!proto.JFJochProtoBuf.DetectorInput}
  */
-proto.JFJochProtoBuf.JFJochDetectorInput.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.DetectorInput.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8814,913 +12712,48 @@ proto.JFJochProtoBuf.JFJochDetectorInput.deserializeBinaryFromReader = function(
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.JFJochProtoBuf.JungfraujochSettings;
-      reader.readMessage(value,proto.JFJochProtoBuf.JungfraujochSettings.deserializeBinaryFromReader);
-      msg.setJungfraujochSettings(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.JFJochDetectorInput.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochDetectorInput.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorInput} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.JFJochDetectorInput.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getJungfraujochSettings();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.JFJochProtoBuf.JungfraujochSettings.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional JungfraujochSettings jungfraujoch_settings = 1;
- * @return {?proto.JFJochProtoBuf.JungfraujochSettings}
- */
-proto.JFJochProtoBuf.JFJochDetectorInput.prototype.getJungfraujochSettings = function() {
-  return /** @type{?proto.JFJochProtoBuf.JungfraujochSettings} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JungfraujochSettings, 1));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.JungfraujochSettings|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochDetectorInput} returns this
-*/
-proto.JFJochProtoBuf.JFJochDetectorInput.prototype.setJungfraujochSettings = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorInput} returns this
- */
-proto.JFJochProtoBuf.JFJochDetectorInput.prototype.clearJungfraujochSettings = function() {
-  return this.setJungfraujochSettings(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.JFJochDetectorInput.prototype.hasJungfraujochSettings = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.JFJochDetectorOutput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochDetectorOutput.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochDetectorOutput} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.JFJochDetectorOutput.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorOutput}
- */
-proto.JFJochProtoBuf.JFJochDetectorOutput.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochDetectorOutput;
-  return proto.JFJochProtoBuf.JFJochDetectorOutput.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorOutput} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochDetectorOutput}
- */
-proto.JFJochProtoBuf.JFJochDetectorOutput.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.JFJochDetectorOutput.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochDetectorOutput.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochDetectorOutput} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.JFJochDetectorOutput.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.Empty.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.Empty.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.Empty} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.Empty.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.Empty}
- */
-proto.JFJochProtoBuf.Empty.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.Empty;
-  return proto.JFJochProtoBuf.Empty.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.Empty} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.Empty}
- */
-proto.JFJochProtoBuf.Empty.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.Empty.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.Empty.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.Empty} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.Empty.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.UnitCell.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.UnitCell} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.UnitCell.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    a: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    b: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
-    c: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    alpha: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    beta: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    gamma: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.UnitCell}
- */
-proto.JFJochProtoBuf.UnitCell.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.UnitCell;
-  return proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.UnitCell} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.UnitCell}
- */
-proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setA(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setModulesNum(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setB(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setC(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setAlpha(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setBeta(value);
-      break;
-    case 6:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setGamma(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.UnitCell} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getA();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      1,
-      f
-    );
-  }
-  f = message.getB();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      2,
-      f
-    );
-  }
-  f = message.getC();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      3,
-      f
-    );
-  }
-  f = message.getAlpha();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      4,
-      f
-    );
-  }
-  f = message.getBeta();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      5,
-      f
-    );
-  }
-  f = message.getGamma();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      6,
-      f
-    );
-  }
-};
-
-
-/**
- * optional double a = 1;
- * @return {number}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.getA = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.UnitCell} returns this
- */
-proto.JFJochProtoBuf.UnitCell.prototype.setA = function(value) {
-  return jspb.Message.setProto3FloatField(this, 1, value);
-};
-
-
-/**
- * optional double b = 2;
- * @return {number}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.getB = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.UnitCell} returns this
- */
-proto.JFJochProtoBuf.UnitCell.prototype.setB = function(value) {
-  return jspb.Message.setProto3FloatField(this, 2, value);
-};
-
-
-/**
- * optional double c = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.getC = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.UnitCell} returns this
- */
-proto.JFJochProtoBuf.UnitCell.prototype.setC = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
-};
-
-
-/**
- * optional double alpha = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.getAlpha = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.UnitCell} returns this
- */
-proto.JFJochProtoBuf.UnitCell.prototype.setAlpha = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
-};
-
-
-/**
- * optional double beta = 5;
- * @return {number}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.getBeta = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.UnitCell} returns this
- */
-proto.JFJochProtoBuf.UnitCell.prototype.setBeta = function(value) {
-  return jspb.Message.setProto3FloatField(this, 5, value);
-};
-
-
-/**
- * optional double gamma = 6;
- * @return {number}
- */
-proto.JFJochProtoBuf.UnitCell.prototype.getGamma = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.UnitCell} returns this
- */
-proto.JFJochProtoBuf.UnitCell.prototype.setGamma = function(value) {
-  return jspb.Message.setProto3FloatField(this, 6, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.Vector.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.Vector.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.Vector} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.Vector.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    x: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    y: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
-    z: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.Vector}
- */
-proto.JFJochProtoBuf.Vector.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.Vector;
-  return proto.JFJochProtoBuf.Vector.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.Vector} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.Vector}
- */
-proto.JFJochProtoBuf.Vector.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setX(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setY(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setZ(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.Vector.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.Vector.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.Vector} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.Vector.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getX();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      1,
-      f
-    );
-  }
-  f = message.getY();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      2,
-      f
-    );
-  }
-  f = message.getZ();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional double x = 1;
- * @return {number}
- */
-proto.JFJochProtoBuf.Vector.prototype.getX = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.Vector} returns this
- */
-proto.JFJochProtoBuf.Vector.prototype.setX = function(value) {
-  return jspb.Message.setProto3FloatField(this, 1, value);
-};
-
-
-/**
- * optional double y = 2;
- * @return {number}
- */
-proto.JFJochProtoBuf.Vector.prototype.getY = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.Vector} returns this
- */
-proto.JFJochProtoBuf.Vector.prototype.setY = function(value) {
-  return jspb.Message.setProto3FloatField(this, 2, value);
-};
-
-
-/**
- * optional double z = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.Vector.prototype.getZ = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.Vector} returns this
- */
-proto.JFJochProtoBuf.Vector.prototype.setZ = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
-};
-
-
-
-/**
- * Oneof group definitions for this message. Each group defines the field
- * numbers belonging to that group. When of these fields' value is set, all
- * other fields in the group are cleared. During deserialization, if multiple
- * fields are encountered for a group, only the last value seen will be kept.
- * @private {!Array<!Array<number>>}
- * @const
- */
-proto.JFJochProtoBuf.ParameterValue.oneofGroups_ = [[1,2,3,4,5,6]];
-
-/**
- * @enum {number}
- */
-proto.JFJochProtoBuf.ParameterValue.ValueCase = {
-  VALUE_NOT_SET: 0,
-  TEXT: 1,
-  FP_NUMBER: 2,
-  NUMBER: 3,
-  LOGICAL: 4,
-  VECTOR: 5,
-  UNIT_CELL: 6
-};
-
-/**
- * @return {proto.JFJochProtoBuf.ParameterValue.ValueCase}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.getValueCase = function() {
-  return /** @type {proto.JFJochProtoBuf.ParameterValue.ValueCase} */(jspb.Message.computeOneofCase(this, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0]));
-};
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.ParameterValue.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.ParameterValue} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.ParameterValue.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    text: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    fpNumber: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
-    number: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    logical: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    vector: (f = msg.getVector()) && proto.JFJochProtoBuf.Vector.toObject(includeInstance, f),
-    unitCell: (f = msg.getUnitCell()) && proto.JFJochProtoBuf.UnitCell.toObject(includeInstance, f),
-    unit: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    fpMin: jspb.Message.getFloatingPointFieldWithDefault(msg, 12, 0.0),
-    fpMax: jspb.Message.getFloatingPointFieldWithDefault(msg, 13, 0.0),
-    intMin: jspb.Message.getFieldWithDefault(msg, 14, 0),
-    intMax: jspb.Message.getFieldWithDefault(msg, 15, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.ParameterValue}
- */
-proto.JFJochProtoBuf.ParameterValue.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.ParameterValue;
-  return proto.JFJochProtoBuf.ParameterValue.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.ParameterValue} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.ParameterValue}
- */
-proto.JFJochProtoBuf.ParameterValue.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setText(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setFpNumber(value);
+      var value = /** @type {!proto.JFJochProtoBuf.DetectorMode} */ (reader.readEnum());
+      msg.setMode(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setNumber(value);
+      msg.setNumFrames(value);
       break;
     case 4:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setLogical(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setNumTriggers(value);
       break;
     case 5:
-      var value = new proto.JFJochProtoBuf.Vector;
-      reader.readMessage(value,proto.JFJochProtoBuf.Vector.deserializeBinaryFromReader);
-      msg.setVector(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setStorageCellNumber(value);
       break;
     case 6:
-      var value = new proto.JFJochProtoBuf.UnitCell;
-      reader.readMessage(value,proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader);
-      msg.setUnitCell(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setStorageCellStart(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setStorageCellDelay(value);
+      break;
+    case 9:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPeriodUs(value);
+      break;
+    case 10:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCountTimeUs(value);
       break;
     case 11:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUnit(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setDelayUs(value);
       break;
     case 12:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setFpMin(value);
-      break;
-    case 13:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setFpMax(value);
-      break;
-    case 14:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setIntMin(value);
-      break;
-    case 15:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setIntMax(value);
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSoftTrigger(value);
       break;
     default:
       reader.skipField();
@@ -9735,9 +12768,9 @@ proto.JFJochProtoBuf.ParameterValue.deserializeBinaryFromReader = function(msg, 
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.DetectorInput.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.ParameterValue.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.DetectorInput.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9745,471 +12778,578 @@ proto.JFJochProtoBuf.ParameterValue.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.ParameterValue} message
+ * @param {!proto.JFJochProtoBuf.DetectorInput} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.ParameterValue.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.DetectorInput.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
-    writer.writeString(
+  f = message.getModulesNum();
+  if (f !== 0) {
+    writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
-    writer.writeDouble(
+  f = message.getMode();
+  if (f !== 0.0) {
+    writer.writeEnum(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getNumFrames();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
-    writer.writeBool(
+  f = message.getNumTriggers();
+  if (f !== 0) {
+    writer.writeInt64(
       4,
       f
     );
   }
-  f = message.getVector();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getStorageCellNumber();
+  if (f !== 0) {
+    writer.writeInt64(
       5,
-      f,
-      proto.JFJochProtoBuf.Vector.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getUnitCell();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getStorageCellStart();
+  if (f !== 0) {
+    writer.writeInt64(
       6,
-      f,
-      proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getUnit();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getStorageCellDelay();
+  if (f !== 0) {
+    writer.writeInt64(
+      7,
+      f
+    );
+  }
+  f = message.getPeriodUs();
+  if (f !== 0) {
+    writer.writeInt64(
+      9,
+      f
+    );
+  }
+  f = message.getCountTimeUs();
+  if (f !== 0) {
+    writer.writeInt64(
+      10,
+      f
+    );
+  }
+  f = message.getDelayUs();
+  if (f !== 0) {
+    writer.writeInt64(
       11,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 12));
-  if (f != null) {
-    writer.writeDouble(
+  f = message.getSoftTrigger();
+  if (f) {
+    writer.writeBool(
       12,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 13));
-  if (f != null) {
-    writer.writeDouble(
-      13,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 14));
-  if (f != null) {
-    writer.writeInt64(
-      14,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 15));
-  if (f != null) {
-    writer.writeInt64(
-      15,
-      f
-    );
-  }
 };
 
 
 /**
- * optional string text = 1;
- * @return {string}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.getText = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.setText = function(value) {
-  return jspb.Message.setOneofField(this, 1, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearText = function() {
-  return jspb.Message.setOneofField(this, 1, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional double fp_number = 2;
+ * optional int64 modules_num = 1;
  * @return {number}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.getFpNumber = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+proto.JFJochProtoBuf.DetectorInput.prototype.getModulesNum = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.setFpNumber = function(value) {
-  return jspb.Message.setOneofField(this, 2, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], value);
+proto.JFJochProtoBuf.DetectorInput.prototype.setModulesNum = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * optional DetectorMode mode = 2;
+ * @return {!proto.JFJochProtoBuf.DetectorMode}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearFpNumber = function() {
-  return jspb.Message.setOneofField(this, 2, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], undefined);
+proto.JFJochProtoBuf.DetectorInput.prototype.getMode = function() {
+  return /** @type {!proto.JFJochProtoBuf.DetectorMode} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * @param {!proto.JFJochProtoBuf.DetectorMode} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasFpNumber = function() {
-  return jspb.Message.getField(this, 2) != null;
+proto.JFJochProtoBuf.DetectorInput.prototype.setMode = function(value) {
+  return jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
 /**
- * optional int64 number = 3;
+ * optional int64 num_frames = 3;
  * @return {number}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.getNumber = function() {
+proto.JFJochProtoBuf.DetectorInput.prototype.getNumFrames = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.setNumber = function(value) {
-  return jspb.Message.setOneofField(this, 3, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], value);
+proto.JFJochProtoBuf.DetectorInput.prototype.setNumFrames = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * optional int64 num_triggers = 4;
+ * @return {number}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearNumber = function() {
-  return jspb.Message.setOneofField(this, 3, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], undefined);
+proto.JFJochProtoBuf.DetectorInput.prototype.getNumTriggers = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /**
- * Returns whether this field is set.
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.setNumTriggers = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional int64 storage_cell_number = 5;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.getStorageCellNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.setStorageCellNumber = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional int64 storage_cell_start = 6;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.getStorageCellStart = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.setStorageCellStart = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional int64 storage_cell_delay = 7;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.getStorageCellDelay = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.setStorageCellDelay = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional int64 period_us = 9;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.getPeriodUs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.setPeriodUs = function(value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
+};
+
+
+/**
+ * optional int64 count_time_us = 10;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.getCountTimeUs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.setCountTimeUs = function(value) {
+  return jspb.Message.setProto3IntField(this, 10, value);
+};
+
+
+/**
+ * optional int64 delay_us = 11;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.getDelayUs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
+ */
+proto.JFJochProtoBuf.DetectorInput.prototype.setDelayUs = function(value) {
+  return jspb.Message.setProto3IntField(this, 11, value);
+};
+
+
+/**
+ * optional bool soft_trigger = 12;
  * @return {boolean}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasNumber = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * optional bool logical = 4;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.getLogical = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+proto.JFJochProtoBuf.DetectorInput.prototype.getSoftTrigger = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorInput} returns this
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.setLogical = function(value) {
-  return jspb.Message.setOneofField(this, 4, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], value);
+proto.JFJochProtoBuf.DetectorInput.prototype.setSoftTrigger = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 12, value);
 };
 
 
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
 /**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearLogical = function() {
-  return jspb.Message.setOneofField(this, 4, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], undefined);
+proto.JFJochProtoBuf.DetectorOutput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.DetectorOutput.toObject(opt_includeInstance, this);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.DetectorOutput} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasLogical = function() {
-  return jspb.Message.getField(this, 4) != null;
+proto.JFJochProtoBuf.DetectorOutput.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
 };
+}
 
 
 /**
- * optional Vector vector = 5;
- * @return {?proto.JFJochProtoBuf.Vector}
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.DetectorOutput}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.getVector = function() {
-  return /** @type{?proto.JFJochProtoBuf.Vector} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.Vector, 5));
+proto.JFJochProtoBuf.DetectorOutput.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.DetectorOutput;
+  return proto.JFJochProtoBuf.DetectorOutput.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
- * @param {?proto.JFJochProtoBuf.Vector|undefined} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
-*/
-proto.JFJochProtoBuf.ParameterValue.prototype.setVector = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 5, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.DetectorOutput} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.DetectorOutput}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearVector = function() {
-  return this.setVector(undefined);
+proto.JFJochProtoBuf.DetectorOutput.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasVector = function() {
-  return jspb.Message.getField(this, 5) != null;
+proto.JFJochProtoBuf.DetectorOutput.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.DetectorOutput.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
 };
 
 
 /**
- * optional UnitCell unit_cell = 6;
- * @return {?proto.JFJochProtoBuf.UnitCell}
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.DetectorOutput} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.getUnitCell = function() {
-  return /** @type{?proto.JFJochProtoBuf.UnitCell} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.UnitCell, 6));
+proto.JFJochProtoBuf.DetectorOutput.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
 };
 
 
-/**
- * @param {?proto.JFJochProtoBuf.UnitCell|undefined} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
-*/
-proto.JFJochProtoBuf.ParameterValue.prototype.setUnitCell = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 6, proto.JFJochProtoBuf.ParameterValue.oneofGroups_[0], value);
-};
 
 
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
 /**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearUnitCell = function() {
-  return this.setUnitCell(undefined);
+proto.JFJochProtoBuf.DetectorStatus.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.DetectorStatus.toObject(opt_includeInstance, this);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.DetectorStatus} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasUnitCell = function() {
-  return jspb.Message.getField(this, 6) != null;
+proto.JFJochProtoBuf.DetectorStatus.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    fwVersion: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    serverVersion: jspb.Message.getFieldWithDefault(msg, 3, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
 };
+}
 
 
 /**
- * optional string unit = 11;
- * @return {string}
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.DetectorStatus}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.getUnit = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+proto.JFJochProtoBuf.DetectorStatus.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.DetectorStatus;
+  return proto.JFJochProtoBuf.DetectorStatus.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.DetectorStatus} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.DetectorStatus}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.setUnit = function(value) {
-  return jspb.Message.setProto3StringField(this, 11, value);
+proto.JFJochProtoBuf.DetectorStatus.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.JFJochProtoBuf.DetectorStatusEnum} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFwVersion(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setServerVersion(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
 };
 
 
 /**
- * optional double fp_min = 12;
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.DetectorStatus.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.DetectorStatus.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.DetectorStatus} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.DetectorStatus.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getFwVersion();
+  if (f !== 0) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = message.getServerVersion();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional DetectorStatusEnum status = 1;
+ * @return {!proto.JFJochProtoBuf.DetectorStatusEnum}
+ */
+proto.JFJochProtoBuf.DetectorStatus.prototype.getStatus = function() {
+  return /** @type {!proto.JFJochProtoBuf.DetectorStatusEnum} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.DetectorStatusEnum} value
+ * @return {!proto.JFJochProtoBuf.DetectorStatus} returns this
+ */
+proto.JFJochProtoBuf.DetectorStatus.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional int64 fw_version = 2;
  * @return {number}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.getFpMin = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 12, 0.0));
+proto.JFJochProtoBuf.DetectorStatus.prototype.getFwVersion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorStatus} returns this
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.setFpMin = function(value) {
-  return jspb.Message.setField(this, 12, value);
+proto.JFJochProtoBuf.DetectorStatus.prototype.setFwVersion = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearFpMin = function() {
-  return jspb.Message.setField(this, 12, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasFpMin = function() {
-  return jspb.Message.getField(this, 12) != null;
-};
-
-
-/**
- * optional double fp_max = 13;
+ * optional int64 server_version = 3;
  * @return {number}
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.getFpMax = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 13, 0.0));
+proto.JFJochProtoBuf.DetectorStatus.prototype.getServerVersion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
+ * @return {!proto.JFJochProtoBuf.DetectorStatus} returns this
  */
-proto.JFJochProtoBuf.ParameterValue.prototype.setFpMax = function(value) {
-  return jspb.Message.setField(this, 13, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearFpMax = function() {
-  return jspb.Message.setField(this, 13, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasFpMax = function() {
-  return jspb.Message.getField(this, 13) != null;
-};
-
-
-/**
- * optional int64 int_min = 14;
- * @return {number}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.getIntMin = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 14, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.setIntMin = function(value) {
-  return jspb.Message.setField(this, 14, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearIntMin = function() {
-  return jspb.Message.setField(this, 14, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasIntMin = function() {
-  return jspb.Message.getField(this, 14) != null;
-};
-
-
-/**
- * optional int64 int_max = 15;
- * @return {number}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.getIntMax = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.setIntMax = function(value) {
-  return jspb.Message.setField(this, 15, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.ParameterValue} returns this
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.clearIntMax = function() {
-  return jspb.Message.setField(this, 15, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.ParameterValue.prototype.hasIntMax = function() {
-  return jspb.Message.getField(this, 15) != null;
+proto.JFJochProtoBuf.DetectorStatus.prototype.setServerVersion = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -12010,17 +15150,13 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.toObject = function(opt_in
  */
 proto.JFJochProtoBuf.DataProcessingSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    spotFindingAlgorithm: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    enable3dSpotFinding: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    highResolutionLimit: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    lowResolutionLimit: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    signalToNoiseThreshold: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    photonCountThreshold: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    maxDepth: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    minPixPerSpot: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    maxPixPerSpot: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    localBkgSize: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    maxSpots: jspb.Message.getFieldWithDefault(msg, 11, 0)
+    signalToNoiseThreshold: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    photonCountThreshold: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    minPixPerSpot: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    maxPixPerSpot: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    localBkgSize: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    highResolutionLimit: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
+    lowResolutionLimit: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0)
   };
 
   if (includeInstance) {
@@ -12058,48 +15194,32 @@ proto.JFJochProtoBuf.DataProcessingSettings.deserializeBinaryFromReader = functi
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!proto.JFJochProtoBuf.SpotFindingAlgorithm} */ (reader.readEnum());
-      msg.setSpotFindingAlgorithm(value);
-      break;
-    case 2:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setEnable3dSpotFinding(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setHighResolutionLimit(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setLowResolutionLimit(value);
-      break;
-    case 5:
       var value = /** @type {number} */ (reader.readDouble());
       msg.setSignalToNoiseThreshold(value);
       break;
-    case 6:
+    case 2:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPhotonCountThreshold(value);
       break;
-    case 7:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setMaxDepth(value);
-      break;
-    case 8:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setMinPixPerSpot(value);
       break;
-    case 9:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setMaxPixPerSpot(value);
       break;
-    case 10:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setLocalBkgSize(value);
       break;
-    case 11:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setMaxSpots(value);
+    case 6:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setHighResolutionLimit(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setLowResolutionLimit(value);
       break;
     default:
       reader.skipField();
@@ -12130,80 +15250,52 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.serializeBinary = function
  */
 proto.JFJochProtoBuf.DataProcessingSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSpotFindingAlgorithm();
-  if (f !== 0.0) {
-    writer.writeEnum(
-      1,
-      f
-    );
-  }
-  f = message.getEnable3dSpotFinding();
-  if (f) {
-    writer.writeBool(
-      2,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
-    writer.writeDouble(
-      3,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
-    writer.writeDouble(
-      4,
-      f
-    );
-  }
   f = message.getSignalToNoiseThreshold();
   if (f !== 0.0) {
     writer.writeDouble(
-      5,
+      1,
       f
     );
   }
   f = message.getPhotonCountThreshold();
   if (f !== 0) {
     writer.writeInt64(
-      6,
-      f
-    );
-  }
-  f = message.getMaxDepth();
-  if (f !== 0) {
-    writer.writeInt64(
-      7,
+      2,
       f
     );
   }
   f = message.getMinPixPerSpot();
   if (f !== 0) {
     writer.writeInt64(
-      8,
+      3,
       f
     );
   }
   f = message.getMaxPixPerSpot();
   if (f !== 0) {
     writer.writeInt64(
-      9,
+      4,
       f
     );
   }
   f = message.getLocalBkgSize();
   if (f !== 0) {
     writer.writeInt64(
-      10,
+      5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 11));
+  f = /** @type {number} */ (jspb.Message.getField(message, 6));
   if (f != null) {
-    writer.writeInt64(
-      11,
+    writer.writeDouble(
+      6,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 7));
+  if (f != null) {
+    writer.writeDouble(
+      7,
       f
     );
   }
@@ -12211,119 +15303,11 @@ proto.JFJochProtoBuf.DataProcessingSettings.serializeBinaryToWriter = function(m
 
 
 /**
- * optional SpotFindingAlgorithm spot_finding_algorithm = 1;
- * @return {!proto.JFJochProtoBuf.SpotFindingAlgorithm}
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.getSpotFindingAlgorithm = function() {
-  return /** @type {!proto.JFJochProtoBuf.SpotFindingAlgorithm} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/**
- * @param {!proto.JFJochProtoBuf.SpotFindingAlgorithm} value
- * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.setSpotFindingAlgorithm = function(value) {
-  return jspb.Message.setProto3EnumField(this, 1, value);
-};
-
-
-/**
- * optional bool enable_3d_spot_finding = 2;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.getEnable3dSpotFinding = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.setEnable3dSpotFinding = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 2, value);
-};
-
-
-/**
- * optional double high_resolution_limit = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.getHighResolutionLimit = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.setHighResolutionLimit = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.clearHighResolutionLimit = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.hasHighResolutionLimit = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * optional double low_resolution_limit = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.getLowResolutionLimit = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.setLowResolutionLimit = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.clearLowResolutionLimit = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.hasLowResolutionLimit = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional double signal_to_noise_threshold = 5;
+ * optional double signal_to_noise_threshold = 1;
  * @return {number}
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.getSignalToNoiseThreshold = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
 };
 
 
@@ -12332,16 +15316,16 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.getSignalToNoiseThreshold 
  * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.setSignalToNoiseThreshold = function(value) {
-  return jspb.Message.setProto3FloatField(this, 5, value);
+  return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
 
 /**
- * optional int64 photon_count_threshold = 6;
+ * optional int64 photon_count_threshold = 2;
  * @return {number}
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.getPhotonCountThreshold = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -12350,34 +15334,16 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.getPhotonCountThreshold = 
  * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.setPhotonCountThreshold = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 max_depth = 7;
- * @return {number}
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.getMaxDepth = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
- */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.setMaxDepth = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
-};
-
-
-/**
- * optional int64 min_pix_per_spot = 8;
+ * optional int64 min_pix_per_spot = 3;
  * @return {number}
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.getMinPixPerSpot = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -12386,16 +15352,16 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.getMinPixPerSpot = functio
  * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.setMinPixPerSpot = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional int64 max_pix_per_spot = 9;
+ * optional int64 max_pix_per_spot = 4;
  * @return {number}
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.getMaxPixPerSpot = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -12404,16 +15370,16 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.getMaxPixPerSpot = functio
  * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.setMaxPixPerSpot = function(value) {
-  return jspb.Message.setProto3IntField(this, 9, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 local_bkg_size = 10;
+ * optional int64 local_bkg_size = 5;
  * @return {number}
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.getLocalBkgSize = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -12422,16 +15388,16 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.getLocalBkgSize = function
  * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
  */
 proto.JFJochProtoBuf.DataProcessingSettings.prototype.setLocalBkgSize = function(value) {
-  return jspb.Message.setProto3IntField(this, 10, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int64 max_spots = 11;
+ * optional double high_resolution_limit = 6;
  * @return {number}
  */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.getMaxSpots = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.getHighResolutionLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
 };
 
 
@@ -12439,8 +15405,8 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.getMaxSpots = function() {
  * @param {number} value
  * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
  */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.setMaxSpots = function(value) {
-  return jspb.Message.setField(this, 11, value);
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.setHighResolutionLimit = function(value) {
+  return jspb.Message.setField(this, 6, value);
 };
 
 
@@ -12448,8 +15414,8 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.setMaxSpots = function(val
  * Clears the field making it undefined.
  * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
  */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.clearMaxSpots = function() {
-  return jspb.Message.setField(this, 11, undefined);
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.clearHighResolutionLimit = function() {
+  return jspb.Message.setField(this, 6, undefined);
 };
 
 
@@ -12457,8 +15423,44 @@ proto.JFJochProtoBuf.DataProcessingSettings.prototype.clearMaxSpots = function()
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.JFJochProtoBuf.DataProcessingSettings.prototype.hasMaxSpots = function() {
-  return jspb.Message.getField(this, 11) != null;
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.hasHighResolutionLimit = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional double low_resolution_limit = 7;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.getLowResolutionLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 7, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
+ */
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.setLowResolutionLimit = function(value) {
+  return jspb.Message.setField(this, 7, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.DataProcessingSettings} returns this
+ */
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.clearLowResolutionLimit = function() {
+  return jspb.Message.setField(this, 7, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.DataProcessingSettings.prototype.hasLowResolutionLimit = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
@@ -13203,6 +16205,518 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
+proto.JFJochProtoBuf.IndexerStatus.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.IndexerStatus.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.IndexerStatus} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.IndexerStatus.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    indexingRate: (f = msg.getIndexingRate()) && proto.JFJochProtoBuf.Plot.toObject(includeInstance, f),
+    imagesAnalyzed: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    imagesIndexed: jspb.Message.getFieldWithDefault(msg, 4, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.IndexerStatus}
+ */
+proto.JFJochProtoBuf.IndexerStatus.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.IndexerStatus;
+  return proto.JFJochProtoBuf.IndexerStatus.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.IndexerStatus} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.IndexerStatus}
+ */
+proto.JFJochProtoBuf.IndexerStatus.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.JFJochProtoBuf.Plot;
+      reader.readMessage(value,proto.JFJochProtoBuf.Plot.deserializeBinaryFromReader);
+      msg.setIndexingRate(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImagesAnalyzed(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImagesIndexed(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.IndexerStatus.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.IndexerStatus} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.IndexerStatus.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getIndexingRate();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.JFJochProtoBuf.Plot.serializeBinaryToWriter
+    );
+  }
+  f = message.getImagesAnalyzed();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = message.getImagesIndexed();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional Plot indexing_rate = 1;
+ * @return {?proto.JFJochProtoBuf.Plot}
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.getIndexingRate = function() {
+  return /** @type{?proto.JFJochProtoBuf.Plot} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.Plot, 1));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.Plot|undefined} value
+ * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
+*/
+proto.JFJochProtoBuf.IndexerStatus.prototype.setIndexingRate = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.clearIndexingRate = function() {
+  return this.setIndexingRate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.hasIndexingRate = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional int64 images_analyzed = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.getImagesAnalyzed = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.setImagesAnalyzed = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int64 images_indexed = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.getImagesIndexed = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
+ */
+proto.JFJochProtoBuf.IndexerStatus.prototype.setImagesIndexed = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.IndexerInput.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.IndexerInput} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.IndexerInput.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    expectedImageNumber: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    imageStride: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    unitCell: (f = msg.getUnitCell()) && proto.JFJochProtoBuf.UnitCell.toObject(includeInstance, f),
+    centering: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    zmqRecvPubAddr: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    binSize: jspb.Message.getFieldWithDefault(msg, 6, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.IndexerInput}
+ */
+proto.JFJochProtoBuf.IndexerInput.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.IndexerInput;
+  return proto.JFJochProtoBuf.IndexerInput.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.IndexerInput} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.IndexerInput}
+ */
+proto.JFJochProtoBuf.IndexerInput.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setExpectedImageNumber(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImageStride(value);
+      break;
+    case 3:
+      var value = new proto.JFJochProtoBuf.UnitCell;
+      reader.readMessage(value,proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader);
+      msg.setUnitCell(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCentering(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setZmqRecvPubAddr(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setBinSize(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.IndexerInput.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.IndexerInput} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.IndexerInput.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getExpectedImageNumber();
+  if (f !== 0) {
+    writer.writeInt64(
+      1,
+      f
+    );
+  }
+  f = message.getImageStride();
+  if (f !== 0) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = message.getUnitCell();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter
+    );
+  }
+  f = message.getCentering();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+  f = message.getZmqRecvPubAddr();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getBinSize();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int64 expected_image_number = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.getExpectedImageNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.IndexerInput} returns this
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.setExpectedImageNumber = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional int64 image_stride = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.getImageStride = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.IndexerInput} returns this
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.setImageStride = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional UnitCell unit_cell = 3;
+ * @return {?proto.JFJochProtoBuf.UnitCell}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.getUnitCell = function() {
+  return /** @type{?proto.JFJochProtoBuf.UnitCell} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.UnitCell, 3));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.UnitCell|undefined} value
+ * @return {!proto.JFJochProtoBuf.IndexerInput} returns this
+*/
+proto.JFJochProtoBuf.IndexerInput.prototype.setUnitCell = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.IndexerInput} returns this
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.clearUnitCell = function() {
+  return this.setUnitCell(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.hasUnitCell = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional int64 centering = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.getCentering = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.IndexerInput} returns this
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.setCentering = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional string zmq_recv_pub_addr = 5;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.getZmqRecvPubAddr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.IndexerInput} returns this
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.setZmqRecvPubAddr = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional int64 bin_size = 6;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.getBinSize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.IndexerInput} returns this
+ */
+proto.JFJochProtoBuf.IndexerInput.prototype.setBinSize = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
 proto.JFJochProtoBuf.IndexerImageOutput.prototype.toObject = function(opt_includeInstance) {
   return proto.JFJochProtoBuf.IndexerImageOutput.toObject(opt_includeInstance, this);
 };
@@ -13429,684 +16943,12 @@ proto.JFJochProtoBuf.IndexerImageOutput.prototype.hasUnitCell = function() {
 
 
 
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.IndexerStatus.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.IndexerStatus} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.IndexerStatus.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    indexingRate: (f = msg.getIndexingRate()) && proto.JFJochProtoBuf.Plot.toObject(includeInstance, f),
-    imagesAnalyzed: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    imagesIndexed: jspb.Message.getFieldWithDefault(msg, 4, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.IndexerStatus}
- */
-proto.JFJochProtoBuf.IndexerStatus.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.IndexerStatus;
-  return proto.JFJochProtoBuf.IndexerStatus.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.IndexerStatus} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.IndexerStatus}
- */
-proto.JFJochProtoBuf.IndexerStatus.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = new proto.JFJochProtoBuf.Plot;
-      reader.readMessage(value,proto.JFJochProtoBuf.Plot.deserializeBinaryFromReader);
-      msg.setIndexingRate(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setImagesAnalyzed(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setImagesIndexed(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.IndexerStatus.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.IndexerStatus} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.IndexerStatus.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getIndexingRate();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.JFJochProtoBuf.Plot.serializeBinaryToWriter
-    );
-  }
-  f = message.getImagesAnalyzed();
-  if (f !== 0) {
-    writer.writeInt64(
-      3,
-      f
-    );
-  }
-  f = message.getImagesIndexed();
-  if (f !== 0) {
-    writer.writeInt64(
-      4,
-      f
-    );
-  }
-};
-
-
-/**
- * optional Plot indexing_rate = 1;
- * @return {?proto.JFJochProtoBuf.Plot}
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.getIndexingRate = function() {
-  return /** @type{?proto.JFJochProtoBuf.Plot} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.Plot, 1));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.Plot|undefined} value
- * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
-*/
-proto.JFJochProtoBuf.IndexerStatus.prototype.setIndexingRate = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.clearIndexingRate = function() {
-  return this.setIndexingRate(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.hasIndexingRate = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional int64 images_analyzed = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.getImagesAnalyzed = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.setImagesAnalyzed = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-/**
- * optional int64 images_indexed = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.getImagesIndexed = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.IndexerStatus} returns this
- */
-proto.JFJochProtoBuf.IndexerStatus.prototype.setImagesIndexed = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.OnlineProcessingRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.OnlineProcessingRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    fileName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    images: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    beamXPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    beamYPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    detectorDistanceMm: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.OnlineProcessingRequest}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.OnlineProcessingRequest;
-  return proto.JFJochProtoBuf.OnlineProcessingRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.OnlineProcessingRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.OnlineProcessingRequest}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setFileName(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setImages(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setBeamXPxl(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setBeamYPxl(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setDetectorDistanceMm(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.OnlineProcessingRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.OnlineProcessingRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getFileName();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getImages();
-  if (f !== 0) {
-    writer.writeInt64(
-      2,
-      f
-    );
-  }
-  f = message.getBeamXPxl();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      3,
-      f
-    );
-  }
-  f = message.getBeamYPxl();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      4,
-      f
-    );
-  }
-  f = message.getDetectorDistanceMm();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      5,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string file_name = 1;
- * @return {string}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.getFileName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.OnlineProcessingRequest} returns this
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.setFileName = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional int64 images = 2;
- * @return {number}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.getImages = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.OnlineProcessingRequest} returns this
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.setImages = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional double beam_x_pxl = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.getBeamXPxl = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.OnlineProcessingRequest} returns this
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.setBeamXPxl = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
-};
-
-
-/**
- * optional double beam_y_pxl = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.getBeamYPxl = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.OnlineProcessingRequest} returns this
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.setBeamYPxl = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
-};
-
-
-/**
- * optional double detector_distance_mm = 5;
- * @return {number}
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.getDetectorDistanceMm = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.OnlineProcessingRequest} returns this
- */
-proto.JFJochProtoBuf.OnlineProcessingRequest.prototype.setDetectorDistanceMm = function(value) {
-  return jspb.Message.setProto3FloatField(this, 5, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochIndexerInput.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochIndexerInput} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    jungfraujochSettings: (f = msg.getJungfraujochSettings()) && proto.JFJochProtoBuf.JungfraujochSettings.toObject(includeInstance, f),
-    zmqRecvPubAddr: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    binSize: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochIndexerInput}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochIndexerInput;
-  return proto.JFJochProtoBuf.JFJochIndexerInput.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochIndexerInput} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochIndexerInput}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = new proto.JFJochProtoBuf.JungfraujochSettings;
-      reader.readMessage(value,proto.JFJochProtoBuf.JungfraujochSettings.deserializeBinaryFromReader);
-      msg.setJungfraujochSettings(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setZmqRecvPubAddr(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setBinSize(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochIndexerInput.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochIndexerInput} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getJungfraujochSettings();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.JFJochProtoBuf.JungfraujochSettings.serializeBinaryToWriter
-    );
-  }
-  f = message.getZmqRecvPubAddr();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getBinSize();
-  if (f !== 0) {
-    writer.writeInt64(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional JungfraujochSettings jungfraujoch_settings = 1;
- * @return {?proto.JFJochProtoBuf.JungfraujochSettings}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.getJungfraujochSettings = function() {
-  return /** @type{?proto.JFJochProtoBuf.JungfraujochSettings} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JungfraujochSettings, 1));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.JungfraujochSettings|undefined} value
- * @return {!proto.JFJochProtoBuf.JFJochIndexerInput} returns this
-*/
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.setJungfraujochSettings = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.JFJochIndexerInput} returns this
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.clearJungfraujochSettings = function() {
-  return this.setJungfraujochSettings(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.hasJungfraujochSettings = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional string zmq_recv_pub_addr = 2;
- * @return {string}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.getZmqRecvPubAddr = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.JFJochIndexerInput} returns this
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.setZmqRecvPubAddr = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional int64 bin_size = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.getBinSize = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochIndexerInput} returns this
- */
-proto.JFJochProtoBuf.JFJochIndexerInput.prototype.setBinSize = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.repeatedFields_ = [1];
+proto.JFJochProtoBuf.IndexerOutput.repeatedFields_ = [1];
 
 
 
@@ -14123,8 +16965,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.JFJochIndexerOutput.toObject(opt_includeInstance, this);
+proto.JFJochProtoBuf.IndexerOutput.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.IndexerOutput.toObject(opt_includeInstance, this);
 };
 
 
@@ -14133,11 +16975,11 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.toObject = function(opt_inclu
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.JFJochIndexerOutput} msg The msg instance to transform.
+ * @param {!proto.JFJochProtoBuf.IndexerOutput} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.toObject = function(includeInstance, msg) {
+proto.JFJochProtoBuf.IndexerOutput.toObject = function(includeInstance, msg) {
   var f, obj = {
     imageOutputList: jspb.Message.toObjectList(msg.getImageOutputList(),
     proto.JFJochProtoBuf.IndexerImageOutput.toObject, includeInstance),
@@ -14156,23 +16998,23 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.toObject = function(includeInstance, ms
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.JFJochIndexerOutput}
+ * @return {!proto.JFJochProtoBuf.IndexerOutput}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.deserializeBinary = function(bytes) {
+proto.JFJochProtoBuf.IndexerOutput.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.JFJochIndexerOutput;
-  return proto.JFJochProtoBuf.JFJochIndexerOutput.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JFJochProtoBuf.IndexerOutput;
+  return proto.JFJochProtoBuf.IndexerOutput.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.JFJochIndexerOutput} msg The message object to deserialize into.
+ * @param {!proto.JFJochProtoBuf.IndexerOutput} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.JFJochIndexerOutput}
+ * @return {!proto.JFJochProtoBuf.IndexerOutput}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.deserializeBinaryFromReader = function(msg, reader) {
+proto.JFJochProtoBuf.IndexerOutput.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -14205,9 +17047,9 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.deserializeBinaryFromReader = function(
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.serializeBinary = function() {
+proto.JFJochProtoBuf.IndexerOutput.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.JFJochIndexerOutput.serializeBinaryToWriter(this, writer);
+  proto.JFJochProtoBuf.IndexerOutput.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -14215,11 +17057,11 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.serializeBinary = function() 
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.JFJochIndexerOutput} message
+ * @param {!proto.JFJochProtoBuf.IndexerOutput} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.serializeBinaryToWriter = function(message, writer) {
+proto.JFJochProtoBuf.IndexerOutput.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getImageOutputList();
   if (f.length > 0) {
@@ -14250,7 +17092,7 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.serializeBinaryToWriter = function(mess
  * repeated IndexerImageOutput image_output = 1;
  * @return {!Array<!proto.JFJochProtoBuf.IndexerImageOutput>}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.getImageOutputList = function() {
+proto.JFJochProtoBuf.IndexerOutput.prototype.getImageOutputList = function() {
   return /** @type{!Array<!proto.JFJochProtoBuf.IndexerImageOutput>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.IndexerImageOutput, 1));
 };
@@ -14258,9 +17100,9 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.getImageOutputList = function
 
 /**
  * @param {!Array<!proto.JFJochProtoBuf.IndexerImageOutput>} value
- * @return {!proto.JFJochProtoBuf.JFJochIndexerOutput} returns this
+ * @return {!proto.JFJochProtoBuf.IndexerOutput} returns this
 */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.setImageOutputList = function(value) {
+proto.JFJochProtoBuf.IndexerOutput.prototype.setImageOutputList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
@@ -14270,16 +17112,16 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.setImageOutputList = function
  * @param {number=} opt_index
  * @return {!proto.JFJochProtoBuf.IndexerImageOutput}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.addImageOutput = function(opt_value, opt_index) {
+proto.JFJochProtoBuf.IndexerOutput.prototype.addImageOutput = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.JFJochProtoBuf.IndexerImageOutput, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.JFJochProtoBuf.JFJochIndexerOutput} returns this
+ * @return {!proto.JFJochProtoBuf.IndexerOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.clearImageOutputList = function() {
+proto.JFJochProtoBuf.IndexerOutput.prototype.clearImageOutputList = function() {
   return this.setImageOutputList([]);
 };
 
@@ -14288,16 +17130,16 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.clearImageOutputList = functi
  * optional double ms_per_image = 2;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.getMsPerImage = function() {
+proto.JFJochProtoBuf.IndexerOutput.prototype.getMsPerImage = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochIndexerOutput} returns this
+ * @return {!proto.JFJochProtoBuf.IndexerOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.setMsPerImage = function(value) {
+proto.JFJochProtoBuf.IndexerOutput.prototype.setMsPerImage = function(value) {
   return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
@@ -14306,462 +17148,17 @@ proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.setMsPerImage = function(valu
  * optional int64 indexed_images = 3;
  * @return {number}
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.getIndexedImages = function() {
+proto.JFJochProtoBuf.IndexerOutput.prototype.getIndexedImages = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.JFJochProtoBuf.JFJochIndexerOutput} returns this
+ * @return {!proto.JFJochProtoBuf.IndexerOutput} returns this
  */
-proto.JFJochProtoBuf.JFJochIndexerOutput.prototype.setIndexedImages = function(value) {
+proto.JFJochProtoBuf.IndexerOutput.prototype.setIndexedImages = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.BrokerStatus.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.BrokerStatus} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.BrokerStatus.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    currentState: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    receiverStatus: (f = msg.getReceiverStatus()) && proto.JFJochProtoBuf.ReceiverStatus.toObject(includeInstance, f),
-    indexerStatus: (f = msg.getIndexerStatus()) && proto.JFJochProtoBuf.IndexerStatus.toObject(includeInstance, f),
-    lastMeasurementImagesCollected: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    lastMeasurementCollectionEfficiency: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    lastMeasurementCompressionRatio: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
-    lastMeasurementSequenceNumber: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    lastMeasurementName: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    calibrationStatistics: (f = msg.getCalibrationStatistics()) && proto.JFJochProtoBuf.JFCalibrationStatistics.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.BrokerStatus}
- */
-proto.JFJochProtoBuf.BrokerStatus.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.BrokerStatus;
-  return proto.JFJochProtoBuf.BrokerStatus.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.BrokerStatus} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.BrokerStatus}
- */
-proto.JFJochProtoBuf.BrokerStatus.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {!proto.JFJochProtoBuf.BrokerStatus.State} */ (reader.readEnum());
-      msg.setCurrentState(value);
-      break;
-    case 2:
-      var value = new proto.JFJochProtoBuf.ReceiverStatus;
-      reader.readMessage(value,proto.JFJochProtoBuf.ReceiverStatus.deserializeBinaryFromReader);
-      msg.setReceiverStatus(value);
-      break;
-    case 3:
-      var value = new proto.JFJochProtoBuf.IndexerStatus;
-      reader.readMessage(value,proto.JFJochProtoBuf.IndexerStatus.deserializeBinaryFromReader);
-      msg.setIndexerStatus(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setLastMeasurementImagesCollected(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setLastMeasurementCollectionEfficiency(value);
-      break;
-    case 6:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setLastMeasurementCompressionRatio(value);
-      break;
-    case 7:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setLastMeasurementSequenceNumber(value);
-      break;
-    case 8:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setLastMeasurementName(value);
-      break;
-    case 10:
-      var value = new proto.JFJochProtoBuf.JFCalibrationStatistics;
-      reader.readMessage(value,proto.JFJochProtoBuf.JFCalibrationStatistics.deserializeBinaryFromReader);
-      msg.setCalibrationStatistics(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.BrokerStatus.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.BrokerStatus} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.BrokerStatus.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getCurrentState();
-  if (f !== 0.0) {
-    writer.writeEnum(
-      1,
-      f
-    );
-  }
-  f = message.getReceiverStatus();
-  if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.JFJochProtoBuf.ReceiverStatus.serializeBinaryToWriter
-    );
-  }
-  f = message.getIndexerStatus();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.JFJochProtoBuf.IndexerStatus.serializeBinaryToWriter
-    );
-  }
-  f = message.getLastMeasurementImagesCollected();
-  if (f !== 0) {
-    writer.writeUint64(
-      4,
-      f
-    );
-  }
-  f = message.getLastMeasurementCollectionEfficiency();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      5,
-      f
-    );
-  }
-  f = message.getLastMeasurementCompressionRatio();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      6,
-      f
-    );
-  }
-  f = message.getLastMeasurementSequenceNumber();
-  if (f !== 0) {
-    writer.writeInt64(
-      7,
-      f
-    );
-  }
-  f = message.getLastMeasurementName();
-  if (f.length > 0) {
-    writer.writeString(
-      8,
-      f
-    );
-  }
-  f = message.getCalibrationStatistics();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      proto.JFJochProtoBuf.JFCalibrationStatistics.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * @enum {number}
- */
-proto.JFJochProtoBuf.BrokerStatus.State = {
-  NOT_INITIALIZED: 0,
-  IDLE: 1,
-  BUSY: 2,
-  PEDESTAL: 3,
-  DATA_COLLECTION: 4,
-  ERROR: 5
-};
-
-/**
- * optional State current_state = 1;
- * @return {!proto.JFJochProtoBuf.BrokerStatus.State}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getCurrentState = function() {
-  return /** @type {!proto.JFJochProtoBuf.BrokerStatus.State} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/**
- * @param {!proto.JFJochProtoBuf.BrokerStatus.State} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.setCurrentState = function(value) {
-  return jspb.Message.setProto3EnumField(this, 1, value);
-};
-
-
-/**
- * optional ReceiverStatus receiver_status = 2;
- * @return {?proto.JFJochProtoBuf.ReceiverStatus}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getReceiverStatus = function() {
-  return /** @type{?proto.JFJochProtoBuf.ReceiverStatus} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.ReceiverStatus, 2));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.ReceiverStatus|undefined} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
-*/
-proto.JFJochProtoBuf.BrokerStatus.prototype.setReceiverStatus = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.clearReceiverStatus = function() {
-  return this.setReceiverStatus(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.hasReceiverStatus = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional IndexerStatus indexer_status = 3;
- * @return {?proto.JFJochProtoBuf.IndexerStatus}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getIndexerStatus = function() {
-  return /** @type{?proto.JFJochProtoBuf.IndexerStatus} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.IndexerStatus, 3));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.IndexerStatus|undefined} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
-*/
-proto.JFJochProtoBuf.BrokerStatus.prototype.setIndexerStatus = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.clearIndexerStatus = function() {
-  return this.setIndexerStatus(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.hasIndexerStatus = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * optional uint64 last_measurement_images_collected = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getLastMeasurementImagesCollected = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.setLastMeasurementImagesCollected = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional double last_measurement_collection_efficiency = 5;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getLastMeasurementCollectionEfficiency = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.setLastMeasurementCollectionEfficiency = function(value) {
-  return jspb.Message.setProto3FloatField(this, 5, value);
-};
-
-
-/**
- * optional double last_measurement_compression_ratio = 6;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getLastMeasurementCompressionRatio = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.setLastMeasurementCompressionRatio = function(value) {
-  return jspb.Message.setProto3FloatField(this, 6, value);
-};
-
-
-/**
- * optional int64 last_measurement_sequence_number = 7;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getLastMeasurementSequenceNumber = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.setLastMeasurementSequenceNumber = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
-};
-
-
-/**
- * optional string last_measurement_name = 8;
- * @return {string}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getLastMeasurementName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.setLastMeasurementName = function(value) {
-  return jspb.Message.setProto3StringField(this, 8, value);
-};
-
-
-/**
- * optional JFCalibrationStatistics calibration_statistics = 10;
- * @return {?proto.JFJochProtoBuf.JFCalibrationStatistics}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.getCalibrationStatistics = function() {
-  return /** @type{?proto.JFJochProtoBuf.JFCalibrationStatistics} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JFCalibrationStatistics, 10));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.JFCalibrationStatistics|undefined} value
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
-*/
-proto.JFJochProtoBuf.BrokerStatus.prototype.setCalibrationStatistics = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.clearCalibrationStatistics = function() {
-  return this.setCalibrationStatistics(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerStatus.prototype.hasCalibrationStatistics = function() {
-  return jspb.Message.getField(this, 10) != null;
 };
 
 
@@ -15132,1348 +17529,6 @@ proto.JFJochProtoBuf.ModuleStatistics.prototype.getMaskedPixels = function() {
  */
 proto.JFJochProtoBuf.ModuleStatistics.prototype.setMaskedPixels = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.BrokerStatistics.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.BrokerStatistics.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.BrokerStatistics} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.BrokerStatistics.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.BrokerStatistics}
- */
-proto.JFJochProtoBuf.BrokerStatistics.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.BrokerStatistics;
-  return proto.JFJochProtoBuf.BrokerStatistics.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.BrokerStatistics} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.BrokerStatistics}
- */
-proto.JFJochProtoBuf.BrokerStatistics.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.BrokerStatistics.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.BrokerStatistics.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.BrokerStatistics} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.BrokerStatistics.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.DetectorStatus.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.DetectorStatus.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.DetectorStatus} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.DetectorStatus.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    idle: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.DetectorStatus}
- */
-proto.JFJochProtoBuf.DetectorStatus.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.DetectorStatus;
-  return proto.JFJochProtoBuf.DetectorStatus.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.DetectorStatus} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.DetectorStatus}
- */
-proto.JFJochProtoBuf.DetectorStatus.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIdle(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.DetectorStatus.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.DetectorStatus.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.DetectorStatus} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.DetectorStatus.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getIdle();
-  if (f) {
-    writer.writeBool(
-      1,
-      f
-    );
-  }
-};
-
-
-/**
- * optional bool idle = 1;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.DetectorStatus.prototype.getIdle = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.DetectorStatus} returns this
- */
-proto.JFJochProtoBuf.DetectorStatus.prototype.setIdle = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 1, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.toObject = function(opt_includeInstance) {
-  return proto.JFJochProtoBuf.BrokerSetup.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.JFJochProtoBuf.BrokerSetup} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.BrokerSetup.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    imagesPerTrigger: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    imageTimeUs: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    beamCenterXPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    beamCenterYPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    detectorDistanceMm: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    photonEnergyKev: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
-    namePattern: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    sampleName: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    ntrigger: jspb.Message.getFieldWithDefault(msg, 15, 0),
-    imagesPerFile: jspb.Message.getFieldWithDefault(msg, 16, 0),
-    compression: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    omegaStartDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 18, 0.0),
-    omegaIncrementDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 19, 0.0),
-    timeResolvedMode: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
-    forceFullSpeed: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
-    dataCollectionMode: jspb.Message.getFieldWithDefault(msg, 23, ""),
-    pedestalSaved: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
-    previewRateMs: jspb.Message.getFieldWithDefault(msg, 27, 0),
-    unitCell: (f = msg.getUnitCell()) && proto.JFJochProtoBuf.UnitCell.toObject(includeInstance, f),
-    spotFindingRateMs: jspb.Message.getFieldWithDefault(msg, 30, 0),
-    bkgEstimateRateMs: jspb.Message.getFieldWithDefault(msg, 31, 0),
-    spaceGroupNumber: jspb.Message.getFieldWithDefault(msg, 33, 0),
-    runNumber: jspb.Message.getFieldWithDefault(msg, 34, 0),
-    detectorDelayAfterTriggerUs: jspb.Message.getFieldWithDefault(msg, 35, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JFJochProtoBuf.BrokerSetup}
- */
-proto.JFJochProtoBuf.BrokerSetup.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JFJochProtoBuf.BrokerSetup;
-  return proto.JFJochProtoBuf.BrokerSetup.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.JFJochProtoBuf.BrokerSetup} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JFJochProtoBuf.BrokerSetup}
- */
-proto.JFJochProtoBuf.BrokerSetup.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setImagesPerTrigger(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setImageTimeUs(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setBeamCenterXPxl(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setBeamCenterYPxl(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setDetectorDistanceMm(value);
-      break;
-    case 6:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setPhotonEnergyKev(value);
-      break;
-    case 7:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setNamePattern(value);
-      break;
-    case 8:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSampleName(value);
-      break;
-    case 15:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setNtrigger(value);
-      break;
-    case 16:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setImagesPerFile(value);
-      break;
-    case 17:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setCompression(value);
-      break;
-    case 18:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setOmegaStartDeg(value);
-      break;
-    case 19:
-      var value = /** @type {number} */ (reader.readDouble());
-      msg.setOmegaIncrementDeg(value);
-      break;
-    case 20:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setTimeResolvedMode(value);
-      break;
-    case 22:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setForceFullSpeed(value);
-      break;
-    case 23:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDataCollectionMode(value);
-      break;
-    case 25:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setPedestalSaved(value);
-      break;
-    case 27:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setPreviewRateMs(value);
-      break;
-    case 29:
-      var value = new proto.JFJochProtoBuf.UnitCell;
-      reader.readMessage(value,proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader);
-      msg.setUnitCell(value);
-      break;
-    case 30:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setSpotFindingRateMs(value);
-      break;
-    case 31:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setBkgEstimateRateMs(value);
-      break;
-    case 33:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setSpaceGroupNumber(value);
-      break;
-    case 34:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setRunNumber(value);
-      break;
-    case 35:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setDetectorDelayAfterTriggerUs(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.JFJochProtoBuf.BrokerSetup.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.JFJochProtoBuf.BrokerSetup} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.JFJochProtoBuf.BrokerSetup.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getImagesPerTrigger();
-  if (f !== 0) {
-    writer.writeInt64(
-      1,
-      f
-    );
-  }
-  f = message.getImageTimeUs();
-  if (f !== 0) {
-    writer.writeInt64(
-      2,
-      f
-    );
-  }
-  f = message.getBeamCenterXPxl();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      3,
-      f
-    );
-  }
-  f = message.getBeamCenterYPxl();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      4,
-      f
-    );
-  }
-  f = message.getDetectorDistanceMm();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      5,
-      f
-    );
-  }
-  f = message.getPhotonEnergyKev();
-  if (f !== 0.0) {
-    writer.writeDouble(
-      6,
-      f
-    );
-  }
-  f = message.getNamePattern();
-  if (f.length > 0) {
-    writer.writeString(
-      7,
-      f
-    );
-  }
-  f = message.getSampleName();
-  if (f.length > 0) {
-    writer.writeString(
-      8,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 15));
-  if (f != null) {
-    writer.writeInt64(
-      15,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 16));
-  if (f != null) {
-    writer.writeInt64(
-      16,
-      f
-    );
-  }
-  f = /** @type {string} */ (jspb.Message.getField(message, 17));
-  if (f != null) {
-    writer.writeString(
-      17,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 18));
-  if (f != null) {
-    writer.writeDouble(
-      18,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 19));
-  if (f != null) {
-    writer.writeDouble(
-      19,
-      f
-    );
-  }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 20));
-  if (f != null) {
-    writer.writeBool(
-      20,
-      f
-    );
-  }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 22));
-  if (f != null) {
-    writer.writeBool(
-      22,
-      f
-    );
-  }
-  f = /** @type {string} */ (jspb.Message.getField(message, 23));
-  if (f != null) {
-    writer.writeString(
-      23,
-      f
-    );
-  }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 25));
-  if (f != null) {
-    writer.writeBool(
-      25,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 27));
-  if (f != null) {
-    writer.writeInt64(
-      27,
-      f
-    );
-  }
-  f = message.getUnitCell();
-  if (f != null) {
-    writer.writeMessage(
-      29,
-      f,
-      proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 30));
-  if (f != null) {
-    writer.writeInt64(
-      30,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 31));
-  if (f != null) {
-    writer.writeInt64(
-      31,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 33));
-  if (f != null) {
-    writer.writeInt64(
-      33,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 34));
-  if (f != null) {
-    writer.writeInt64(
-      34,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 35));
-  if (f != null) {
-    writer.writeInt64(
-      35,
-      f
-    );
-  }
-};
-
-
-/**
- * optional int64 images_per_trigger = 1;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getImagesPerTrigger = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setImagesPerTrigger = function(value) {
-  return jspb.Message.setProto3IntField(this, 1, value);
-};
-
-
-/**
- * optional int64 image_time_us = 2;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getImageTimeUs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setImageTimeUs = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional double beam_center_x_pxl = 3;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getBeamCenterXPxl = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setBeamCenterXPxl = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
-};
-
-
-/**
- * optional double beam_center_y_pxl = 4;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getBeamCenterYPxl = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setBeamCenterYPxl = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
-};
-
-
-/**
- * optional double detector_distance_mm = 5;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getDetectorDistanceMm = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setDetectorDistanceMm = function(value) {
-  return jspb.Message.setProto3FloatField(this, 5, value);
-};
-
-
-/**
- * optional double photon_energy_kev = 6;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getPhotonEnergyKev = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setPhotonEnergyKev = function(value) {
-  return jspb.Message.setProto3FloatField(this, 6, value);
-};
-
-
-/**
- * optional string name_pattern = 7;
- * @return {string}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getNamePattern = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setNamePattern = function(value) {
-  return jspb.Message.setProto3StringField(this, 7, value);
-};
-
-
-/**
- * optional string sample_name = 8;
- * @return {string}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getSampleName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setSampleName = function(value) {
-  return jspb.Message.setProto3StringField(this, 8, value);
-};
-
-
-/**
- * optional int64 ntrigger = 15;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getNtrigger = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setNtrigger = function(value) {
-  return jspb.Message.setField(this, 15, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearNtrigger = function() {
-  return jspb.Message.setField(this, 15, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasNtrigger = function() {
-  return jspb.Message.getField(this, 15) != null;
-};
-
-
-/**
- * optional int64 images_per_file = 16;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getImagesPerFile = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setImagesPerFile = function(value) {
-  return jspb.Message.setField(this, 16, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearImagesPerFile = function() {
-  return jspb.Message.setField(this, 16, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasImagesPerFile = function() {
-  return jspb.Message.getField(this, 16) != null;
-};
-
-
-/**
- * optional string compression = 17;
- * @return {string}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getCompression = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setCompression = function(value) {
-  return jspb.Message.setField(this, 17, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearCompression = function() {
-  return jspb.Message.setField(this, 17, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasCompression = function() {
-  return jspb.Message.getField(this, 17) != null;
-};
-
-
-/**
- * optional double omega_start_deg = 18;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getOmegaStartDeg = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 18, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setOmegaStartDeg = function(value) {
-  return jspb.Message.setField(this, 18, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearOmegaStartDeg = function() {
-  return jspb.Message.setField(this, 18, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasOmegaStartDeg = function() {
-  return jspb.Message.getField(this, 18) != null;
-};
-
-
-/**
- * optional double omega_increment_deg = 19;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getOmegaIncrementDeg = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 19, 0.0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setOmegaIncrementDeg = function(value) {
-  return jspb.Message.setField(this, 19, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearOmegaIncrementDeg = function() {
-  return jspb.Message.setField(this, 19, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasOmegaIncrementDeg = function() {
-  return jspb.Message.getField(this, 19) != null;
-};
-
-
-/**
- * optional bool time_resolved_mode = 20;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getTimeResolvedMode = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 20, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setTimeResolvedMode = function(value) {
-  return jspb.Message.setField(this, 20, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearTimeResolvedMode = function() {
-  return jspb.Message.setField(this, 20, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasTimeResolvedMode = function() {
-  return jspb.Message.getField(this, 20) != null;
-};
-
-
-/**
- * optional bool force_full_speed = 22;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getForceFullSpeed = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setForceFullSpeed = function(value) {
-  return jspb.Message.setField(this, 22, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearForceFullSpeed = function() {
-  return jspb.Message.setField(this, 22, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasForceFullSpeed = function() {
-  return jspb.Message.getField(this, 22) != null;
-};
-
-
-/**
- * optional string data_collection_mode = 23;
- * @return {string}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getDataCollectionMode = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setDataCollectionMode = function(value) {
-  return jspb.Message.setField(this, 23, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearDataCollectionMode = function() {
-  return jspb.Message.setField(this, 23, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasDataCollectionMode = function() {
-  return jspb.Message.getField(this, 23) != null;
-};
-
-
-/**
- * optional bool pedestal_saved = 25;
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getPedestalSaved = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 25, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setPedestalSaved = function(value) {
-  return jspb.Message.setField(this, 25, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearPedestalSaved = function() {
-  return jspb.Message.setField(this, 25, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasPedestalSaved = function() {
-  return jspb.Message.getField(this, 25) != null;
-};
-
-
-/**
- * optional int64 preview_rate_ms = 27;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getPreviewRateMs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 27, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setPreviewRateMs = function(value) {
-  return jspb.Message.setField(this, 27, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearPreviewRateMs = function() {
-  return jspb.Message.setField(this, 27, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasPreviewRateMs = function() {
-  return jspb.Message.getField(this, 27) != null;
-};
-
-
-/**
- * optional UnitCell unit_cell = 29;
- * @return {?proto.JFJochProtoBuf.UnitCell}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getUnitCell = function() {
-  return /** @type{?proto.JFJochProtoBuf.UnitCell} */ (
-    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.UnitCell, 29));
-};
-
-
-/**
- * @param {?proto.JFJochProtoBuf.UnitCell|undefined} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
-*/
-proto.JFJochProtoBuf.BrokerSetup.prototype.setUnitCell = function(value) {
-  return jspb.Message.setWrapperField(this, 29, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearUnitCell = function() {
-  return this.setUnitCell(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasUnitCell = function() {
-  return jspb.Message.getField(this, 29) != null;
-};
-
-
-/**
- * optional int64 spot_finding_rate_ms = 30;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getSpotFindingRateMs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 30, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setSpotFindingRateMs = function(value) {
-  return jspb.Message.setField(this, 30, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearSpotFindingRateMs = function() {
-  return jspb.Message.setField(this, 30, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasSpotFindingRateMs = function() {
-  return jspb.Message.getField(this, 30) != null;
-};
-
-
-/**
- * optional int64 bkg_estimate_rate_ms = 31;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getBkgEstimateRateMs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 31, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setBkgEstimateRateMs = function(value) {
-  return jspb.Message.setField(this, 31, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearBkgEstimateRateMs = function() {
-  return jspb.Message.setField(this, 31, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasBkgEstimateRateMs = function() {
-  return jspb.Message.getField(this, 31) != null;
-};
-
-
-/**
- * optional int64 space_group_number = 33;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getSpaceGroupNumber = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 33, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setSpaceGroupNumber = function(value) {
-  return jspb.Message.setField(this, 33, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearSpaceGroupNumber = function() {
-  return jspb.Message.setField(this, 33, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasSpaceGroupNumber = function() {
-  return jspb.Message.getField(this, 33) != null;
-};
-
-
-/**
- * optional int64 run_number = 34;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getRunNumber = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 34, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setRunNumber = function(value) {
-  return jspb.Message.setField(this, 34, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearRunNumber = function() {
-  return jspb.Message.setField(this, 34, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasRunNumber = function() {
-  return jspb.Message.getField(this, 34) != null;
-};
-
-
-/**
- * optional int64 detector_delay_after_trigger_us = 35;
- * @return {number}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.getDetectorDelayAfterTriggerUs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 35, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.setDetectorDelayAfterTriggerUs = function(value) {
-  return jspb.Message.setField(this, 35, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.clearDetectorDelayAfterTriggerUs = function() {
-  return jspb.Message.setField(this, 35, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.JFJochProtoBuf.BrokerSetup.prototype.hasDetectorDelayAfterTriggerUs = function() {
-  return jspb.Message.getField(this, 35) != null;
 };
 
 
@@ -16895,6 +17950,1235 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
+proto.JFJochProtoBuf.BrokerSetup.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.BrokerSetup.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.BrokerSetup} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerSetup.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    imagesPerTrigger: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    summation: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    beamCenterXPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+    beamCenterYPxl: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    detectorDistanceMm: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+    photonEnergyKev: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
+    namePattern: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    sampleName: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    softTrigger: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
+    ntrigger: jspb.Message.getFieldWithDefault(msg, 15, 0),
+    imagesPerFile: jspb.Message.getFieldWithDefault(msg, 16, 0),
+    compression: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    omegaStartDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 18, 0.0),
+    omegaIncrementDeg: jspb.Message.getFloatingPointFieldWithDefault(msg, 19, 0.0),
+    timeResolvedMode: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
+    dataCollectionMode: jspb.Message.getFieldWithDefault(msg, 23, ""),
+    previewRateMs: jspb.Message.getFieldWithDefault(msg, 27, 0),
+    unitCell: (f = msg.getUnitCell()) && proto.JFJochProtoBuf.UnitCell.toObject(includeInstance, f),
+    spotFindingRateMs: jspb.Message.getFieldWithDefault(msg, 30, 0),
+    bkgEstimateRateMs: jspb.Message.getFieldWithDefault(msg, 31, 0),
+    spaceGroupNumber: jspb.Message.getFieldWithDefault(msg, 33, 0),
+    detectorDelayAfterTriggerUs: jspb.Message.getFieldWithDefault(msg, 35, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup}
+ */
+proto.JFJochProtoBuf.BrokerSetup.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.BrokerSetup;
+  return proto.JFJochProtoBuf.BrokerSetup.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.BrokerSetup} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup}
+ */
+proto.JFJochProtoBuf.BrokerSetup.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImagesPerTrigger(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSummation(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBeamCenterXPxl(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBeamCenterYPxl(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setDetectorDistanceMm(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setPhotonEnergyKev(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setNamePattern(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSampleName(value);
+      break;
+    case 14:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSoftTrigger(value);
+      break;
+    case 15:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setNtrigger(value);
+      break;
+    case 16:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setImagesPerFile(value);
+      break;
+    case 17:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCompression(value);
+      break;
+    case 18:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setOmegaStartDeg(value);
+      break;
+    case 19:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setOmegaIncrementDeg(value);
+      break;
+    case 20:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTimeResolvedMode(value);
+      break;
+    case 23:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDataCollectionMode(value);
+      break;
+    case 27:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPreviewRateMs(value);
+      break;
+    case 29:
+      var value = new proto.JFJochProtoBuf.UnitCell;
+      reader.readMessage(value,proto.JFJochProtoBuf.UnitCell.deserializeBinaryFromReader);
+      msg.setUnitCell(value);
+      break;
+    case 30:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSpotFindingRateMs(value);
+      break;
+    case 31:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setBkgEstimateRateMs(value);
+      break;
+    case 33:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSpaceGroupNumber(value);
+      break;
+    case 35:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setDetectorDelayAfterTriggerUs(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.BrokerSetup.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.BrokerSetup} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerSetup.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getImagesPerTrigger();
+  if (f !== 0) {
+    writer.writeInt64(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = message.getBeamCenterXPxl();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      3,
+      f
+    );
+  }
+  f = message.getBeamCenterYPxl();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      4,
+      f
+    );
+  }
+  f = message.getDetectorDistanceMm();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      5,
+      f
+    );
+  }
+  f = message.getPhotonEnergyKev();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      6,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 7));
+  if (f != null) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+  f = message.getSampleName();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 14));
+  if (f != null) {
+    writer.writeBool(
+      14,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 15));
+  if (f != null) {
+    writer.writeInt64(
+      15,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 16));
+  if (f != null) {
+    writer.writeInt64(
+      16,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 17));
+  if (f != null) {
+    writer.writeString(
+      17,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 18));
+  if (f != null) {
+    writer.writeDouble(
+      18,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 19));
+  if (f != null) {
+    writer.writeDouble(
+      19,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 20));
+  if (f != null) {
+    writer.writeBool(
+      20,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 23));
+  if (f != null) {
+    writer.writeString(
+      23,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 27));
+  if (f != null) {
+    writer.writeInt64(
+      27,
+      f
+    );
+  }
+  f = message.getUnitCell();
+  if (f != null) {
+    writer.writeMessage(
+      29,
+      f,
+      proto.JFJochProtoBuf.UnitCell.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 30));
+  if (f != null) {
+    writer.writeInt64(
+      30,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 31));
+  if (f != null) {
+    writer.writeInt64(
+      31,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 33));
+  if (f != null) {
+    writer.writeInt64(
+      33,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 35));
+  if (f != null) {
+    writer.writeInt64(
+      35,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int64 images_per_trigger = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getImagesPerTrigger = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setImagesPerTrigger = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional int64 summation = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getSummation = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setSummation = function(value) {
+  return jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearSummation = function() {
+  return jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasSummation = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional double beam_center_x_pxl = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getBeamCenterXPxl = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setBeamCenterXPxl = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+/**
+ * optional double beam_center_y_pxl = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getBeamCenterYPxl = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setBeamCenterYPxl = function(value) {
+  return jspb.Message.setProto3FloatField(this, 4, value);
+};
+
+
+/**
+ * optional double detector_distance_mm = 5;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getDetectorDistanceMm = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setDetectorDistanceMm = function(value) {
+  return jspb.Message.setProto3FloatField(this, 5, value);
+};
+
+
+/**
+ * optional double photon_energy_kev = 6;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getPhotonEnergyKev = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setPhotonEnergyKev = function(value) {
+  return jspb.Message.setProto3FloatField(this, 6, value);
+};
+
+
+/**
+ * optional string name_pattern = 7;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getNamePattern = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setNamePattern = function(value) {
+  return jspb.Message.setField(this, 7, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearNamePattern = function() {
+  return jspb.Message.setField(this, 7, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasNamePattern = function() {
+  return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * optional string sample_name = 8;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getSampleName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setSampleName = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional bool soft_trigger = 14;
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getSoftTrigger = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setSoftTrigger = function(value) {
+  return jspb.Message.setField(this, 14, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearSoftTrigger = function() {
+  return jspb.Message.setField(this, 14, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasSoftTrigger = function() {
+  return jspb.Message.getField(this, 14) != null;
+};
+
+
+/**
+ * optional int64 ntrigger = 15;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getNtrigger = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setNtrigger = function(value) {
+  return jspb.Message.setField(this, 15, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearNtrigger = function() {
+  return jspb.Message.setField(this, 15, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasNtrigger = function() {
+  return jspb.Message.getField(this, 15) != null;
+};
+
+
+/**
+ * optional int64 images_per_file = 16;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getImagesPerFile = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setImagesPerFile = function(value) {
+  return jspb.Message.setField(this, 16, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearImagesPerFile = function() {
+  return jspb.Message.setField(this, 16, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasImagesPerFile = function() {
+  return jspb.Message.getField(this, 16) != null;
+};
+
+
+/**
+ * optional string compression = 17;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getCompression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setCompression = function(value) {
+  return jspb.Message.setField(this, 17, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearCompression = function() {
+  return jspb.Message.setField(this, 17, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasCompression = function() {
+  return jspb.Message.getField(this, 17) != null;
+};
+
+
+/**
+ * optional double omega_start_deg = 18;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getOmegaStartDeg = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 18, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setOmegaStartDeg = function(value) {
+  return jspb.Message.setField(this, 18, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearOmegaStartDeg = function() {
+  return jspb.Message.setField(this, 18, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasOmegaStartDeg = function() {
+  return jspb.Message.getField(this, 18) != null;
+};
+
+
+/**
+ * optional double omega_increment_deg = 19;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getOmegaIncrementDeg = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 19, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setOmegaIncrementDeg = function(value) {
+  return jspb.Message.setField(this, 19, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearOmegaIncrementDeg = function() {
+  return jspb.Message.setField(this, 19, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasOmegaIncrementDeg = function() {
+  return jspb.Message.getField(this, 19) != null;
+};
+
+
+/**
+ * optional bool time_resolved_mode = 20;
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getTimeResolvedMode = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 20, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setTimeResolvedMode = function(value) {
+  return jspb.Message.setField(this, 20, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearTimeResolvedMode = function() {
+  return jspb.Message.setField(this, 20, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasTimeResolvedMode = function() {
+  return jspb.Message.getField(this, 20) != null;
+};
+
+
+/**
+ * optional string data_collection_mode = 23;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getDataCollectionMode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setDataCollectionMode = function(value) {
+  return jspb.Message.setField(this, 23, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearDataCollectionMode = function() {
+  return jspb.Message.setField(this, 23, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasDataCollectionMode = function() {
+  return jspb.Message.getField(this, 23) != null;
+};
+
+
+/**
+ * optional int64 preview_rate_ms = 27;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getPreviewRateMs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 27, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setPreviewRateMs = function(value) {
+  return jspb.Message.setField(this, 27, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearPreviewRateMs = function() {
+  return jspb.Message.setField(this, 27, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasPreviewRateMs = function() {
+  return jspb.Message.getField(this, 27) != null;
+};
+
+
+/**
+ * optional UnitCell unit_cell = 29;
+ * @return {?proto.JFJochProtoBuf.UnitCell}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getUnitCell = function() {
+  return /** @type{?proto.JFJochProtoBuf.UnitCell} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.UnitCell, 29));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.UnitCell|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+*/
+proto.JFJochProtoBuf.BrokerSetup.prototype.setUnitCell = function(value) {
+  return jspb.Message.setWrapperField(this, 29, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearUnitCell = function() {
+  return this.setUnitCell(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasUnitCell = function() {
+  return jspb.Message.getField(this, 29) != null;
+};
+
+
+/**
+ * optional int64 spot_finding_rate_ms = 30;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getSpotFindingRateMs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 30, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setSpotFindingRateMs = function(value) {
+  return jspb.Message.setField(this, 30, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearSpotFindingRateMs = function() {
+  return jspb.Message.setField(this, 30, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasSpotFindingRateMs = function() {
+  return jspb.Message.getField(this, 30) != null;
+};
+
+
+/**
+ * optional int64 bkg_estimate_rate_ms = 31;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getBkgEstimateRateMs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 31, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setBkgEstimateRateMs = function(value) {
+  return jspb.Message.setField(this, 31, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearBkgEstimateRateMs = function() {
+  return jspb.Message.setField(this, 31, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasBkgEstimateRateMs = function() {
+  return jspb.Message.getField(this, 31) != null;
+};
+
+
+/**
+ * optional int64 space_group_number = 33;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getSpaceGroupNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 33, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setSpaceGroupNumber = function(value) {
+  return jspb.Message.setField(this, 33, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearSpaceGroupNumber = function() {
+  return jspb.Message.setField(this, 33, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasSpaceGroupNumber = function() {
+  return jspb.Message.getField(this, 33) != null;
+};
+
+
+/**
+ * optional int64 detector_delay_after_trigger_us = 35;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.getDetectorDelayAfterTriggerUs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 35, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.setDetectorDelayAfterTriggerUs = function(value) {
+  return jspb.Message.setField(this, 35, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerSetup} returns this
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.clearDetectorDelayAfterTriggerUs = function() {
+  return jspb.Message.setField(this, 35, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerSetup.prototype.hasDetectorDelayAfterTriggerUs = function() {
+  return jspb.Message.getField(this, 35) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.BrokerPersistentTimingSettings.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    frameTimeUs: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    countTimeUs: jspb.Message.getFieldWithDefault(msg, 2, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings}
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.BrokerPersistentTimingSettings;
+  return proto.JFJochProtoBuf.BrokerPersistentTimingSettings.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings}
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setFrameTimeUs(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCountTimeUs(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.BrokerPersistentTimingSettings.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getFrameTimeUs();
+  if (f !== 0) {
+    writer.writeInt64(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int64 frame_time_us = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.getFrameTimeUs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings} returns this
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.setFrameTimeUs = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional int64 count_time_us = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.getCountTimeUs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings} returns this
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.setCountTimeUs = function(value) {
+  return jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentTimingSettings} returns this
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.clearCountTimeUs = function() {
+  return jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerPersistentTimingSettings.prototype.hasCountTimeUs = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
 proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.toObject = function(opt_includeInstance) {
   return proto.JFJochProtoBuf.BrokerPersistentSettings.toObject(opt_includeInstance, this);
 };
@@ -16912,10 +19196,12 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.toObject = function(opt_
 proto.JFJochProtoBuf.BrokerPersistentSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     useStorageCells: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
-    countTimeUs: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    timing: (f = msg.getTiming()) && proto.JFJochProtoBuf.BrokerPersistentTimingSettings.toObject(includeInstance, f),
     pedestalG0Frames: jspb.Message.getFieldWithDefault(msg, 3, 0),
     pedestalG1Frames: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    pedestalG2Frames: jspb.Message.getFieldWithDefault(msg, 5, 0)
+    pedestalG2Frames: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    useInternalPacketGenerator: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+    runNumber: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -16957,8 +19243,9 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.deserializeBinaryFromReader = func
       msg.setUseStorageCells(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setCountTimeUs(value);
+      var value = new proto.JFJochProtoBuf.BrokerPersistentTimingSettings;
+      reader.readMessage(value,proto.JFJochProtoBuf.BrokerPersistentTimingSettings.deserializeBinaryFromReader);
+      msg.setTiming(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
@@ -16971,6 +19258,14 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.deserializeBinaryFromReader = func
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPedestalG2Frames(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setUseInternalPacketGenerator(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setRunNumber(value);
       break;
     default:
       reader.skipField();
@@ -17008,11 +19303,12 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.serializeBinaryToWriter = function
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = message.getTiming();
   if (f != null) {
-    writer.writeInt64(
+    writer.writeMessage(
       2,
-      f
+      f,
+      proto.JFJochProtoBuf.BrokerPersistentTimingSettings.serializeBinaryToWriter
     );
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 3));
@@ -17033,6 +19329,20 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.serializeBinaryToWriter = function
   if (f != null) {
     writer.writeInt64(
       5,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeBool(
+      6,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 7));
+  if (f != null) {
+    writer.writeInt64(
+      7,
       f
     );
   }
@@ -17076,29 +19386,30 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.hasUseStorageCells = fun
 
 
 /**
- * optional int64 count_time_us = 2;
- * @return {number}
+ * optional BrokerPersistentTimingSettings timing = 2;
+ * @return {?proto.JFJochProtoBuf.BrokerPersistentTimingSettings}
  */
-proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.getCountTimeUs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.getTiming = function() {
+  return /** @type{?proto.JFJochProtoBuf.BrokerPersistentTimingSettings} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.BrokerPersistentTimingSettings, 2));
 };
 
 
 /**
- * @param {number} value
+ * @param {?proto.JFJochProtoBuf.BrokerPersistentTimingSettings|undefined} value
  * @return {!proto.JFJochProtoBuf.BrokerPersistentSettings} returns this
- */
-proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.setCountTimeUs = function(value) {
-  return jspb.Message.setField(this, 2, value);
+*/
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.setTiming = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.JFJochProtoBuf.BrokerPersistentSettings} returns this
  */
-proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.clearCountTimeUs = function() {
-  return jspb.Message.setField(this, 2, undefined);
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.clearTiming = function() {
+  return this.setTiming(undefined);
 };
 
 
@@ -17106,7 +19417,7 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.clearCountTimeUs = funct
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.hasCountTimeUs = function() {
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.hasTiming = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -17220,6 +19531,1133 @@ proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.hasPedestalG2Frames = fu
 
 
 /**
+ * optional bool use_internal_packet_generator = 6;
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.getUseInternalPacketGenerator = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentSettings} returns this
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.setUseInternalPacketGenerator = function(value) {
+  return jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentSettings} returns this
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.clearUseInternalPacketGenerator = function() {
+  return jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.hasUseInternalPacketGenerator = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional int64 run_number = 7;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.getRunNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentSettings} returns this
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.setRunNumber = function(value) {
+  return jspb.Message.setField(this, 7, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerPersistentSettings} returns this
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.clearRunNumber = function() {
+  return jspb.Message.setField(this, 7, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerPersistentSettings.prototype.hasRunNumber = function() {
+  return jspb.Message.getField(this, 7) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.MeasurementStatistics.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.MeasurementStatistics} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    imagesCollected: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    collectionEfficiency: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    compressionRatio: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+    runNumber: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    fileName: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    writerPerformanceMbs: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
+    imagesWritten: jspb.Message.getFieldWithDefault(msg, 7, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.MeasurementStatistics;
+  return proto.JFJochProtoBuf.MeasurementStatistics.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.MeasurementStatistics} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setImagesCollected(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setCollectionEfficiency(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setCompressionRatio(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setRunNumber(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFileName(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setWriterPerformanceMbs(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setImagesWritten(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.MeasurementStatistics.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.MeasurementStatistics} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getImagesCollected();
+  if (f !== 0) {
+    writer.writeUint64(
+      1,
+      f
+    );
+  }
+  f = message.getCollectionEfficiency();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      2,
+      f
+    );
+  }
+  f = message.getCompressionRatio();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+  f = message.getFileName();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getWriterPerformanceMbs();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      6,
+      f
+    );
+  }
+  f = message.getImagesWritten();
+  if (f !== 0) {
+    writer.writeUint64(
+      7,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional uint64 images_collected = 1;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.getImagesCollected = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.setImagesCollected = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional double collection_efficiency = 2;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.getCollectionEfficiency = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.setCollectionEfficiency = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional double compression_ratio = 3;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.getCompressionRatio = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.setCompressionRatio = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+/**
+ * optional int64 run_number = 4;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.getRunNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.setRunNumber = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.clearRunNumber = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.hasRunNumber = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional string file_name = 5;
+ * @return {string}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.getFileName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.setFileName = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional double writer_performance_MBs = 6;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.getWriterPerformanceMbs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.setWriterPerformanceMbs = function(value) {
+  return jspb.Message.setProto3FloatField(this, 6, value);
+};
+
+
+/**
+ * optional uint64 images_written = 7;
+ * @return {number}
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.getImagesWritten = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.JFJochProtoBuf.MeasurementStatistics} returns this
+ */
+proto.JFJochProtoBuf.MeasurementStatistics.prototype.setImagesWritten = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.BrokerStatus.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.BrokerStatus} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerStatus.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    currentState: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    receiverStatus: (f = msg.getReceiverStatus()) && proto.JFJochProtoBuf.ReceiverStatus.toObject(includeInstance, f),
+    indexerStatus: (f = msg.getIndexerStatus()) && proto.JFJochProtoBuf.IndexerStatus.toObject(includeInstance, f),
+    measurementStatistics: (f = msg.getMeasurementStatistics()) && proto.JFJochProtoBuf.MeasurementStatistics.toObject(includeInstance, f),
+    calibrationStatistics: (f = msg.getCalibrationStatistics()) && proto.JFJochProtoBuf.JFCalibrationStatistics.toObject(includeInstance, f),
+    detectorState: (f = msg.getDetectorState()) && proto.JFJochProtoBuf.DetectorStatus.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.BrokerStatus}
+ */
+proto.JFJochProtoBuf.BrokerStatus.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.BrokerStatus;
+  return proto.JFJochProtoBuf.BrokerStatus.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.BrokerStatus} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.BrokerStatus}
+ */
+proto.JFJochProtoBuf.BrokerStatus.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.JFJochProtoBuf.BrokerStatus.State} */ (reader.readEnum());
+      msg.setCurrentState(value);
+      break;
+    case 2:
+      var value = new proto.JFJochProtoBuf.ReceiverStatus;
+      reader.readMessage(value,proto.JFJochProtoBuf.ReceiverStatus.deserializeBinaryFromReader);
+      msg.setReceiverStatus(value);
+      break;
+    case 3:
+      var value = new proto.JFJochProtoBuf.IndexerStatus;
+      reader.readMessage(value,proto.JFJochProtoBuf.IndexerStatus.deserializeBinaryFromReader);
+      msg.setIndexerStatus(value);
+      break;
+    case 4:
+      var value = new proto.JFJochProtoBuf.MeasurementStatistics;
+      reader.readMessage(value,proto.JFJochProtoBuf.MeasurementStatistics.deserializeBinaryFromReader);
+      msg.setMeasurementStatistics(value);
+      break;
+    case 10:
+      var value = new proto.JFJochProtoBuf.JFCalibrationStatistics;
+      reader.readMessage(value,proto.JFJochProtoBuf.JFCalibrationStatistics.deserializeBinaryFromReader);
+      msg.setCalibrationStatistics(value);
+      break;
+    case 11:
+      var value = new proto.JFJochProtoBuf.DetectorStatus;
+      reader.readMessage(value,proto.JFJochProtoBuf.DetectorStatus.deserializeBinaryFromReader);
+      msg.setDetectorState(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.BrokerStatus.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.BrokerStatus} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerStatus.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getCurrentState();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getReceiverStatus();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      proto.JFJochProtoBuf.ReceiverStatus.serializeBinaryToWriter
+    );
+  }
+  f = message.getIndexerStatus();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      proto.JFJochProtoBuf.IndexerStatus.serializeBinaryToWriter
+    );
+  }
+  f = message.getMeasurementStatistics();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      proto.JFJochProtoBuf.MeasurementStatistics.serializeBinaryToWriter
+    );
+  }
+  f = message.getCalibrationStatistics();
+  if (f != null) {
+    writer.writeMessage(
+      10,
+      f,
+      proto.JFJochProtoBuf.JFCalibrationStatistics.serializeBinaryToWriter
+    );
+  }
+  f = message.getDetectorState();
+  if (f != null) {
+    writer.writeMessage(
+      11,
+      f,
+      proto.JFJochProtoBuf.DetectorStatus.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * @enum {number}
+ */
+proto.JFJochProtoBuf.BrokerStatus.State = {
+  NOT_INITIALIZED: 0,
+  IDLE: 1,
+  BUSY: 2,
+  PEDESTAL: 3,
+  DATA_COLLECTION: 4,
+  ERROR: 5
+};
+
+/**
+ * optional State current_state = 1;
+ * @return {!proto.JFJochProtoBuf.BrokerStatus.State}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.getCurrentState = function() {
+  return /** @type {!proto.JFJochProtoBuf.BrokerStatus.State} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.BrokerStatus.State} value
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.setCurrentState = function(value) {
+  return jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional ReceiverStatus receiver_status = 2;
+ * @return {?proto.JFJochProtoBuf.ReceiverStatus}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.getReceiverStatus = function() {
+  return /** @type{?proto.JFJochProtoBuf.ReceiverStatus} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.ReceiverStatus, 2));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.ReceiverStatus|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerStatus.prototype.setReceiverStatus = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.clearReceiverStatus = function() {
+  return this.setReceiverStatus(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.hasReceiverStatus = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional IndexerStatus indexer_status = 3;
+ * @return {?proto.JFJochProtoBuf.IndexerStatus}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.getIndexerStatus = function() {
+  return /** @type{?proto.JFJochProtoBuf.IndexerStatus} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.IndexerStatus, 3));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.IndexerStatus|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerStatus.prototype.setIndexerStatus = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.clearIndexerStatus = function() {
+  return this.setIndexerStatus(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.hasIndexerStatus = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional MeasurementStatistics measurement_statistics = 4;
+ * @return {?proto.JFJochProtoBuf.MeasurementStatistics}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.getMeasurementStatistics = function() {
+  return /** @type{?proto.JFJochProtoBuf.MeasurementStatistics} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.MeasurementStatistics, 4));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.MeasurementStatistics|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerStatus.prototype.setMeasurementStatistics = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.clearMeasurementStatistics = function() {
+  return this.setMeasurementStatistics(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.hasMeasurementStatistics = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional JFCalibrationStatistics calibration_statistics = 10;
+ * @return {?proto.JFJochProtoBuf.JFCalibrationStatistics}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.getCalibrationStatistics = function() {
+  return /** @type{?proto.JFJochProtoBuf.JFCalibrationStatistics} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.JFCalibrationStatistics, 10));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.JFCalibrationStatistics|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerStatus.prototype.setCalibrationStatistics = function(value) {
+  return jspb.Message.setWrapperField(this, 10, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.clearCalibrationStatistics = function() {
+  return this.setCalibrationStatistics(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.hasCalibrationStatistics = function() {
+  return jspb.Message.getField(this, 10) != null;
+};
+
+
+/**
+ * optional DetectorStatus detector_state = 11;
+ * @return {?proto.JFJochProtoBuf.DetectorStatus}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.getDetectorState = function() {
+  return /** @type{?proto.JFJochProtoBuf.DetectorStatus} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.DetectorStatus, 11));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.DetectorStatus|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerStatus.prototype.setDetectorState = function(value) {
+  return jspb.Message.setWrapperField(this, 11, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.clearDetectorState = function() {
+  return this.setDetectorState(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerStatus.prototype.hasDetectorState = function() {
+  return jspb.Message.getField(this, 11) != null;
+};
+
+
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.repeatedFields_ = [3];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.toObject = function(opt_includeInstance) {
+  return proto.JFJochProtoBuf.BrokerFullStatus.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.JFJochProtoBuf.BrokerFullStatus} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    receiver: (f = msg.getReceiver()) && proto.JFJochProtoBuf.ReceiverOutput.toObject(includeInstance, f),
+    detector: (f = msg.getDetector()) && proto.JFJochProtoBuf.DetectorOutput.toObject(includeInstance, f),
+    writerList: jspb.Message.toObjectList(msg.getWriterList(),
+    proto.JFJochProtoBuf.WriterOutput.toObject, includeInstance),
+    indexer: (f = msg.getIndexer()) && proto.JFJochProtoBuf.IndexerOutput.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.JFJochProtoBuf.BrokerFullStatus;
+  return proto.JFJochProtoBuf.BrokerFullStatus.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.JFJochProtoBuf.BrokerFullStatus} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.JFJochProtoBuf.ReceiverOutput;
+      reader.readMessage(value,proto.JFJochProtoBuf.ReceiverOutput.deserializeBinaryFromReader);
+      msg.setReceiver(value);
+      break;
+    case 2:
+      var value = new proto.JFJochProtoBuf.DetectorOutput;
+      reader.readMessage(value,proto.JFJochProtoBuf.DetectorOutput.deserializeBinaryFromReader);
+      msg.setDetector(value);
+      break;
+    case 3:
+      var value = new proto.JFJochProtoBuf.WriterOutput;
+      reader.readMessage(value,proto.JFJochProtoBuf.WriterOutput.deserializeBinaryFromReader);
+      msg.addWriter(value);
+      break;
+    case 4:
+      var value = new proto.JFJochProtoBuf.IndexerOutput;
+      reader.readMessage(value,proto.JFJochProtoBuf.IndexerOutput.deserializeBinaryFromReader);
+      msg.setIndexer(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.JFJochProtoBuf.BrokerFullStatus.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.JFJochProtoBuf.BrokerFullStatus} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getReceiver();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.JFJochProtoBuf.ReceiverOutput.serializeBinaryToWriter
+    );
+  }
+  f = message.getDetector();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      proto.JFJochProtoBuf.DetectorOutput.serializeBinaryToWriter
+    );
+  }
+  f = message.getWriterList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      proto.JFJochProtoBuf.WriterOutput.serializeBinaryToWriter
+    );
+  }
+  f = message.getIndexer();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      proto.JFJochProtoBuf.IndexerOutput.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional ReceiverOutput receiver = 1;
+ * @return {?proto.JFJochProtoBuf.ReceiverOutput}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.getReceiver = function() {
+  return /** @type{?proto.JFJochProtoBuf.ReceiverOutput} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.ReceiverOutput, 1));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.ReceiverOutput|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.setReceiver = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.clearReceiver = function() {
+  return this.setReceiver(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.hasReceiver = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional DetectorOutput detector = 2;
+ * @return {?proto.JFJochProtoBuf.DetectorOutput}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.getDetector = function() {
+  return /** @type{?proto.JFJochProtoBuf.DetectorOutput} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.DetectorOutput, 2));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.DetectorOutput|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.setDetector = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.clearDetector = function() {
+  return this.setDetector(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.hasDetector = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * repeated WriterOutput writer = 3;
+ * @return {!Array<!proto.JFJochProtoBuf.WriterOutput>}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.getWriterList = function() {
+  return /** @type{!Array<!proto.JFJochProtoBuf.WriterOutput>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.JFJochProtoBuf.WriterOutput, 3));
+};
+
+
+/**
+ * @param {!Array<!proto.JFJochProtoBuf.WriterOutput>} value
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.setWriterList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.JFJochProtoBuf.WriterOutput=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.JFJochProtoBuf.WriterOutput}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.addWriter = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.JFJochProtoBuf.WriterOutput, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.clearWriterList = function() {
+  return this.setWriterList([]);
+};
+
+
+/**
+ * optional IndexerOutput indexer = 4;
+ * @return {?proto.JFJochProtoBuf.IndexerOutput}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.getIndexer = function() {
+  return /** @type{?proto.JFJochProtoBuf.IndexerOutput} */ (
+    jspb.Message.getWrapperField(this, proto.JFJochProtoBuf.IndexerOutput, 4));
+};
+
+
+/**
+ * @param {?proto.JFJochProtoBuf.IndexerOutput|undefined} value
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+*/
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.setIndexer = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.JFJochProtoBuf.BrokerFullStatus} returns this
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.clearIndexer = function() {
+  return this.setIndexer(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.JFJochProtoBuf.BrokerFullStatus.prototype.hasIndexer = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * @enum {number}
+ */
+proto.JFJochProtoBuf.Compression = {
+  BSHUF_LZ4: 0,
+  BSHUF_ZSTD: 1,
+  NO_COMPRESSION: 2
+};
+
+/**
+ * @enum {number}
+ */
+proto.JFJochProtoBuf.DetectorType = {
+  JUNGFRAU: 0,
+  EIGER: 1
+};
+
+/**
  * @enum {number}
  */
 proto.JFJochProtoBuf.DetectorMode = {
@@ -17233,19 +20671,29 @@ proto.JFJochProtoBuf.DetectorMode = {
 /**
  * @enum {number}
  */
-proto.JFJochProtoBuf.SpotFindingAlgorithm = {
-  LOCAL: 0,
-  RADIAL: 1,
-  PEAKFINDER8: 2
+proto.JFJochProtoBuf.FPGAFIFOStatus = {
+  EMPTY: 0,
+  FULL: 1,
+  PARTIAL: 2
 };
 
 /**
  * @enum {number}
  */
-proto.JFJochProtoBuf.FPGAFIFOStatus = {
-  EMPTY: 0,
-  FULL: 1,
-  PARTIAL: 2
+proto.JFJochProtoBuf.WriterFrameType = {
+  END_ACQUISITION: 0,
+  START_ACQUISITION: 1,
+  IMAGE: 2
+};
+
+/**
+ * @enum {number}
+ */
+proto.JFJochProtoBuf.DetectorStatusEnum = {
+  IDLE: 0,
+  ERROR: 1,
+  BUSY: 2,
+  NO_DETECTOR: 3
 };
 
 goog.object.extend(exports, proto.JFJochProtoBuf);

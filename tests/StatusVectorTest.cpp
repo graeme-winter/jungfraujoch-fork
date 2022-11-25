@@ -47,3 +47,15 @@ TEST_CASE("StatusVector_Plot","[StatusVector]") {
     REQUIRE(plot_out.x(2) == Approx(2500));
     REQUIRE(plot_out.y(2) == Approx((45 + 44 + 41) / 3.0));
 }
+
+TEST_CASE("StatusVector_Plot_OneBin","[StatusVector]") {
+    StatusVector<uint64_t> status_vector;
+    status_vector.AddElement(5, 11);
+
+    JFJochProtoBuf::Plot plot_out;
+    status_vector.GetPlot(plot_out, 1000);
+    REQUIRE(plot_out.x_size() == 1);
+    REQUIRE(plot_out.y_size() == 1);
+    REQUIRE(plot_out.x(0) == Approx(2.5));
+    REQUIRE(plot_out.y(0) == Approx(11));
+}

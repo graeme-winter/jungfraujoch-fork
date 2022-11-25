@@ -14,7 +14,7 @@ public:
     void Connect(const std::string& addr);
     JFJochIndexerClient &ZMQReceiverAddr(const std::string& receiver_addr);
     void Start(const DiffractionExperiment &x);
-    JFJochProtoBuf::JFJochIndexerOutput Stop();
+    JFJochProtoBuf::IndexerOutput Stop();
     JFJochProtoBuf::IndexerStatus GetStatus();
 };
 

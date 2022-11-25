@@ -5,6 +5,7 @@
 
 #include "MakeAcquisitionDevice.h"
 #include "JFJochReceiverTest.h"
+#include "../tests/FPGAUnitTest.h"
 
 int main(int argc, char **argv) {
     uint16_t nstreams = 1;
@@ -12,10 +13,13 @@ int main(int argc, char **argv) {
     size_t nimages = 2;
     uint64_t processing_period = 20;
 
+    Logger logger("ActionTest");
+    logger.Verbose(true);
+
     bool abort_test = false;
 
     if ((argc == 1) || (argc > 6)) {
-        std::cout << "Usage ./jfjoch_action_test <path to JFjoch source> {<# of images> {<# of modules> {<# of streams> {<processing period>}}}}" << std::endl;
+        logger.Error("Usage ./jfjoch_action_test <path to JFjoch source> {<# of images> {<# of modules> {<# of streams> {<processing period>}}}}");
         exit(EXIT_FAILURE);
     }
 
@@ -24,8 +28,6 @@ int main(int argc, char **argv) {
     if (argc >= 5) nstreams = atoi(argv[4]);
     if (argc >= 6) processing_period = atoi(argv[5]);
 
-    Logger logger("ActionTest");
-    logger.Verbose(true);
     DiffractionExperiment x;
 
     std::vector<int64_t> detector_geom;
@@ -33,11 +35,11 @@ int main(int argc, char **argv) {
         detector_geom.push_back(nmodules);
 
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, detector_geom);
-    x.ImagesPerTrigger(nimages).PedestalG0Frames(0).UseInternalPacketGenerator(true).PhotonEnergy_keV(12.4).NumTriggers(0);
+    x.ImagesPerTrigger(nimages).PedestalG0Frames(0).UseInternalPacketGenerator(true).PhotonEnergy_keV(12.4).NumTriggers(1);
     x.SpotFindingPeriod(std::chrono::milliseconds(processing_period))
             .BackgroundEstimationPeriod(std::chrono::milliseconds(processing_period))
             .ImagesPerFile(100);
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD,ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD,ZSTD_USE_JFJOCH_RLE);
 
 #ifdef __PPC__
     std::vector<uint16_t> pci_slot_number = {4, 5};
@@ -58,27 +60,31 @@ int main(int argc, char **argv) {
     logger.Verbose(verbose);
 
     if (nstreams > pci_slot_number.size()) {
-        logger.Error("Only " + std::to_string(pci_slot_number.size()) + " data streams allowed on this platform");
+        logger.Error("Only {} data streams allowed on this platform", pci_slot_number.size());
         exit(EXIT_FAILURE);
     }
 
     std::vector<std::unique_ptr<AcquisitionDevice>> oc_devices;
     std::vector<AcquisitionDevice *> aq_devices;
 
+    std::string image_path = std::string(argv[1]) + "/tests/test_data/mod5_raw0.bin";
+    std::vector<uint16_t> input(RAW_MODULE_SIZE, 0);
+    LoadBinaryFile(image_path, input.data(), RAW_MODULE_SIZE);
+
     for (int i = 0; i < nstreams; i++) {
         oc_devices.push_back(MakeAcquisitionDevice(AcquisitionDeviceType::OpenCAPI, i, frame_buffer_size,
                                                    pci_slot_number[i], numa_node[i]));
+        oc_devices[i]->SetCustomInternalGeneratorFrame(input);
         oc_devices[i]->EnableLogging(&logger);
         aq_devices.push_back(oc_devices[i].get());
     }
 
     volatile bool done = false;
-    JFJochProtoBuf::JFJochReceiverOutput output;
+    JFJochProtoBuf::ReceiverOutput output;
     bool ret;
     std::thread run_thread([&] {
         try {
-            ret = JFJochReceiverTest(output, logger, aq_devices, x, nthreads, std::string(argv[1]) + "/",
-                                     abort_test, verbose);
+            ret = JFJochReceiverTest(output, logger, aq_devices, x, nthreads,abort_test, verbose);
         } catch (std::exception &e) {
             logger.Error(e.what());
             ret = false;
@@ -90,13 +96,10 @@ int main(int argc, char **argv) {
         while (!done) {
             for (int i = 0; i < nstreams; i++) {
                 auto status = oc_devices[i]->GetStatus();
-                logger.Info("Dev: " + std::to_string(i)
-                            + " Head packet: " + std::to_string(status.slowest_head())
-                            + " Power: " + std::to_string(status.current_edge_12v_a() * status.voltage_edge_12v_v() +
-                                                          status.current_edge_3p3v_a() * status.voltage_edge_3p3v_v())
-                            + " FPGA Temp: " + std::to_string(status.fpga_temp_degc())
-                            + " HBM Temp: " + std::to_string(status.hbm_temp())
-                            + " Stalls: " + std::to_string(status.stalls_hbm()));
+                logger.Info("Device {}:  Head packet: {}  Power: {} W  FPGA Temp: {:d} degC  HBM Temp: {:d} degC  Stalls: {}",
+                            i, status.slowest_head(), status.current_edge_12v_a() * status.voltage_edge_12v_v() +
+                                                      status.current_edge_3p3v_a() * status.voltage_edge_3p3v_v(),
+                            status.fpga_temp_degc(), status.hbm_temp(), status.stalls_hbm());
             }
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
@@ -104,8 +107,15 @@ int main(int argc, char **argv) {
 
     run_thread.join();
 
-    logger.Info("Max delay: " + std::to_string(output.max_receive_delay()));
-    logger.Info("Compression ratio: " + std::to_string(output.compressed_ratio()));
+    double receiving_time = static_cast<double>(output.end_time_ms() - output.start_time_ms())/1000.0;
+
+    logger.Info("Max delay: {}",output.max_receive_delay());
+    logger.Info("Compression ratio: {}", output.compressed_ratio());
+    logger.Info("Receiving time: {} s", receiving_time);
+    logger.Info("Frame rate: {} Hz", static_cast<double>(nimages)/receiving_time);
+    logger.Info("Total throughput: {:.2f} GB/s",
+            static_cast<double>(nimages*nstreams*nmodules*RAW_MODULE_SIZE*sizeof(uint16_t)) / (receiving_time * 1e9));
+    logger.Info("");
     for (int i = 0; i < nstreams; i++) {
         auto stalls = output.device_statistics(i).fpga_status().stalls_hbm();
 
@@ -113,20 +123,19 @@ int main(int argc, char **argv) {
         uint64_t throughput_MBs = nimages * nmodules * RAW_MODULE_SIZE*sizeof(uint16_t) * clock_MHz / (nimages * nmodules * 128 * 128 + stalls);
         double performance = static_cast<double>(throughput_MBs) / 1000;
         // Assuming 250 MHz clock
-        logger.Info("Device " + std::to_string(i) + "   stalls: "  + std::to_string(stalls) +
-                    "   est. performance: " + std::to_string(performance).substr(0, 5) + " GB/s");
+        logger.Info("Device {}:  stalls: {}   est. performance: {:.2f} GB/s", i, stalls, performance);
 
         if (output.device_statistics(i).fpga_status().frame_statistics_alignment_err())
-            logger.Error("Device " + std::to_string(i) + ": memory alignment error");
+            logger.Error("Device {}: memory alignment error", i);
         if (output.device_statistics(i).fpga_status().frame_statistics_tlast_err())
-            logger.Error("Device " + std::to_string(i) + ": error in AXI-Stream sequence");
+            logger.Error("Device {}: error in AXI-Stream sequence", i);
         if (output.device_statistics(i).fpga_status().frame_statistics_work_req_err())
-            logger.Error("Device " + std::to_string(i) + ": parity error in work request");
+            logger.Error("Device {}: parity error in work request", i);
         if (output.device_statistics(i).fpga_status().datamover_s2mm_error())
-            logger.Error("Device " + std::to_string(i) + ": AXI-Stream to AXImm error");
+            logger.Error("Device {}: AXI-Stream to AXImm error", i);
         if (output.device_statistics(i).fpga_status().mailbox_err_reg() != 0)
-            logger.Error("Device " + std::to_string(i) + ": Mailbox error " +
-                    std::to_string(output.device_statistics(i).fpga_status().mailbox_err_reg()));
+            logger.Error("Device {}: Mailbox error {:x}", i,
+                         output.device_statistics(i).fpga_status().mailbox_err_reg());
     }
 
     if (ret) {

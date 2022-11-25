@@ -103,8 +103,10 @@ public:
     HLSSimulatedDevice(uint16_t data_stream, size_t in_frame_buffer_size_modules, int16_t numa_node = -1);
     ~HLSSimulatedDevice();
     void SendPacket(char *buffer, int len, uint8_t user = 0);
-    void CreatePacket(const DiffractionExperiment& experiment, uint64_t frame_number, uint32_t eth_packet,
-                      uint32_t module, const uint16_t *data, bool trigger, int8_t adjust_axis = 0, uint8_t user = 0);
+    void CreatePacketJF(const DiffractionExperiment& experiment, uint64_t frame_number, uint32_t eth_packet,
+                        uint32_t module, const uint16_t *data, bool trigger, int8_t adjust_axis = 0, uint8_t user = 0);
+    void CreatePacketEIGER(const DiffractionExperiment& experiment, uint64_t frame_number, uint32_t eth_packet,
+                        uint32_t module, const uint16_t *data, bool trigger, int8_t adjust_axis = 0, uint8_t user = 0);
     void CreatePackets(const DiffractionExperiment& experiment, uint64_t frame_number_0, uint64_t frames,
                        uint32_t module, const uint16_t *data, bool trigger, int8_t adjust_axis = 0,
                        uint8_t user = 0);

@@ -377,7 +377,7 @@ TEST_CASE("JFCalibration_GetPedestal","[JFCalibration]") {
         }
     }
 
-    auto x = calibration.GetPedestal(1, 1);
+    auto x = calibration.GetPedestalFP(1, 1);
     REQUIRE(x[0] == Approx(2000));
     REQUIRE(x[2*RAW_MODULE_SIZE] == Approx(3 * 2000));
     REQUIRE(x[3*RAW_MODULE_SIZE+500] == Approx(4 * 2000 + 500/4.0f));

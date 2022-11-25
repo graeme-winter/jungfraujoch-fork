@@ -8,8 +8,10 @@
 #include <map>
 #include <mutex>
 
+#include <jfjoch.pb.h>
+
 #include "JFJochException.h"
-#include "jfjoch.pb.h"
+
 
 template <class T> class StatusVector {
     mutable std::mutex m;
@@ -56,7 +58,10 @@ public:
 
     void GetPlot(JFJochProtoBuf::Plot& plot, int32_t bin_size) const {
         auto status = GetStatus(bin_size);
-        if (!status.empty()) {
+        if (status.size() == 1) {
+            plot.add_x(max_id / 2.0);
+            plot.add_y(status[0]);
+        } else if (!status.empty()) {
             *plot.mutable_y() = {status.begin(), status.end()};
 
             for (int i = 0; i < status.size(); i++)

@@ -14,7 +14,7 @@ void ipv4(AXI_STREAM &eth_in,
 #pragma HLS INTERFACE axis register both port=icmp_out
 #pragma HLS INTERFACE ap_none register port=fpga_ipv4_addr
 
-#pragma HLS PIPELINE II=1 enable_flush
+#pragma HLS PIPELINE II=1 style=flp
     enum ipv4_dest {DEST_UDP = 0, DEST_ICMP = 1, DEST_IGNORE=2};
     enum ipv4_state {INSPECT_HEADER, FORWARD, DISCARD};
     static ipv4_state state = INSPECT_HEADER;

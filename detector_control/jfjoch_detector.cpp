@@ -27,12 +27,7 @@ int main(int argc, char **argv) {
     uint16_t tcp_port = 5236;
     if (argc == 3) tcp_port = atoi(argv[2]);
 
-    JFJochDetector service(logger);
-
-    if (input.contains("serial_port")) {
-        service.SerialPort(input["serial_port"]);
-        logger.Info("Using serial port for trigger " + std::string(input["serial_port"]));
-    }
+    JFJochDetector service;
 
     auto server = gRPCServer("0.0.0.0:" + std::to_string(tcp_port), service);
     logger.Info("gRPC configuration listening on port " + std::to_string(tcp_port));

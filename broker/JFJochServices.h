@@ -16,9 +16,11 @@
 class JFJochServices {
     JFJochReceiverClient receiver;
     JFJochWriterGroupClient writer;
-    JFJochTriggerClient trigger;
     JFJochDetectorClient detector;
     JFJochIndexerClient indexer;
+
+    JFJochProtoBuf::FacilityMetadata facility_metadata;
+
     Logger &logger;
     bool indexer_running = false;
     bool writer_running = false;
@@ -28,10 +30,9 @@ public:
     void On(const DiffractionExperiment& experiment);
     void Off();
     void Start(const DiffractionExperiment& experiment, const JFCalibration &calibration);
-    JFJochProtoBuf::JFJochReceiverOutput Stop(const JFCalibration &calibration);
+    JFJochProtoBuf::BrokerFullStatus Stop(const JFCalibration &calibration);
     void Abort();
     void Cancel();
-    bool IsDetectorIdle();
 
     JFJochProtoBuf::ReceiverStatus GetReceiverStatus();
     JFJochProtoBuf::IndexerStatus GetIndexerStatus();
@@ -39,10 +40,10 @@ public:
 
     void SetDataProcessingSettings(const JFJochProtoBuf::DataProcessingSettings &settings);
     JFJochServices& Receiver(const std::string &addr);
-    JFJochServices& Writer(const std::string &addr, const std::string &zmq_pull_addr);
-    JFJochServices& Trigger(const std::string &addr);
+    JFJochServices& Writer(const std::string &addr, const std::string &zmq_push_addr);
     JFJochServices& Detector(const std::string &addr);
     JFJochServices& Indexer(const std::string &addr, const std::string &zmq_sub_addr);
+    JFJochServices& FacilityMetadata(const JFJochProtoBuf::FacilityMetadata &input);
 };
 
 

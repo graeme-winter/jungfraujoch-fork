@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
 
 PROJECT(Jungfraujoch VERSION 1.0 LANGUAGES C CXX)
 
@@ -9,7 +9,7 @@ SET(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_CXX_STANDARD_REQUIRED True)
 
 SET(CMAKE_CUDA_ARCHITECTURES 70 75 80 86) # V100, T4, A100, RTX A4000
-SET(CMAKE_CUDA_STANDARD 14)
+SET(CMAKE_CUDA_STANDARD 17)
 
 IF (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "ppc64le")
     SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -mcpu=power9 -mtune=power9")
@@ -40,6 +40,7 @@ ELSE()
     MESSAGE(STATUS "CUDA not found")
 ENDIF()
 
+ADD_SUBDIRECTORY(frame_serialize)
 ADD_SUBDIRECTORY(grpc)
 ADD_SUBDIRECTORY(compression)
 ADD_SUBDIRECTORY(common)
@@ -61,7 +62,7 @@ ENDIF()
 
 IF (JFJOCH_COMPILE_TESTS OR JFJOCH_COMPILE_WRITER)
     ADD_SUBDIRECTORY(writer)
-    LIST(APPEND jfjoch_executables jfjoch_writer)
+    LIST(APPEND jfjoch_executables jfjoch_writer jfjoch_writer_test)
 ENDIF()
 
 IF (JFJOCH_COMPILE_TESTS OR JFJOCH_COMPILE_INDEXER)
@@ -71,7 +72,7 @@ ENDIF()
 
 IF (JFJOCH_COMPILE_TESTS)
     ADD_SUBDIRECTORY(tests)
-    LIST(APPEND jfjoch_executables CatchTest DataAnalysisPerfTest ZMQTestPuller ZMQTestPusher CompressionBenchmark HDF5DatasetWriteTest)
+    LIST(APPEND jfjoch_executables CatchTest DataAnalysisPerfTest CompressionBenchmark HDF5DatasetWriteTest)
 ENDIF()
 
 ADD_CUSTOM_COMMAND(OUTPUT frontend_ui/build/index.html

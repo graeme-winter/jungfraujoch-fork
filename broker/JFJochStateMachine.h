@@ -20,16 +20,16 @@ class JFJochStateMachine {
     std::future<void> measurement;
 
     std::unique_ptr<JFCalibration> calibration;
-    mutable std::mutex statistics_mutex;
-    JFJochProtoBuf::JFCalibrationStatistics statistics;
+    mutable std::mutex calibration_statistics_mutex;
+    JFJochProtoBuf::JFCalibrationStatistics calibration_statistics;
 
     volatile JFJochState state = JFJochState::Inactive;
     JFJochServices &services;
     // Private functions assume that lock is acquired
     void WaitTillMeasurementDone();
-    void ImportPedestal(const JFJochProtoBuf::JFJochReceiverOutput &receiver_output, size_t gain_level, size_t storage_cell = 0);
+    void ImportPedestal(const JFJochProtoBuf::ReceiverOutput &receiver_output, size_t gain_level, size_t storage_cell = 0);
     void ImportPedestalG0(const DiffractionExperiment &experiment,
-                          const JFJochProtoBuf::JFJochReceiverOutput &receiver_output);
+                          const JFJochProtoBuf::ReceiverOutput &receiver_output);
 
     void TakePedestalInternalAll(const DiffractionExperiment &experiment);
     void TakePedestalInternalG0(const DiffractionExperiment &experiment);
@@ -37,8 +37,9 @@ class JFJochStateMachine {
     void TakePedestalInternalG2(const DiffractionExperiment &experiment, int32_t storage_cell = 0);
 
     mutable std::mutex last_receiver_output_mutex;
-    JFJochProtoBuf::JFJochReceiverOutput last_receiver_output;
-    void SetLastReceiverOutput(JFJochProtoBuf::JFJochReceiverOutput &output);
+    JFJochProtoBuf::BrokerFullStatus last_receiver_output;
+    JFJochProtoBuf::MeasurementStatistics last_measurement_statistics;
+    void SetFullMeasurementOutput(JFJochProtoBuf::BrokerFullStatus &output);
 public:
     explicit JFJochStateMachine(JFJochServices &in_services, const DiffractionExperiment &experiment);
     ~JFJochStateMachine();
@@ -53,12 +54,15 @@ public:
 
     void Abort();
     void Cancel();
+
     void LoadMask(const DiffractionExperiment& experiment, const std::vector<uint32_t> &vec, uint32_t bit);
-    // return by value to ensure thread safety
-    JFJochProtoBuf::JFJochReceiverOutput GetLastReceiverOutput() const;
-    JFJochProtoBuf::JFCalibrationStatistics GetCalibrationStatistics() const;
     void SetCalibrationStatistics(const JFJochProtoBuf::JFCalibrationStatistics &input);
     JFCalibration GetCalibration() const;
+
+    // return by value to ensure thread safety
+    JFJochProtoBuf::BrokerFullStatus GetFullMeasurementOutput() const;
+    JFJochProtoBuf::MeasurementStatistics GetMeasurementStatistics() const;
+    JFJochProtoBuf::JFCalibrationStatistics GetCalibrationStatistics() const;
 };
 
 

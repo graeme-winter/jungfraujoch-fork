@@ -17,8 +17,7 @@ void JFJochDetectorClient::Connect(const std::string &addr) {
 void JFJochDetectorClient::Start(const DiffractionExperiment &in_experiment) {
     if (_stub) {
         grpc::ClientContext context;
-        JFJochProtoBuf::JFJochDetectorInput request;
-        *request.mutable_jungfraujoch_settings() = in_experiment;
+        JFJochProtoBuf::DetectorInput request = in_experiment;
         JFJochProtoBuf::Empty empty;
         auto status = _stub->Start(&context, request, &empty);
         if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
@@ -36,7 +35,7 @@ void JFJochDetectorClient::Stop() {
     }
 }
 
-void JFJochDetectorClient::On(const JFJochProtoBuf::JFJochDetectorConfig &request) {
+void JFJochDetectorClient::On(const JFJochProtoBuf::DetectorConfig &request) {
     if (_stub) {
         grpc::ClientContext context;
         JFJochProtoBuf::Empty empty;
@@ -56,17 +55,16 @@ void JFJochDetectorClient::Off() {
     }
 }
 
-bool JFJochDetectorClient::IsIdle() {
+JFJochProtoBuf::DetectorStatus JFJochDetectorClient::GetStatus() {
+    JFJochProtoBuf::DetectorStatus ret;
     if (_stub) {
         grpc::ClientContext context;
         JFJochProtoBuf::Empty empty;
-        JFJochProtoBuf::DetectorStatus detector_status;
-        auto status = _stub->Status(&context, empty, &detector_status);
+        auto status = _stub->Status(&context, empty, &ret);
         if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
                                                 "JFJochDetector: " + status.error_message());
-        return detector_status.idle();
     } else {
-        return true;
+        ret.set_status(JFJochProtoBuf::NO_DETECTOR);
     }
-
+    return ret;
 }

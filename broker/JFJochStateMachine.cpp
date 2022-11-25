@@ -16,7 +16,7 @@ JFJochState JFJochStateMachine::GetState() const {
 }
 
 void JFJochStateMachine::ImportPedestalG0(const DiffractionExperiment &experiment,
-                                          const JFJochProtoBuf::JFJochReceiverOutput &receiver_output) {
+                                          const JFJochProtoBuf::ReceiverOutput &receiver_output) {
     if (receiver_output.pedestal_result_size() != experiment.GetModulesNum() * experiment.GetStorageCellNumber())
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid, "Mismatch in pedestal output");
 
@@ -28,7 +28,7 @@ void JFJochStateMachine::ImportPedestalG0(const DiffractionExperiment &experimen
     SetCalibrationStatistics(calibration->GetModuleStatistics());
 }
 
-void JFJochStateMachine::ImportPedestal(const JFJochProtoBuf::JFJochReceiverOutput &receiver_output, size_t gain_level,
+void JFJochStateMachine::ImportPedestal(const JFJochProtoBuf::ReceiverOutput &receiver_output, size_t gain_level,
                                         size_t storage_cell) {
     for (int i = 0; i < receiver_output.pedestal_result_size(); i++)
         calibration->Pedestal(i, gain_level, storage_cell) = receiver_output.pedestal_result(i);
@@ -38,12 +38,12 @@ void JFJochStateMachine::ImportPedestal(const JFJochProtoBuf::JFJochReceiverOutp
 void JFJochStateMachine::TakePedestalInternalAll(const DiffractionExperiment &in_experiment) {
     calibration = std::make_unique<JFCalibration>(in_experiment);
 
+    TakePedestalInternalG0(in_experiment);
+
     for (int i = 0; i < in_experiment.GetStorageCellNumber(); i++) {
         TakePedestalInternalG1(in_experiment, i);
         TakePedestalInternalG2(in_experiment, i);
     }
-
-    TakePedestalInternalG0(in_experiment);
 }
 
 void JFJochStateMachine::TakePedestalInternalG0(const DiffractionExperiment &in_experiment) {
@@ -54,8 +54,8 @@ void JFJochStateMachine::TakePedestalInternalG0(const DiffractionExperiment &in_
     if (experiment.GetPedestalG0Frames() > 0) {
         services.Start(experiment, *calibration);
         auto pedestal_output = services.Stop(*calibration);
-        SetLastReceiverOutput(pedestal_output);
-        ImportPedestalG0(in_experiment, pedestal_output);
+        SetFullMeasurementOutput(pedestal_output);
+        ImportPedestalG0(in_experiment, pedestal_output.receiver());
     }
 }
 
@@ -63,14 +63,15 @@ void JFJochStateMachine::TakePedestalInternalG1(const DiffractionExperiment &in_
     state = JFJochState::Pedestal;
     DiffractionExperiment experiment(in_experiment);
     experiment.Mode(DetectorMode::PedestalG1);
-    if (in_experiment.GetStorageCellNumber() == 2)
+
+    if (experiment.GetStorageCellNumber() == 2)
         experiment.StorageCellStart((storage_cell + 15) % 16); // one previous
 
     if (experiment.GetPedestalG1Frames() > 0) {
         services.Start(experiment, *calibration);
         auto pedestal_output = services.Stop(*calibration);
-        SetLastReceiverOutput(pedestal_output);
-        ImportPedestal(pedestal_output, 1, storage_cell);
+        SetFullMeasurementOutput(pedestal_output);
+        ImportPedestal(pedestal_output.receiver(), 1, storage_cell);
     }
 }
 
@@ -79,14 +80,14 @@ void JFJochStateMachine::TakePedestalInternalG2(const DiffractionExperiment &in_
     DiffractionExperiment experiment(in_experiment);
     experiment.Mode(DetectorMode::PedestalG2);
 
-    if (in_experiment.GetStorageCellNumber() == 2)
+    if (experiment.GetStorageCellNumber() == 2)
         experiment.StorageCellStart((storage_cell + 15) % 16); // one previous
 
     if (experiment.GetPedestalG2Frames() > 0) {
         services.Start(experiment, *calibration);
         auto pedestal_output = services.Stop(*calibration);
-        SetLastReceiverOutput(pedestal_output);
-        ImportPedestal(pedestal_output, 2, storage_cell);
+        SetFullMeasurementOutput(pedestal_output);
+        ImportPedestal(pedestal_output.receiver(), 2, storage_cell);
     }
 }
 
@@ -133,10 +134,6 @@ void JFJochStateMachine::MeasureStart(const DiffractionExperiment &in_experiment
         throw JFJochException(JFJochExceptionCategory::WrongDAQState,
                               "Must be idle to start measurement");
 
-    if (!services.IsDetectorIdle())
-        throw JFJochException(JFJochExceptionCategory::Detector,
-                               "Detector is not idle; restart at your own risk");
-
     if (measurement.valid())
         measurement.get(); // In case measurement was running - clear thread
 
@@ -182,7 +179,7 @@ void JFJochStateMachine::MeasureEnd() {
 void JFJochStateMachine::WaitTillMeasurementDone() {
     try {
         auto tmp_output = services.Stop(*calibration);
-        SetLastReceiverOutput(tmp_output);
+        SetFullMeasurementOutput(tmp_output);
         {
             std::unique_lock<std::mutex> ul(m);
             state = JFJochState::Idle;
@@ -233,19 +230,43 @@ JFJochStateMachine::~JFJochStateMachine() {
     } catch (...) {}
 }
 
-JFJochProtoBuf::JFJochReceiverOutput JFJochStateMachine::GetLastReceiverOutput() const {
+JFJochProtoBuf::BrokerFullStatus JFJochStateMachine::GetFullMeasurementOutput() const {
     std::unique_lock<std::mutex> ul(last_receiver_output_mutex);
     return last_receiver_output;
+}
+
+JFJochProtoBuf::MeasurementStatistics JFJochStateMachine::GetMeasurementStatistics() const {
+    std::unique_lock<std::mutex> ul(last_receiver_output_mutex);
+    return last_measurement_statistics;
+}
+
+
+void JFJochStateMachine::SetFullMeasurementOutput(JFJochProtoBuf::BrokerFullStatus &output) {
+    std::unique_lock<std::mutex> ul(last_receiver_output_mutex);
+    last_receiver_output = output;
+
+    last_measurement_statistics.set_compression_ratio(last_receiver_output.receiver().compressed_ratio());
+    last_measurement_statistics.set_collection_efficiency(last_receiver_output.receiver().efficiency());
+    last_measurement_statistics.set_images_collected(last_receiver_output.receiver().images_sent());
+    last_measurement_statistics.set_file_name(last_receiver_output.receiver().master_file_name());
+    if (last_receiver_output.receiver().jungfraujoch_settings().sample().run_number() != DiffractionExperiment::RunNumberNotSet)
+        last_measurement_statistics.set_run_number(last_receiver_output.receiver().jungfraujoch_settings().sample().run_number());
+
+    double writer_perf = 0.0;
+    int64_t images_written = 0;
+
+    for (const auto &i: last_receiver_output.writer()) {
+        writer_perf += i.performance_mbs();
+        images_written += i.nimages();
+    }
+
+    last_measurement_statistics.set_images_written(images_written);
+    last_measurement_statistics.set_writer_performance_mbs(writer_perf);
 }
 
 JFCalibration JFJochStateMachine::GetCalibration() const {
     std::unique_lock<std::mutex> ul(m);
     return *calibration;
-}
-
-void JFJochStateMachine::SetLastReceiverOutput(JFJochProtoBuf::JFJochReceiverOutput &output) {
-    std::unique_lock<std::mutex> ul(last_receiver_output_mutex);
-    last_receiver_output = output;
 }
 
 void JFJochStateMachine::LoadMask(const DiffractionExperiment &experiment, const std::vector<uint32_t> &vec, uint32_t bit) {
@@ -254,11 +275,11 @@ void JFJochStateMachine::LoadMask(const DiffractionExperiment &experiment, const
 }
 
 JFJochProtoBuf::JFCalibrationStatistics JFJochStateMachine::GetCalibrationStatistics() const {
-    std::unique_lock<std::mutex> ul(statistics_mutex);
-    return statistics;
+    std::unique_lock<std::mutex> ul(calibration_statistics_mutex);
+    return calibration_statistics;
 }
 
 void JFJochStateMachine::SetCalibrationStatistics(const JFJochProtoBuf::JFCalibrationStatistics &input) {
-    std::unique_lock<std::mutex> ul(statistics_mutex);
-    statistics = input;
+    std::unique_lock<std::mutex> ul(calibration_statistics_mutex);
+    calibration_statistics = input;
 }

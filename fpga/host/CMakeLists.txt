@@ -1,12 +1,11 @@
 ADD_LIBRARY(JungfraujochHost STATIC
         GenerateOpenCAPIDeviceName.h
         AcquisitionDevice.cpp AcquisitionDevice.h
-        AcquisitionDeviceFilter.cpp AcquisitionDeviceFilter.h
-        AcquisitionDeviceCounters.cpp AcquisitionDeviceCounters.h
+        AcquisitionOnlineCounters.cpp AcquisitionOnlineCounters.h
         MockAcquisitionDevice.cpp MockAcquisitionDevice.h
         HLSSimulatedDevice.cpp HLSSimulatedDevice.h
         Completion.cpp Completion.h ActionConfig.h
-        PCIExpressDevice.cpp PCIExpressDevice.h MakeAcquisitionDevice.cpp MakeAcquisitionDevice.h)
+        PCIExpressDevice.cpp PCIExpressDevice.h MakeAcquisitionDevice.cpp MakeAcquisitionDevice.h AcquisitionOfflineCounters.cpp AcquisitionOfflineCounters.h)
 
 TARGET_LINK_LIBRARIES(JungfraujochHost CommonFunctions HLSSimulation)
 

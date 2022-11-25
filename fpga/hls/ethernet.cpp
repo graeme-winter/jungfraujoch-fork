@@ -15,7 +15,7 @@ void ethernet(AXI_STREAM &eth_in,
 #pragma HLS INTERFACE ap_none register port=fpga_mac_addr
 #pragma HLS INTERFACE ap_vld port=counter
 
-#pragma HLS PIPELINE II=1 enable_flush
+#pragma HLS PIPELINE II=1 style=flp
     enum eth_dest {DEST_IP = 0, DEST_ARP = 1, DEST_IGNORE = 2};
     enum eth_state {INSPECT_HEADER, FORWARD, DISCARD};
     static eth_state state = INSPECT_HEADER;

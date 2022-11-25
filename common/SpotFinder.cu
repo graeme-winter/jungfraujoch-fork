@@ -277,9 +277,6 @@ SpotFinder::SpotFinder(int32_t in_xpixels, int32_t in_ypixels, int32_t gpu_devic
     cuda_err(cudaMemsetAsync(gpu_mask, 1, xpixels*ypixels, cudastream->v));
 }
 
-SpotFinder::SpotFinder(const DiffractionExperiment &experiment, int32_t gpu_device) :
-        SpotFinder(experiment.GetXPixelsNum(), experiment.GetYPixelsNum(), gpu_device) {}
-
 SpotFinder::~SpotFinder() {
     cudaStreamDestroy(cudastream->v);
     delete(cudastream);

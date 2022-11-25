@@ -7,7 +7,7 @@
 #include <google/protobuf/util/message_differencer.h>
 
 #include "../common/DiffractionExperiment.h"
-
+#include "../compression/JFJochCompressor.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -91,8 +91,11 @@ TEST_CASE("DiffractionExperiment_ImageAndFileNumber","[DiffractionExperiment]") 
     REQUIRE_THROWS(x.GetImagesInFile(-1));
     REQUIRE(x.GetFilesNum() == 2);
 
-    REQUIRE(x.GetFileForImage(0) == 0);
-    REQUIRE(x.GetFileForImage(100) == 1);
+    REQUIRE(x.GetImageLocationInFile(31).first == 0);
+    REQUIRE(x.GetImageLocationInFile(31).second == 31);
+
+    REQUIRE(x.GetImageLocationInFile(100).first == 1);
+    REQUIRE(x.GetImageLocationInFile(100).second == 0);
 
     x.ImagesPerTrigger(78).ImagesPerFile(100);
     REQUIRE(x.GetImageNum() == 78);
@@ -105,8 +108,10 @@ TEST_CASE("DiffractionExperiment_ImageAndFileNumber","[DiffractionExperiment]") 
     REQUIRE(x.GetImagesPerFile() == 78);
     REQUIRE(x.GetImagesInFile(0) == 78);
     REQUIRE(x.GetFilesNum() == 1);
-    REQUIRE(x.GetFileForImage(0) == 0);
-    REQUIRE(x.GetFileForImage(77) == 0);
+    REQUIRE(x.GetImageLocationInFile(0).first == 0);
+    REQUIRE(x.GetImageLocationInFile(0).second == 0);
+    REQUIRE(x.GetImageLocationInFile(77).first == 0);
+    REQUIRE(x.GetImageLocationInFile(77).second == 77);
 }
 
 TEST_CASE("DiffractionExperiment_ImageAndFileNumber_ActualImages","[DiffractionExperiment]") {
@@ -126,25 +131,33 @@ TEST_CASE("DiffractionExperiment_ImageAndFileNumber_ActualImages","[DiffractionE
 TEST_CASE("DiffractionExperiment_SequenceNumber","[DiffractionExperiment]") {
     DiffractionExperiment x;
 
-    REQUIRE_THROWS(x.MeasurementSequenceNumber(-1));
-    REQUIRE_THROWS(x.MeasurementSequenceNumber(INT32_MAX));
+    // Default is not set
+    REQUIRE(x.GetRunNumber() == DiffractionExperiment::RunNumberNotSet);
 
-    REQUIRE_NOTHROW(x.MeasurementSequenceNumber(345));
-    REQUIRE(x.GetMeasurementSequenceNumber() == 345);
+    // if run number is not set, it is not changed with increment
+    REQUIRE_NOTHROW(x.RunNumber(DiffractionExperiment::RunNumberNotSet));
+    x.IncrementRunNumber();
+    REQUIRE(x.GetRunNumber() == DiffractionExperiment::RunNumberNotSet);
 
-    x.IncrementMeasurementSequenceNumber();
-    REQUIRE(x.GetMeasurementSequenceNumber() == 346);
+    REQUIRE_THROWS(x.RunNumber(100000));
 
-    REQUIRE_NOTHROW(x.MeasurementSequenceNumber(INT32_MAX - 1));
-    x.IncrementMeasurementSequenceNumber();
-    REQUIRE(x.GetMeasurementSequenceNumber() == 0);
+    REQUIRE_NOTHROW(x.RunNumber(345));
+    REQUIRE(x.GetRunNumber() == 345);
+    x.IncrementRunNumber();
+    REQUIRE(x.GetRunNumber() == 346);
+
+
+    REQUIRE_NOTHROW(x.RunNumber(99999));
+    REQUIRE(x.GetRunNumber() == 99999);
+    x.IncrementRunNumber();
+    REQUIRE(x.GetRunNumber() == 0);
 }
 
 TEST_CASE("DiffractionExperiment_Compression_Raw","[DiffractionExperiment]") {
     DiffractionExperiment x;
     for (auto i: {DetectorMode::Raw, DetectorMode::PedestalG0, DetectorMode::PedestalG1, DetectorMode::PedestalG2}) {
-        x.Mode(i).Compression(CompressionAlgorithm::BSHUF_ZSTD, 5);
-        REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::None);
+        x.Mode(i).Compression(JFJochProtoBuf::BSHUF_ZSTD, 5);
+        REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::NO_COMPRESSION);
         REQUIRE(x.GetCompressionAlgorithmText() == "off");
     }
 }
@@ -153,27 +166,27 @@ TEST_CASE("DiffractionExperiment_Compression","[DiffractionExperiment]") {
     DiffractionExperiment x;
 
     // Compression
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4);
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_LZ4);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
     REQUIRE(x.GetCompressionBlockSize() == LZ4_BLOCK_SIZE);
     REQUIRE(x.GetCompressionLevel() == 0);
     REQUIRE(x.GetCompressionAlgorithmText() == "bslz4");
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_ZSTD);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
     REQUIRE(x.GetCompressionBlockSize() == ZSTD_BLOCK_SIZE);
     REQUIRE(x.GetCompressionLevel() == 0);
     REQUIRE(x.GetCompressionAlgorithmText() == "bszstd");
 
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4);
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_LZ4);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
 
-    x.Compression(CompressionAlgorithm::None);
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::None);
+    x.Compression(JFJochProtoBuf::NO_COMPRESSION);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::NO_COMPRESSION);
     REQUIRE(x.GetCompressionAlgorithmText() == "off");
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_ZSTD);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
     REQUIRE(x.GetCompressionLevel() == ZSTD_USE_JFJOCH_RLE);
     REQUIRE(x.GetCompressionAlgorithmText() == "bszstd_rle");
 
@@ -183,30 +196,30 @@ TEST_CASE("DiffractionExperiment_Compression","[DiffractionExperiment]") {
     REQUIRE_THROWS(x.CompressionBlockSize(513));
     REQUIRE_THROWS(x.CompressionBlockSize(0));
 
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4, 3);
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_LZ4);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 3);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
     REQUIRE(x.GetCompressionLevel() == 3);
     REQUIRE(x.GetCompressionAlgorithmText() == "bslz4:3");
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_ZSTD);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
     REQUIRE(x.GetCompressionLevel() == 0);
 
     REQUIRE(x.GetCompressionBlockSize() == 512);
 
     x.Compression_Text("off");
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::None);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::NO_COMPRESSION);
 
     x.Compression_Text("bslz4:5");
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_LZ4);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
     REQUIRE(x.GetCompressionLevel() == 5);
 
     x.Compression_Text("bszstd:-1");
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_ZSTD);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
     REQUIRE(x.GetCompressionLevel() == -1);
 
     x.Compression_Text("bszstd_rle");
-    REQUIRE(x.GetCompressionAlgorithm() == CompressionAlgorithm::BSHUF_ZSTD);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
     REQUIRE(x.GetCompressionLevel() == ZSTD_USE_JFJOCH_RLE);
 
 }
@@ -215,7 +228,7 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     DiffractionExperiment x;
     x.Mode(DetectorMode::Conversion);
     // Timing and frame count
-    x.PedestalG0Frames(1000).ImagesPerTrigger(1000).NumTriggers(1).ImageTime(1000us);
+    x.PedestalG0Frames(1000).ImagesPerTrigger(1000).NumTriggers(1).FrameTime(1000us).Summation(1);
 
     // Frame count analysis
 
@@ -227,7 +240,7 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetUnderflow() == INT16_MIN + 4);
     REQUIRE(x.GetFrameNumPerTrigger() == 1000);
     x.PedestalG0Frames(1000).PedestalG1Frames(2000).PedestalG2Frames(3000).NumTriggers(1)
-        .ImagesPerTrigger(1000).ImageTime(6000us);
+        .ImagesPerTrigger(1000).FrameTime(1000us).Summation(6);
 
     REQUIRE(x.GetImageNum() == 1000);
     REQUIRE(x.GetImageNumPerTrigger() == 1000);
@@ -245,11 +258,6 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetOverflow() == 8*INT16_MAX - 4);
     REQUIRE(x.GetUnderflow() == 8*INT16_MIN + 4);
 
-    x.NumTriggers(0);
-    REQUIRE(x.GetFrameNum() == 6000);
-    REQUIRE(x.GetImageNum() == 1000);
-    REQUIRE(x.GetImageNumPerTrigger() == 1000);
-
     x.NumTriggers(2);
     REQUIRE(x.GetFrameNum() == 12000);
     REQUIRE(x.GetNumTriggers() == 2);
@@ -257,12 +265,11 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetImageNumPerTrigger() == 1000);
     REQUIRE(x.GetFrameNumPerTrigger() == 6000);
 
-
     x.Mode(DetectorMode::Raw);
     REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetFrameNum() == 12000);
-    REQUIRE(x.GetImageNum() == 12000);
-    REQUIRE(x.GetImageNumPerTrigger() == 6000);
+    REQUIRE(x.GetFrameNum() == 2000);
+    REQUIRE(x.GetImageNum() == 2000);
+    REQUIRE(x.GetImageNumPerTrigger() == 1000);
 
     x.Mode(DetectorMode::PedestalG0);
 
@@ -285,42 +292,6 @@ TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
     REQUIRE(x.GetFrameNum() == 3000);
     REQUIRE(x.GetFrameTime().count() == 8345);
     REQUIRE(x.GetSummation() == 1);
-}
-
-TEST_CASE("DiffractionExperiment_Timing_FullSpeed","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-    // Timing and frame count
-    REQUIRE_THROWS(x.ImageTime(300us));
-
-    x.ImageTime(550us);
-    REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetFrameTime().count() == 550);
-    REQUIRE(x.IsDetectorFullSpeed());
-
-    x.ImageTime(1020us);
-    REQUIRE(x.GetSummation() == 1);
-    REQUIRE(x.GetFrameTime().count() == 1020);
-    REQUIRE(!x.IsDetectorFullSpeed());
-
-    x.ImageTime(2ms).ForceFullSpeed(true);
-    REQUIRE(x.GetSummation() == 4);
-    REQUIRE(x.GetFrameTime().count() == 500);
-    REQUIRE(x.IsDetectorFullSpeed());
-
-    x.ImageTime(2ms).ForceFullSpeed(false);
-    REQUIRE(x.GetSummation() == 2);
-    REQUIRE(x.GetFrameTime().count() == 1000);
-    REQUIRE(!x.IsDetectorFullSpeed());
-}
-
-TEST_CASE("DiffractionExperiment_ErrorWhenOverwriting","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-    REQUIRE(!x.GetErrorWhenOverwriting());
-    x.ErrorWhenOverwriting(true);
-    REQUIRE(x.GetErrorWhenOverwriting());
-    JFJochProtoBuf::JungfraujochSettings settings = x;
-    DiffractionExperiment x2(settings);
-    REQUIRE(x2.GetErrorWhenOverwriting());
 }
 
 TEST_CASE("DiffractionExperiment_UnitCell","[DiffractionExperiment]") {
@@ -628,41 +599,19 @@ TEST_CASE("DiffractionExperiment_Metadata","[DiffractionExperiment]") {
     REQUIRE(x.GetPhotonEnergy_keV() == 6.0);
     REQUIRE(x.GetWavelength_A() == Approx(12.39854 / 6.0));
 
-    x.TotalFlux(2e9);
-    REQUIRE(x.GetTotalFlux() == Approx(2e9));
-
-    x.Transmission(0.45);
-    REQUIRE(x.GetTransmission() == Approx(0.45));
-    REQUIRE_THROWS(x.Transmission(1.0001));
-
-    x.SampleTemperature(150.0);
-    REQUIRE(x.GetSampleTemperature() == Approx(150.0));
-
-    x.DetectorDistance_mm(30.0).OmegaStart(50.0).OmegaIncrement(1.0).BeamX_pxl(1200).BeamY_pxl(1000).BeamSizeX_um(25)
-            .BeamSizeY_um(75).TrackingID("ID0").ScatteringVector({1,2,3}).RotationAxis({4,5,6}).ImageTime(2700us);
+    x.DetectorDistance_mm(30.0).BeamX_pxl(1200).BeamY_pxl(1000)
+    .ScatteringVector({1,2,3}).Summation(3).FrameTime(900us);
 
     REQUIRE(x.GetBeamX_pxl() == Approx(1200));
     REQUIRE(x.GetBeamY_pxl() == Approx(1000));
 
     REQUIRE(x.GetDetectorDistance_mm() == Approx(30.0));
-    REQUIRE(x.GetOmegaStart() == Approx(50.0));
-    REQUIRE(x.GetOmegaIncrement() == Approx(1.0));
-    REQUIRE(x.GetOmega(10.0) == Approx(50.0+10.0));
-    REQUIRE(x.GetRotationSpeed() == Approx(1.0/2700e-6));
-    REQUIRE(x.GetBeamSizeX_um() == Approx(25.0));
-    REQUIRE(x.GetBeamSizeY_um() == Approx(75.0));
-    REQUIRE(x.GetTrackingID() == "ID0");
     REQUIRE(x.GetScatteringVector().x == Approx(1.0/sqrt(14.0) / x.GetWavelength_A()));
     REQUIRE(x.GetScatteringVector().y == Approx(2.0/sqrt(14.0) / x.GetWavelength_A()));
     REQUIRE(x.GetScatteringVector().z == Approx(3.0/sqrt(14.0) / x.GetWavelength_A()));
-    REQUIRE(x.GetRotationAxis().Length() == Approx(1.0));
 
-    x.DetectorName("det1").SourceName("x").SourceNameShort("x1").InstrumentName("x2").InstrumentNameShort("x3");
+    x.DetectorName("det1");
     REQUIRE(x.GetDetectorName() == "det1");
-    REQUIRE(x.GetSourceName() == "x");
-    REQUIRE(x.GetSourceNameShort() == "x1");
-    REQUIRE(x.GetInstrumentName() == "x2");
-    REQUIRE(x.GetInstrumentNameShort() == "x3");
 
     REQUIRE_THROWS(x.PedestalG0Frames(-1));
     REQUIRE_THROWS(x.PedestalG1Frames(-1));
@@ -671,7 +620,7 @@ TEST_CASE("DiffractionExperiment_Metadata","[DiffractionExperiment]") {
 
 TEST_CASE("DiffractionExperiment_TimeResolvedMode", "[DiffractionExperiment]") {
     DiffractionExperiment x;
-    x.ImagesPerTrigger(20).ImagesPerFile(50).NumTriggers(10).PedestalG0Frames(500).ImageTime(std::chrono::milliseconds(10));
+    x.ImagesPerTrigger(20).ImagesPerFile(50).NumTriggers(10).PedestalG0Frames(500).Summation(10).FrameTime(1ms);
     x.TimeResolvedMode(true);
 
     REQUIRE(x.GetNumTriggers() == 10);
@@ -687,15 +636,23 @@ TEST_CASE("DiffractionExperiment_TimeResolvedMode", "[DiffractionExperiment]") {
     REQUIRE(x.GetImagesInFile(1) == 10);
     REQUIRE(x.GetImagesInFile(9) == 10);
 
-    REQUIRE(x.GetFileForImage(0) == 0);
-    REQUIRE(x.GetFileForImage(19) == 19);
-    REQUIRE(x.GetFileForImage(39) == 19);
+    REQUIRE(x.GetImageLocationInFile(0).first == 0);
+    REQUIRE(x.GetImageLocationInFile(0).second == 0);
+
+    REQUIRE(x.GetImageLocationInFile(19).first == 19);
+    REQUIRE(x.GetImageLocationInFile(19).second == 0);
+
+    REQUIRE(x.GetImageLocationInFile(39).first == 19);
+    REQUIRE(x.GetImageLocationInFile(39).second == 1);
+
+    REQUIRE(x.GetImageLocationInFile(80).first == 0);
+    REQUIRE(x.GetImageLocationInFile(80).second == 4);
 }
 
 TEST_CASE("DiffractionExperiment_Preview", "[DiffractionExperiment]") {
     DiffractionExperiment x;
     std::map<size_t, uint32_t> map, map2;
-    x.ImagesPerTrigger(10000).ImageTime(1ms);
+    x.ImagesPerTrigger(10000).Summation(1).FrameTime(1ms);
     x.PreviewPeriod(0ms);
     REQUIRE(x.GetPreviewStride() == 0);
     REQUIRE(x.GetPreviewPeriod().count() == 0);
@@ -729,7 +686,7 @@ TEST_CASE("DiffractionExperiment_Preview", "[DiffractionExperiment]") {
 TEST_CASE("DiffractionExperiment_SpotFinding", "[DiffractionExperiment]") {
     DiffractionExperiment x;
     std::map<size_t, uint32_t> map, map2;
-    x.ImagesPerTrigger(10000).ImageTime(1ms);
+    x.ImagesPerTrigger(10000).Summation(1).FrameTime(1ms);
     x.SpotFindingPeriod(0ms);
     REQUIRE(x.GetSpotFindingStride() == 0);
     REQUIRE(x.GetSpotFindingPeriod().count() == 0);
@@ -768,30 +725,22 @@ TEST_CASE("DiffractionExperiment_SpotFinding", "[DiffractionExperiment]") {
 
 TEST_CASE("DiffractionExperiment_FrameCountTime","[DiffractionExperiment]") {
     DiffractionExperiment x;
-    x.ImageTime(std::chrono::microseconds(2200));
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(1100 - READOUT_TIME_IN_US));
 
-    x.ImageTime(std::chrono::microseconds(1000));
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(1000 - READOUT_TIME_IN_US));
+    x.FrameTime(std::chrono::microseconds(1200));
+    REQUIRE(x.GetFrameTime() == std::chrono::microseconds(1200));
+    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(1200 - READOUT_TIME_IN_US));
+    REQUIRE(x.GetImageTime() == std::chrono::microseconds(1200));
+    REQUIRE(x.GetImageCountTime() == std::chrono::microseconds(1200 - READOUT_TIME_IN_US));
 
-    x.ImageTime(std::chrono::microseconds(3000));
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(1000 - READOUT_TIME_IN_US));
+    x.FrameTime(std::chrono::microseconds(1200), std::chrono::microseconds(567));
+    REQUIRE(x.GetFrameTime() == std::chrono::microseconds(1200));
+    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(567));
 
-    x.ForceFullSpeed(true);
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(500 - READOUT_TIME_IN_US));
-    x.ForceFullSpeed(false);
-
-    x.Mode(DetectorMode::PedestalG1);
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(1000 - READOUT_TIME_IN_US));
-
-    x.Mode(DetectorMode::PedestalG2);
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(1000 - READOUT_TIME_IN_US));
-
-    x.ForceFullSpeed(true);
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(500 - READOUT_TIME_IN_US));
-
-    x.CountTime(std::chrono::microseconds(10));
-    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(10));
+    x.Summation(7);
+    REQUIRE(x.GetFrameTime() == std::chrono::microseconds(1200));
+    REQUIRE(x.GetFrameCountTime() == std::chrono::microseconds(567));
+    REQUIRE(x.GetImageTime() == std::chrono::microseconds(7*1200));
+    REQUIRE(x.GetImageCountTime() == std::chrono::microseconds(7*567));
 }
 
 TEST_CASE("DiffractionExperiment_ExportProtobuf","[DiffractionExperiment]") {
@@ -802,12 +751,10 @@ TEST_CASE("DiffractionExperiment_ExportProtobuf","[DiffractionExperiment]") {
     for (auto &i : v) {
         x.UpsideDown(false).DataStreamModuleSize(4, {4, 4, 8}).
                         Mode(i).FilePrefix("z").ImagesPerTrigger(20).NumTriggers(5).PedestalG0Frames(1345).
-                        PedestalG1Frames(1876).PedestalG2Frames(654).OptimizeFrameTime(false).
+                        PedestalG1Frames(1876).PedestalG2Frames(654).
                         PhotonEnergy_keV(16.0).BeamX_pxl(566).BeamY_pxl(1234).DetectorDistance_mm(145).
-                        Transmission(0.5).TotalFlux(1e9).SampleTemperature(90).ForceFullSpeed(true).
-                        ImageTime(std::chrono::microseconds(765)).CountTime(std::chrono::microseconds(10)).
+                        FrameTime(std::chrono::microseconds(765),std::chrono::microseconds(10)).
                         PedestalG1G2FrameTime(std::chrono::milliseconds(10))
-                .RotationAxis({3, 4, 5})
                 .BaseIPv4Address("2.2.2.2").BaseUDPPort(64*76).TimeResolvedMode(true).MaskModuleEdges(true);
 
         JFJochProtoBuf::JungfraujochSettings settings_in_protobuf = x;
@@ -826,16 +773,10 @@ TEST_CASE("DiffractionExperiment_ExportProtobuf","[DiffractionExperiment]") {
         REQUIRE(y.GetBeamX_pxl() == 566);
         REQUIRE(y.GetBeamY_pxl() == 1234);
         REQUIRE(y.GetDetectorDistance_mm() == 145);
-        REQUIRE(y.GetTransmission() == 0.5);
-        REQUIRE(y.GetTotalFlux() == 1e9);
 
-        REQUIRE(y.IsDetectorFullSpeed());
         REQUIRE(x.GetFrameNum() == y.GetFrameNum());
         REQUIRE(x.GetImageTime() == y.GetImageTime());
-        REQUIRE(y.GetFrameCountTime().count() == 10);
-        REQUIRE(y.GetRotationAxis().x == Approx(Coord(3,4,5).Normalize().x));
-        REQUIRE(y.GetRotationAxis().y == Approx(Coord(3,4,5).Normalize().y));
-        REQUIRE(y.GetRotationAxis().z == Approx(Coord(3,4,5).Normalize().z));
+        REQUIRE(y.GetFrameCountTime().count() == x.GetFrameCountTime().count());
         REQUIRE(y.GetDestUDPPort(0,0) == 64*76);
         REQUIRE(y.GetDestIPv4Address(0) == 0x02020202);
         REQUIRE(y.GetTimeResolvedMode() == x.GetTimeResolvedMode());
@@ -860,23 +801,23 @@ TEST_CASE("DiffractionExperiment_InternalPacketGenerator", "[DiffractionExperime
 
 TEST_CASE("DiffractionExperiment_CopyConstructor", "[DiffractionExperiment]") {
     DiffractionExperiment a = DiffractionExperiment().Mode(DetectorMode::Raw);
-    a.SampleTemperature(150);
-    REQUIRE(a.GetSampleTemperature() == 150.0);
+    a.BeamX_pxl(150);
+    REQUIRE(a.GetBeamX_pxl() == 150.0);
     REQUIRE(a.GetDetectorMode() == DetectorMode::Raw);
 
     DiffractionExperiment b(a);
-    REQUIRE(b.GetSampleTemperature() == 150.0);
-    b.SampleTemperature(100);
-    REQUIRE(a.GetSampleTemperature() == 150.0);
-    REQUIRE(b.GetSampleTemperature() == 100.0);
+    REQUIRE(b.GetBeamX_pxl() == 150.0);
+    b.BeamX_pxl(100);
+    REQUIRE(a.GetBeamX_pxl() == 150.0);
+    REQUIRE(b.GetBeamX_pxl() == 100.0);
     REQUIRE(b.GetDetectorMode() == DetectorMode::Raw);
 
     DiffractionExperiment c = b;
-    REQUIRE (c.GetSampleTemperature() == 100.0);
-    c.SampleTemperature(10);
-    REQUIRE (a.GetSampleTemperature() == 150.0);
-    REQUIRE (b.GetSampleTemperature() == 100.0);
-    REQUIRE (c.GetSampleTemperature() == 10.0);
+    REQUIRE (c.GetBeamX_pxl() == 100.0);
+    c.BeamX_pxl(10);
+    REQUIRE (a.GetBeamX_pxl() == 150.0);
+    REQUIRE (b.GetBeamX_pxl() == 100.0);
+    REQUIRE (c.GetBeamX_pxl() == 10.0);
 }
 
 TEST_CASE("DiffractionExperiment_ResToPxl","[DiffractionExperiment]") {
@@ -962,7 +903,7 @@ TEST_CASE("DiffractionExperiment_RadialIntegration_BkgEstimate","[DiffractionExp
 TEST_CASE("DiffractionExperiment_BkgEstPeriod","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
     x.DetectorDistance_mm(75).Wavelength_A(1.0);
-    x.ImageTime(3ms);
+    x.FrameTime(1ms).Summation(3);
     x.BackgroundEstimationPeriod(9ms);
     REQUIRE(x.GetBackgroundEstimationPeriod() == std::chrono::milliseconds(9));
     REQUIRE(x.GetBackgroundEstimationStride() == 3);
@@ -971,7 +912,7 @@ TEST_CASE("DiffractionExperiment_BkgEstPeriod","[DiffractionExperiment]") {
 TEST_CASE("DiffractionExperiment_StorageCells","[DiffractionExperiment]") {
     const int64_t num_triggers = 20;
     DiffractionExperiment x;
-    x.ImageTime(std::chrono::milliseconds(10)).ImagesPerTrigger(5).NumTriggers(num_triggers);
+    x.FrameTime(std::chrono::milliseconds(1)).Summation(10).ImagesPerTrigger(5).NumTriggers(num_triggers);
     REQUIRE(x.GetSummation() > 1);
     REQUIRE(x.GetImageNumPerTrigger() == 5);
     REQUIRE(x.GetNumTriggers() == num_triggers);
@@ -1016,4 +957,86 @@ TEST_CASE("DiffractionExperiment_StorageCells_Pedestal","[DiffractionExperiment]
     x.Mode(DetectorMode::PedestalG2);
     REQUIRE(x.GetStorageCellNumber() == 2);
     REQUIRE(x.GetFrameNum() == 456 * 2);
+}
+
+
+TEST_CASE("DiffractionExperiment_IsPixelSigned","[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.DetectorType(JFJochProtoBuf::JUNGFRAU).Mode(DetectorMode::Conversion);
+    REQUIRE(x.IsPixelSigned());
+    x.DetectorType(JFJochProtoBuf::EIGER);
+    REQUIRE(!x.IsPixelSigned());
+    x.DetectorType(JFJochProtoBuf::JUNGFRAU).Mode(DetectorMode::Raw);
+    REQUIRE(!x.IsPixelSigned());
+}
+
+TEST_CASE("DiffractionExperiment_DetectorType","[DiffractionExperiment]") {
+    DiffractionExperiment x,y;
+    REQUIRE(x.GetDetectorType() == JFJochProtoBuf::JUNGFRAU); // JF is default
+    x.DetectorType(JFJochProtoBuf::EIGER);
+    REQUIRE(x.GetDetectorType() == JFJochProtoBuf::EIGER);
+
+    JFJochProtoBuf::JungfraujochSettings settings_in_protobuf = x;
+    REQUIRE_NOTHROW(y.Import(settings_in_protobuf));
+
+    REQUIRE(y.GetDetectorType() == JFJochProtoBuf::EIGER);
+}
+
+TEST_CASE("DiffractionExperiment_DetectorInput_MultiTriggger","[DiffractionExperiment]") {
+    DiffractionExperiment x(2, {4,4}, 8, 36);
+    x.FrameTime(700us).Summation(1).ImagesPerTrigger(350).NumTriggers(7).DetectorDelayAfterTrigger(1ms).SoftTrigger(false);
+    JFJochProtoBuf::DetectorInput ret = x;
+    REQUIRE(ret.modules_num() == 8);
+    REQUIRE(ret.period_us() == x.GetFrameTime().count());
+    REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
+    REQUIRE(!ret.soft_trigger());
+    REQUIRE(ret.num_triggers() == 8);
+    REQUIRE(ret.num_frames() == 350);
+    REQUIRE(ret.storage_cell_number() == 1);
+    REQUIRE(ret.delay_us() == 1000);
+    REQUIRE(ret.mode() == JFJochProtoBuf::CONVERSION);
+}
+
+TEST_CASE("DiffractionExperiment_DetectorInput_NoTriggger","[DiffractionExperiment]") {
+    DiffractionExperiment x(2, {4,4}, 8, 36);
+    x.FrameTime(1200us).Summation(1).ImagesPerTrigger(350).NumTriggers(1).DetectorDelayAfterTrigger(1ms).SoftTrigger(true);
+    JFJochProtoBuf::DetectorInput ret = x;
+    REQUIRE(ret.modules_num() == 8);
+    REQUIRE(ret.period_us() == x.GetFrameTime().count());
+    REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
+    REQUIRE(ret.soft_trigger());
+    REQUIRE(ret.num_triggers() == 1);
+    REQUIRE(ret.num_frames() == 350 + DELAY_FRAMES_STOP_AND_QUIT);
+    REQUIRE(ret.storage_cell_number() == 1);
+    REQUIRE(ret.delay_us() == 1000);
+    REQUIRE(ret.mode() == JFJochProtoBuf::CONVERSION);
+}
+
+TEST_CASE("DiffractionExperiment_DetectorInput_PedestalG2","[DiffractionExperiment]") {
+    DiffractionExperiment x(2, {4,4}, 8, 36);
+    x.FrameTime(1200us).Summation(1).PedestalG2Frames(4560).NumTriggers(1).DetectorDelayAfterTrigger(1ms).Mode(DetectorMode::PedestalG2);
+    JFJochProtoBuf::DetectorInput ret = x;
+    REQUIRE(ret.modules_num() == 8);
+    REQUIRE(ret.period_us() == x.GetFrameTime().count());
+    REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
+    REQUIRE(ret.soft_trigger());
+    REQUIRE(ret.num_triggers() == 1);
+    REQUIRE(ret.num_frames() == 4560 + DELAY_FRAMES_STOP_AND_QUIT);
+    REQUIRE(ret.storage_cell_number() == 1);
+    REQUIRE(ret.delay_us() == 1000);
+}
+
+TEST_CASE("DiffractionExperiment_DetectorInput_StorageCell","[DiffractionExperiment]") {
+    DiffractionExperiment x(2, {4,4}, 8, 36);
+    x.FrameTime(1200us).Summation(1).NumTriggers(4560).StorageCells(7).SoftTrigger(false);
+    JFJochProtoBuf::DetectorInput ret = x;
+    REQUIRE(ret.modules_num() == 8);
+    REQUIRE(ret.period_us() == 7 * (x.GetFrameTime().count() + 10));
+    REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
+    REQUIRE(!ret.soft_trigger());
+    REQUIRE(ret.num_triggers() == 4560 + 1);
+    REQUIRE(ret.num_frames() == 1);
+    REQUIRE(ret.storage_cell_number() == 7);
+    REQUIRE(ret.storage_cell_delay() == 5);
+    REQUIRE(ret.storage_cell_start() == x.GetStorageCellStart());
 }

@@ -4,29 +4,29 @@
 #ifndef JUNGFRAUJOCH_ZMQIMAGEPUSHER_H
 #define JUNGFRAUJOCH_ZMQIMAGEPUSHER_H
 
-#include "CommunicationBuffer.h"
+#include <jfjoch.pb.h>
+
+#include "ImagePusher.h"
 #include "ThreadSafeFIFO.h"
-#include "jfjoch.pb.h"
 #include "ZMQWrappers.h"
+#include "DiffractionSpot.h"
+#include "../frame_serialize/JFJochFrameSerializer.h"
 
-class ZMQImagePusher {
-    ZMQContext& zmq_context;
-    DiffractionExperiment experiment;
+class ZMQImagePusher : public ImagePusher {
+    std::mutex m;
+    std::vector<std::unique_ptr<ZMQContext>> contexts;
     std::vector<std::unique_ptr<ZMQSocket>> sockets;
-    std::vector<std::string> address;
-    int32_t send_buffer_size = -1;
-    int32_t send_buffer_high_watermark = -1;
+    JFJochFrameSerializer serializer{16*1024*1024};
 public:
-    ZMQImagePusher(ZMQContext &context);
-
-    void Connect(const std::vector<std::string>& addr, const JFJochProtoBuf::JungfraujochSettings &settings);
-    void Disconnect();
-
-    void EndDataCollection();
-    void SendData(void *buffer, size_t image_number, size_t image_size);
-    ZMQImagePusher& SendBufferHighWatermark(int32_t msgs);
-    ZMQImagePusher& SendBufferSize(int32_t bytes);
+    ZMQImagePusher(ZMQContext &context, const std::vector<std::string>& addr,
+                   int32_t send_buffer_high_watermark = -1, int32_t send_buffer_size = -1);
+    // High performance implementation, where each socket has dedicated ZMQ context
+    explicit ZMQImagePusher(const std::vector<std::string>& addr,
+                   int32_t send_buffer_high_watermark = -1, int32_t send_buffer_size = -1);
+    void StartDataCollection() override;
+    void EndDataCollection() override;
+    void SendData(void *image, const std::pair<int64_t,int64_t> &image_location_in_file,
+                  size_t image_size, const std::vector<DiffractionSpot>& spots) override;
 };
-
 
 #endif //JUNGFRAUJOCH_ZMQIMAGEPUSHER_H

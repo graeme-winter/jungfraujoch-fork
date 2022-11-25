@@ -8,6 +8,7 @@
 #include "../writer/HDF5Objects.h"
 #include "../common/FrameTransformation.h"
 #include "../common/RawToConvertedGeometry.h"
+#include "../compression/JFJochDecompress.h"
 
 std::string CheckCompression(const DiffractionExperiment &x, size_t nimages, const std::vector<int16_t> &image) {
 
@@ -53,14 +54,13 @@ std::string CheckDecompression(const DiffractionExperiment &x, size_t nimages, c
                                          i, j, 0);
         }
         compressed_size[i] = transformation.PackStandardOutput();
+        output[i].resize(compressed_size[i]);
     }
 
-    JFJochDecompressor decompressor(x);
+    std::vector<uint16_t> decompress_v;
     auto start_time = std::chrono::system_clock::now();
     for (int i = 0; i < nimages; i++) {
-        decompressor.Decompress(output[i].data(),
-                                compressed_size[i], x.GetPixelsNum(),
-                                sizeof(uint16_t));
+        JFJochDecompress(decompress_v, x.GetCompressionAlgorithmEnum(), output[i], x.GetPixelsNum());
     }
 
     auto end_time = std::chrono::system_clock::now();
@@ -68,7 +68,7 @@ std::string CheckDecompression(const DiffractionExperiment &x, size_t nimages, c
     char buf[256];
 
     snprintf(buf, 255, "    decompression                    Throughput: %5.2f GB/s\n", (original_size / elapsed.count()) / 1000.0);
-    return std::string(buf);
+    return {buf};
 }
 
 int main(int argc, char **argv) {
@@ -139,89 +139,96 @@ int main(int argc, char **argv) {
     x.DataStreamModuleSize(2, {8}, 8, 36);
 
     x.CompressionBlockSize(4096);
+    x.MaskChipEdges(false);
 
-    x.Compression(CompressionAlgorithm::None);
+    x.Compression(JFJochProtoBuf::NO_COMPRESSION);
     std::cout << "None (geom transform)       " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4);
     std::cout << "BSHUF/LZ4                   " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4, 10);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 10);
     std::cout << "BSHUF/LZ4  (10)             " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
     std::cout << "BSHUF/ZSTD (0)              " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, -10);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, -10);
     std::cout << "BSHUF/ZSTD (-10)            " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, -5);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, -5);
     std::cout << "BSHUF/ZSTD (-5)             " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, 5);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 5);
     std::cout << "BSHUF/ZSTD (5)              " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, 10);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 10);
     std::cout << "BSHUF/ZSTD (10)             " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
     std::cout << "BSHUF/ZSTD (RLE)            " << CheckCompression(x, nimages, image);
 
     x.CompressionBlockSize(2*1024);
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4, 0);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 0);
     std::cout << "BSHUF/LZ4 (block 4kB)       " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, 0);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 0);
     std::cout << "BSHUF/ZSTD (block 4kB)      " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
     std::cout << "BSHUF/ZSTD (block 4kB;RLE)  " << CheckCompression(x, nimages, image);
 
     x.CompressionBlockSize(32*1024);
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4, 0);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 0);
     std::cout << "BSHUF/LZ4 (block 64kB)      " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, 0);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 0);
     std::cout << "BSHUF/ZSTD (block 64kB)     " << CheckCompression(x, nimages, image);
 
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
     std::cout << "BSHUF/ZSTD (block 64kB;RLE) " << CheckCompression(x, nimages, image);
 
     x.CompressionBlockSize(512*1024);
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4, 0);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 0);
     std::cout << "BSHUF/LZ4 (block 1MB)       " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, 0);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 0);
     std::cout << "BSHUF/ZSTD (block 1MB)      " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
     std::cout << "BSHUF/ZSTD (block 1MB;RLE)  " << CheckCompression(x, nimages, image);
+
+    x.Compression(JFJochProtoBuf::NO_COMPRESSION);
+    std::cout << "None (geom transform)       " << CheckCompression(x, nimages, image);
 
     std::cout << std::endl << std::endl << "Decompression" << std::endl << std::endl;
 
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4).CompressionBlockSize(4096);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4).CompressionBlockSize(4096);
     std::cout << "BSHUF/LZ4                   " << CheckDecompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD).CompressionBlockSize(4096);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD).CompressionBlockSize(4096);
     std::cout << "BSHUF/ZSTD                  " << CheckDecompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE).CompressionBlockSize(4096);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE).CompressionBlockSize(4096);
     std::cout << "BSHUF/ZSTD (RLE)            " << CheckDecompression(x, nimages, image);
 
     x.CompressionBlockSize(4096);
-    std::cout << std::endl << std::endl << "No multi-pixel calculation" << std::endl << std::endl;
-    x.MaskChipEdges(true);
 
-    x.Compression(CompressionAlgorithm::None);
+    std::cout << std::endl << std::endl << "EIGER-type transformation (16-bit)" << std::endl << std::endl;
+    x.DetectorType(JFJochProtoBuf::EIGER);
+
+    x.Compression(JFJochProtoBuf::NO_COMPRESSION);
     std::cout << "None (geom transform)       " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4);
     std::cout << "BSHUF/LZ4                   " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
     std::cout << "BSHUF/ZSTD (0)              " << CheckCompression(x, nimages, image);
 
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
     std::cout << "BSHUF/ZSTD (RLE)            " << CheckCompression(x, nimages, image);
+
+
 }

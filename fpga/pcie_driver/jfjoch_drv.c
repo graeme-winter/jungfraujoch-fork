@@ -96,6 +96,7 @@ static int jfjoch_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id
 
     unmap_bar:
     pci_iounmap(pdev, drvdata->bar0);
+    pci_release_region(pdev, 0);
 
     disable_device:
     pci_disable_device(pdev);

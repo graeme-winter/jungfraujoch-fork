@@ -10,10 +10,12 @@
 #include <arpa/inet.h>
 
 #include <bitshuffle/bitshuffle.h>
+#include <gemmi/symmetry.hpp>
+#include "JFJochCompressor.h" // For ZSTD_USE_JFJOCH_RLE
 #include "GitInfo.h"
 #include "DiffractionExperiment.h"
 #include "JFJochException.h"
-#include <gemmi/symmetry.hpp>
+
 
 DiffractionExperiment::DiffractionExperiment(const JFJochProtoBuf::JungfraujochSettings &settings) : DiffractionExperiment() {
     Import(settings);
@@ -73,40 +75,33 @@ DiffractionExperiment::operator JFJochProtoBuf::JungfraujochSettings() const {
 DiffractionExperiment::DiffractionExperiment() {
     diffraction_geometry.set_photon_energy_kev(WVL_1A_IN_KEV);
     diffraction_geometry.set_detector_distance_mm(100);
-    *diffraction_geometry.mutable_rotation_axis() = Coord(1,0,0);
     *diffraction_geometry.mutable_scattering_vector() = Coord(0,0,1);
 
     diffraction_geometry.mutable_data_stream_modules()->Add(4);
     diffraction_geometry.mutable_data_stream_modules()->Add(4);
     diffraction_geometry.set_horizontal_module_stacking(2);
 
-    beamline_metadata.set_sample_temperature_k(-1);
-    beamline_metadata.set_beam_size_x_um(-1);
-    beamline_metadata.set_beam_size_y_um(-1);
-    beamline_metadata.set_total_flux(-1);
-    beamline_metadata.set_transmission(-1);
-
     beamline_metadata.set_detector_name(DETECTOR_NAME);
-    beamline_metadata.set_source_name(SOURCE_NAME);
-    beamline_metadata.set_source_name_short(SOURCE_NAME_SHORT);
-    beamline_metadata.set_instrument_name(INSTRUMENT_NAME);
-    beamline_metadata.set_instrument_name_short(INSTRUMENT_NAME_SHORT);
 
-    compr.set_algorithm(JFJochProtoBuf::CompressionSettings_Compression_BSHUF_LZ4);
+    compr.set_algorithm(JFJochProtoBuf::BSHUF_LZ4);
     compr.set_block_size(4096);
 
-    image_saving.set_image_per_file(100);
+    image_saving.set_images_per_file(10000);
     image_saving.set_file_prefix("test");
-    image_saving.set_error_when_overwritting(false);
 
-    timing.set_requested_image_time_us(MIN_FRAME_TIME_HALF_SPEED_IN_US);
+    frame_count.set_ntrigger(1);
+    frame_count.set_images_per_trigger(1);
+
+    timing.set_frame_time_us(MIN_FRAME_TIME_HALF_SPEED_IN_US);
+    timing.set_count_time_us(MIN_FRAME_TIME_HALF_SPEED_IN_US - READOUT_TIME_IN_US);
+    timing.set_summation(1);
     timing.set_frame_time_pedestalg1g2_us(FRAME_TIME_PEDE_G1G2_IN_US);
-    timing.set_use_optimal_frame_time(true);
     timing.set_time_resolved_mode(false);
 
     conv.set_mask_chip_edges(false);
     conv.set_mask_module_edges(false);
     conv.set_upside_down(true);
+    conv.set_type(JFJochProtoBuf::JUNGFRAU);
 
     preview.set_preview_period_us(1000*1000); // 1s / 1 Hz
     preview.set_spot_finding_period_us(10*1000); // 10 ms / 100 Hz
@@ -126,9 +121,11 @@ DiffractionExperiment::DiffractionExperiment() {
     sample.set_run_number(RunNumberNotSet);
     sample.set_space_group_number(1); // P1
 
+    detector.set_soft_trigger(true);
     detector.set_storage_cells(1);
     detector.set_storage_cell_start(15);
     detector.set_delay_after_trigger_us(0);
+
     UpdateGeometry();
 }
 
@@ -166,26 +163,34 @@ DiffractionExperiment &DiffractionExperiment::ImagesPerTrigger(int64_t input) {
 }
 
 DiffractionExperiment &DiffractionExperiment::NumTriggers(int64_t input) {
-    check_max("Total number of triggers", input, INT32_MAX);
-    check_min("Total number of triggers", input, 0);
+    check_max("Total number of triggers", input, INT16_MAX);
+    check_min("Total number of triggers", input, 1);
     frame_count.set_ntrigger(input);
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::ImageTime(std::chrono::microseconds input) {
-    check_min("Image time (us)", input.count(), MIN_FRAME_TIME_FULL_SPEED_IN_US);
-    timing.set_requested_image_time_us(input.count());
+DiffractionExperiment &DiffractionExperiment::FrameTime(std::chrono::microseconds in_frame_time,
+                                                        std::chrono::microseconds in_count_time) {
+    check_min("Frame time (us)", in_frame_time.count(), MIN_FRAME_TIME_FULL_SPEED_IN_US);
+    check_max("Frame time (us)", in_frame_time.count(), MAX_FRAME_TIME);
+    check_max("Count time (us)", in_count_time.count(), in_frame_time.count() - READOUT_TIME_IN_US);
+    if (in_count_time.count() != 0) {
+        check_min("Count time (us)", in_count_time.count(), MIN_COUNT_TIME_IN_US);
+    }
+
+    timing.set_frame_time_us(in_frame_time.count());
+    if (in_count_time.count() == 0)
+        timing.set_count_time_us(in_frame_time.count() - READOUT_TIME_IN_US);
+    else
+        timing.set_count_time_us(in_count_time.count());
+
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::CountTime(std::chrono::microseconds input) {
-    check_max("Count time (us)", input.count(), 1500);
-    timing.set_count_time_us(input.count());
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::OptimizeFrameTime(bool input) {
-    timing.set_use_optimal_frame_time(input);
+DiffractionExperiment &DiffractionExperiment::Summation(int64_t input) {
+    check_min("Summation", input, 1);
+    check_max("Summation", input, MAX_SUMMATION);
+    timing.set_summation(input);
     return *this;
 }
 
@@ -243,49 +248,8 @@ DiffractionExperiment &DiffractionExperiment::DetectorDistance_mm(double input) 
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::Transmission(double input) {
-    check_max("Transmission", input, 1.0);
-    beamline_metadata.set_transmission(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::TotalFlux(double input) {
-    beamline_metadata.set_total_flux(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::OmegaStart(double input) {
-    diffraction_geometry.set_omega_start_deg(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::OmegaIncrement(double input) {
-    diffraction_geometry.set_omega_angle_per_image_deg(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::BeamSizeX_um(double input) {
-    beamline_metadata.set_beam_size_x_um(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::BeamSizeY_um(double input) {
-    beamline_metadata.set_beam_size_y_um(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::SampleTemperature(double input) {
-    beamline_metadata.set_sample_temperature_k(input);
-    return *this;
-}
-
 DiffractionExperiment &DiffractionExperiment::ScatteringVector(Coord input) {
     *diffraction_geometry.mutable_scattering_vector() = input.Normalize();
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::RotationAxis(Coord input) {
-    *diffraction_geometry.mutable_rotation_axis() = input.Normalize();
     return *this;
 }
 
@@ -308,14 +272,9 @@ DiffractionExperiment &DiffractionExperiment::FilePrefix(std::string input) {
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::TrackingID(std::string input) {
-    image_saving.set_tracking_id(input);
-    return *this;
-}
-
 DiffractionExperiment &DiffractionExperiment::ImagesPerFile(int64_t input) {
     check_min("Images per file", input, 0);
-    image_saving.set_image_per_file(input);
+    image_saving.set_images_per_file(input);
     return *this;
 }
 
@@ -326,36 +285,6 @@ DiffractionExperiment &DiffractionExperiment::UseInternalPacketGenerator(bool in
 
 DiffractionExperiment &DiffractionExperiment::DetectorName(std::string input) {
     beamline_metadata.set_detector_name(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::SourceName(std::string input) {
-    beamline_metadata.set_source_name(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::SourceNameShort(std::string input) {
-    beamline_metadata.set_source_name_short(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::InstrumentName(std::string input) {
-    beamline_metadata.set_instrument_name(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::InstrumentNameShort(std::string input) {
-    beamline_metadata.set_instrument_name_short(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::PedestalSaved(bool input) {
-    pedestal.set_saved(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::ForceFullSpeed(bool input) {
-    detector.set_force_full_speed(input);
     return *this;
 }
 
@@ -424,21 +353,11 @@ DiffractionExperiment &DiffractionExperiment::TimeResolvedMode(bool input) {
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::IncrementMeasurementSequenceNumber() {
-    auto tmp = (image_saving.measurement_sequence_num() + 1) % INT32_MAX;
-    image_saving.set_measurement_sequence_num(tmp);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::MeasurementSequenceNumber(int64_t input) {
-    check_min("Sequence number", input, 0);
-    check_max("Sequence number", input, INT32_MAX-1);
-    image_saving.set_measurement_sequence_num(input);
-    return *this;
-}
-
-DiffractionExperiment &DiffractionExperiment::ErrorWhenOverwriting(bool input) {
-    image_saving.set_error_when_overwritting(input);
+DiffractionExperiment &DiffractionExperiment::IncrementRunNumber() {
+    if (sample.run_number() == MaxRunNumber)
+        sample.set_run_number(0);
+    else if (sample.run_number() != RunNumberNotSet)
+        sample.set_run_number(sample.run_number() + 1);
     return *this;
 }
 
@@ -451,15 +370,12 @@ int64_t DiffractionExperiment::GetNumTriggers() const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
         case DetectorMode::Raw:
-            if (GetTimeResolvedMode() && (frame_count.ntrigger() < 1))
-                return 1;
-            else
-                return frame_count.ntrigger();
+            return frame_count.ntrigger();
         case DetectorMode::PedestalG0:
         case DetectorMode::PedestalG1:
         case DetectorMode::PedestalG2:
         default:
-            return 0;
+            return 1;
     }
 }
 
@@ -479,31 +395,10 @@ DetectorMode DiffractionExperiment::GetDetectorMode() const {
     }
 }
 
-bool DiffractionExperiment::IsDetectorFullSpeed() const {
-    // Either detector is forced to operate in full speed
-    // or image time is so short, that it can be only satisfied in full speed mode
-    return ((timing.requested_image_time_us() < MIN_FRAME_TIME_HALF_SPEED_IN_US) || detector.force_full_speed());
-}
-
-int64_t DiffractionExperiment::GetFrameToReqImageRatio() const {
-    switch (GetDetectorMode()) {
-        case DetectorMode::PedestalG1:
-        case DetectorMode::PedestalG2:
-            return 1;
-        case DetectorMode::PedestalG0:
-        case DetectorMode::Conversion:
-        case DetectorMode::Raw:
-        default:
-            if (!timing.use_optimal_frame_time()) return 1;
-            if (IsDetectorFullSpeed()) return (timing.requested_image_time_us() / MIN_FRAME_TIME_FULL_SPEED_IN_US);
-            else return (timing.requested_image_time_us() / MIN_FRAME_TIME_HALF_SPEED_IN_US);
-    }
-}
-
 int64_t DiffractionExperiment::GetSummation() const {
     if ((GetDetectorMode() == DetectorMode::Conversion) && (GetStorageCellNumber() == 1))
         // Only conversion mode allows for summation, but this option can be overridden by setting an option
-        return GetFrameToReqImageRatio();
+        return timing.summation();
     else
         return 1;
 }
@@ -517,7 +412,7 @@ std::chrono::microseconds DiffractionExperiment::GetFrameTime() const {
         case DetectorMode::Raw:
         case DetectorMode::PedestalG0:
         default:
-            return std::chrono::microseconds(timing.requested_image_time_us() / GetFrameToReqImageRatio());
+            return std::chrono::microseconds(timing.frame_time_us());
     }
 }
 
@@ -527,10 +422,11 @@ std::chrono::microseconds DiffractionExperiment::GetImageTime() const {
         case DetectorMode::PedestalG2:
             return std::chrono::microseconds(timing.frame_time_pedestalg1g2_us());
         case DetectorMode::Conversion:
+            return GetFrameTime() * GetSummation();
         case DetectorMode::Raw:
         case DetectorMode::PedestalG0:
         default:
-            return GetFrameTime() * GetSummation();
+            return GetFrameTime();
     }
 }
 
@@ -538,17 +434,12 @@ int64_t DiffractionExperiment::GetImageNum() const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
         case DetectorMode::Raw:
-            if (GetNumTriggers() == 0)
-                return GetImageNumPerTrigger() ;
-            else
                 return GetImageNumPerTrigger() * GetNumTriggers();
         case DetectorMode::PedestalG0:
         case DetectorMode::PedestalG1:
         case DetectorMode::PedestalG2:
         default:
-            if (pedestal.saved()) return GetFrameNum();
-                // No frames saved for pedestal runs
-            else return 0;
+             return 0;
     }
 }
 
@@ -562,35 +453,13 @@ int64_t DiffractionExperiment::GetImageNumPerTrigger() const {
         case DetectorMode::PedestalG0:
         case DetectorMode::PedestalG1:
         case DetectorMode::PedestalG2:
-            if (pedestal.saved())
-                return GetFrameNumPerTrigger();
-            else
-                return 0;
         default:
             return 0;
     }
 }
 
 int64_t DiffractionExperiment::GetFrameNum() const {
-    switch (GetDetectorMode()) {
-        case DetectorMode::Conversion:
-        case DetectorMode::Raw:
-        {
-            int64_t nframes = 0;
-            if (frame_count.ntrigger() == 0)
-                nframes += GetFrameNumPerTrigger();
-            else {
-                nframes += GetFrameNumPerTrigger() * frame_count.ntrigger();
-            }
-            return nframes;
-        }
-        case DetectorMode::PedestalG0:
-        case DetectorMode::PedestalG1:
-        case DetectorMode::PedestalG2:
-            return GetFrameNumPerTrigger();
-        default:
-            return 0;
-    }
+    return GetFrameNumPerTrigger() * GetNumTriggers();
 }
 
 int64_t DiffractionExperiment::GetFrameNumPerTrigger() const {
@@ -600,7 +469,7 @@ int64_t DiffractionExperiment::GetFrameNumPerTrigger() const {
             if (GetStorageCellNumber() > 1)
                 return GetStorageCellNumber();
             else
-                return frame_count.images_per_trigger() * GetFrameToReqImageRatio();
+                return frame_count.images_per_trigger() * GetSummation();
         case DetectorMode::PedestalG0:
             return pedestal.g0_frames() * GetStorageCellNumber();
         case DetectorMode::PedestalG1:
@@ -613,16 +482,7 @@ int64_t DiffractionExperiment::GetFrameNumPerTrigger() const {
 }
 
 std::chrono::microseconds DiffractionExperiment::GetFrameCountTime() const {
-    if ((timing.count_time_us() > 0) && (timing.count_time_us() - GetFrameTime().count() < READOUT_TIME_IN_US))
-        return std::chrono::microseconds(timing.count_time_us());
-    else if (IsDetectorFullSpeed())
-        return std::chrono::microseconds((timing.requested_image_time_us() /
-                                          (timing.requested_image_time_us() / MIN_FRAME_TIME_FULL_SPEED_IN_US))
-                                         - READOUT_TIME_IN_US);
-    else
-        return std::chrono::microseconds((timing.requested_image_time_us() /
-                                          (timing.requested_image_time_us() / MIN_FRAME_TIME_HALF_SPEED_IN_US))
-                                         - READOUT_TIME_IN_US);
+    return std::chrono::microseconds(timing.count_time_us());
 }
 
 std::chrono::microseconds DiffractionExperiment::GetImageCountTime() const {
@@ -661,110 +521,70 @@ double DiffractionExperiment::GetDetectorDistance_mm() const {
     return diffraction_geometry.detector_distance_mm();
 }
 
-double DiffractionExperiment::GetTransmission() const {
-    return beamline_metadata.transmission();
-}
-
-double DiffractionExperiment::GetTotalFlux() const {
-    return beamline_metadata.total_flux();
-}
-
-double DiffractionExperiment::GetOmegaStart() const {
-    return diffraction_geometry.omega_start_deg();
-}
-
-double DiffractionExperiment::GetOmegaIncrement() const {
-    return diffraction_geometry.omega_angle_per_image_deg();
-}
-
-double DiffractionExperiment::GetOmega(double image) const {
-    return GetOmegaStart() + GetOmegaIncrement() * image;
-}
-
-double DiffractionExperiment::GetBeamSizeX_um() const {
-    return beamline_metadata.beam_size_x_um();
-}
-
-double DiffractionExperiment::GetBeamSizeY_um() const {
-    return beamline_metadata.beam_size_y_um();
-}
-
-std::vector<double> DiffractionExperiment::GetBeamSize() const {
-    return {GetBeamSizeX_um(), GetBeamSizeY_um()};
-}
-
-double DiffractionExperiment::GetSampleTemperature() const {
-    return beamline_metadata.sample_temperature_k();
-}
-
-Coord DiffractionExperiment::GetRotationAxis() const {
-    return diffraction_geometry.rotation_axis();
-}
-
 Coord DiffractionExperiment::GetScatteringVector() const {
     return (Coord)diffraction_geometry.scattering_vector() * (diffraction_geometry.photon_energy_kev() / WVL_1A_IN_KEV);
-}
-
-std::string DiffractionExperiment::GetTrackingID() const {
-    return image_saving.tracking_id();
 }
 
 std::string DiffractionExperiment::GetFilePrefix() const {
     return image_saving.file_prefix();
 }
 
-int64_t DiffractionExperiment::GetFileForImage(int64_t image_number) const {
-    if (GetTimeResolvedMode())
-        return image_number % GetImageNumPerTrigger();
-    if (image_saving.image_per_file() == 0)
-        return 0;
+std::pair<int64_t,int64_t>  DiffractionExperiment::GetImageLocationInFile(int64_t image_number) const {
+    if (image_number < 0)
+        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Image number out of bounds");
+    else if (GetTimeResolvedMode() && (GetImageNumPerTrigger() > 0))
+        return {image_number % GetImageNumPerTrigger(), image_number / GetImageNumPerTrigger()};
+    else if (GetImagesPerFile() > 0)
+        return {image_number / GetImagesPerFile(), image_number % GetImagesPerFile()};
     else
-        return image_number / GetImagesPerFile();
+        return {0,0};
 }
 
 int64_t DiffractionExperiment::GetImagesPerFile() const {
     if (GetTimeResolvedMode())
         return GetNumTriggers();
-    if (image_saving.image_per_file() == 0)
+    if (image_saving.images_per_file() == 0)
         return GetImageNum();
     else
-        return image_saving.image_per_file();
+        return image_saving.images_per_file();
 }
 
-CompressionAlgorithm DiffractionExperiment::GetCompressionAlgorithm() const {
+JFJochProtoBuf::Compression DiffractionExperiment::GetCompressionAlgorithm() const {
     switch (GetDetectorMode()) {
         case DetectorMode::Conversion:
-            switch (compr.algorithm()) {
-                case JFJochProtoBuf::CompressionSettings_Compression_BSHUF_LZ4:
-                    return CompressionAlgorithm::BSHUF_LZ4;
-                case JFJochProtoBuf::CompressionSettings_Compression_BSHUF_ZSTD:
-                    return CompressionAlgorithm::BSHUF_ZSTD;
-                default:
-                case JFJochProtoBuf::CompressionSettings_Compression_NONE:
-                    return CompressionAlgorithm::None;
-            }
+            return compr.algorithm();
         default:
             // Compression not supported for raw data and pedestal
-            return CompressionAlgorithm::None;
+            return JFJochProtoBuf::NO_COMPRESSION;
     }
 }
 
+CompressionAlgorithm DiffractionExperiment::GetCompressionAlgorithmEnum() const {
+    switch (GetCompressionAlgorithm()) {
+        case JFJochProtoBuf::BSHUF_LZ4:
+            return CompressionAlgorithm::BSHUF_LZ4;
+        case JFJochProtoBuf::BSHUF_ZSTD:
+            return CompressionAlgorithm::BSHUF_ZSTD;
+        default:
+            return CompressionAlgorithm::NO_COMPRESSION;
+    }
+}
 std::string DiffractionExperiment::GetCompressionAlgorithmText() const {
     std::string algorithm;
     switch (GetCompressionAlgorithm()) {
-        case CompressionAlgorithm::BSHUF_LZ4:
+        case JFJochProtoBuf::BSHUF_LZ4:
             algorithm = "bslz4";
             if (compr.level() != 0)
                 algorithm += ":" + std::to_string(compr.level());
             break;
-        case CompressionAlgorithm::BSHUF_ZSTD:
+        case JFJochProtoBuf::BSHUF_ZSTD:
             algorithm = "bszstd";
             if (compr.level() == ZSTD_USE_JFJOCH_RLE)
                 algorithm += "_rle";
             else if (compr.level() != 0)
                 algorithm += ":" + std::to_string(compr.level());
             break;
-        case CompressionAlgorithm::None:
+        case JFJochProtoBuf::NO_COMPRESSION:
         default:
             algorithm = "off";
             break;
@@ -789,34 +609,34 @@ DiffractionExperiment &DiffractionExperiment::Compression_Text(std::string input
         in_compression_level = std::stoi(input.substr(colon_position + 1));
 
     if ((prefix == "off") || (prefix == "none"))
-        Compression(CompressionAlgorithm::None, 0);
+        Compression(JFJochProtoBuf::NO_COMPRESSION, 0);
     else if (prefix == "bslz4") // Allows for shorter names, used by Dectris EIGER
-        Compression(CompressionAlgorithm::BSHUF_LZ4, in_compression_level);
+        Compression(JFJochProtoBuf::BSHUF_LZ4, in_compression_level);
     else if (prefix == "bszstd")
-        Compression(CompressionAlgorithm::BSHUF_ZSTD, in_compression_level);
+        Compression(JFJochProtoBuf::BSHUF_ZSTD, in_compression_level);
     else if (prefix == "bszstd_rle")
-        Compression(CompressionAlgorithm::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+        Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
     else throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                                "Compression algorithm not supported");
     return *this;
 }
 
-DiffractionExperiment &DiffractionExperiment::Compression(CompressionAlgorithm input, int64_t in_compression_level) {
+DiffractionExperiment &DiffractionExperiment::Compression(JFJochProtoBuf::Compression input, int64_t in_compression_level) {
     switch (input) {
-        case CompressionAlgorithm::BSHUF_ZSTD:
+        case JFJochProtoBuf::BSHUF_ZSTD:
             if (in_compression_level != ZSTD_USE_JFJOCH_RLE) {
                 check_min("Zstd compression level", in_compression_level, ZSTD_minCLevel());
                 check_max("Zstd compression level", in_compression_level, ZSTD_maxCLevel());
             }
-            compr.set_algorithm(JFJochProtoBuf::CompressionSettings_Compression_BSHUF_ZSTD);
+            compr.set_algorithm(JFJochProtoBuf::BSHUF_ZSTD);
             compr.set_level(in_compression_level);
             break;
-        case CompressionAlgorithm::BSHUF_LZ4:
+        case JFJochProtoBuf::BSHUF_LZ4:
             compr.set_level(in_compression_level);
-            compr.set_algorithm(JFJochProtoBuf::CompressionSettings_Compression_BSHUF_LZ4);
+            compr.set_algorithm(JFJochProtoBuf::BSHUF_LZ4);
             break;
         default:
-            compr.set_algorithm(JFJochProtoBuf::CompressionSettings_Compression_NONE);
+            compr.set_algorithm(JFJochProtoBuf::NO_COMPRESSION);
             compr.set_level(0);
             break;
     }
@@ -953,6 +773,10 @@ int64_t DiffractionExperiment::GetPixelDepth() const {
     else return 4;
 }
 
+bool DiffractionExperiment::IsPixelSigned() const {
+    return (GetDetectorMode() == DetectorMode::Conversion) && (GetDetectorType() == JFJochProtoBuf::JUNGFRAU);
+}
+
 int64_t DiffractionExperiment::GetDataStreamsNum() const {
     return diffraction_geometry.data_stream_modules_size();
 }
@@ -978,10 +802,10 @@ int64_t DiffractionExperiment::GetFirstModuleOfDataStream(uint16_t data_stream) 
 
 int64_t DiffractionExperiment::GetMaxCompressedSizeGeneral(int64_t pixels_number, uint16_t pixel_depth) const {
     switch (GetCompressionAlgorithm()) {
-        case CompressionAlgorithm::BSHUF_LZ4:
+        case JFJochProtoBuf::BSHUF_LZ4:
             return bshuf_compress_lz4_bound(pixels_number, pixel_depth,
                                             GetCompressionBlockSize()) + 12;
-        case CompressionAlgorithm::BSHUF_ZSTD:
+        case JFJochProtoBuf::BSHUF_ZSTD:
             return bshuf_compress_zstd_bound(pixels_number, pixel_depth,
                                              GetCompressionBlockSize()) + 12;
         default:
@@ -1044,10 +868,6 @@ int64_t DiffractionExperiment::GetImagesInFile(int64_t file_num, int64_t actual_
         return actual_images - (GetFilesNum(actual_images) - 1) * GetImagesPerFile();
 }
 
-double DiffractionExperiment::GetRotationSpeed() const {
-    return GetOmegaIncrement() / (GetImageTime().count() * 1e-6);
-}
-
 std::string DiffractionExperiment::GenerateFilePrefix() const {
     //Private, no need to lock
     std::string filename;
@@ -1105,10 +925,9 @@ int64_t DiffractionExperiment::GetUnderflow(int64_t in_summation) {
 }
 
 std::string DiffractionExperiment::GenerateDataFilename(int64_t file_id) const {
-
     std::string ret = GenerateFilePrefix() + "_data";
     char buff[32];
-    if (GetImagesPerFile() != 0) {
+    if (image_saving.images_per_file() != 0) {
         snprintf(buff,31,"_%06ld", file_id+1);
         ret += std::string(buff);
     }
@@ -1215,32 +1034,6 @@ std::string DiffractionExperiment::GetDetectorName() const {
     return beamline_metadata.detector_name();
 }
 
-std::string DiffractionExperiment::GetInstrumentName() const {
-    return beamline_metadata.instrument_name();
-}
-
-std::string DiffractionExperiment::GetInstrumentNameShort() const {
-    return beamline_metadata.instrument_name_short();
-}
-
-std::string DiffractionExperiment::GetSourceName() const {
-    return beamline_metadata.source_name();
-}
-
-std::string DiffractionExperiment::GetSourceNameShort() const {
-    return beamline_metadata.source_name_short();
-}
-
-bool DiffractionExperiment::IsPedestalSaved() const {
-    return pedestal.saved();
-}
-
-bool DiffractionExperiment::IsPedestalChanging() const {
-    return (GetDetectorMode() == DetectorMode::PedestalG0)
-           || (GetDetectorMode() == DetectorMode::PedestalG1)
-           || (GetDetectorMode() == DetectorMode::PedestalG2);
-}
-
 int32_t DiffractionExperiment::GetSrcIPv4Address(uint16_t half_module) const {
     if (half_module >= 2 * GetModulesNum())
         throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Non existing module");
@@ -1264,10 +1057,6 @@ bool DiffractionExperiment::GetTimeResolvedMode() const {
     return (GetStorageCellNumber() > 1) || timing.time_resolved_mode();
 }
 
-int64_t DiffractionExperiment::GetMeasurementSequenceNumber() const {
-    return image_saving.measurement_sequence_num();
-}
-
 bool DiffractionExperiment::CheckGitSha1Consistent() const {
     return (internal.git_sha1() == jfjoch_git_sha1());
 }
@@ -1279,10 +1068,6 @@ std::string DiffractionExperiment::CheckGitSha1Msg() const {
         return "Local component git repo is rev. " + jfjoch_git_sha1().substr(0,6) +  " (" + jfjoch_git_date() +") remote component repo is rev. "
                + internal.git_sha1().substr(0,6) + " (" + internal.git_date() + ")";
     }
-}
-
-bool DiffractionExperiment::GetErrorWhenOverwriting() const {
-    return image_saving.error_when_overwritting();
 }
 
 bool DiffractionExperiment::GetMaskModuleEdges() const {
@@ -1342,11 +1127,6 @@ double DiffractionExperiment::PxlToRes(double detector_x, double detector_y) con
     return GetWavelength_A() / (2 * sin_theta);
 }
 
-DiffractionExperiment &DiffractionExperiment::SampleName(const std::string &input) {
-    sample.set_name(input);
-    return *this;
-}
-
 DiffractionExperiment &DiffractionExperiment::SpaceGroupNumber(int64_t input) {
     try {
         auto sg = gemmi::get_spacegroup_by_number(input);
@@ -1369,10 +1149,6 @@ DiffractionExperiment &DiffractionExperiment::SpaceGroup(const std::string &inpu
     return *this;
 }
 
-std::string DiffractionExperiment::GetSampleName() const {
-    return sample.name();
-}
-
 int64_t DiffractionExperiment::GetSpaceGroupNumber() const {
     return sample.space_group_number();
 }
@@ -1388,8 +1164,8 @@ char DiffractionExperiment::GetCentering() const {
 }
 
 DiffractionExperiment &DiffractionExperiment::RunNumber(int64_t input) {
-    check_min("Run number", input, -1); // RunNumberNotSet
-    check_max("Run number", input, 99999); // Using 5 digits to save run number
+    check_min("Run number", input, RunNumberNotSet); // RunNumberNotSet
+    check_max("Run number", input, MaxRunNumber); // Using 5 digits to save run number
     sample.set_run_number(input);
     return *this;
 }
@@ -1502,4 +1278,182 @@ DiffractionExperiment& DiffractionExperiment::QSpacingForRadialInt_recipA(double
     check_min("Q spacing for radial integration", input, 0.01);
     radial_int.set_q_spacing(input);
     return *this;
+}
+
+DiffractionExperiment &DiffractionExperiment::DetectorType(JFJochProtoBuf::DetectorType type) {
+    conv.set_type(type);
+    return *this;
+}
+
+JFJochProtoBuf::DetectorType DiffractionExperiment::GetDetectorType() const {
+    return conv.type();
+}
+
+int64_t DiffractionExperiment::GetMaxSpotCount() const {
+    return max_spot_count;
+}
+
+
+DiffractionExperiment &DiffractionExperiment::SoftTrigger(bool input) {
+    detector.set_soft_trigger(input);
+    return *this;
+}
+
+bool DiffractionExperiment::GetSoftTrigger() const {
+    switch (GetDetectorMode()) {
+        case DetectorMode::PedestalG0:
+        case DetectorMode::PedestalG1:
+        case DetectorMode::PedestalG2:
+            return true;
+        case DetectorMode::Conversion:
+        case DetectorMode::Raw:
+        default:
+            return detector.soft_trigger();
+    }
+}
+
+DiffractionExperiment::operator JFJochProtoBuf::DetectorInput() const {
+    JFJochProtoBuf::DetectorInput ret;
+
+    ret.set_modules_num(GetModulesNum());
+    ret.set_mode(conv.mode());
+
+    if (GetNumTriggers() == 1) {
+        ret.set_num_frames(GetFrameNumPerTrigger() + DELAY_FRAMES_STOP_AND_QUIT);
+        ret.set_num_triggers(1);
+    } else {
+        // More than 1 trigger - detector needs one trigger or few more trigger
+        if (GetStorageCellNumber() > 1)
+            ret.set_num_frames(1);
+        else
+            ret.set_num_frames(GetFrameNumPerTrigger());
+
+        if (GetFrameNumPerTrigger() < DELAY_FRAMES_STOP_AND_QUIT)
+            ret.set_num_triggers(GetNumTriggers() + DELAY_FRAMES_STOP_AND_QUIT);
+        else
+            ret.set_num_triggers(GetNumTriggers() + 1);
+    }
+    ret.set_storage_cell_start(GetStorageCellStart());
+    ret.set_storage_cell_number(GetStorageCellNumber());
+    ret.set_storage_cell_delay(5);
+
+    if (GetStorageCellNumber() > 1) {
+        ret.set_period_us((GetFrameTime().count() +10) * GetStorageCellNumber());
+    } else
+        ret.set_period_us(GetFrameTime().count());
+
+    ret.set_count_time_us(GetFrameCountTime().count());
+    ret.set_soft_trigger(GetSoftTrigger());
+    ret.set_delay_us(GetDetectorDelayAfterTrigger().count());
+
+    return ret;
+}
+
+DiffractionExperiment::operator JFJochProtoBuf::IndexerInput() const {
+    JFJochProtoBuf::IndexerInput ret;
+    ret.set_bin_size(GetSpotFindingBin());
+    if (GetSpotFindingStride() <= 0) {
+        ret.set_expected_image_number(0);
+        ret.set_image_stride(1);
+    } else {
+        ret.set_expected_image_number(GetImageNum() / GetSpotFindingStride());
+        ret.set_image_stride(GetSpotFindingStride());
+    }
+    if (HasUnitCell()) {
+        *ret.mutable_unit_cell() = GetUnitCell();
+        ret.set_centering(GetCentering());
+    }
+
+    return ret;
+}
+
+DiffractionExperiment::operator JFJochProtoBuf::WriterInput() const {
+    JFJochProtoBuf::WriterInput ret;
+
+    for (int i = 0; i < GetFilesNum(); i++) {
+        auto ptr = ret.add_data_files();
+        ptr->set_filename(GenerateDataFilename(i));
+        ptr->set_image0(i * GetImagesPerFile());
+        ptr->set_image_count(GetImagesInFile(i));
+    }
+    ret.set_width(GetXPixelsNum());
+    ret.set_height(GetYPixelsNum());
+    ret.set_images_per_file(GetImagesPerFile());
+    ret.set_pixel_depth_bytes(GetPixelDepth());
+    ret.set_signed_pxl(IsPixelSigned());
+    ret.set_compression_block_size(GetCompressionBlockSize());
+    ret.set_compression_algorithm(GetCompressionAlgorithm());
+    ret.set_max_spot_count(GetMaxSpotCount());
+    if (GetDetectorMode() == DetectorMode::Conversion)
+        ret.set_image_units("photon");
+    else
+        ret.set_image_units("ADU");
+    return ret;
+}
+
+JFJochProtoBuf::DetectorConfig
+DiffractionExperiment::DetectorConfig(const JFJochProtoBuf::ReceiverNetworkConfig &net_config) const {
+    JFJochProtoBuf::DetectorConfig ret;
+    if (net_config.fpga_mac_addr_size() < GetDataStreamsNum())
+        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds,
+                              "Number of FPGA boards in the receiver is less then necessary");
+    int i = 0;
+    for (int d = 0; d < GetDataStreamsNum(); d++) {
+        for (int module = 0; module < GetModulesNum(d); module++) {
+            auto mod_cfg = ret.add_modules();
+            mod_cfg->set_udp_dest_port_1(GetDestUDPPort(d,module));
+            mod_cfg->set_udp_dest_port_2(GetDestUDPPort(d,module) + 1);
+            mod_cfg->set_ipv4_src_addr_1(IPv4AddressToStr(GetSrcIPv4Address(i * 2)));
+            mod_cfg->set_ipv4_src_addr_2(IPv4AddressToStr(GetSrcIPv4Address(i * 2 + 1)));
+            mod_cfg->set_ipv4_dest_addr_1(IPv4AddressToStr(GetDestIPv4Address(d)));
+            mod_cfg->set_ipv4_dest_addr_2(IPv4AddressToStr(GetDestIPv4Address(d)));
+            mod_cfg->set_mac_addr_dest_1(net_config.fpga_mac_addr(d));
+            mod_cfg->set_mac_addr_dest_2(net_config.fpga_mac_addr(d));
+            i++;
+        }
+    }
+    return ret;
+}
+
+void DiffractionExperiment::FillWriterMetadata(JFJochProtoBuf::WriterMetadataInput &input) const {
+    // general metadata
+
+    input.set_image_number(GetImageNum());
+    input.set_images_per_file(GetImagesPerFile());
+    input.set_images_per_trigger(GetImageNumPerTrigger());
+    input.set_metadata_file_name(GenerateMasterFilename());
+    for (int i = 0; i < GetFilesNum(); i++) {
+        auto ptr = input.add_data_files();
+        ptr->set_filename(GenerateDataFilename(i));
+        ptr->set_image0(i * GetImagesPerFile());
+        ptr->set_image_count(GetImagesInFile(i));
+    }
+
+    input.mutable_beam_metadata()->set_energy_kev(GetPhotonEnergy_keV());
+
+    auto det = input.mutable_detector_metadata();
+    det->set_type(GetDetectorType());
+    det->set_width_pxl(GetXPixelsNum());
+    det->set_height_pxl(GetYPixelsNum());
+    det->set_pixel_depth_byte(GetPixelDepth());
+    det->set_signed_pxl(IsPixelSigned());
+    *det->mutable_compression() = compr;
+    det->set_image_time_us(GetImageTime().count());
+    det->set_count_time_us(GetImageCountTime().count());
+    det->set_overload(GetOverflow());
+    if (IsPixelSigned())
+        det->set_underload(GetUnderflow());
+    det->set_delay_after_trigger_us(GetDetectorDelayAfterTrigger().count());
+    det->set_ntrigger(GetNumTriggers());
+    det->set_time_resolved_mode(GetTimeResolvedMode());
+    det->set_storage_cell_number(GetStorageCellNumber());
+
+    det->set_sensor_material(SENSOR_MATERIAL);
+    det->set_pixel_size_mm(PIXEL_SIZE_IN_MM);
+    det->set_sensor_thickness_um(SENSOR_THICKNESS_IN_UM);
+
+    auto geom = input.mutable_geometry_metadata();
+    geom->set_beam_x_pxl(GetBeamX_pxl());
+    geom->set_beam_y_pxl(GetBeamY_pxl());
+    geom->set_distance_mm(GetDetectorDistance_mm());
 }

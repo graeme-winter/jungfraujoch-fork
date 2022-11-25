@@ -297,7 +297,7 @@ always @(posedge clk) begin
                 rdata[16] <= mailbox_interrupt_0;
                 rdata[17] <= mailbox_interrupt_1;
                 rdata[18] <= !reg_qsfpdd_modprs;
-                rdata[27:24] <= reg_host_writer_err;
+                rdata[31:24] <= reg_host_writer_err;
             end
             `ADDR_MAC_ADDR_HI: begin
                 rdata <= fpga_mac_addr[47:32];

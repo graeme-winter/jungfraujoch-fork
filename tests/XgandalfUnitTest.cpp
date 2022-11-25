@@ -100,9 +100,9 @@ TEST_CASE("Xgandalf","[Indexing]") {
         settings.unit_cell = c;
         settings.centering = 'P';
         settings.max_indexing_spots = 30;
-        settings.algorithm = IndexingAlgorithm::Xgandalf_fast;
+        wrapper.Setup(settings);
 
-        REQUIRE(!wrapper.Run(settings, recip).empty());
+        REQUIRE(!wrapper.Run(recip).empty());
     }
 }
 
@@ -111,8 +111,8 @@ TEST_CASE("JFJochIndexerService_StartStop","[Indexing]") {
     ZMQContext context;
     JFJochIndexerService service(context, logger);
 
-    JFJochProtoBuf::JFJochIndexerInput input;
-    JFJochProtoBuf::JFJochIndexerOutput output;
+    JFJochProtoBuf::IndexerInput input;
+    JFJochProtoBuf::IndexerOutput output;
     input.set_bin_size(100);
     input.set_zmq_recv_pub_addr("inproc://#1");
 
@@ -140,11 +140,12 @@ TEST_CASE("JFJochIndexerService_Operation","[Indexing]") {
 
     DiffractionExperiment experiment;
     experiment.SetUnitCell(cell);
+    experiment.ImagesPerTrigger(200).SpotFindingPeriod(std::chrono::milliseconds(10));
+    REQUIRE(experiment.GetSpotFindingStride() == 10);
 
-    JFJochProtoBuf::JFJochIndexerInput input;
-    input.set_bin_size(10* experiment.GetSpotFindingStride());
+    JFJochProtoBuf::IndexerInput input;
+    input = experiment;
     input.set_zmq_recv_pub_addr("inproc://test1");
-    *input.mutable_jungfraujoch_settings() = experiment;
 
     REQUIRE(service.Start(nullptr, &input, nullptr).ok());
 
@@ -161,7 +162,7 @@ TEST_CASE("JFJochIndexerService_Operation","[Indexing]") {
         publisher.PublishReciprocal(experiment, recip, image * experiment.GetSpotFindingStride());
     }
 
-    JFJochProtoBuf::JFJochIndexerOutput output;
+    JFJochProtoBuf::IndexerOutput output;
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 

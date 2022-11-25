@@ -6,29 +6,19 @@
 
 #include <future>
 #include "jfjoch.grpc.pb.h"
-#include "../common/ZMQImagePuller.h"
+#include "ZMQImagePuller.h"
 #include "HDF5Writer.h"
 #include "../common/Logger.h"
-#include "../common/ThreadSafeFIFO.h"
 
 class JFJochWriter {
-    DiffractionExperiment experiment;
     ZMQImagePuller image_puller;
     Logger &logger;
     std::unique_ptr<HDF5Writer> data_file_set;
-    std::future<void> measurement;
-    std::future<void> writing_future;
-    std::future<void> pulling_future;
-    void PullingThread();
-    void WritingThread();
-    void MeasurementThread();
-    void MakeDirectory(const std::string& file_path);
-    ThreadSafeFIFO<std::shared_ptr<std::vector<uint8_t> > > image_fifo{1000};
+    std::future<JFJochProtoBuf::WriterOutput> measurement;
+    JFJochProtoBuf::WriterOutput MeasurementThread();
 public:
-    JFJochWriter(DiffractionExperiment  experiment, ZMQContext& context, const std::string& zmq_addr,
-                 Logger &logger);
-    void Stop();
-    void WaitTillDone();
+    JFJochWriter(const JFJochProtoBuf::WriterInput &request, ZMQContext& context, Logger &logger);
+    JFJochProtoBuf::WriterOutput Stop();
     void Abort();
     ~JFJochWriter();
 };

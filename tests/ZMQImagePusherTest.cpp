@@ -2,8 +2,41 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <catch2/catch.hpp>
-#include "../common/ZMQImagePuller.h"
+#include "../writer/ZMQImagePuller.h"
 #include "../common/ZMQImagePusher.h"
+
+void test_puller(ZMQImagePuller *puller,
+                 const DiffractionExperiment& x,
+                 const std::vector<uint16_t> &image1,
+                 int64_t nwriter,
+                 int64_t writer_id,
+                 std::vector<size_t> &diff_split,
+                 std::vector<size_t> &diff_size,
+                 std::vector<size_t> &diff_content,
+                 std::vector<size_t> &nimages) {
+
+    puller->WaitForImage();
+    if (puller->GetFrameType() != JFJochFrameDeserializer::Type::START) {
+        diff_content[writer_id]++;
+        return;
+    }
+    puller->WaitForImage();
+    while (puller->GetFrameType() != JFJochFrameDeserializer::Type::END) {
+        if (puller->GetFrameType() == JFJochFrameDeserializer::Type::IMAGE) {
+
+            if ((nwriter > 1) && (puller->GetFileNumber() % nwriter != writer_id))
+                diff_split[writer_id]++;
+            if (puller->GetImageSize() != x.GetPixelsNum() * sizeof(uint16_t))
+                diff_size[writer_id]++;
+            else if (memcmp(puller->GetImage(),image1.data() + (puller->GetFileNumber() * x.GetImagesPerFile()
+                                                           + puller->GetImageNumber()) * x.GetPixelsNum(),
+                            x.GetPixelsNum() * sizeof(uint16_t)) != 0)
+                diff_content[writer_id]++;
+            nimages[writer_id]++;
+        }
+        puller->WaitForImage();
+    }
+}
 
 TEST_CASE("ZMQImageCommTest_1Writer","[ZeroMQ]") {
     const size_t nframes = 256;
@@ -12,9 +45,10 @@ TEST_CASE("ZMQImageCommTest_1Writer","[ZeroMQ]") {
     Logger logger("test");
     DiffractionExperiment x, x_out;
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
-    x.PedestalG0Frames(0).NumTriggers(0).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
+    x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
         .ImagesPerTrigger(nframes);
 
+    std::vector<DiffractionSpot> empty_spot_vector;
 
     REQUIRE(x.GetImageNum() == nframes);
 
@@ -28,47 +62,33 @@ TEST_CASE("ZMQImageCommTest_1Writer","[ZeroMQ]") {
 
     // Puller needs to be declared first, but both objects need to exist till communication finished
     // TODO: ImageSender should not allow if there are still completions to be done
-    ZMQImagePuller puller(context, zmq_addr);
-    ZMQImagePusher pusher(context);
+    ZMQImagePuller puller(context);
+    ZMQImagePusher pusher(context, {zmq_addr});
 
-    size_t diff_size = 0, diff_content = 0, diff_size_header = 0;
-    size_t nimages = 0;
+    std::vector<size_t> diff_size(1), diff_content(1), diff_split(1), nimages(1);
 
-    std::vector<std::string> zmq_addr_v = {zmq_addr};
-    pusher.Connect(zmq_addr_v, x);
+    puller.Connect(zmq_addr);
 
     std::thread sender_thread = std::thread([&] {
-        std::vector<char> pusher_buff(x.GetMaxCompressedSize() + sizeof(ImageMetadata));
-        for (int i = 0; i < nframes; i++) {
-            memcpy(pusher_buff.data() + sizeof(ImageMetadata),
-                   image1.data() + i * x.GetPixelsNum(),
-                   x.GetPixelsNum() * sizeof(uint16_t));
-            pusher.SendData(pusher_buff.data(), i, x.GetPixelsNum() * sizeof(uint16_t));
-        }
+        pusher.StartDataCollection();
+        for (int i = 0; i < nframes; i++)
+            pusher.SendData(image1.data() + i * x.GetPixelsNum(), x.GetImageLocationInFile(i),
+                            x.GetPixelsNum() * sizeof(uint16_t), empty_spot_vector);
         pusher.EndDataCollection();
     });
 
-    std::vector<uint8_t> rcv_image;
-    int64_t msg_size = puller.GetImage(rcv_image);
-    while (msg_size > 0) {
-        auto image_metadata = (const ImageMetadata *) rcv_image.data();
-        if (msg_size != x.GetPixelsNum() * sizeof(uint16_t) + sizeof(ImageMetadata)) diff_size++;
-        if (image_metadata->image_size != x.GetPixelsNum() * sizeof(uint16_t)) diff_size_header++;
-        else if (memcmp(rcv_image.data() + sizeof(ImageMetadata),
-                        image1.data() + image_metadata->frameid * x.GetPixelsNum(),
-                        x.GetPixelsNum() * sizeof(uint16_t)) != 0)
-            diff_content++;
-        nimages++;
-        msg_size = puller.GetImage(rcv_image);
-    }
+    std::thread puller_thread(test_puller, &puller, std::cref(x), std::cref(image1), 1, 0,
+                              std::ref(diff_split), std::ref(diff_size), std::ref(diff_content),
+                              std::ref(nimages));
 
     sender_thread.join();
+    puller_thread.join();
 
-     REQUIRE_NOTHROW(pusher.Disconnect());
-    REQUIRE(nimages == nframes);
-    REQUIRE(diff_size == 0);
-    REQUIRE(diff_content == 0);
-    REQUIRE(diff_size_header == 0);
+    puller.Disconnect();
+
+    REQUIRE(nimages[0] == nframes);
+    REQUIRE(diff_size[0] == 0);
+    REQUIRE(diff_content[0] == 0);
 }
 
 
@@ -79,9 +99,8 @@ TEST_CASE("ZMQImageCommTest_2Writers","[ZeroMQ]") {
     Logger logger("test");
     DiffractionExperiment x, x_out;
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
-    x.PedestalG0Frames(0).NumTriggers(0).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
+    x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
             .ImagesPerTrigger(nframes).ImagesPerFile(16);
-
 
     REQUIRE(x.GetImageNum() == nframes);
 
@@ -91,71 +110,49 @@ TEST_CASE("ZMQImageCommTest_2Writers","[ZeroMQ]") {
     std::vector<uint16_t> image1(x.GetPixelsNum()*nframes);
     for (auto &i: image1) i = dist(g1);
 
-    std::vector<std::string> zmq_addr = {"inproc://#1", "inproc://#2"};
+    std::vector<DiffractionSpot> empty_spot_vector;
+
+    std::vector<std::string> zmq_addr;
+
+    int64_t npullers = 2;
+
+    for (int i = 0; i < npullers; i++)
+        zmq_addr.push_back("inproc://#" + std::to_string(i));
+
+    ZMQImagePusher pusher(context, zmq_addr);
 
     // Puller needs to be declared first, but both objects need to exist till communication finished
     // TODO: ImageSender should not allow if there are still completions to be done
-    ZMQImagePuller puller_0(context, zmq_addr[0]);
-    ZMQImagePuller puller_1(context, zmq_addr[1]);
-    ZMQImagePusher pusher(context);
+    std::vector<std::unique_ptr<ZMQImagePuller> > puller;
+    for (int i = 0; i < npullers; i++) {
+        puller.push_back(std::make_unique<ZMQImagePuller>(context));
+        puller[i]->Connect(zmq_addr[i]);
+    }
 
-    size_t diff_size[2] = {0, 0};
-    size_t diff_content[2] = {0, 0};
-    size_t diff_split[2] = {0, 0};
-    size_t nimages[2] = {0, 0};
-
-    pusher.Connect(zmq_addr, x);
+    std::vector<size_t> diff_size(npullers), diff_content(npullers), diff_split(npullers), nimages(npullers);
 
     std::thread sender_thread = std::thread([&] {
-        std::vector<char> pusher_buff(x.GetMaxCompressedSize() + sizeof(ImageMetadata));
-        for (int i = 0; i < nframes; i++) {
-            memcpy(pusher_buff.data() + sizeof(ImageMetadata),
-                   image1.data() + i * x.GetPixelsNum(),
-                   x.GetPixelsNum() * sizeof(uint16_t));
-            pusher.SendData(pusher_buff.data(), i, x.GetPixelsNum() * sizeof(uint16_t));
-        }
+        pusher.StartDataCollection();
+        for (int i = 0; i < nframes; i++)
+            pusher.SendData(image1.data() + i * x.GetPixelsNum(), x.GetImageLocationInFile(i),
+                            x.GetPixelsNum() * sizeof(uint16_t), empty_spot_vector);
         pusher.EndDataCollection();
     });
 
-    std::thread puller_0_thread = std::thread([&] {
-        std::vector<uint8_t> rcv_image;
-        int64_t msg_size = puller_0.GetImage(rcv_image);
-        while (msg_size > 0) {
-            auto image_metadata = (const ImageMetadata *) rcv_image.data();
-            if ((image_metadata->frameid / x.GetImagesPerFile()) % 2 != 0) diff_split[0]++;
-            if (msg_size != x.GetPixelsNum() * sizeof(uint16_t) + sizeof(ImageMetadata)) diff_size[0]++;
-            else if (memcmp(rcv_image.data() + sizeof(ImageMetadata),
-                            image1.data() + image_metadata->frameid * x.GetPixelsNum(),
-                            x.GetPixelsNum() * sizeof(uint16_t)) != 0)
-                diff_content[0]++;
-            msg_size = puller_0.GetImage(rcv_image);
-            nimages[0]++;
-        }
-    });
+    std::vector<std::thread> puller_threads;
+    for (int i = 0; i < npullers; i++)
+        puller_threads.emplace_back(test_puller, puller[i].get(), std::cref(x),
+                                    std::cref(image1), npullers, i,
+                                    std::ref(diff_split), std::ref(diff_size), std::ref(diff_content), std::ref(nimages));
 
-
-    std::thread puller_1_thread = std::thread([&] {
-        std::vector<uint8_t> rcv_image;
-        int64_t msg_size = puller_1.GetImage(rcv_image);
-        while (msg_size > 0) {
-            auto image_metadata = (const ImageMetadata *) rcv_image.data();
-            if ((image_metadata->frameid / x.GetImagesPerFile()) % 2 != 1) diff_split[1]++;
-            if (msg_size != x.GetPixelsNum() * sizeof(uint16_t) + sizeof(ImageMetadata)) diff_size[1]++;
-            else if (memcmp(rcv_image.data() + sizeof(ImageMetadata),
-                            image1.data() + image_metadata->frameid * x.GetPixelsNum(),
-                            x.GetPixelsNum() * sizeof(uint16_t)) != 0)
-                diff_content[1]++;
-            msg_size = puller_1.GetImage(rcv_image);
-            nimages[1]++;
-        }
-    });
-
-    puller_0_thread.join();
-    puller_1_thread.join();
+    for (int i = 0; i < npullers; i++)
+        puller_threads[i].join();
 
     sender_thread.join();
 
-    REQUIRE_NOTHROW(pusher.Disconnect());
+    REQUIRE_NOTHROW(puller[0]->Disconnect());
+    REQUIRE_NOTHROW(puller[1]->Disconnect());
+
     REQUIRE(nimages[0] == nframes / 2);
     REQUIRE(nimages[1] == nframes / 2);
     REQUIRE(diff_size[0] == 0);
@@ -175,9 +172,8 @@ TEST_CASE("ZMQImageCommTest_4Writers","[ZeroMQ]") {
     Logger logger("test");
     DiffractionExperiment x, x_out;
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
-    x.PedestalG0Frames(0).NumTriggers(0).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
+    x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
             .ImagesPerTrigger(nframes).ImagesPerFile(16);
-
 
     REQUIRE(x.GetImageNum() == nframes);
 
@@ -187,126 +183,64 @@ TEST_CASE("ZMQImageCommTest_4Writers","[ZeroMQ]") {
     std::vector<uint16_t> image1(x.GetPixelsNum()*nframes);
     for (auto &i: image1) i = dist(g1);
 
-    std::vector<std::string> zmq_addr = {"inproc://#1", "inproc://#2", "inproc://#3", "inproc://#4"};
+    std::vector<DiffractionSpot> empty_spot_vector;
+
+    std::vector<std::string> zmq_addr;
+
+    int64_t npullers = 4;
+
+
+    for (int i = 0; i < npullers; i++)
+        zmq_addr.push_back("inproc://#" + std::to_string(i));
+
+    ZMQImagePusher pusher(context, zmq_addr);
 
     // Puller needs to be declared first, but both objects need to exist till communication finished
     // TODO: ImageSender should not allow if there are still completions to be done
-    ZMQImagePuller puller_0(context, zmq_addr[0]);
-    ZMQImagePuller puller_1(context, zmq_addr[1]);
-    ZMQImagePuller puller_2(context, zmq_addr[2]);
-    ZMQImagePuller puller_3(context, zmq_addr[3]);
-    ZMQImagePusher pusher(context);
+    std::vector<std::unique_ptr<ZMQImagePuller> > puller;
+    for (int i = 0; i < npullers; i++) {
+        puller.push_back(std::make_unique<ZMQImagePuller>(context));
+        puller[i]->Connect(zmq_addr[i]);
+    }
 
-    size_t diff_size[4] = {0, 0, 0, 0};
-    size_t diff_content[4] = {0, 0, 0, 0};
-    size_t diff_split[4] = {0, 0, 0, 0};
-    size_t nimages[4] = {0, 0, 0, 0};
 
-    pusher.Connect(zmq_addr, x);
+    std::vector<size_t> diff_size(npullers), diff_content(npullers), diff_split(npullers), nimages(npullers);
 
     std::thread sender_thread = std::thread([&] {
-        std::vector<char> pusher_buff(x.GetMaxCompressedSize() + sizeof(ImageMetadata));
-        for (int i = 0; i < nframes; i++) {
-            memcpy(pusher_buff.data() + sizeof(ImageMetadata),
-                   image1.data() + i * x.GetPixelsNum(),
-                   x.GetPixelsNum() * sizeof(uint16_t));
-            pusher.SendData(pusher_buff.data(), i, x.GetPixelsNum() * sizeof(uint16_t));
-        }
+        pusher.StartDataCollection();
+        for (int i = 0; i < nframes; i++)
+            pusher.SendData(image1.data() + i * x.GetPixelsNum(),
+                            x.GetImageLocationInFile(i),
+                            x.GetPixelsNum() * sizeof(uint16_t), empty_spot_vector);
         pusher.EndDataCollection();
     });
 
-    std::thread puller_0_thread = std::thread([&] {
-        std::vector<uint8_t> rcv_image;
-        int64_t msg_size = puller_0.GetImage(rcv_image);
-        while (msg_size > 0) {
-            auto image_metadata = (const ImageMetadata *) rcv_image.data();
-            if ((image_metadata->frameid / x.GetImagesPerFile()) % 4 != 0) diff_split[0]++;
-            if (msg_size != x.GetPixelsNum() * sizeof(uint16_t) + sizeof(ImageMetadata)) diff_size[0]++;
-            else if (memcmp(rcv_image.data() + sizeof(ImageMetadata),
-                            image1.data() + image_metadata->frameid * x.GetPixelsNum(),
-                            x.GetPixelsNum() * sizeof(uint16_t)) != 0)
-                diff_content[0]++;
-            msg_size = puller_0.GetImage(rcv_image);
-            nimages[0]++;
-        }
-    });
+    std::vector<std::thread> puller_threads;
+    for (int i = 0; i < npullers; i++)
+        puller_threads.emplace_back(test_puller, puller[i].get(), std::cref(x),
+                                    std::cref(image1), npullers, i,
+                                    std::ref(diff_split), std::ref(diff_size), std::ref(diff_content), std::ref(nimages));
 
-    std::thread puller_1_thread = std::thread([&] {
-        std::vector<uint8_t> rcv_image;
-        int64_t msg_size = puller_1.GetImage(rcv_image);
-        while (msg_size > 0) {
-            auto image_metadata = (const ImageMetadata *) rcv_image.data();
-            if ((image_metadata->frameid / x.GetImagesPerFile()) % 4 != 1) diff_split[1]++;
-            if (msg_size != x.GetPixelsNum() * sizeof(uint16_t) + sizeof(ImageMetadata)) diff_size[1]++;
-            else if (memcmp(rcv_image.data() + sizeof(ImageMetadata),
-                            image1.data() + image_metadata->frameid * x.GetPixelsNum(),
-                            x.GetPixelsNum() * sizeof(uint16_t)) != 0)
-                diff_content[1]++;
-            msg_size = puller_1.GetImage(rcv_image);
-            nimages[1]++;
-        }
-    });
+    for (int i = 0; i < npullers; i++)
+        puller_threads[i].join();
 
-    std::thread puller_2_thread = std::thread([&] {
-        std::vector<uint8_t> rcv_image;
-        int64_t msg_size = puller_2.GetImage(rcv_image);
-        while (msg_size > 0) {
-            auto image_metadata = (const ImageMetadata *) rcv_image.data();
-            if ((image_metadata->frameid / x.GetImagesPerFile()) % 4 != 2) diff_split[2]++;
-            if (msg_size != x.GetPixelsNum() * sizeof(uint16_t) + sizeof(ImageMetadata)) diff_size[2]++;
-            else if (memcmp(rcv_image.data() + sizeof(ImageMetadata),
-                            image1.data() + image_metadata->frameid * x.GetPixelsNum(),
-                            x.GetPixelsNum() * sizeof(uint16_t)) != 0)
-                diff_content[2]++;
-            msg_size = puller_2.GetImage(rcv_image);
-            nimages[2]++;
-        }
-    });
-
-    std::thread puller_3_thread = std::thread([&] {
-        std::vector<uint8_t> rcv_image;
-        int64_t msg_size = puller_3.GetImage(rcv_image);
-        while (msg_size > 0) {
-            auto image_metadata = (const ImageMetadata *) rcv_image.data();
-            if ((image_metadata->frameid / x.GetImagesPerFile()) % 4 != 3) diff_split[3]++;
-            if (msg_size != x.GetPixelsNum() * sizeof(uint16_t) + sizeof(ImageMetadata)) diff_size[3]++;
-            else if (memcmp(rcv_image.data() + sizeof(ImageMetadata),
-                            image1.data() + image_metadata->frameid * x.GetPixelsNum(),
-                            x.GetPixelsNum() * sizeof(uint16_t)) != 0)
-                diff_content[3]++;
-            msg_size = puller_3.GetImage(rcv_image);
-            nimages[3]++;
-        }
-    });
-
-    puller_0_thread.join();
-    puller_1_thread.join();
-    puller_2_thread.join();
-    puller_3_thread.join();
     sender_thread.join();
 
-    REQUIRE_NOTHROW(pusher.Disconnect());
+    REQUIRE_NOTHROW(puller[0]->Disconnect());
+    REQUIRE_NOTHROW(puller[1]->Disconnect());
+    REQUIRE_NOTHROW(puller[2]->Disconnect());
+    REQUIRE_NOTHROW(puller[3]->Disconnect());
+
     REQUIRE(nimages[0] == 64);
     REQUIRE(nimages[1] == 64);
     REQUIRE(nimages[2] == 64);
     REQUIRE(nimages[3] == 63);
 
-    REQUIRE(diff_size[0] == 0);
-    REQUIRE(diff_content[0] == 0);
-
-    REQUIRE(diff_size[1] == 0);
-    REQUIRE(diff_content[1] == 0);
-
-    REQUIRE(diff_size[2] == 0);
-    REQUIRE(diff_content[2] == 0);
-
-    REQUIRE(diff_size[3] == 0);
-    REQUIRE(diff_content[3] == 0);
-
-    REQUIRE(diff_split[0] == 0);
-    REQUIRE(diff_split[1] == 0);
-    REQUIRE(diff_split[2] == 0);
-    REQUIRE(diff_split[3] == 0);
+    for (int i = 0; i < npullers; i++) {
+        REQUIRE(diff_size[i] == 0);
+        REQUIRE(diff_content[i] == 0);
+        REQUIRE(diff_split[i] == 0);
+    }
 }
 
 TEST_CASE("ZMQImagePuller_abort","[ZeroMQ]") {
@@ -314,16 +248,19 @@ TEST_CASE("ZMQImagePuller_abort","[ZeroMQ]") {
     std::string zmq_addr = "inproc://#1";
     DiffractionExperiment x, x_out;
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
-    x.PedestalG0Frames(0).NumTriggers(0).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
+    x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
             .ImagesPerTrigger(nframes);
 
     ZMQContext context;
-    ZMQImagePuller puller(context, zmq_addr);
+    ZMQImagePuller puller(context);
 
-    std::thread puller_thread([&] {
-        std::vector<uint8_t> tmp;
-        puller.GetImage(tmp);
-    });
+    std::vector<size_t> diff_size(1), diff_content(1), diff_split(1), nimages(1);
+    std::vector<uint16_t> image1(x.GetPixelsNum());
+
+    std::thread puller_thread(test_puller, &puller, std::cref(x), std::cref(image1), 1, 0,
+                              std::ref(diff_split), std::ref(diff_size), std::ref(diff_content),
+                              std::ref(nimages));
     puller.Abort();
     puller_thread.join();
+    REQUIRE(nimages[0] == 0);
 }

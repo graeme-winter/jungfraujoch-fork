@@ -38,17 +38,18 @@ public:
                             JFJochProtoBuf::Empty *response) override;
     grpc::Status Deactivate(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                             JFJochProtoBuf::Empty *response) override;
-    grpc::Status Pedestal(grpc::ServerContext *context, const JFJochProtoBuf::BrokerSetup *request,
+    grpc::Status Pedestal(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                           JFJochProtoBuf::Empty *response) override;
     grpc::Status Setup(grpc::ServerContext *context, const JFJochProtoBuf::BrokerPersistentSettings *request,
                          JFJochProtoBuf::Empty *response) override;
-
+    grpc::Status GetSetup(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
+                            JFJochProtoBuf::BrokerPersistentSettings *response) override;
     grpc::Status GetStatus(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                            JFJochProtoBuf::BrokerStatus *response) override;
     grpc::Status GetCalibration(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                   JFJochProtoBuf::JFCalibration *response) override;
-    grpc::Status GetDetailedReceiverOutput(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
-                                           JFJochProtoBuf::JFJochReceiverOutput *response) override;
+    grpc::Status GetFullStatus(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
+                                           JFJochProtoBuf::BrokerFullStatus *response) override;
     grpc::Status GetPreviewFrame(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                JFJochProtoBuf::PreviewFrame *response) override;
     grpc::Status SetDataProcessingSettings(grpc::ServerContext *context, const JFJochProtoBuf::DataProcessingSettings *request,

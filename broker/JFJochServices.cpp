@@ -4,10 +4,15 @@
 #include "JFJochServices.h"
 #include "../common/JFJochException.h"
 
+uint64_t current_time_ms() {
+    auto curr_time = std::chrono::system_clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(curr_time.time_since_epoch()).count();
+}
+
 JFJochServices::JFJochServices(Logger &in_logger) : logger(in_logger) {}
 
 void JFJochServices::Start(const DiffractionExperiment& experiment, const JFCalibration &calibration) {
-    logger.Info("Measurement start for: " + experiment.GetFilePrefix());
+    logger.Info("Measurement start for: {}", experiment.GetFilePrefix());
 
     if (experiment.GetDetectorMode() == DetectorMode::Conversion) {
         logger.Info("   ... indexer start");
@@ -16,9 +21,17 @@ void JFJochServices::Start(const DiffractionExperiment& experiment, const JFCali
     } else
         indexer_running = false;
 
-    if (experiment.GetImageNum() > 0) {
+    if ((experiment.GetImageNum() > 0) && (!experiment.GetFilePrefix().empty())){
+        logger.Info("   ... write HDF5 master file");
+
+        JFJochProtoBuf::WriterMetadataInput request;
+        experiment.FillWriterMetadata(request);
+        calibration.Export(experiment, request);
+        request.set_start_time_ms(current_time_ms());
+        writer.WriteMasterFile(request);
+
         logger.Info("   ... writer start");
-        writer.Start(experiment);
+        writer.Start(experiment, writer_zmq_addr);
         writer_running = true;
     } else
         writer_running = false;
@@ -32,15 +45,6 @@ void JFJochServices::Start(const DiffractionExperiment& experiment, const JFCali
     if (!experiment.IsUsingInternalPacketGen()) {
         logger.Info("   ... detector start");
         detector.Start(experiment);
-
-        if (!experiment.GetTimeResolvedMode() &&
-            ((experiment.GetDetectorMode() == DetectorMode::Conversion)
-            || (experiment.GetDetectorMode() == DetectorMode::Raw))) {
-            // Pedestal is using soft trigger
-            // Time resolved mode uses external (non RPi) trigger
-            logger.Info("   ... trigger");
-            trigger.Trigger();
-        }
     }
     logger.Info("   Done!");
 }
@@ -52,51 +56,33 @@ void JFJochServices::Off() {
 void JFJochServices::On(const DiffractionExperiment &x) {
     logger.Info("Detector on");
 
-    auto net_config = receiver.GetNetworkConfig();
-    if (net_config.fpga_mac_addr_size() < x.GetDataStreamsNum())
-        logger.Warning("Receiver doesn't support enough data streams");
-    JFJochProtoBuf::JFJochDetectorConfig config;
-
-    int i = 0;
-    for (int d = 0; d < x.GetDataStreamsNum(); d++) {
-        for (int module = 0; module < x.GetModulesNum(d); module++) {
-            auto mod_cfg = config.add_modules();
-            mod_cfg->set_udp_dest_port_1(x.GetDestUDPPort(d,module));
-            mod_cfg->set_udp_dest_port_2(x.GetDestUDPPort(d,module) + 1);
-            mod_cfg->set_ipv4_src_addr_1(x.GetSrcIPv4Address(i * 2));
-            mod_cfg->set_ipv4_src_addr_2(x.GetSrcIPv4Address(i * 2 + 1));
-            mod_cfg->set_ipv4_dest_addr_1(x.GetDestIPv4Address(d));
-            mod_cfg->set_ipv4_dest_addr_2(x.GetDestIPv4Address(d));
-            if (d < net_config.fpga_mac_addr_size()) {
-                mod_cfg->set_mac_addr_dest_1(net_config.fpga_mac_addr(d));
-                mod_cfg->set_mac_addr_dest_2(net_config.fpga_mac_addr(d));
-            }
-            i++;
-        }
-    }
+    JFJochProtoBuf::DetectorConfig config = x.DetectorConfig(receiver.GetNetworkConfig());
 
     detector.On(config);
     logger.Info("   ... done");
 }
 
-JFJochProtoBuf::JFJochReceiverOutput JFJochServices::Stop(const JFCalibration &calibration) {
-    JFJochProtoBuf::JFJochReceiverOutput last_receiver_output;
+JFJochProtoBuf::BrokerFullStatus JFJochServices::Stop(const JFCalibration &calibration) {
+    JFJochProtoBuf::BrokerFullStatus ret;
     try {
         logger.Info("Wait for receiver done");
-        last_receiver_output = receiver.Stop();
+        *ret.mutable_receiver() = receiver.Stop();
 
-        logger.Info("    ... Receiver efficiency: " + std::to_string(static_cast<int>(last_receiver_output.efficiency()*100.0)) + " %"
-                    + "     Max delay: " + std::to_string(last_receiver_output.max_receive_delay())
-                    + "     Compression ratio " + std::to_string(static_cast<int>(std::round(last_receiver_output.compressed_ratio()))) + "x"
-                    );
+        logger.Info("    ... Receiver efficiency: {} %     Max delay: {}     Compression ratio {}x",
+                    static_cast<int>(ret.receiver().efficiency()*100.0),
+                    ret.receiver().max_receive_delay(),
+                    static_cast<int>(std::round(ret.receiver().compressed_ratio())));
 
     } catch (const JFJochException &e) {
-        logger.Info("Receiver finished with error " + std::string(e.what()));
-        // If receiver failed with error, then need to stop writer
-        if (writer_running)
-            writer.Stop();
-        if (indexer_running)
-            indexer.Stop();
+        logger.Error("Receiver finished with error {}",e.what());
+        try {
+            // If receiver failed with error, then need to stop writer
+            if (writer_running)
+                writer.Stop();
+            if (indexer_running)
+                indexer.Stop();
+            detector.Stop();
+        } catch (...) {}
         throw;
     }
     logger.Info("Receiver finished with success");
@@ -104,33 +90,48 @@ JFJochProtoBuf::JFJochReceiverOutput JFJochServices::Stop(const JFCalibration &c
     if (indexer_running) {
         logger.Info("Stopping indexer");
         try {
-            *last_receiver_output.mutable_indexer_output() = indexer.Stop();
+            *ret.mutable_indexer() = indexer.Stop();
         } catch (JFJochException &e) {
-            logger.Info("   ... finished with error " + std::string(e.what()));
-            if (writer_running)
-                writer.Stop();
+
+            logger.Error("   ... finished with error {}",e.what());
+            try {
+                if (writer_running)
+                    writer.Stop();
+                detector.Stop();
+            } catch (...) {}
             throw;
         }
         logger.Info("   ... finished with success.");
-        logger.Info("   ... indexed "
-                    + std::to_string(last_receiver_output.indexer_output().indexed_images())
-                    + " out of "
-                    + std::to_string(last_receiver_output.indexer_output().image_output_size()));
+        logger.Info("   ... indexed {} out of {}", ret.indexer().indexed_images(),
+                    ret.indexer().image_output_size());
     }
     if (writer_running) {
         logger.Info("Stopping writer");
         try {
-            writer.Stop();
+            auto stats = writer.Stop();
             logger.Info("   ... finished with success");
-            writer.WriteMasterFile(last_receiver_output, calibration);
-            logger.Info("   ... master HDF5 file written");
+            for (int i = 0; i < stats.size(); i++) {
+                *ret.add_writer() = stats[i];
+                logger.Info("Writer {}: Images = {} Throughput = {:.0f} MB/s Frame rate = {:.0f} Hz",
+                            i, stats[i].nimages(), stats[i].performance_mbs(), stats[i].performance_hz());
+            }
         } catch (JFJochException &e) {
-            logger.Info("   ... writer finished with error " + std::string(e.what()));
+            logger.Error("   ... writer finished with error {}", e.what());
+            try {
+                detector.Stop();
+            } catch (...) {}
             throw;
         }
     }
 
-    return last_receiver_output;
+    try {
+        detector.Stop();
+    } catch (JFJochException &e) {
+        logger.Error("Detector failed with error {} ", e.what());
+        throw;
+    }
+
+    return ret;
 }
 
 void JFJochServices::Abort() {
@@ -153,32 +154,22 @@ void JFJochServices::Cancel() {
     receiver.Cancel();
 }
 
-bool JFJochServices::IsDetectorIdle() {
-    return detector.IsIdle();
-}
-
 JFJochServices &JFJochServices::Receiver(const std::string &addr) {
     receiver.Connect(addr);
     logger.Info("Using receiver service with gRPC " + addr);
     return *this;
 }
 
-JFJochServices &JFJochServices::Writer(const std::string &addr, const std::string &zmq_pull_addr) {
+JFJochServices &JFJochServices::Writer(const std::string &addr, const std::string &zmq_push_addr) {
     writer.AddClient(addr);
-    writer_zmq_addr.push_back(zmq_pull_addr);
-    logger.Info("Using writer   service with gRPC " + addr + " listening for images on ZeroMQ " + zmq_pull_addr);
+    writer_zmq_addr.push_back(zmq_push_addr);
+    logger.Info("Using writer   service with gRPC {} listening for images from ZeroMQ {}", addr,  zmq_push_addr);
     return *this;
 }
 
 JFJochServices &JFJochServices::Detector(const std::string &addr) {
     detector.Connect(addr);
-    logger.Info("Using detector service with gRPC " + addr);
-    return *this;
-}
-
-JFJochServices &JFJochServices::Trigger(const std::string &addr) {
-    trigger.Connect(addr);
-    logger.Info("Using trigger  service with gRPC " + addr);
+    logger.Info("Using detector service with gRPC {}", addr);
     return *this;
 }
 
@@ -196,10 +187,15 @@ void JFJochServices::SetDataProcessingSettings(const JFJochProtoBuf::DataProcess
 
 JFJochServices &JFJochServices::Indexer(const std::string &addr, const std::string &zmq_sub_addr) {
     indexer.ZMQReceiverAddr(zmq_sub_addr).Connect(addr);
-    logger.Info("Using indexer  service with gRPC " + addr + "    connected to ZMQ subscriber " + zmq_sub_addr);
+    logger.Info("Using indexer  service with gRPC {}    connected to ZMQ subscriber {}", addr, zmq_sub_addr);
     return *this;
 }
 
 JFJochProtoBuf::PreviewFrame JFJochServices::GetPreviewFrame() {
     return receiver.GetPreviewFrame();
+}
+
+JFJochServices &JFJochServices::FacilityMetadata(const JFJochProtoBuf::FacilityMetadata &input) {
+    facility_metadata = input;
+    return *this;
 }

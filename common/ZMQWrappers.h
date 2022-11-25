@@ -41,6 +41,7 @@ public:
     ZMQSocket &Subscribe(const std::string &topic);
     ZMQSocket &SubscribeAll();
     ZMQSocket &NoLinger();
+    ZMQSocket &Conflate(bool input);
     ZMQSocket &SendBufferSize(int32_t bytes);
     ZMQSocket &ReceiverBufferSize(int32_t bytes);
 
@@ -77,12 +78,13 @@ public:
     }
 
     void Send();
-    void Send(void *buf, size_t buf_size);
+    void SendTwoPartAtomic(const std::string &metadata, void *image, size_t image_size);
+    void Send(const void *buf, size_t buf_size, bool blocking = true, bool multipart = false);
     template <class T> void Send(const std::vector<T> &buf) {
         Send(buf.data(), buf.size() * sizeof(T));
     }
     void Send(const int32_t &value);
-    void Send(const std::string &s);
+    void Send(const std::string &s, bool blocking = true, bool multipart = false);
     void Send(zmq_msg_t *msg);
     ZMQSocket &SendWaterMark(int32_t msgs);
     ZMQSocket &ReceiveWaterMark(int32_t msgs);

@@ -50,37 +50,7 @@ template <typename Td, typename Ts> void LineCopyAndAdjustMultipixel(Td *destina
     }
 }
 
-template <class Td, class Ts> void TransferPacketAdjustMultipixels(Td *destination, const Ts *source, int64_t line_shift,
-        int64_t packet_number, Ts min, Ts max) {
-    for (int i = 0; i < 4; i++) {
-        size_t line = packet_number * 4 + i;
-        if ((line == 255) || (line == 256)) {
-            LineCopyAndAdjustMultipixelMidRow<Td, Ts>(destination + line_shift * (line + 1),
-                                                      source + RAW_MODULE_COLS * i, min, max);
-            memcpy(destination + line_shift * (line + ((line > 255) ? 2 : 0)),
-                   destination + line_shift * (line + 1),RAW_MODULE_COLS*sizeof(Td));
-        } else {
-            LineCopyAndAdjustMultipixel<Td, Ts>(destination + line_shift * (line + ((line > 255) ? 2 : 0)),
-                                                source + RAW_MODULE_COLS * i, min, max);
-        }
-    }
-}
-
-template <class Td, class Ts> void TransferModuleAdjustMultipixels(Td *destination, const Ts *source, int64_t line_shift, Ts min, Ts max) {
-    for (size_t line = 0; line < RAW_MODULE_LINES; line++) {
-        if ((line == 255) || (line == 256)) {
-            LineCopyAndAdjustMultipixelMidRow<Td, Ts>(destination + line_shift * (line + 1),
-                                                      source + RAW_MODULE_COLS * line, min, max);
-            memcpy(destination + line_shift * (line + ((line > 255) ? 2 : 0)),
-                   destination + line_shift * (line + 1),RAW_MODULE_COLS*sizeof(Td));
-        } else {
-            LineCopyAndAdjustMultipixel<Td, Ts>(destination + line_shift * (line + ((line > 255) ? 2 : 0)),
-                                                source + RAW_MODULE_COLS * line, min, max);
-        }
-    }
-}
-
-// Copy line and extend multipixels
+// Copy line and copy multipixels (e.g. for mask)
 template <typename Td, typename Ts> void LineCopyAndAddMultipixel(Td *destination, const Ts* source) {
     for (int chip = 0; chip < 4; chip++) {
         for (int i = 0; i < 256; i++)
@@ -92,36 +62,40 @@ template <typename Td, typename Ts> void LineCopyAndAddMultipixel(Td *destinatio
     }
 }
 
-// Copy line and extend multipixels
-template <typename Td, typename Ts> void LineCopyAndAddMultipixelHPerf(Td *destination, const Ts* source) {
-    for (int chip = 0; chip < 4; chip++) {
-        for (int i = 0; i < 256; i++) {
-            if ((i + chip * 256 != 0) && (i+chip * 256 != 1030))
-                destination[i + chip * 258 - 1] = source[i + chip * 256];
-        }
-    }
-    for (int i = 0; i < 3; i++) {
-        destination[256+i*258] = source[255 + i*256];
-        destination[257+i*258] = source[256 + i*256];
-    }
-}
-
-// Copy line and extend multipixels
-template <typename Td, typename Ts> void LineCopyNoMultipixel(Td *destination, const Ts* source) {
+template <typename Td, typename Ts> void LineCopyFirstHalfNoMultipixel(Td *destination, const Ts* source) {
     destination[0] = source[0];
-    for (int chip = 0; chip < 4; chip++) {
+    for (int chip = 0; chip < 2; chip++) {
         for (int i = 1; i < 255; i++)
             destination[i+chip*258] = source[i+chip*256];
     }
-    destination[1029] = source[1023];
 }
 
-template <class Td, class Ts> void TransferPacketNoMultipixel(Td *destination, const Ts *source, int64_t line_shift, int64_t packet_number) {
-    for (int i = 0; i < 4; i++) {
-        size_t line = packet_number * 4 + i;
-        if ((line != 255) && (line != 256))
-            LineCopyNoMultipixel<Td, Ts>(destination + line_shift * (line + ((line > 255) ? 2 : 0)),
-                                         source + RAW_MODULE_COLS * i);
+template <typename Td, typename Ts> void LineCopySecondHalfNoMultipixel(Td *destination, const Ts* source) {
+    for (int chip = 0; chip < 2; chip++) {
+        for (int i = 1; i < 255; i++)
+            destination[i+(chip+2)*258] = source[i+chip*256];
+    }
+    destination[1029] = source[511];
+}
+
+template <class Td, class Ts> void TransferPacketEIGER(Td *destination, const Ts *source, int64_t line_shift, int64_t packet_number) {
+    constexpr int lines_per_packet = 4096 / (RAW_MODULE_COLS / 2 * sizeof(Ts));
+    constexpr int packets_per_module = 128 * sizeof(Ts);
+    for (int i = 0; i < lines_per_packet; i++) {
+        size_t line;
+        if (packet_number < packets_per_module / 2)
+            line = (packet_number % (packets_per_module / 4)) * lines_per_packet + i;
+        else
+            line = 258 + (packet_number % (packets_per_module / 4)) * lines_per_packet + (lines_per_packet - 1 - i);
+        if ((line != 255) && (line != 258)) {
+            if ((packet_number / (packets_per_module / 4)) % 2 == 0) {
+                LineCopyFirstHalfNoMultipixel<Td, Ts>(destination + line_shift * line,
+                                                      source + (RAW_MODULE_COLS/2) * i);
+            } else
+
+                LineCopySecondHalfNoMultipixel<Td, Ts>(destination + line_shift * line,
+                                                      source + (RAW_MODULE_COLS/2) * i);
+        }
     }
 }
 
@@ -135,6 +109,28 @@ template <class Td, class Ts> void TransferModule(Td *destination, const Ts *sou
         }
     }
 }
+
+template <class Td, class Ts> void TransferModuleEIGER(Td *destination, const Ts *source, int64_t line_shift) {
+    constexpr int lines_per_packet = 4096 / (RAW_MODULE_COLS / 2 * sizeof(Ts));
+    constexpr int packets_per_module = 128 * sizeof(Ts);
+    for (int i = 0; i < packets_per_module; i++)
+        TransferPacketEIGER(destination, source + i * (RAW_MODULE_COLS / 2) * lines_per_packet,  line_shift, i);
+}
+
+template <class Td, class Ts> void TransferModuleAdjustMultipixels(Td *destination, const Ts *source, int64_t line_shift, Ts min, Ts max) {
+    for (size_t line = 0; line < RAW_MODULE_LINES; line++) {
+        if ((line != 255) && (line != 256))
+            LineCopyAndAdjustMultipixel<Td, Ts>(destination + line_shift * (line + ((line > 255) ? 2 : 0)),
+                                                source + RAW_MODULE_COLS * line, min, max);
+        else {
+            LineCopyAndAdjustMultipixelMidRow<Td, Ts>(destination + line_shift * (line + 1),
+                                                      source + RAW_MODULE_COLS * line, min, max);
+            memcpy(destination + line_shift * (line + ((line > 255) ? 2 : 0)),
+                   destination + line_shift * (line + 1),CONVERTED_MODULE_COLS*sizeof(Td));
+        }
+    }
+}
+
 
 inline Coord RawToConvertedCoordinate(const DiffractionExperiment& experiment, uint16_t data_stream, const Coord &raw) {
     if (experiment.GetDetectorMode() == DetectorMode::Conversion) {
@@ -156,6 +152,7 @@ inline Coord RawToConvertedCoordinate(const DiffractionExperiment& experiment, u
 }
 
 // Input coord is column + 1024 * (line + 512 * module)
+// Copies result over multipixel - can be used for example for mask calculation
 template <class Td, class Ts> void RawToConvertedGeometry(const DiffractionExperiment& experiment, Td *destination, const Ts *source) {
     for (size_t module = 0; module < experiment.GetModulesNum(); module++)
         TransferModule<Td, Ts>(destination + experiment.GetPixel0OfModule(module),
@@ -184,21 +181,23 @@ template <class T> void LineConvtToRaw(T *destination, const T* source) {
     }
 }
 
-template <class T> void LineConvtToRawHPerf(T *destination, const T* source) {
-    for (int chip = 0; chip < 4; chip++) {
-        for (int i = 0; i < 256; i++) {
-            if ((i + chip * 256 != 0) && (i + chip * 256 != 1023))
-                destination[i + chip * 256] = source[i + chip * 258 - 1];
-        }
-    }
-}
-
 template <class T> void ConvertedToRawGeometry(const DiffractionExperiment& experiment, T *destination, const T* source) {
     for (size_t module = 0; module < experiment.GetModulesNum(); module++) {
         for (size_t line = 0; line < RAW_MODULE_LINES; line++) {
             LineConvtToRaw<T>(destination + module * RAW_MODULE_SIZE + RAW_MODULE_COLS * line,
                               source + experiment.GetPixel0OfModule(module) + (experiment.IsUpsideDown() ? -1 : 1) * experiment.GetXPixelsNum() * (line + ((line > 255) ? 2 : 0))
                               );
+        }
+    }
+}
+
+
+template <class T> void ConvertedToRawGeometryEIGER(const DiffractionExperiment& experiment, T *destination, const T* source) {
+    for (size_t module = 0; module < experiment.GetModulesNum(); module++) {
+        for (size_t line = 0; line < RAW_MODULE_LINES; line++) {
+            LineConvtToRaw<T>(destination + module * RAW_MODULE_SIZE + RAW_MODULE_COLS * line,
+                              source + experiment.GetPixel0OfModule(module) + (experiment.IsUpsideDown() ? -1 : 1) * experiment.GetXPixelsNum() * (line + ((line > 255) ? 2 : 0))
+            );
         }
     }
 }

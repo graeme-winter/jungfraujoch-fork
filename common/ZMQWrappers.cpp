@@ -51,14 +51,28 @@ void ZMQSocket::Send() {
         throw JFJochException(JFJochExceptionCategory::ZeroMQ, "zmq_send() failed: " + std::string(std::strerror(errno)));
 }
 
-void ZMQSocket::Send(void *buf, size_t buf_size) {
+void ZMQSocket::Send(const void *buf, size_t buf_size, bool blocking, bool multipart) {
     std::unique_lock<std::mutex> ul(m);
-    if (zmq_send(socket, buf, buf_size, 0) != buf_size)
-        throw JFJochException(JFJochExceptionCategory::ZeroMQ, "zmq_send(buf) failed: " + std::string(std::strerror(errno)));
+    if (zmq_send(socket, buf, buf_size, (blocking ? 0 : ZMQ_DONTWAIT) | (multipart ? ZMQ_SNDMORE : 0)) != buf_size) {
+        if (errno != EAGAIN)
+            throw JFJochException(JFJochExceptionCategory::ZeroMQ,
+                              "zmq_send(buf) failed: " + std::string(std::strerror(errno)));
+    }
 }
 
-void ZMQSocket::Send(const std::string &s) {
-    Send((void *) s.c_str(), s.size());
+
+void ZMQSocket::SendTwoPartAtomic(const std::string &metadata, void *image, size_t image_size) {
+    std::unique_lock<std::mutex> ul(m);
+    if (zmq_send(socket, metadata.c_str(), metadata.size(), ZMQ_SNDMORE) != metadata.size())
+        throw JFJochException(JFJochExceptionCategory::ZeroMQ, "zmq_send(part1) failed: "
+        + std::string(std::strerror(errno)));
+    if (zmq_send(socket, image, image_size, 0) != image_size)
+        throw JFJochException(JFJochExceptionCategory::ZeroMQ, "zmq_send(part2) failed: "
+                                                               + std::string(std::strerror(errno)));
+}
+
+void ZMQSocket::Send(const std::string &s, bool blocking, bool multipart) {
+    Send((void *) s.c_str(), s.size(), blocking, multipart);
 }
 
 void ZMQSocket::Send(const int32_t &value) {
@@ -142,5 +156,10 @@ ZMQSocket& ZMQSocket::SendWaterMark(int32_t msgs) {
 
 ZMQSocket &ZMQSocket::NoLinger() {
     SetSocketOption(ZMQ_LINGER, 0);
+    return *this;
+}
+
+ZMQSocket &ZMQSocket::Conflate(bool input) {
+    SetSocketOption(ZMQ_CONFLATE, input ? 1 : 0);
     return *this;
 }

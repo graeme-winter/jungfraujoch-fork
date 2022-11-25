@@ -53,7 +53,7 @@ void arp(AXI_STREAM &arp_in,
          ap_uint<1> enable,
          ap_uint<1> arp_start) {
 #pragma HLS INTERFACE ap_ctrl_none port=return
-#pragma HLS PIPELINE II=1 enable_flush
+#pragma HLS PIPELINE II=1 style=flp
 #pragma HLS INTERFACE ap_none register port=fpga_mac_addr
 #pragma HLS INTERFACE ap_none register port=fpga_ipv4_addr
 #pragma HLS INTERFACE ap_none register port=enable

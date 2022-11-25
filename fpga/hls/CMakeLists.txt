@@ -13,7 +13,7 @@ ADD_LIBRARY( HLSSimulation STATIC
         ip_header_checksum.h
         udp.cpp
         sls_detector.cpp
-        hls_bitshuffle.cpp)
+        hls_bitshuffle.cpp data_and_cmd_stream_sync.cpp)
 
 TARGET_INCLUDE_DIRECTORIES(HLSSimulation PUBLIC ../include)
 TARGET_LINK_LIBRARIES(HLSSimulation CommonFunctions)
@@ -47,6 +47,7 @@ MAKE_HLS_MODULE(arp.cpp arp)
 MAKE_HLS_MODULE(udp.cpp udp)
 MAKE_HLS_MODULE(sls_detector.cpp sls_detector)
 MAKE_HLS_MODULE(hls_bitshuffle.cpp bitshuffle)
+MAKE_HLS_MODULE(data_and_cmd_stream_sync.cpp data_and_cmd_stream_sync)
 
 SET (HLS_IPS psi_ch_hls_data_collection_fsm_1_0.zip
              psi_ch_hls_timer_host_1_0.zip
@@ -61,7 +62,8 @@ SET (HLS_IPS psi_ch_hls_data_collection_fsm_1_0.zip
              psi_ch_hls_udp_1_0.zip
              psi_ch_hls_sls_detector_1_0.zip
              psi_ch_hls_icmp_1_0.zip
-             psi_ch_hls_host_writer_1_0.zip)
+             psi_ch_hls_host_writer_1_0.zip
+             psi_ch_hls_data_and_cmd_stream_sync_1_0.zip)
 
 SET (HLS_IPS ${HLS_IPS} PARENT_SCOPE)
 ADD_CUSTOM_TARGET(hls DEPENDS ${HLS_IPS})

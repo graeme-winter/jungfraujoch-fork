@@ -9,10 +9,7 @@
 #include <osnap_hls_if.h>
 
 #include "../../common/Definitions.h"
-#include "../../common/DiffractionExperiment.h"
-#include "../../common/Logger.h"
 #include "AcquisitionDevice.h"
-#include <bitset>
 
 enum class MMIORegion : size_t {HLS = 0x00000, CMAC = 0x40000, MAILBOX = 0x30000, AD_BCI = 0x10000, CALIB_BRAM = 0x60000};
 

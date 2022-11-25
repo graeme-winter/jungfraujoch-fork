@@ -42,11 +42,10 @@ int main(int argc, char **argv) {
     }
 
     DiffractionExperiment x;
-    x.ImageTime(std::chrono::milliseconds(1));
+    x.Summation(1);
 
     // Set metadata for the compression_benchmark.h5 dataset
-    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).OmegaStart(0)
-    .OmegaIncrement(0.088).Wavelength_A(1.0);
+    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).Wavelength_A(1.0);
     x.MaskModuleEdges(true);
     x.MaskChipEdges(true);
 
@@ -116,10 +115,13 @@ int main(int argc, char **argv) {
     auto start_time = std::chrono::system_clock::now();
     logger.Info("Writing " + std::to_string(nimages_out) + " images");
 
+    std::vector<SpotToSave> spots;
+
     int64_t total_image_size = 0;
     for (int i = 0; i < nimages_out; i++) {
         std::this_thread::sleep_until(start_time + i * period_us);
-        fileset->Write(output[i % nimages].data(), output_size[i % nimages], i);
+        auto [file_number, image_number_in_file] = x.GetImageLocationInFile(i);
+        fileset->Write(output[i % nimages].data(), output_size[i % nimages], spots, file_number, image_number_in_file);
         total_image_size += output_size[i % nimages];
     }
 
@@ -132,7 +134,7 @@ int main(int argc, char **argv) {
 
     logger.Info("Write HDF5 master file");
 
-    JFJochProtoBuf::JFJochReceiverOutput receiver_output;
+    JFJochProtoBuf::ReceiverOutput receiver_output;
 
     receiver_output.set_start_time_ms(1640995200000);
     receiver_output.set_end_time_ms(1640995210000);
@@ -140,10 +142,8 @@ int main(int argc, char **argv) {
     receiver_output.set_max_image_number_sent(nimages - 1);
     *receiver_output.mutable_jungfraujoch_settings() = x;
 
-    JFJochProtoBuf::JFJochWriterMetadataInput request;
-    *request.mutable_receiver_output() = receiver_output;
-    *request.mutable_calibration() = JFCalibration(x);
-
+    JFJochProtoBuf::WriterMetadataInput request;
+    x.FillWriterMetadata(request);
     WriteHDF5MasterFile(request);
 
     logger.Info("Writing done");

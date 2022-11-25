@@ -11,10 +11,9 @@ class JFJochWriterGroupClient {
     std::vector<JFJochWriterClient> clients;
 public:
     void AddClient(const std::string &addr);
-    void Start(const DiffractionExperiment &experiment);
-    void Stop();
-    void WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request,
-                         const JFJochProtoBuf::JFCalibration &calibration);
+    void Start(const DiffractionExperiment &experiment, const std::vector<std::string> &zmq_push_addr);
+    std::vector<JFJochProtoBuf::WriterOutput> Stop();
+    void WriteMasterFile(JFJochProtoBuf::WriterMetadataInput &request);
     void Abort();
 };
 

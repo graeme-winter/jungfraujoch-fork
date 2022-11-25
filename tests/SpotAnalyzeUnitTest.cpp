@@ -26,15 +26,14 @@ TEST_CASE("DiffractionSpot_LabCoord","[StrongPixelSet]") {
     DiffractionSpot spot(212, 2047, 12, 45);
     DiffractionExperiment experiment;
     experiment.DataStreamModuleSize(2, {4, 4}, 8, 36).UpsideDown(true);
-    experiment.DetectorDistance_mm(30).OmegaStart(50.0).OmegaIncrement(1.0).BeamX_pxl(120)
-    .BeamY_pxl(150.0).ScatteringVector(Coord(0,0,1)).RotationAxis(Coord(1,0,0));
+    experiment.DetectorDistance_mm(30).BeamX_pxl(120)
+    .BeamY_pxl(150.0).ScatteringVector(Coord(0,0,1));
 
     REQUIRE(spot.RawCoord().x == 212);
     REQUIRE(spot.RawCoord().y == 2047);
     REQUIRE(spot.Frame() == 12);
 
     REQUIRE(spot.Count() == 45);
-    REQUIRE(spot.OmegaRad(experiment) == (50 + 12 * 1.0) * M_PI / 180.0);
 
     auto spot_transformed_0 = spot.TransformCoordinates(experiment, 0);
     auto spot_transformed_1 = spot.TransformCoordinates(experiment, 1);
@@ -56,11 +55,9 @@ TEST_CASE("DiffractionSpot_ReciprocalCoord","[StrongPixelSet]") {
 
     experiment.DataStreamModuleSize(2, {4, 4}, 8, 36).UpsideDown(true)
     .BeamX_pxl(beam_center_x).BeamY_pxl(beam_center_y).DetectorDistance_mm(detector_distance)
-    .PhotonEnergy_keV(WVL_1A_IN_KEV/2.4).OmegaStart(0).OmegaIncrement(1)
-    .ScatteringVector(Coord(0,0,1)).RotationAxis(Coord(1,0,0));
+    .PhotonEnergy_keV(WVL_1A_IN_KEV/2.4).ScatteringVector(Coord(0,0,1));
 
     auto spot_transformed_0 = spot.TransformCoordinates(experiment, 0);
-    auto spot_transformed_1 = spot.TransformCoordinates(experiment, 0);
 
     Coord lab = spot_transformed_0.LabCoord(experiment, 0);
 
@@ -79,17 +76,6 @@ TEST_CASE("DiffractionSpot_ReciprocalCoord","[StrongPixelSet]") {
     REQUIRE(spot_transformed_0.ReciprocalCoord(experiment, 0).x == -75.0 / (2.4 * lab.Length()));
     REQUIRE(spot_transformed_0.ReciprocalCoord(experiment, 0).y == 0);
     REQUIRE(spot_transformed_0.ReciprocalCoord(experiment, 0).z == Approx(75.0 / sqrt(3) / (2.4 * lab.Length()) - 1.0 / 2.4));
-
-   REQUIRE(spot_transformed_0.OmegaRad(experiment) == Approx(M_PI));
-    REQUIRE(spot_transformed_0.ReciprocalCoord3D(experiment, 0).x == -75.0 / (2.4 * lab.Length()));
-    REQUIRE(spot_transformed_0.ReciprocalCoord3D(experiment, 0).y == Approx(0).margin(1e-12));
-    REQUIRE(spot_transformed_0.ReciprocalCoord3D(experiment, 0).z == -Approx(75.0 / sqrt(3) / (2.4 * lab.Length()) - 1.0 / 2.4));
-
-    experiment.OmegaIncrement(0.5);
-    REQUIRE(spot.OmegaRad(experiment) == Approx(M_PI_2));
-    REQUIRE(spot_transformed_0.ReciprocalCoord3D(experiment, 0).x == -75.0 / (2.4 * lab.Length()));
-    REQUIRE(spot_transformed_0.ReciprocalCoord3D(experiment, 0).y == -Approx(75.0 / sqrt(3) / (2.4 * lab.Length()) - 1.0 / 2.4));
-    REQUIRE(spot_transformed_0.ReciprocalCoord3D(experiment, 0).z == Approx(0).margin(1e-12));
 }
 
 TEST_CASE("StrongPixelSet_coord2uint64_t","[StrongPixelSet]") {
@@ -108,7 +94,6 @@ TEST_CASE("StrongPixelSet_BuildSpots","[StrongPixelSet]") {
     settings.set_high_resolution_limit(0.5);
     settings.set_min_pix_per_spot(3);
     settings.set_max_pix_per_spot(200);
-    settings.set_enable_3d_spot_finding(false);
 
     std::vector<DiffractionSpot> spots;
     StrongPixelSet strong_pixel_set;
@@ -131,44 +116,5 @@ TEST_CASE("StrongPixelSet_BuildSpots","[StrongPixelSet]") {
     REQUIRE(spots[0].RawCoord().y == Approx(105.0));
     REQUIRE(spots[0].Frame() == Approx(1.0));
     REQUIRE(spots[0].Depth() == 1);
-    REQUIRE(spots[0].Size() == 9);
-}
-
-
-TEST_CASE("StrongPixelSet_BuildSpots3D","[StrongPixelSet]") {
-    DiffractionExperiment experiment;
-    experiment.Mode(DetectorMode::Raw);
-
-    JFJochProtoBuf::DataProcessingSettings settings;
-    settings.set_low_resolution_limit(200.0);
-    settings.set_high_resolution_limit(0.5);
-    settings.set_min_pix_per_spot(3);
-    settings.set_max_pix_per_spot(200);
-    settings.set_max_depth(5);
-    settings.set_enable_3d_spot_finding(true);
-
-    std::vector<DiffractionSpot> spots;
-    StrongPixelSet strong_pixel_set;
-    strong_pixel_set.AddStrongPixel(7,105,1);
-    strong_pixel_set.AddStrongPixel(7,106,1);
-    strong_pixel_set.AddStrongPixel(7,104,1);
-    strong_pixel_set.AddStrongPixel(6,106,1);
-    strong_pixel_set.AddStrongPixel(6,105,1);
-    strong_pixel_set.AddStrongPixel(6,104,1);
-    strong_pixel_set.AddStrongPixel(8,106,1);
-    strong_pixel_set.AddStrongPixel(8,105,1);
-    strong_pixel_set.AddStrongPixel(8,104,1);
-    strong_pixel_set.AddStrongPixel(7,105,2);
-    strong_pixel_set.AddStrongPixel(7,105,0);
-    strong_pixel_set.AddStrongPixel(9,109,0);
-    strong_pixel_set.FindSpots(experiment, settings, spots);
-    REQUIRE(strong_pixel_set.Count() == 0);
-    REQUIRE(spots.size() == 1);
-
-    REQUIRE(spots[0].Count() == 11.0f);
-    REQUIRE(spots[0].RawCoord().x == Approx(7.0));
-    REQUIRE(spots[0].RawCoord().y == Approx(105.0));
-    REQUIRE(spots[0].Frame() == Approx(1.0));
-    REQUIRE(spots[0].Depth() == 3);
     REQUIRE(spots[0].Size() == 9);
 }

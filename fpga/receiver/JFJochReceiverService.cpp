@@ -4,11 +4,11 @@
 #include "JFJochReceiverService.h"
 
 JFJochReceiverService::JFJochReceiverService(std::vector<AcquisitionDevice *> &open_capi_device,
-                                             ZMQContext &context, Logger &in_logger) :
+                                             Logger &in_logger, ImagePusher &pusher) :
         logger(in_logger), aq_devices(open_capi_device),
-        image_pusher(context) {}
+        image_pusher(pusher) {}
 
-grpc::Status JFJochReceiverService::Start(grpc::ServerContext *context, const JFJochProtoBuf::JFJochReceiverInput *request,
+grpc::Status JFJochReceiverService::Start(grpc::ServerContext *context, const JFJochProtoBuf::ReceiverInput *request,
                                           JFJochProtoBuf::Empty *response) {
     std::unique_lock<std::mutex> ul_state(state_mutex);
     if (state != ReceiverState::Idle)
@@ -45,7 +45,7 @@ void JFJochReceiverService::FinalizeMeasurement() {
 }
 
 grpc::Status JFJochReceiverService::Stop(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
-                                         JFJochProtoBuf::JFJochReceiverOutput *response) {
+                                         JFJochProtoBuf::ReceiverOutput *response) {
     std::unique_lock<std::mutex> ul(state_mutex);
 
     measurement_done.wait(ul, [this] { return (state != ReceiverState::Running);});
@@ -109,18 +109,6 @@ JFJochReceiverService &JFJochReceiverService::SpotPublisher(ZMQSpotPublisher *in
     return *this;
 }
 
-JFJochReceiverService &JFJochReceiverService::SendBufferSize(int32_t bytes) {
-    logger.Info("Setting ZeroMQ/TCP send buffer size to " + std::to_string(bytes) + " bytes");
-    image_pusher.SendBufferSize(bytes);
-    return *this;
-}
-
-JFJochReceiverService &JFJochReceiverService::SendBufferHighWatermark(int32_t msgs)  {
-    logger.Info("Setting ZeroMQ/TCP send buffer high watermark to " + std::to_string(msgs) + " messages");
-    image_pusher.SendBufferHighWatermark(msgs);
-    return *this;
-}
-
 grpc::Status JFJochReceiverService::GetStatus(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                                 JFJochProtoBuf::ReceiverStatus *response) {
     // FPGA status can be polled outside of the state mutex
@@ -165,7 +153,7 @@ grpc::Status JFJochReceiverService::GetPreviewFrame(grpc::ServerContext *context
 }
 
 grpc::Status JFJochReceiverService::GetNetworkConfig(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
-                                                     JFJochProtoBuf::JFJochReceiverNetworkConfig *response) {
+                                                     JFJochProtoBuf::ReceiverNetworkConfig *response) {
     for (const auto &aq: aq_devices)
         response->add_fpga_mac_addr(aq->GetMACAddress());
     return grpc::Status::OK;

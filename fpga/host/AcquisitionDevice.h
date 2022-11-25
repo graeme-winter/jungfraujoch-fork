@@ -9,23 +9,24 @@
 #include <future>
 #include <unistd.h>
 
+#include <jfjoch.pb.h>
+
 #include "../../common/Definitions.h"
 #include "../../common/DiffractionExperiment.h"
 #include "../../common/Logger.h"
 #include "../../common/JFCalibration.h"
 #include "../../common/ThreadSafeFIFO.h"
-
-#include "jfjoch.pb.h"
+#include "../../common/JFModuleGainCalibration.h"
 
 #include "ActionConfig.h"
-#include "AcquisitionDeviceFilter.h"
-#include "AcquisitionDeviceCounters.h"
+#include "AcquisitionOnlineCounters.h"
 #include "Completion.h"
+#include "AcquisitionOfflineCounters.h"
 
 void *mmap_acquisition_buffer(size_t size, int16_t numa_node);
 
 class AcquisitionDevice {
-    uint32_t packets_ok = 0;
+    uint64_t bytes_received = 0;
 
     std::vector<std::array<uint16_t, RAW_MODULE_SIZE> > gain0;
     std::vector<std::array<uint16_t, RAW_MODULE_SIZE> > gain1;
@@ -39,15 +40,17 @@ class AcquisitionDevice {
 
     void FillActionRegister(const DiffractionExperiment& x, ActionConfig& job);
 
-    AcquisitionDeviceFilter filter;
-    AcquisitionDeviceCounters counters;
+    int64_t expected_frames;
+    AcquisitionOnlineCounters counters;
 
     ThreadSafeFIFO<Completion> work_completion_queue;
     std::future<void> read_work_completion_future;
     void ReadWorkCompletionThread();
 
-    ThreadSafeSet<uint32_t> work_request_queue;
+    ThreadSafeSet<uint64_t> work_request_queue;
     std::future<void> send_work_request_future;
+
+    AcquisitionOfflineCounters completion_vector;
 
     void SendWorkRequestThread();
     void EndWorkRequestAndSignalQueues();
@@ -83,7 +86,7 @@ protected:
     void UnmapBuffers();
     void MapBuffersStandard(size_t c2h_buffer_count, size_t h2c_buffer_count, int16_t numa_node);
 public:
-    static const uint16_t HandleNotValid = UINT16_MAX;
+    static constexpr const uint64_t HandleNotValid = UINT64_MAX;
 
     virtual ~AcquisitionDevice() { UnmapBuffers(); };
 
@@ -97,35 +100,32 @@ public:
     void EnableLogging(Logger *logger);
 
     // Post measurement statistics - only guaranteed valid after WaitForActionComplete ends
-    uint32_t GetPacketsOK() const;
+    uint64_t GetBytesReceived() const;
 
     void SaveStatistics(const DiffractionExperiment &experiment, JFJochProtoBuf::AcquisitionDeviceStatistics &statistics) const;
     JFJochProtoBuf::FPGAStatus GetStatus() const;
 
     // Internal frame generator
     void SetCustomInternalGeneratorFrame(const std::vector<uint16_t> &v);
+    const std::vector<uint16_t> &GetInternalGeneratorFrame() const;
 
     const int16_t *GetFrameBuffer(size_t frame_number, uint16_t module) const;
     void FrameBufferRelease(size_t frame_number, uint16_t module);
-    const int16_t *GetPacketBuffer(size_t frame_number, uint16_t module, uint16_t packet);
+    const int16_t *GetErrorFrameBuffer() const;
 
     int16_t *GetDeviceBuffer(size_t handle);
 
     // Calibration
     virtual void InitializeCalibration(const DiffractionExperiment &experiment, const JFCalibration &calib);
 
-    template<class T> void LoadModuleGain(const std::vector<T> &vector, uint16_t module);
-    void LoadModuleGain(const std::string &filename, uint16_t module);
+    void LoadModuleGain(const JFModuleGainCalibration &gain_calibration, uint16_t module);
 
     uint64_t GetHead(uint8_t module) const;
     uint64_t GetSlowestHead() const;
     void WaitForFrame(size_t curr_frame, uint16_t module = UINT16_MAX) const;
     int64_t CalculateDelay(size_t curr_frame, uint16_t module = UINT16_MAX) const; // mutex acquired indirectly
-    uint64_t GetPacketMaskHalfModule(size_t frame, uint8_t module) const;
-    uint16_t GetBufferHandle(size_t frame, uint8_t module) const;
-    uint16_t GetPacketCount(size_t frame, uint8_t module) const;
-    uint16_t GetPacketCountHalfModule(size_t frame, uint8_t module) const;
-    bool GetTriggerField(size_t frame, uint8_t module) const;
+    uint64_t GetBufferHandle(size_t frame, uint8_t module) const;
+    bool IsFullModuleCollected(size_t frame, uint8_t module) const;
     ActionConfig ReadActionRegister();
     bool IsDone() const;
 

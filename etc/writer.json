@@ -1,5 +1,4 @@
 {
-  "zmq_threads": 4,
-  "base_directory": "/sls/MX/Data10/x",
+  "base_directory": "/home/leonarski_f/data",
   "gid": -1
 }

@@ -65,11 +65,13 @@ class App extends Component {
             let param_array = [
                 {
                     desc: "Efficiency",
-                    value: (100.0 * response.getLastMeasurementCollectionEfficiency()).toFixed() + " %"
+                    value: (100.0 * response.getMeasurementStatistics().getCollectionEfficiency()).toFixed() + " %"
                 },
-                {desc: "Compression ratio", value: response.getLastMeasurementCompressionRatio().toPrecision(3) + "x"},
-                {desc: "Images collected", value: response.getLastMeasurementImagesCollected()},
-                {desc: "File prefix", value: response.getLastMeasurementName()}
+                {desc: "Compression ratio", value: response.getMeasurementStatistics().getCompressionRatio().toPrecision(3) + "x"},
+                {desc: "Images collected", value: response.getMeasurementStatistics().getImagesCollected()},
+                {desc: "Images written", value: response.getMeasurementStatistics().getImagesWritten()},
+                {desc: "File prefix", value: response.getMeasurementStatistics().getFileName()},
+                {desc: "Write performance (MB/s)", value: response.getMeasurementStatistics().getWriterPerformanceMbs()},
             ];
 
             let state_map = {

@@ -32,3 +32,4 @@ always @(posedge clk)
 assign out_resetn = q2;
 
 endmodule
+

@@ -27,20 +27,62 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator", "[FPGA][Full]") {
 
     REQUIRE(test.OutputStream().size() == 1);
 
-    REQUIRE(test.GetPacketsOK() == 128 * nmodules * 4);
+    JFJochProtoBuf::AcquisitionDeviceStatistics device_statistics;
+    REQUIRE_NOTHROW(test.SaveStatistics(x, device_statistics));
+    REQUIRE(device_statistics.bytes_received() == 128 * nmodules * 4 * JUNGFRAU_PACKET_SIZE_BYTES);
+    REQUIRE(device_statistics.mask_entries_per_module() == 2); // JUNGFRAU
+    REQUIRE(device_statistics.packets_expected_per_module() == 128); // JUNGFRAU
+    REQUIRE(device_statistics.packet_mask_size() == nmodules * 4 * 2);
+    REQUIRE(device_statistics.packets_received_per_module_size() == nmodules * 4);
 
-    for (int j = 0; j < 4; j++) {
-        for (int i = 0; i < nmodules; i++) {
-            REQUIRE(test.GetPacketCount(j, i) == 128);
-            REQUIRE(test.GetPacketCountHalfModule(j, i * 2    ) == 64);
-            REQUIRE(test.GetPacketCountHalfModule(j, i * 2 + 1) == 64);
-            REQUIRE(test.GetPacketMaskHalfModule(j, i * 2) == UINT64_MAX);
-            REQUIRE(test.GetPacketMaskHalfModule(j, i * 2 + 1) == UINT64_MAX);
-        }
-    }
 
     for (int image = 0; image < 4; image++) {
+
         for (int m = 0; m < nmodules; m++) {
+            REQUIRE(device_statistics.packets_received_per_module(image * nmodules + m) == 128);
+            for (int i = 0; i < 2; i++) {
+                REQUIRE(device_statistics.packet_mask((nmodules * image + m) * 2 + i) == UINT64_MAX);
+            }
+
+            auto imageBuf = (uint16_t *) test.GetFrameBuffer(image, m);
+            for (int i = 0; i < RAW_MODULE_SIZE; i++)
+                REQUIRE(imageBuf[i] == i % 65536);
+        }
+    }
+}
+
+TEST_CASE("HLS_C_Simulation_internal_packet_generator_4KB", "[FPGA][Full]") {
+    const uint16_t nmodules = 4;
+
+    DiffractionExperiment x;
+
+    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {nmodules}).DetectorType(JFJochProtoBuf::EIGER);
+    x.UseInternalPacketGenerator(true).ImagesPerTrigger(4).PedestalG0Frames(0);
+
+    HLSSimulatedDevice test(0, 64);
+
+    REQUIRE_NOTHROW(test.StartAction(x));
+    REQUIRE_NOTHROW(test.WaitForActionComplete());
+
+    REQUIRE(test.OutputStream().size() == 1);
+
+    JFJochProtoBuf::AcquisitionDeviceStatistics device_statistics;
+    REQUIRE_NOTHROW(test.SaveStatistics(x, device_statistics));
+    REQUIRE(device_statistics.bytes_received() == 128 * nmodules * 4 * JUNGFRAU_PACKET_SIZE_BYTES);
+    REQUIRE(device_statistics.mask_entries_per_module() == 4); // EIGER
+    REQUIRE(device_statistics.packets_expected_per_module() == 256); // EIGER
+    REQUIRE(device_statistics.packet_mask_size() == nmodules * 4 * 4);
+    REQUIRE(device_statistics.packets_received_per_module_size() == nmodules * 4);
+
+
+    for (int image = 0; image < 4; image++) {
+
+        for (int m = 0; m < nmodules; m++) {
+            REQUIRE(device_statistics.packets_received_per_module(image * nmodules + m) == 256);
+            for (int i = 0; i < 4; i++) {
+                REQUIRE(device_statistics.packet_mask((nmodules * image + m) * 4 + i) == UINT64_MAX);
+            }
+
             auto imageBuf = (uint16_t *) test.GetFrameBuffer(image, m);
             for (int i = 0; i < RAW_MODULE_SIZE; i++)
                 REQUIRE(imageBuf[i] == i % 65536);
@@ -72,17 +114,7 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_custom_frame", "[FPGA][Ful
 
     REQUIRE(test.OutputStream().size() == 1);
 
-    REQUIRE(test.GetPacketsOK() == 128 * nmodules * 4);
-
-    for (int j = 0; j < 4; j++) {
-        for (int i = 0; i < nmodules; i++) {
-            REQUIRE(test.GetPacketCount(j, i) == 128);
-            REQUIRE(test.GetPacketCountHalfModule(j, i * 2    ) == 64);
-            REQUIRE(test.GetPacketCountHalfModule(j, i * 2 + 1) == 64);
-            REQUIRE(test.GetPacketMaskHalfModule(j, i * 2) == UINT64_MAX);
-            REQUIRE(test.GetPacketMaskHalfModule(j, i * 2 + 1) == UINT64_MAX);
-        }
-    }
+    REQUIRE(test.GetBytesReceived() == 128 * nmodules * 4 * JUNGFRAU_PACKET_SIZE_BYTES);
 
     for (int image = 0; image < 4; image++) {
         for (int m = 0; m < nmodules; m++) {
@@ -107,7 +139,7 @@ TEST_CASE("HLS_C_Simulation_check_raw", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
     test.CreatePackets(x, 1, 5, 0, raw_frames.data(), true);
@@ -121,24 +153,21 @@ TEST_CASE("HLS_C_Simulation_check_raw", "[FPGA][Full]") {
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 5 * 128);
+    REQUIRE(test.GetBytesReceived() == 5 * 128 * JUNGFRAU_PACKET_SIZE_BYTES);
 
-    for (int i = 0; i < 5; i++) {
-        REQUIRE(test.GetPacketCount(i, 0) == 128);
-    }
-    REQUIRE_THROWS(test.GetPacketCount(6, 0));
-
-    REQUIRE(test.GetPacketCount(0,2) == 0);
-    REQUIRE(test.GetPacketCount(0,3) == 0);
-    REQUIRE_THROWS(test.GetPacketCount(0,4));
-    REQUIRE_THROWS(test.GetPacketCount(0,5));
-    REQUIRE_THROWS(test.GetPacketCount(0,6));
-    REQUIRE_THROWS(test.GetPacketCount(0,7));
+    JFJochProtoBuf::AcquisitionDeviceStatistics device_statistics;
+    REQUIRE_NOTHROW(test.SaveStatistics(x, device_statistics));
+    REQUIRE(device_statistics.bytes_received() == 5 * 128 * JUNGFRAU_PACKET_SIZE_BYTES);
+    REQUIRE(device_statistics.efficiency() == Approx(0.25));
+    REQUIRE(device_statistics.packets_received_per_module_size() == 5 * x.GetModulesNum());
 
     uint64_t diffs = 0;
-    for (int i = 0; i < 5; i++) {
+    for (int image = 0; image < 5; image++) {
+        REQUIRE(device_statistics.packets_received_per_module(image * x.GetModulesNum()) == 128);
+        REQUIRE(device_statistics.packets_received_per_module(image * x.GetModulesNum() + 1) == 0);
+        REQUIRE(device_statistics.packets_received_per_module(image * x.GetModulesNum() + 3) == 0);
         for (int j = 0; j < RAW_MODULE_SIZE; j++) {
-            if (raw_frames[i*RAW_MODULE_SIZE+j] != ((uint16_t *) test.GetFrameBuffer(i, 0))[j]) diffs++;
+            if (raw_frames[image*RAW_MODULE_SIZE+j] != ((uint16_t *) test.GetFrameBuffer(image, 0))[j]) diffs++;
         }
     }
 
@@ -146,17 +175,11 @@ TEST_CASE("HLS_C_Simulation_check_raw", "[FPGA][Full]") {
 }
 
 TEST_CASE("HLS_C_Simulation_check_cancel", "[FPGA][Full]") {
-    std::vector<uint16_t> raw_frames(RAW_MODULE_SIZE*20);
-
-    for (int i = 0; i < 20; i++) {
-        LoadBinaryFile("../../tests/test_data/mod5_raw" + std::to_string(i)+".bin", raw_frames.data() + i * RAW_MODULE_SIZE, RAW_MODULE_SIZE);
-    }
-
     DiffractionExperiment x;
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
 
@@ -170,7 +193,35 @@ TEST_CASE("HLS_C_Simulation_check_cancel", "[FPGA][Full]") {
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 0);
+    REQUIRE(test.GetBytesReceived() == 0);
+}
+
+
+TEST_CASE("HLS_C_Simulation_check_cancel_conversion", "[FPGA][Full]") {
+    DiffractionExperiment x;
+    uint16_t data[4096];
+
+    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{4});
+    x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(1);
+
+    HLSSimulatedDevice test(0, 64);
+
+    auto gain_from_file = GainCalibrationFromTestFile();
+
+    for (int i = 0; i < x.GetModulesNum(); i++)
+        REQUIRE_NOTHROW(test.LoadModuleGain(gain_from_file, i));
+
+    REQUIRE_NOTHROW(test.StartAction(x));
+    test.ActionAbort();
+
+    REQUIRE_NOTHROW(test.WaitForActionComplete());
+
+    REQUIRE(test.GetSlowestHead() == 0);
+
+    REQUIRE_NOTHROW(test.OutputStream().read());
+    REQUIRE(test.OutputStream().size() == 0);
+
+    REQUIRE(test.GetBytesReceived() == 0);
 }
 
 TEST_CASE("HLS_C_Simulation_check_delay", "[FPGA][Full]") {
@@ -181,24 +232,24 @@ TEST_CASE("HLS_C_Simulation_check_delay", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
 
-    test.CreatePacket(x, 1, 0, 0, data, false);
-    test.CreatePacket(x, 1, 0, 1, data, false);
-    test.CreatePacket(x, 1, 0, 2, data, false);
-    test.CreatePacket(x, 1, 0, 3, data, false);
+    test.CreatePacketJF(x, 1, 0, 0, data, false);
+    test.CreatePacketJF(x, 1, 0, 1, data, false);
+    test.CreatePacketJF(x, 1, 0, 2, data, false);
+    test.CreatePacketJF(x, 1, 0, 3, data, false);
 
-    test.CreatePacket(x, 2, 0, 0, data, false);
-    test.CreatePacket(x, 2, 0, 1, data, false);
-    test.CreatePacket(x, 2, 0, 2, data, false);
-    test.CreatePacket(x, 2, 0, 3, data, false);
+    test.CreatePacketJF(x, 2, 0, 0, data, false);
+    test.CreatePacketJF(x, 2, 0, 1, data, false);
+    test.CreatePacketJF(x, 2, 0, 2, data, false);
+    test.CreatePacketJF(x, 2, 0, 3, data, false);
 
-    test.CreatePacket(x, 3, 0, 0, data, false);
-    test.CreatePacket(x, 3, 0, 1, data, false);
-    test.CreatePacket(x, 3, 0, 2, data, false);
-    test.CreatePacket(x, 3, 0, 3, data, false);
+    test.CreatePacketJF(x, 3, 0, 0, data, false);
+    test.CreatePacketJF(x, 3, 0, 1, data, false);
+    test.CreatePacketJF(x, 3, 0, 2, data, false);
+    test.CreatePacketJF(x, 3, 0, 3, data, false);
 
     test.CreateFinalPacket(x);
 
@@ -224,11 +275,11 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_raw", "[FPGA][Full]") {
 
     for (int i = 0; i < 4096; i++) data[i] = i;
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
 
-    test.CreatePacket(x, 1, 0, 0, data, false);
+    test.CreatePacketJF(x, 1, 0, 0, data, false);
     test.CreateFinalPacket(x);
 
     REQUIRE_NOTHROW(test.StartAction(x));
@@ -237,9 +288,7 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_raw", "[FPGA][Full]") {
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 1);
-
-    REQUIRE(test.GetPacketCount(0, 0) == 1);
+    REQUIRE(test.GetBytesReceived() == JUNGFRAU_PACKET_SIZE_BYTES);
 
     REQUIRE(test.GetFrameBuffer(0,0)[0] == 0);
     REQUIRE(test.GetFrameBuffer(0,0)[1] == 1);
@@ -256,14 +305,15 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_conversion", "[FPGA][Full]") {
 
     for (int i = 0; i < 4096; i++) data[i] = i;
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
 
+    auto gain_from_file = GainCalibrationFromTestFile();
     for (int i = 0; i < x.GetModulesNum(); i++)
-        REQUIRE_NOTHROW(test.LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", i));
+        REQUIRE_NOTHROW(test.LoadModuleGain(gain_from_file, i));
 
-    test.CreatePacket(x, 1, 0, 0, data, false);
+    test.CreatePacketJF(x, 1, 0, 0, data, false);
     test.CreateFinalPacket(x);
 
     REQUIRE_NOTHROW(test.StartAction(x));
@@ -272,9 +322,7 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_conversion", "[FPGA][Full]") {
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 1);
-
-    REQUIRE(test.GetPacketCount(0, 0) == 1);
+    REQUIRE(test.GetBytesReceived() == JUNGFRAU_PACKET_SIZE_BYTES);
 
     REQUIRE(test.GetFrameBuffer(0,1)[0] == PIXEL_OUT_LOST);
     REQUIRE(test.GetFrameBuffer(0,1)[RAW_MODULE_SIZE-1] == PIXEL_OUT_LOST);
@@ -289,31 +337,31 @@ TEST_CASE("HLS_C_Simulation_check_single_packet", "[FPGA][Full]") {
     uint16_t data[4096];
 
     x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
-    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(0);
+    x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
     HLSSimulatedDevice test(0, 64);
 
-    test.CreatePacket(x, 1, 0, 0, data, false);
-    test.CreatePacket(x, 1, 64, 0, data, false);
-    test.CreatePacket(x, 1, 0, 2, data, false);
+    test.CreatePacketJF(x, 1, 0, 0, data, false);
+    test.CreatePacketJF(x, 1, 64, 0, data, false);
+    test.CreatePacketJF(x, 1, 0, 2, data, false);
 
-    test.CreatePacket(x, 1, 2, 3, data, false);
-    test.CreatePacket(x, 1, 3, 3, data, false);
+    test.CreatePacketJF(x, 1, 2, 3, data, false);
+    test.CreatePacketJF(x, 1, 3, 3, data, false);
 
-    test.CreatePacket(x, 1, 1, 3, data, false);
-    test.CreatePacket(x, 1, 0, 3, data, false);
-    test.CreatePacket(x, 1, 64, 3, data, false);
+    test.CreatePacketJF(x, 1, 1, 3, data, false);
+    test.CreatePacketJF(x, 1, 0, 3, data, false);
+    test.CreatePacketJF(x, 1, 64, 3, data, false);
 
-    test.CreatePacket(x, 1, 5, 0, data, false);
-    test.CreatePacket(x, 1, 4, 0, data, false);
+    test.CreatePacketJF(x, 1, 5, 0, data, false);
+    test.CreatePacketJF(x, 1, 4, 0, data, false);
 
-    test.CreatePacket(x, 1, 67, 1, data, false);
-    test.CreatePacket(x, 1, 66, 1, data, false);
-    test.CreatePacket(x, 1, 68, 1, data, false);
+    test.CreatePacketJF(x, 1, 67, 1, data, false);
+    test.CreatePacketJF(x, 1, 66, 1, data, false);
+    test.CreatePacketJF(x, 1, 68, 1, data, false);
 
-    test.CreatePacket(x, 3, 1, 0, data, false);
-    test.CreatePacket(x, 2, 1, 0, data, false);
+    test.CreatePacketJF(x, 3, 1, 0, data, false);
+    test.CreatePacketJF(x, 2, 1, 0, data, false);
 
-    test.CreatePacket(x, 4, 1, 0, data, false);
+    test.CreatePacketJF(x, 4, 1, 0, data, false);
 
     test.CreateFinalPacket(x);
 
@@ -323,44 +371,30 @@ TEST_CASE("HLS_C_Simulation_check_single_packet", "[FPGA][Full]") {
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 16);
-    //REQUIRE(test.ReadMMIOExchangeRegister(MMIO_EXCHANGE_DIFF_HEADS) == 2);
-
-    REQUIRE(test.GetPacketCountHalfModule(0, 0) == 3);
-    REQUIRE(test.GetPacketCountHalfModule(0, 1) == 1);
-    REQUIRE(test.GetPacketCountHalfModule(0, 2) == 0);
-    REQUIRE(test.GetPacketCountHalfModule(0, 3) == 3);
-    REQUIRE(test.GetPacketCountHalfModule(0, 4) == 1);
-    REQUIRE(test.GetPacketCountHalfModule(0, 5) == 0);
-    REQUIRE(test.GetPacketCountHalfModule(0, 6) == 4);
-    REQUIRE(test.GetPacketCountHalfModule(0, 7) == 1);
-
-    REQUIRE(test.GetPacketCount(0, 0) == 4);
-    REQUIRE(test.GetPacketCount(0, 1) == 3);
-    REQUIRE(test.GetPacketCount(0, 2) == 1);
-    REQUIRE(test.GetPacketCount(0, 3) == 5);
-
-    REQUIRE(test.GetPacketCount(1, 0) == 1);
-    REQUIRE(test.GetPacketCount(2, 0) == 1);
-
-    REQUIRE(test.GetPacketMaskHalfModule(0, 0) == (uint64_t(1)<<0) + (uint64_t(1)<<4) + (uint64_t(1)<<5));
-    REQUIRE(test.GetPacketMaskHalfModule(0, 1) == uint64_t(1)<<0);
-    REQUIRE(test.GetPacketMaskHalfModule(0, 2) == 0);
-    REQUIRE(test.GetPacketMaskHalfModule(0, 3) == (uint64_t(1)<<2) + (uint64_t(1)<<3) + (uint64_t(1)<<4));
-
-    REQUIRE(test.GetPacketMaskHalfModule(1, 0) == uint64_t(1)<<1);
+    REQUIRE(test.GetBytesReceived() == 16 * JUNGFRAU_PACKET_SIZE_BYTES);
 
     JFJochProtoBuf::AcquisitionDeviceStatistics device_statistics;
     REQUIRE_NOTHROW(test.SaveStatistics(x, device_statistics));
-    REQUIRE(device_statistics.packets_received_per_image().size() == 3);
-    REQUIRE(device_statistics.packets_received_per_image(0) == 13);
-    REQUIRE(device_statistics.packets_received_per_image(1) == 1);
-    REQUIRE(device_statistics.packets_received_per_image(2) == 1);
+    REQUIRE(device_statistics.packets_received_per_module().size() == 3 * x.GetModulesNum());
+    REQUIRE(device_statistics.packets_received_per_module(x.GetModulesNum() * 0 + 0) == 4);
+    REQUIRE(device_statistics.packets_received_per_module(x.GetModulesNum() * 0 + 1) == 3);
+    REQUIRE(device_statistics.packets_received_per_module(x.GetModulesNum() * 0 + 2) == 1);
+    REQUIRE(device_statistics.packets_received_per_module(x.GetModulesNum() * 0 + 3) == 5);
+
+    REQUIRE(device_statistics.packets_received_per_module(x.GetModulesNum() * 1 + 0) == 1);
+    REQUIRE(device_statistics.packets_received_per_module(x.GetModulesNum() * 2 + 0) == 1);
     REQUIRE(device_statistics.good_packets() == 15);
-    REQUIRE(device_statistics.ok_eth_packets() == 16);
-    REQUIRE(device_statistics.packets_expected_per_image() == 4*128);
+    REQUIRE(device_statistics.bytes_received() == 16 * JUNGFRAU_PACKET_SIZE_BYTES);
+    REQUIRE(device_statistics.packets_expected_per_module() == 128);
     REQUIRE(device_statistics.timestamp().size() == 3*4);
     REQUIRE(device_statistics.timestamp(0) == 0x00FEDCBAL );
+
+    REQUIRE(device_statistics.packet_mask_size() == 4 * 3 * 2);
+    REQUIRE(device_statistics.packet_mask(0*4*2+0) == (uint64_t(1)<<0) + (uint64_t(1)<<4) + (uint64_t(1)<<5));
+    REQUIRE(device_statistics.packet_mask(0*4*2+1) == (uint64_t(1)<<0));
+    REQUIRE(device_statistics.packet_mask(0*4*2+2) == 0);
+    REQUIRE(device_statistics.packet_mask(0*4*2+3) == (uint64_t(1)<<2) + (uint64_t(1)<<3) + (uint64_t(1)<<4));
+    REQUIRE(device_statistics.packet_mask(1*4*2+0) == (uint64_t(1)<<1));
 }
 
 TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
@@ -383,11 +417,14 @@ TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
     DiffractionExperiment x;
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {4});
     HLSSimulatedDevice test(0, 64);
+
+    auto gain_from_file = GainCalibrationFromTestFile();
+
     for (int i = 0; i < x.GetModulesNum(); i++)
-        REQUIRE_NOTHROW(test.LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", i));
+        REQUIRE_NOTHROW(test.LoadModuleGain(gain_from_file, i));
 
     for (const auto energy : energy_values) {
-        x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(1).PhotonEnergy_keV(energy);
+        x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(1).PhotonEnergy_keV(energy);
 
         REQUIRE(x.GetPhotonEnergy_keV() == Approx(energy));
 
@@ -399,7 +436,7 @@ TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
         test.InitializeCalibration(x, c_in);
 
         for (int i = 0; i < 16; i++)
-            test.CreatePacket(x, 1, i, 0, data.data() + i * 4096, true);
+            test.CreatePacketJF(x, 1, i, 0, data.data() + i * 4096, true);
 
         test.CreateFinalPacket(x);
 
@@ -408,12 +445,10 @@ TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
 
         REQUIRE_NOTHROW(test.OutputStream().read());
         REQUIRE(test.OutputStream().size() == 0);
-        REQUIRE(test.GetPacketsOK() == 16);
+        REQUIRE(test.GetBytesReceived() == 16 * JUNGFRAU_PACKET_SIZE_BYTES);
 
-        REQUIRE(test.GetPacketCount(0, 0) == 16);
-
-
-        double mean_error = CheckConversion(x, c_in, data.data(), test.GetFrameBuffer(0,0), 65536);
+        double mean_error = CheckConversion(x, c_in, gain_from_file,
+                                            data.data(), test.GetFrameBuffer(0,0), 65536);
 
         REQUIRE(mean_error < 0.5);
     }
@@ -438,17 +473,8 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
     }
 
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {1});
-    x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(1).UseInternalPacketGenerator(true).PhotonEnergy_keV(energy);
+    x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(1).UseInternalPacketGenerator(true).PhotonEnergy_keV(energy);
     REQUIRE(x.GetPhotonEnergy_keV() == Approx(energy));
-
-    std::fstream file("../../tests/test_data/gainMaps_M049.bin", std::fstream::in | std::fstream::binary);
-    REQUIRE(file.is_open());
-
-    file.read((char *) gain.data(), gain.size() * sizeof(double));
-
-    for (int i = 0; i < RAW_MODULE_SIZE; i++) {
-        if (gain[i] == 0) gain[i] = 1.0;
-    }
 
     JFCalibration c(x);
     c.Pedestal(0,0) = pedestal_g0;
@@ -457,7 +483,9 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
 
     HLSSimulatedDevice test(0, 64);
 
-    REQUIRE_NOTHROW(test.LoadModuleGain(gain, 0));
+    auto gain_from_file = GainCalibrationFromTestFile();
+
+    REQUIRE_NOTHROW(test.LoadModuleGain(gain_from_file, 0));
 
     REQUIRE_NOTHROW(test.InitializeCalibration(x, c));
     REQUIRE_NOTHROW(test.StartAction(x));
@@ -466,11 +494,10 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 128);
+    REQUIRE(test.GetBytesReceived() == 128 * JUNGFRAU_PACKET_SIZE_BYTES);
 
-    REQUIRE(test.GetPacketCount(0, 0) == 128);
-
-    double mean_error = CheckConversion(x, c, data.data(), test.GetFrameBuffer(0,0), RAW_MODULE_SIZE);
+    double mean_error = CheckConversion(x, c, gain_from_file,
+                                        data.data(), test.GetFrameBuffer(0,0), RAW_MODULE_SIZE);
 
     REQUIRE(mean_error < 0.5);
 }
@@ -503,8 +530,10 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
     REQUIRE_NOTHROW(c.Pedestal(0, 1).LoadPedestal(pedestal_g1));
     REQUIRE_NOTHROW(c.Pedestal(0, 2).LoadPedestal(pedestal_g2));
 
+    auto gain_from_file = GainCalibrationFromTestFile();
+
     for (int i = 0; i < x.GetModulesNum(); i++)
-        REQUIRE_NOTHROW(test.LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", i));
+        REQUIRE_NOTHROW(test.LoadModuleGain(gain_from_file, i));
 
     REQUIRE_NOTHROW(test.InitializeCalibration(x, c));
 
@@ -525,46 +554,33 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
 
     REQUIRE(test.GetSlowestHead() == 0);
     REQUIRE(test.GetHead(0) == 9);
-    // per packet should be available as soon as
-    for (int i = 0; i < 10; i++) {
-        REQUIRE(test.GetPacketCount(i, 0) == 128);
-        REQUIRE(test.GetPacketCountHalfModule(i, 0) == 64);
-        REQUIRE(test.GetPacketCountHalfModule(i, 1) == 64);
-    }
-    for (int i = 10; i < 25; i++)
-        REQUIRE_THROWS(test.GetPacketCount(i,0));
-
-    REQUIRE(test.GetPacketCount(0,2) == 0);
-    REQUIRE(test.GetPacketCount(0,3) == 0);
-    REQUIRE_THROWS(test.GetPacketCount(0,4));
-    REQUIRE_THROWS(test.GetPacketCount(0,5));
-    REQUIRE_THROWS(test.GetPacketCount(0,6));
-    REQUIRE_THROWS(test.GetPacketCount(0,7));
-
-    REQUIRE(test.GetTriggerField(5,0) != 0);
 
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 128 * 10);
-
     JFJochProtoBuf::AcquisitionDeviceStatistics device_statistics;
     REQUIRE_NOTHROW(test.SaveStatistics(x, device_statistics));
-    REQUIRE(device_statistics.packets_received_per_image().size() == 10);
-    REQUIRE(device_statistics.packets_received_per_image(0) == 128);
-    REQUIRE(device_statistics.packets_received_per_image(1) == 128);
-    REQUIRE(device_statistics.packets_received_per_image(9) == 128);
+    REQUIRE(device_statistics.packets_received_per_module().size() == 10*x.GetModulesNum());
 
     REQUIRE(device_statistics.efficiency() == Approx(0.25));
     REQUIRE(device_statistics.good_packets() == 128*10);
-    REQUIRE(device_statistics.packets_expected_per_image() == 128*4);
-    REQUIRE(device_statistics.ok_eth_packets() == 128 * 10);
+    REQUIRE(device_statistics.packets_expected_per_module() == 128);
+    REQUIRE(device_statistics.bytes_received() == 128 * 10 * JUNGFRAU_PACKET_SIZE_BYTES);
+    REQUIRE(device_statistics.packet_mask_size() == 10*2*x.GetModulesNum());
 
     double mean_error = 0.0;
-    for (int i = 0; i < 10; i++) {
+    for (int image = 0; image < 10; image++) {
+
+        for (int m = 0; m < x.GetModulesNum(); m++) {
+            REQUIRE(device_statistics.packets_received_per_module(image * x.GetModulesNum() + m) == ((m == 0) ? 128 : 0)); // only one module
+            for (int i = 0; i < 2; i++) {
+                REQUIRE(device_statistics.packet_mask((image * x.GetModulesNum() + m) * 2 + 1) == ((m == 0) ? UINT64_MAX : 0));
+            }
+        }
+
         for (int j = 0; j < RAW_MODULE_SIZE; j++) {
-            if ((test.GetFrameBuffer(i, 0)[j] < 30000) && (test.GetFrameBuffer(i, 0)[j] > -30000)) {
-                float diff = (conv_frames[i * RAW_MODULE_SIZE + j] - (float) test.GetFrameBuffer(i, 0)[j]);
+            if ((test.GetFrameBuffer(image, 0)[j] < 30000) && (test.GetFrameBuffer(image, 0)[j] > -30000)) {
+                float diff = (conv_frames[image * RAW_MODULE_SIZE + j] - (float) test.GetFrameBuffer(image, 0)[j]);
                 mean_error += diff * diff;
             }
         }
@@ -580,32 +596,34 @@ TEST_CASE("HLS_C_Simulation_check_wrong_packet_size", "[FPGA][Full]") {
     uint16_t data[8192];
 
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{1});
-    x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(5);
+    x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(5);
 
     HLSSimulatedDevice test(0, 64);
 
+    auto gain_from_file = GainCalibrationFromTestFile();
+
     for (int i = 0; i < x.GetModulesNum(); i++)
-        REQUIRE_NOTHROW(test.LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", i));
+        REQUIRE_NOTHROW(test.LoadModuleGain(gain_from_file, i));
 
     JFCalibration c(x);
     REQUIRE_NOTHROW(test.InitializeCalibration(x, c));
 
     // send some frames with wrong size or tuser=1
-    test.CreatePacket(x, 1, 0, 0, data, true, 0);
-    test.CreatePacket(x, 1, 1, 0, data, true, -1);
-    test.CreatePacket(x, 1, 2, 0, data, true, 2);
-    test.CreatePacket(x, 1, 3, 0, data, true, 0);
-    test.CreatePacket(x, 1, 4, 0, data, true, -5);
-    test.CreatePacket(x, 1, 5, 0, data, true, 0,1);
-    test.CreatePacket(x, 1, 6, 0, data, true, 0);
-    test.CreatePacket(x, 1, 7, 0, data, true, 0);
-    test.CreatePacket(x, 1, 8, 0, data, true, 7);
-    test.CreatePacket(x, 1, 9, 0, data, true, 100);
-    test.CreatePacket(x, 1, 10, 0, data, true, 2);
-    test.CreatePacket(x, 1, 11, 0, data, true, 0);
-    test.CreatePacket(x, 1, 12, 0, data, true, -80);
-    test.CreatePacket(x, 1, 13, 0, data, true, 100);
-    test.CreatePacket(x, 1, 118, 0, data, true, 0);
+    test.CreatePacketJF(x, 1, 0, 0, data, true, 0);
+    test.CreatePacketJF(x, 1, 1, 0, data, true, -1);
+    test.CreatePacketJF(x, 1, 2, 0, data, true, 2);
+    test.CreatePacketJF(x, 1, 3, 0, data, true, 0);
+    test.CreatePacketJF(x, 1, 4, 0, data, true, -5);
+    test.CreatePacketJF(x, 1, 5, 0, data, true, 0, 1);
+    test.CreatePacketJF(x, 1, 6, 0, data, true, 0);
+    test.CreatePacketJF(x, 1, 7, 0, data, true, 0);
+    test.CreatePacketJF(x, 1, 8, 0, data, true, 7);
+    test.CreatePacketJF(x, 1, 9, 0, data, true, 100);
+    test.CreatePacketJF(x, 1, 10, 0, data, true, 2);
+    test.CreatePacketJF(x, 1, 11, 0, data, true, 0);
+    test.CreatePacketJF(x, 1, 12, 0, data, true, -80);
+    test.CreatePacketJF(x, 1, 13, 0, data, true, 100);
+    test.CreatePacketJF(x, 1, 118, 0, data, true, 0);
 
     test.CreateFinalPacket(x);
 
@@ -617,10 +635,7 @@ TEST_CASE("HLS_C_Simulation_check_wrong_packet_size", "[FPGA][Full]") {
 
     REQUIRE(test.IsDone());
 
-    REQUIRE(test.GetPacketCount(0, 0) == 6);
-    REQUIRE(test.GetTriggerField(0,0) != 0);
-
-    REQUIRE(test.GetPacketsOK() == 6);
+    REQUIRE(test.GetBytesReceived() == 6 * JUNGFRAU_PACKET_SIZE_BYTES);
 }
 
 TEST_CASE("HLS_DataCollectionFSM","[OpenCAPI]") {
@@ -819,9 +834,9 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G0", 
 
     HLSSimulatedDevice test(0, 64);
 
-    std::vector<double> gain(3 * RAW_MODULE_SIZE);
-    for (auto &i: gain)
-        i = 50.0;
+    std::vector<double> tmp(3 * RAW_MODULE_SIZE, 50);
+    JFModuleGainCalibration gain(tmp);
+
     REQUIRE_NOTHROW(test.LoadModuleGain(gain, 0));
     REQUIRE_NOTHROW(test.LoadModuleGain(gain, 1));
 
@@ -844,9 +859,7 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G0", 
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 2*16*128);
-
-    REQUIRE(test.GetPacketCount(15, 0) == 128);
+    REQUIRE(test.GetBytesReceived() == 2*16*128 * JUNGFRAU_PACKET_SIZE_BYTES);
 
     for (int i = 0; i < 16; i++) {
         REQUIRE(test.GetFrameBuffer(i,0)[511*764] == 32 - 15 + (i % 16));
@@ -858,14 +871,14 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G1", 
     DiffractionExperiment x;
 
     x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {2});
-    x.PedestalG0Frames(0).NumTriggers(0).ImagesPerTrigger(16).UseInternalPacketGenerator(true)
+    x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(16).UseInternalPacketGenerator(true)
             .PhotonEnergy_keV(10.0).StorageCells(16);
 
     HLSSimulatedDevice test(0, 64);
 
-    std::vector<double> gain(3 * RAW_MODULE_SIZE);
-    for (auto &i: gain)
-        i = -1.0;
+    std::vector<double> tmp(3 * RAW_MODULE_SIZE, -1);
+    JFModuleGainCalibration gain(tmp);
+
     REQUIRE_NOTHROW(test.LoadModuleGain(gain, 0));
     REQUIRE_NOTHROW(test.LoadModuleGain(gain, 1));
 
@@ -888,9 +901,7 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G1", 
     REQUIRE_NOTHROW(test.OutputStream().read());
     REQUIRE(test.OutputStream().size() == 0);
 
-    REQUIRE(test.GetPacketsOK() == 32*128);
-
-    REQUIRE(test.GetPacketCount(15, 0) == 128);
+    REQUIRE(test.GetBytesReceived() == 32*128*JUNGFRAU_PACKET_SIZE_BYTES);
 
     for (int i = 0; i < 16; i++) {
         REQUIRE(test.GetFrameBuffer(i,0)[511*764] == 17 - (i % 16) - 1);

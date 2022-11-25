@@ -37,7 +37,7 @@ int main (int argc, char **argv) {
     }
 
     DiffractionExperiment experiment(2, {4,4}, 8, 36);
-    experiment.PedestalG0Frames(3000).PedestalG1Frames(300).PedestalG2Frames(300);
+    experiment.PedestalG0Frames(2000).PedestalG1Frames(300).PedestalG2Frames(300);
     experiment.MaskChipEdges(true).MaskModuleEdges(true);
 
     std::random_device generator;
@@ -68,14 +68,19 @@ int main (int argc, char **argv) {
     }
     if (input.contains("detector_addr"))
         broker.Services().Detector(input["detector_addr"]);
-    if (input.contains("trigger_addr"))
-        broker.Services().Trigger(input["trigger_addr"]);
-    if (input.contains("indexer"))
+     if (input.contains("indexer"))
         broker.Services().Indexer(input["indexer"]["addr_grpc"], input["indexer"]["addr_zmq"]);
 
+    JFJochProtoBuf::FacilityMetadata facility_metadata;
+    facility_metadata.set_source_name(SOURCE_NAME);
+    facility_metadata.set_source_name_short(SOURCE_NAME_SHORT);
+    facility_metadata.set_instrument_name(INSTRUMENT_NAME);
+    facility_metadata.set_instrument_name_short(INSTRUMENT_NAME_SHORT);
+    broker.Services().FacilityMetadata(facility_metadata);
+
     auto server = gRPCServer("0.0.0.0:" + std::to_string(tcp_port), broker);
-    logger.Info("Detector module number: " + std::to_string(broker.Experiment().GetModulesNum()));
-    logger.Info("gRPC configuration listening on port " + std::to_string(tcp_port));
+    logger.Info("Detector module number: {}", broker.Experiment().GetModulesNum());
+    logger.Info("gRPC configuration listening on port {}", tcp_port);
     logger.Info("Started");
     server->Wait();
 }

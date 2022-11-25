@@ -4,68 +4,69 @@
 #include "ZMQImagePusher.h"
 #include "JFJochException.h"
 
-ZMQImagePusher::ZMQImagePusher(ZMQContext &context)
-           : zmq_context(context) {
-}
-
-void ZMQImagePusher::EndDataCollection() {
-    for (const auto &s: sockets)
-        s->Send();
-}
-
-void ZMQImagePusher::SendData(void *buffer, size_t image_number, size_t buffer_size) {
-    if (sockets.empty())
-        return;
-    auto metadata = (ImageMetadata *) buffer;
-    metadata->version = IMAGE_METADATA_VERSION;
-    metadata->image_size = buffer_size;
-    metadata->frameid = image_number;
-
-    auto socket_number = experiment.GetFileForImage(image_number) % sockets.size();
-    sockets[socket_number]->Send(buffer, buffer_size + sizeof(ImageMetadata));
-}
-
-void ZMQImagePusher::Connect(const std::vector<std::string>& in_address, const JFJochProtoBuf::JungfraujochSettings &settings) {
-    Disconnect();
-
-    if (!sockets.empty())
-        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
-                              "Socket must be empty");
-
-    if (in_address.empty())
+ZMQImagePusher::ZMQImagePusher(ZMQContext &zmq_context, const std::vector<std::string> &addr,
+                               int32_t send_buffer_high_watermark, int32_t send_buffer_size) {
+    if (addr.empty())
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                               "No writer ZMQ address provided");
 
-    address = in_address;
-    experiment = DiffractionExperiment(settings);
-
-    for (const auto &a : address) {
+    for (const auto &a : addr) {
         auto s = std::make_unique<ZMQSocket>(zmq_context, ZMQSocketType::Push);
         if (send_buffer_size > 0)
             s->SendBufferSize(send_buffer_size);
         if (send_buffer_high_watermark > 0)
             s->SendWaterMark(send_buffer_high_watermark);
-        s->Connect(a);
+        s->Bind(a);
         sockets.push_back(std::move(s));
     }
 }
 
-void ZMQImagePusher::Disconnect() {
-    for (int i = 0 ; i < sockets.size(); i++) {
-        if (!address[i].empty())
-            sockets[i]->Disconnect(address[i]);
-        address[i] = "";
+ZMQImagePusher::ZMQImagePusher(const std::vector<std::string> &addr,
+                               int32_t send_buffer_high_watermark, int32_t send_buffer_size) {
+    if (addr.empty())
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "No writer ZMQ address provided");
+
+    for (const auto &a : addr) {
+        auto c = std::make_unique<ZMQContext>();
+        auto s = std::make_unique<ZMQSocket>(*c, ZMQSocketType::Push);
+        if (send_buffer_size > 0)
+            s->SendBufferSize(send_buffer_size);
+        if (send_buffer_high_watermark > 0)
+            s->SendWaterMark(send_buffer_high_watermark);
+        s->Bind(a);
+        contexts.push_back(std::move(c));
+        sockets.push_back(std::move(s));
     }
-    sockets.clear();
-    address.clear();
 }
 
-ZMQImagePusher &ZMQImagePusher::SendBufferSize(int32_t bytes) {
-    send_buffer_size = bytes;
-    return *this;
+void ZMQImagePusher::SendData(void *image, const std::pair<int64_t,int64_t> &image_location_in_file, size_t image_size,
+                              const std::vector<DiffractionSpot> &spots) {
+    std::unique_lock<std::mutex> ul(m);
+    if (sockets.empty())
+        return;
+
+    std::vector<SpotToSave> spots_to_save;
+    for (const auto & spot : spots)
+        spots_to_save.push_back(spot);
+
+    size_t msg_size = serializer.SerializeImage(image, image_size, image_location_in_file, spots_to_save);
+
+    auto socket_number = image_location_in_file.first % sockets.size();
+    sockets[socket_number]->Send(serializer.GetBuffer().data(), msg_size);
 }
 
-ZMQImagePusher &ZMQImagePusher::SendBufferHighWatermark(int32_t msgs) {
-    send_buffer_high_watermark = msgs;
-    return *this;
+void ZMQImagePusher::StartDataCollection() {
+    std::unique_lock<std::mutex> ul(m);
+    size_t msg_size = serializer.SerializeSequenceStart();
+    for (const auto &s: sockets)
+        s->Send(serializer.GetBuffer().data(), msg_size, true);
+}
+
+
+void ZMQImagePusher::EndDataCollection() {
+    std::unique_lock<std::mutex> ul(m);
+    size_t msg_size = serializer.SerializeSequenceEnd();
+    for (const auto &s: sockets)
+        s->Send(serializer.GetBuffer().data(), msg_size, true);
 }

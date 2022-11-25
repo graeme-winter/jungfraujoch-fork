@@ -10,6 +10,9 @@
 #include <mutex>
 #include <memory>
 
+#include "spdlog/spdlog.h"
+#include "spdlog/fmt/fmt.h"
+
 namespace spdlog {
     class logger;
 }
@@ -24,10 +27,32 @@ class Logger {
 public:
     Logger(const std::string &service_name, const std::string &file_name = "");
     void ErrorException(const std::exception &e);
-    void Info(const std::string& msg);
-    void Warning(const std::string& msg);
-    void Error(const std::string& msg);
-    void Debug(const std::string& msg);
+
+    void Info(const std::string& msg) { spdlog_logger->info(msg); }
+    void Warning(const std::string& msg) { spdlog_logger->warn(msg); }
+    void Error(const std::string& msg) { spdlog_logger->error(msg); }
+    void Debug(const std::string& msg) { spdlog_logger->debug(msg); }
+
+    template<typename... Args>
+    void Info(fmt::format_string<Args...> fmt, Args &&... args)  {
+        spdlog_logger->info(fmt, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void Error(fmt::format_string<Args...> fmt, Args &&... args)  {
+        spdlog_logger->error(fmt, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void Debug(fmt::format_string<Args...> fmt, Args &&... args)  {
+        spdlog_logger->debug(fmt, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void Warning(fmt::format_string<Args...> fmt, Args &&... args)  {
+        spdlog_logger->warn(fmt, std::forward<Args>(args)...);
+    }
+
     Logger& Verbose(bool input);
 };
 

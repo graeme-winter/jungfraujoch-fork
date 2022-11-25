@@ -7,16 +7,16 @@
 #include <cstdint>
 
 struct Completion {
-    static const uint64_t FrameAfterFilterEnd;
-    static const uint64_t FrameIgnore;
     static const uint64_t MeasurementDone;
 
     uint64_t frame_number;
-    uint64_t packet_mask[2];
+    uint64_t packet_mask[4];
+    uint64_t bunchid;
+    uint32_t debug;
     uint32_t handle;
-    uint8_t module;
-    bool trigger;
     uint32_t timestamp;
+    uint16_t packet_count;
+    uint8_t module;
 };
 
 #endif //JUNGFRAUJOCH_COMPLETION_H

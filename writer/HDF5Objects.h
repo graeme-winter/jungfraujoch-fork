@@ -9,8 +9,9 @@
 #include <string>
 #include <vector>
 #include <mutex>
-#include "../common/DiffractionExperiment.h"
+
 #include "../common/JFJochException.h"
+#include "../compression/CompressionAlgorithmEnum.h"
 
 extern std::mutex hdf5_mutex;
 
@@ -44,6 +45,7 @@ public:
 
 class HDF5DataType : public HDF5Id {
 public:
+    HDF5DataType(uint64_t size_in_bytes, bool is_signed);
     explicit HDF5DataType(double val);
     explicit HDF5DataType(float val);
     explicit HDF5DataType(bool val);
@@ -53,7 +55,8 @@ public:
     explicit HDF5DataType(uint64_t val);
     explicit HDF5DataType(int16_t val);
     explicit HDF5DataType(uint16_t val);
-    explicit HDF5DataType(const DiffractionExperiment& experiment);
+    explicit HDF5DataType(int8_t val);
+    explicit HDF5DataType(uint8_t val);
     explicit HDF5DataType(const std::string &val);
     explicit HDF5DataType(const char *val);
     explicit HDF5DataType(const HDF5DataSet& data_set);
@@ -92,16 +95,15 @@ public:
     HDF5Object& Attr(const std::string& name, int64_t val);
     HDF5Object& Attr(const std::string& name, uint64_t val);
     HDF5Object& Attr(const std::string& name, const std::vector<double> &val);
-    HDF5Object& Attr(const std::string& name, const Coord &val);
     HDF5Object& Units(const std::string& val);
     HDF5Object& NXClass(const std::string& val);
     HDF5Object& Transformation(const std::string& units, const std::string& depends_on,
             const std::string& equipment, const std::string& equipment_component,
-            const std::string& transformation_type, const Coord& vector);
+            const std::string& transformation_type, const std::vector<double> &vec);
     HDF5Object& Transformation(const std::string& units, const std::string& depends_on,
                                const std::string& equipment, const std::string& equipment_component,
-                               const std::string& transformation_type, const Coord& vector, const Coord &offset,
-                               const std::string& offset_units);
+                               const std::string& transformation_type, const std::vector<double>& vector,
+                               const std::vector<double> &offset, const std::string& offset_units);
     HDF5Object& ExternalLink(std::string filename, const std::string &external_dataset, const std::string &local_name);
     HDF5Object& HardLink(const std::string &source, const std::string &dest);
     std::unique_ptr<HDF5DataSet> SaveScalar(const std::string &name, const char *val);
@@ -110,7 +112,7 @@ public:
 
     template <class T> std::unique_ptr<HDF5DataSet> SaveScalar(const std::string &name, T val);
     template <class T> std::unique_ptr<HDF5DataSet> SaveVector(const std::string &name, const std::vector<T> &val,
-            std::vector<hsize_t> dim = {}, CompressionAlgorithm algorithm = CompressionAlgorithm::None);
+            std::vector<hsize_t> dim = {}, CompressionAlgorithm algorithm = CompressionAlgorithm::NO_COMPRESSION);
 };
 
 class HDF5Group : public HDF5Object {
@@ -223,7 +225,8 @@ template <class T> std::unique_ptr<HDF5DataSet> HDF5Object::SaveScalar(const std
 
 
 template <class T> std::unique_ptr<HDF5DataSet> SaveVector(const HDF5Object& parent, const std::string &name, const std::vector<T> &val,
-                                                           std::vector<hsize_t> dims = {}, CompressionAlgorithm algorithm = CompressionAlgorithm::None) {
+                                                           std::vector<hsize_t> dims = {},
+                                                           CompressionAlgorithm algorithm = CompressionAlgorithm::NO_COMPRESSION) {
     if (dims.empty()) dims = {val.size()};
 
     if (val.empty())
@@ -231,7 +234,7 @@ template <class T> std::unique_ptr<HDF5DataSet> SaveVector(const HDF5Object& par
 
     HDF5DataType data_type(val[0]);
     HDF5Dcpl dcpl;
-    if (algorithm != CompressionAlgorithm::None) {
+    if (algorithm != CompressionAlgorithm::NO_COMPRESSION) {
         dcpl.SetCompression(algorithm, H5Tget_size(data_type.GetID()), 0);
         dcpl.SetChunking(dims);
     }
@@ -252,7 +255,7 @@ template <class T> std::unique_ptr<HDF5DataSet> HDF5Object::SaveVector(const std
     HDF5DataType data_type(val[0]);
     HDF5Dcpl dcpl;
 
-    if (algorithm != CompressionAlgorithm::None) {
+    if (algorithm != CompressionAlgorithm::NO_COMPRESSION) {
         dcpl.SetCompression(algorithm, H5Tget_size(data_type.GetID()), 0);
         dcpl.SetChunking(dims);
     }

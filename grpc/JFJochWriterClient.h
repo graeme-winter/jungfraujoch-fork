@@ -13,10 +13,9 @@ class JFJochWriterClient {
     std::unique_ptr<JFJochProtoBuf::gRPC_JFJochWriter::Stub> _stub;
 public:
     void Connect(const std::string &addr);
-    void Start(const DiffractionExperiment &experiment);
-    void Stop();
-    void WriteMasterFile(const JFJochProtoBuf::JFJochReceiverOutput &request,
-                         const JFJochProtoBuf::JFCalibration &calibration);
+    void Start(const DiffractionExperiment &experiment, const std::string zmq_push_addr);
+    JFJochProtoBuf::WriterOutput Stop();
+    void WriteMasterFile(JFJochProtoBuf::WriterMetadataInput &request);
     void Abort();
 };
 

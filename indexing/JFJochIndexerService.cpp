@@ -15,7 +15,7 @@ JFJochIndexerService &JFJochIndexerService::NumThreads(int64_t input) {
 
 
 grpc::Status
-JFJochIndexerService::Start(grpc::ServerContext *context, const JFJochProtoBuf::JFJochIndexerInput *request,
+JFJochIndexerService::Start(grpc::ServerContext *context, const JFJochProtoBuf::IndexerInput *request,
                             JFJochProtoBuf::Empty *response) {
     std::unique_lock<std::shared_mutex> ul(indexer_mutex);
     try {
@@ -28,7 +28,7 @@ JFJochIndexerService::Start(grpc::ServerContext *context, const JFJochProtoBuf::
 }
 
 grpc::Status JFJochIndexerService::Stop(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
-                                        JFJochProtoBuf::JFJochIndexerOutput *response) {
+                                        JFJochProtoBuf::IndexerOutput *response) {
     std::shared_lock<std::shared_mutex> sl(indexer_mutex);
     if (indexer)
         *response = indexer->End();

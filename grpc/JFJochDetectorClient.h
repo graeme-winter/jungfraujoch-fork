@@ -15,10 +15,8 @@ public:
     void Connect(const std::string &addr);
     void Start(const DiffractionExperiment &request);
     void Stop();
-
-    bool IsIdle();
-
-    void On(const JFJochProtoBuf::JFJochDetectorConfig &request);
+    JFJochProtoBuf::DetectorStatus GetStatus();
+    void On(const JFJochProtoBuf::DetectorConfig &request);
     void Off();
 };
 

@@ -9,7 +9,7 @@
 
 #define MAX_ASSEMBLED_LATTICES_COUNT (10)
 
-XgandalfWrapper::XgandalfWrapper() {
+XgandalfWrapper::XgandalfWrapper(bool fast) : fast_xgandalf(fast) {
     allocReciprocalPeaks(&peaks);
 }
 
@@ -42,31 +42,25 @@ void XgandalfWrapper::Setup(const IndexingSettings &in_settings) {
         indexer = std::make_unique<xgandalf::IndexerPlain>(settings);
     }
 
-    switch (in_settings.algorithm) {
-        case IndexingAlgorithm::Xgandalf_fast:
-            indexer->setGradientDescentIterationsCount(xgandalf::IndexerPlain::GradientDescentIterationsCount::few);
-            indexer->setSamplingPitch(xgandalf::IndexerPlain::SamplingPitch::standard);
-            break;
-        case IndexingAlgorithm::Xgandalf:
-        default:
-            indexer->setGradientDescentIterationsCount(xgandalf::IndexerPlain::GradientDescentIterationsCount::manyMany);
-            indexer->setSamplingPitch(xgandalf::IndexerPlain::SamplingPitch::denseWithSeondaryMillerIndices);
-            break;
+    if (fast_xgandalf) {
+        indexer->setGradientDescentIterationsCount(xgandalf::IndexerPlain::GradientDescentIterationsCount::few);
+        indexer->setSamplingPitch(xgandalf::IndexerPlain::SamplingPitch::standard);
+    } else {
+        indexer->setGradientDescentIterationsCount(xgandalf::IndexerPlain::GradientDescentIterationsCount::manyMany);
+        indexer->setSamplingPitch(xgandalf::IndexerPlain::SamplingPitch::denseWithSeondaryMillerIndices);
     }
+
     if (in_settings.max_indexing_spots <= 0)
         indexer->setMaxPeaksToUseForIndexing(30);
     else
         indexer->setMaxPeaksToUseForIndexing(in_settings.max_indexing_spots);
 }
 
-std::vector<JFJochProtoBuf::UnitCell> XgandalfWrapper::Run(const IndexingSettings &settings,
-                                           const std::vector<Coord> &coord) {
+std::vector<JFJochProtoBuf::UnitCell> XgandalfWrapper::Run(const std::vector<Coord> &coord) {
     std::vector<JFJochProtoBuf::UnitCell> ret;
 
     if (coord.size() < 4)
         return ret;
-
-    Setup(settings);
 
     peaks.peakCount = std::min<int32_t>(coord.size(), MAX_PEAK_COUNT_FOR_INDEXER);
 

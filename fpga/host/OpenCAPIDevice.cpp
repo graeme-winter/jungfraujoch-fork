@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <utility>
+#include <bitset>
 
 #include "OpenCAPIDevice.h"
 #include "../../common/JFJochException.h"

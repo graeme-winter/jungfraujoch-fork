@@ -60,12 +60,14 @@ void MockAcquisitionDevice::AddModule(uint64_t frame, uint16_t module, const uin
     if (current_handle < max_handle) {
         memcpy(buffer_device.at(current_handle), data, RAW_MODULE_SIZE * sizeof(uint16_t));
 
-        uint32_t parity = (std::bitset<32>(current_handle).count() + std::bitset<32>(module & 0xFF).count() + 1
+        uint32_t tmp = (module & 0xFF) // module number
+                       | (1 << 8)      // all packets in order
+                       | (256 << 16);  // 256 packets collected
+        uint32_t parity = (std::bitset<32>(current_handle).count()
+                           + std::bitset<32>(tmp).count()
                            + std::bitset<64>(frame).count()) % 2;
         mailbox_fifo.Put(current_handle);
-        mailbox_fifo.Put((module & 0xFF) // module number
-                         + (1 << 8)          // all packets in order
-                         + ((parity == 1) ? (1 << 15) : 0)); // parity bit
+        mailbox_fifo.Put( tmp | ((parity == 1) ? (1 << 15) : 0)); // parity bit
         mailbox_fifo.Put(frame >> 32);
         mailbox_fifo.Put(frame & UINT32_MAX);
 

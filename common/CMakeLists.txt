@@ -26,27 +26,23 @@ ADD_LIBRARY( CommonFunctions STATIC
         Coord.cpp Coord.h
         DiffractionExperiment.cpp DiffractionExperiment.h
         RawToConvertedGeometry.h
-        JFJochException.cpp JFJochException.h
-        CommunicationBuffer.cpp CommunicationBuffer.h
+        JFJochException.h
         Definitions.h
         ${CMAKE_CURRENT_BINARY_DIR}/GitInfo.cpp GitInfo.h
-        JFJochCompressor.cpp JFJochCompressor.h
         FrameTransformation.cpp FrameTransformation.h
         PedestalCalc.cpp PedestalCalc.h
         ZMQWrappers.cpp ZMQWrappers.h
         ThreadSafeFIFO.h
         ZMQPreviewPublisher.cpp ZMQPreviewPublisher.h
-        ZMQImagePuller.h ZMQImagePuller.cpp
         ZMQImagePusher.cpp ZMQImagePusher.h
         RadialIntegration.cpp RadialIntegration.h
         DiffractionSpot.cpp DiffractionSpot.h
         StrongPixelSet.cpp StrongPixelSet.h
         ZMQSpotPublisher.cpp ZMQSpotPublisher.h
         PedestalCalcCPU.cpp PedestalCalcCPU.h
-        ImageMetadata.h
         Latch.cpp Latch.h
         JFPedestal.cpp JFPedestal.h
-        JFCalibration.cpp JFCalibration.h RadialIntegrationMapping.cpp RadialIntegrationMapping.h StatusVector.h)
+        JFCalibration.cpp JFCalibration.h RadialIntegrationMapping.cpp RadialIntegrationMapping.h StatusVector.h JFModuleGainCalibration.cpp JFModuleGainCalibration.h ImagePusher.cpp ImagePusher.h TestImagePusher.cpp TestImagePusher.h SpotToSave.h)
 
 IF (CMAKE_CUDA_COMPILER)
     TARGET_SOURCES(CommonFunctions PUBLIC SpotFinder.h PedestalCalcGPU.h)
@@ -60,7 +56,7 @@ ELSE()
 ENDIF()
 
 # Need to do it to include Protocol Buffer headers - although this is not the cleanest solution
-TARGET_LINK_LIBRARIES(CommonFunctions Compression libzmq JFJochProtoBuf)
+TARGET_LINK_LIBRARIES(CommonFunctions Compression FrameSerialize libzmq JFJochProtoBuf)
 
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     TARGET_LINK_LIBRARIES(CommonFunctions -lrt)

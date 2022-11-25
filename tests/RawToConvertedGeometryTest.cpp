@@ -150,7 +150,7 @@ TEST_CASE("RawToConvertedGeometry_Transform_AdjustMultipixels","[RawToConvertedG
     DiffractionExperiment x;
 
     x.DataStreamModuleSize(2,{4,4,6,6}).Mode(DetectorMode::Conversion).UpsideDown(false);
-    x.ImageTime(std::chrono::seconds(1)); // Ensure the image is 32-bit
+    x.Summation(2); // Ensure the image is 32-bit
     REQUIRE(x.GetPixelDepth() == 4);
 
     REQUIRE(x.GetModulesNum(3) == 6);
@@ -159,7 +159,7 @@ TEST_CASE("RawToConvertedGeometry_Transform_AdjustMultipixels","[RawToConvertedG
     std::vector<int32_t> input(x.GetModulesNum(3) * RAW_MODULE_SIZE);
     std::vector<int32_t> output(x.GetPixelsNum());
 
-    for (int32_t i = 0; i < x.GetModulesNum(3) * RAW_MODULE_SIZE; i++) input[i] = i;
+    for (int32_t i = 0; i < x.GetModulesNum(3) * RAW_MODULE_SIZE; i++) input[i] = i % x.GetOverflow();
 
     for (int i = 0; i < x.GetModulesNum(3); i++)
         TransferModuleAdjustMultipixels<int32_t, int32_t>(output.data() + x.GetPixel0OfModule(i),
@@ -400,4 +400,177 @@ TEST_CASE("RawToConvertedGeometry_Coordinates","[RawToConvertedGeometry]") {
     REQUIRE(x2_conv.x == 1030 + 8 + 1020.5 + 6.0 );
     REQUIRE(x2_conv.y == 513.0 - (257 + 2));
     REQUIRE(x2_conv.z == 5.0);
+}
+
+TEST_CASE("TransferPacketEIGER_uint16_TopLeft","[RawToConvertedGeometry]") {
+    std::vector<uint16_t> destination(CONVERTED_MODULE_SIZE);
+    std::vector<uint16_t> source(2048);
+
+    std::mt19937 g1(345);
+    std::uniform_int_distribution<uint16_t> dist;
+
+    for (auto &i: source)
+        i = dist(g1);
+
+    TransferPacketEIGER(destination.data(), source.data(), CONVERTED_MODULE_COLS, 45);
+
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS] == source[0]);
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 1] == source[1]);
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 500] == source[498]);
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 512] == source[510]);
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 513] == 0); // Masked
+
+    CHECK(destination[(45 * 4 + 1) * CONVERTED_MODULE_COLS] == source[512]);
+    CHECK(destination[(45 * 4 + 1) * CONVERTED_MODULE_COLS + 253] == source[512 + 253]);
+
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 254] == source[512*2 + 254]);
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 255] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 256] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 257] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 258] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 259] == source[512*2 + 257]);
+
+    CHECK(destination[(45 * 4 + 3) * CONVERTED_MODULE_COLS] == source[512*3]);
+    CHECK(destination[(45 * 4 + 3) * CONVERTED_MODULE_COLS + 455] == source[512*3 + 453]);
+}
+
+TEST_CASE("TransferPacketEIGER_uint16_TopRight","[RawToConvertedGeometry]") {
+    std::vector<uint16_t> destination(CONVERTED_MODULE_SIZE);
+    std::vector<uint16_t> source(2048);
+
+    std::mt19937 g1(346);
+    std::uniform_int_distribution<uint16_t> dist;
+
+    for (auto &i: source)
+        i = dist(g1);
+
+    TransferPacketEIGER(destination.data(), source.data(), CONVERTED_MODULE_COLS, 64+45);
+
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 516] == 0); // Masked
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 516 + 1] == source[1]);
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 516 + 500] == source[498]);
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 516 + 512] == source[510]);
+    CHECK(destination[45 * 4 * CONVERTED_MODULE_COLS + 516 + 513] == source[511]);
+
+    CHECK(destination[(45 * 4 + 1) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(45 * 4 + 1) * CONVERTED_MODULE_COLS + 516 + 253] == source[512 + 253]);
+
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 516 + 254] == source[512*2 + 254]);
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 516 + 255] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 516 + 256] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 516 + 257] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 516 + 258] == 0); // Masked
+    CHECK(destination[(45 * 4 + 2) * CONVERTED_MODULE_COLS + 516 + 259] == source[512*2 + 257]);
+
+    CHECK(destination[(45 * 4 + 3) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(45 * 4 + 3) * CONVERTED_MODULE_COLS + 516 + 455] == source[512*3 + 453]);
+
+    CHECK(destination[(45 * 4 + 3) * CONVERTED_MODULE_COLS + 1029] == source[2047]);
+}
+
+TEST_CASE("TransferPacketEIGER_uint16_BottomLeft","[RawToConvertedGeometry]") {
+    std::vector<uint16_t> destination(CONVERTED_MODULE_SIZE);
+    std::vector<uint16_t> source(2048);
+
+    std::mt19937 g1(348);
+    std::uniform_int_distribution<uint16_t> dist;
+
+    for (auto &i: source)
+        i = dist(g1);
+
+
+    TransferPacketEIGER(destination.data(), source.data(), CONVERTED_MODULE_COLS, 128+45);
+
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS] == source[0]);
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 1] == source[1]);
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 500] == source[498]);
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 512] == source[510]);
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 513] == 0); // Masked
+
+    CHECK(destination[(258 + 45 * 4 + 2) * CONVERTED_MODULE_COLS] == source[512]);
+    CHECK(destination[(258 + 45 * 4 + 2) * CONVERTED_MODULE_COLS + 253] == source[512 + 253]);
+
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 254] == source[512*2 + 254]);
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 255] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 256] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 257] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 258] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 259] == source[512*2 + 257]);
+
+    CHECK(destination[(258 + 45 * 4    ) * CONVERTED_MODULE_COLS] == source[512*3]);
+    CHECK(destination[(258 + 45 * 4    ) * CONVERTED_MODULE_COLS + 455] == source[512*3 + 453]);
+}
+
+TEST_CASE("TransferPacketEIGER_uint16_BottomRight","[RawToConvertedGeometry]") {
+    std::vector<uint16_t> destination(CONVERTED_MODULE_SIZE);
+    std::vector<uint16_t> source(2048);
+
+    std::mt19937 g1(349);
+    std::uniform_int_distribution<uint16_t> dist;
+
+    for (auto &i: source)
+        i = dist(g1);
+
+    TransferPacketEIGER(destination.data(), source.data(), CONVERTED_MODULE_COLS, 128+64+45);
+
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 516] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 516 + 1] == source[1]);
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 516 + 500] == source[498]);
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 516 + 512] == source[510]);
+    CHECK(destination[(258 + 45 * 4 + 3) * CONVERTED_MODULE_COLS + 516 + 513] == source[511]);
+
+    CHECK(destination[(258 + 45 * 4 + 2) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(258 + 45 * 4 + 2) * CONVERTED_MODULE_COLS + 516 + 253] == source[512 + 253]);
+
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 516 + 254] == source[512*2 + 254]);
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 516 + 255] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 516 + 256] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 516 + 257] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 516 + 258] == 0); // Masked
+    CHECK(destination[(258 + 45 * 4 + 1) * CONVERTED_MODULE_COLS + 516 + 259] == source[512*2 + 257]);
+
+    CHECK(destination[(258 + 45 * 4    ) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(258 + 45 * 4    ) * CONVERTED_MODULE_COLS + 516 + 455] == source[512*3 + 453]);
+    CHECK(destination[(258 + 45 * 4    ) * CONVERTED_MODULE_COLS + 1029] == source[2047]);
+}
+
+TEST_CASE("TransferPacketEIGER_uint8_BottomRight","[RawToConvertedGeometry]") {
+    std::vector<uint8_t> destination(CONVERTED_MODULE_SIZE);
+    std::vector<uint8_t> source(4096);
+
+    std::mt19937 g1(380);
+    std::uniform_int_distribution<uint8_t> dist;
+
+    for (auto &i: source)
+        i = dist(g1);
+
+    TransferPacketEIGER(destination.data(), source.data(), CONVERTED_MODULE_COLS, 64+32+15);
+
+    CHECK(destination[(258 + 15 * 8 + 7) * CONVERTED_MODULE_COLS + 516] == 0); // Masked
+    CHECK(destination[(258 + 15 * 8 + 7) * CONVERTED_MODULE_COLS + 516 + 1] == source[1]);
+    CHECK(destination[(258 + 15 * 8 + 7) * CONVERTED_MODULE_COLS + 516 + 500] == source[498]);
+    CHECK(destination[(258 + 15 * 8 + 7) * CONVERTED_MODULE_COLS + 516 + 512] == source[510]);
+    CHECK(destination[(258 + 15 * 8 + 7) * CONVERTED_MODULE_COLS + 516 + 513] == source[511]);
+
+    CHECK(destination[(258 + 15 * 8 + 6) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(258 + 15 * 8 + 6) * CONVERTED_MODULE_COLS + 516 + 253] == source[512 + 253]);
+
+    CHECK(destination[(258 + 15 * 8 + 5) * CONVERTED_MODULE_COLS + 516 + 254] == source[512*2 + 254]);
+    CHECK(destination[(258 + 15 * 8 + 5) * CONVERTED_MODULE_COLS + 516 + 255] == 0); // Masked
+    CHECK(destination[(258 + 15 * 8 + 5) * CONVERTED_MODULE_COLS + 516 + 256] == 0); // Masked
+    CHECK(destination[(258 + 15 * 8 + 5) * CONVERTED_MODULE_COLS + 516 + 257] == 0); // Masked
+    CHECK(destination[(258 + 15 * 8 + 5) * CONVERTED_MODULE_COLS + 516 + 258] == 0); // Masked
+    CHECK(destination[(258 + 15 * 8 + 5) * CONVERTED_MODULE_COLS + 516 + 259] == source[512*2 + 257]);
+
+    CHECK(destination[(258 + 15 * 8 + 4) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(258 + 15 * 8 + 4) * CONVERTED_MODULE_COLS + 516 + 455] == source[512*3 + 453]);
+    CHECK(destination[(258 + 15 * 8 + 4) * CONVERTED_MODULE_COLS + 1029] == source[2047]);
+
+    CHECK(destination[(258 + 15 * 8 + 2) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(258 + 15 * 8 + 2) * CONVERTED_MODULE_COLS + 516 + 302] == source[512*5 + 300]);
+    CHECK(destination[(258 + 15 * 8 + 2) * CONVERTED_MODULE_COLS + 1029] == source[512*6-1]);
+
+    CHECK(destination[(258 + 15 * 8    ) * CONVERTED_MODULE_COLS + 516] == 0);
+    CHECK(destination[(258 + 15 * 8    ) * CONVERTED_MODULE_COLS + 516 + 154] == source[512*7 + 154]);
+    CHECK(destination[(258 + 15 * 8    ) * CONVERTED_MODULE_COLS + 1029] == source[512*8-1]);
 }

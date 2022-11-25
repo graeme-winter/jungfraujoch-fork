@@ -11,8 +11,11 @@
 
 FrameTransformation::FrameTransformation(const DiffractionExperiment &in_experiment) :
         experiment(in_experiment), summation(experiment.GetSummation()),
-        pixel_depth(experiment.GetPixelDepth()), compressor(in_experiment),
-        compression_algorithm(in_experiment.GetCompressionAlgorithm()) {
+        pixel_depth(experiment.GetPixelDepth()), compressor(in_experiment.GetCompressionAlgorithmEnum(),
+                                                            in_experiment.GetCompressionBlockSize(),
+                                                            in_experiment.GetCompressionLevel()),
+        compression_algorithm(in_experiment.GetCompressionAlgorithmEnum()),
+        line_shift((experiment.IsUpsideDown() ? -1 : 1) * experiment.GetXPixelsNum()) {
 
     if ((experiment.GetDetectorMode() == DetectorMode::Conversion) && (summation > 1)) {
         for (int i = 0; i < experiment.GetModulesNum(); i++)
@@ -29,9 +32,8 @@ FrameTransformation& FrameTransformation::SetOutput(void *output) {
     return *this;
 }
 
-template <class T> void AddToFramesSum(T *destination, const int16_t *source, size_t nlines,
-                                       int overload_sum, int underload_sum) {
-    for (int i = 0; i < nlines * RAW_MODULE_COLS; i++) {
+template <class Td> void AddToFramesSum(Td *destination, const int16_t *source, int underload_sum, int overload_sum) {
+    for (int i = 0; i < RAW_MODULE_SIZE; i++) {
         if ((source[i] < INT16_MIN + 4) || (destination[i] == underload_sum))
             destination[i] = underload_sum;
         else if ((source[i] > INT16_MAX - 4) || (destination[i] == overload_sum))
@@ -40,47 +42,59 @@ template <class T> void AddToFramesSum(T *destination, const int16_t *source, si
     }
 }
 
-void FrameTransformation::PackUncompressed() {
-    if (summation > 1) {
-        for (int m = 0; m < experiment.GetModulesNum(); m++) {
-            TransferModuleAdjustMultipixels<int32_t, int32_t>(((int32_t *) precompression_buffer.data()) + experiment.GetPixel0OfModule(m),
-                                                              summation_buffer[m].data(),
-                                                              (experiment.IsUpsideDown() ? -1 : 1) *
-                                                              experiment.GetXPixelsNum(),
-                                                              DiffractionExperiment::GetUnderflow(summation) + 1,
-                                                              DiffractionExperiment::GetOverflow(summation) - 1);
-            for (auto &i: summation_buffer[m])
-                i = 0;
-        }
 
-        if (pixel_depth == 4) {
-            // Generate 16-bit preview image
-            auto arr = (int32_t *) precompression_buffer.data();
+template <class Td> void AddToFramesSumUnsigned(Td *destination, const int16_t *source, int overload_sum) {
+    auto source_unsigned = reinterpret_cast<const uint16_t *>(source);
+    for (int i = 0; i < RAW_MODULE_SIZE; i++) {
+        if ((source_unsigned[i] > INT16_MAX - 4) || (destination[i] == overload_sum))
+            destination[i] = overload_sum;
+        else destination[i] += source_unsigned[i];
+    }
+}
 
-            for (int pxl = 0; pxl < experiment.GetPixelsNum(); pxl++) {
-                if (arr[pxl] >= INT16_MAX)
-                    image16bit[pxl] = INT16_MAX;
-                else if (arr[pxl] <= INT16_MIN)
-                    image16bit[pxl] = INT16_MIN;
-                else
-                    image16bit[pxl] = static_cast<int16_t>(arr[pxl]);
-            }
+void FrameTransformation::PackSummation() {
+    for (int m = 0; m < experiment.GetModulesNum(); m++) {
+        void *output = precompression_buffer.data() + sizeof(int32_t) * experiment.GetPixel0OfModule(m);
+
+        if (experiment.GetDetectorType() == JFJochProtoBuf::EIGER)
+            TransferModuleEIGER((uint32_t *) output,
+                                (uint32_t *) summation_buffer[m].data(),
+                                line_shift);
+        else
+            TransferModuleAdjustMultipixels((int32_t *) output,
+                                            (int32_t *) summation_buffer[m].data(),
+                                            line_shift,
+                                            static_cast<int32_t>(experiment.GetUnderflow()),
+                                            static_cast<int32_t>(experiment.GetOverflow()));
+        for (auto &i: summation_buffer[m])
+            i = 0;
+    }
+
+    if (pixel_depth == 4) {
+        // Generate 16-bit preview image
+        auto arr = (int32_t *) precompression_buffer.data();
+
+        for (int pxl = 0; pxl < experiment.GetPixelsNum(); pxl++) {
+            if (arr[pxl] >= INT16_MAX)
+                image16bit[pxl] = INT16_MAX;
+            else if (arr[pxl] <= INT16_MIN)
+                image16bit[pxl] = INT16_MIN;
+            else
+                image16bit[pxl] = static_cast<int16_t>(arr[pxl]);
         }
     }
 }
 
 size_t FrameTransformation::PackStandardOutput() {
-    PackUncompressed();
+    if (summation > 1)
+        PackSummation();
     switch (compression_algorithm) {
         case CompressionAlgorithm::BSHUF_LZ4:
         case CompressionAlgorithm::BSHUF_ZSTD:
-            BitShuffleCompressionHeader(standard_output, experiment.GetPixelsNum(),
-                                        experiment.GetCompressionBlockSize(),
-                                        pixel_depth);
-            return compressor.Compress(standard_output+12, precompression_buffer.data(),
-                                       experiment.GetPixelsNum(), pixel_depth) + 12;
+            return compressor.Compress(standard_output, precompression_buffer.data(),
+                                       experiment.GetPixelsNum(), pixel_depth);
 
-        case CompressionAlgorithm::None:
+        case CompressionAlgorithm::NO_COMPRESSION:
             memcpy(standard_output, precompression_buffer.data(), experiment.GetPixelsNum() * pixel_depth);
             return experiment.GetPixelsNum() * pixel_depth;
         default:
@@ -88,67 +102,40 @@ size_t FrameTransformation::PackStandardOutput() {
     }
 }
 
-
-void FrameTransformation::ProcessPacketNoSummation(const int16_t *input, size_t frame_number,
-                                                   uint16_t module_number, uint16_t packet_number, int data_stream) {
-
-    size_t offset = experiment.GetPixel0OfModule(experiment.GetFirstModuleOfDataStream(data_stream)+module_number);
-    auto output = ((int16_t *) precompression_buffer.data()) + offset;
-
-    if (experiment.GetDetectorMode() == DetectorMode::Conversion) {
-        if (experiment.GetMaskChipEdges())
-            TransferPacketNoMultipixel<int16_t, int16_t>(output, input,
-                                             (experiment.IsUpsideDown() ? -1 : 1) *
-                                             experiment.GetXPixelsNum(),
-                                             packet_number);
-        else
-            TransferPacketAdjustMultipixels<int16_t, int16_t>(output, input,
-                                                          (experiment.IsUpsideDown() ? -1 : 1) *
-                                                          experiment.GetXPixelsNum(),
-                                                          packet_number,
-                                                          DiffractionExperiment::GetUnderflow(summation) + 1,
-                                                          DiffractionExperiment::GetOverflow(summation) - 1);
-    }
-    else
-        memcpy(output + packet_number * 4 * RAW_MODULE_COLS,
-               input,
-               4 * RAW_MODULE_COLS * sizeof(int16_t));
-}
-
-void FrameTransformation::ProcessPacketSummation(const int16_t *input, size_t frame_number, uint16_t module_number,
-                                                 uint16_t packet_number, int data_stream) {
-    size_t module_number_abs = experiment.GetFirstModuleOfDataStream(data_stream) + module_number;
-
-    AddToFramesSum(summation_buffer[module_number_abs].data() + RAW_MODULE_COLS * 4 * packet_number,
-                   input,
-                   4,
-                   experiment.GetOverflow(),
-                   experiment.GetUnderflow());
-}
-
 void FrameTransformation::ProcessModule(const int16_t *input, size_t frame_number, uint16_t module_number,
                                         int data_stream) {
     if (standard_output == nullptr)
         throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Default stream output not initialized");
 
+    size_t module_number_abs = experiment.GetFirstModuleOfDataStream(data_stream) + module_number;
+
     if (summation == 1) {
-        for (int i = 0; i < 128; i++)
-            ProcessPacketNoSummation(input + 4 * RAW_MODULE_COLS * i, frame_number, module_number, i, data_stream);
+        auto output = ((int16_t *) precompression_buffer.data())
+                + experiment.GetPixel0OfModule(module_number_abs);
+
+        if (experiment.GetDetectorMode() != DetectorMode::Conversion)
+            memcpy(output, input, RAW_MODULE_SIZE * experiment.GetPixelDepth());
+        else {
+            switch (experiment.GetDetectorType()) {
+                case JFJochProtoBuf::EIGER:
+                    TransferModuleEIGER((uint16_t *) output, (uint16_t *) input, line_shift);
+                    break;
+                default:
+                case JFJochProtoBuf::JUNGFRAU:
+                    TransferModuleAdjustMultipixels((int16_t *) output, (int16_t *) input, line_shift,
+                                                        static_cast<int16_t>(experiment.GetUnderflow()),
+                                                        static_cast<int16_t>(experiment.GetOverflow()));
+                    break;
+            }
+        }
     } else {
-        for (int i = 0; i < 128; i++)
-            ProcessPacketSummation(input + 4 * RAW_MODULE_COLS * i, frame_number, module_number, i, data_stream);
+        if (experiment.GetDetectorType() == JFJochProtoBuf::EIGER)
+            AddToFramesSumUnsigned(summation_buffer[module_number_abs].data(),
+                                   input,experiment.GetOverflow());
+        else
+            AddToFramesSum(summation_buffer[module_number_abs].data(),
+                           input,experiment.GetUnderflow(), experiment.GetOverflow());
     }
-}
-
-void FrameTransformation::ProcessPacket(const int16_t *input, size_t frame_number, uint16_t module_number,
-                                        uint16_t packet_number, int data_stream) {
-    if (standard_output == nullptr)
-        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Default stream output not initialized");
-
-    if (summation == 1)
-        ProcessPacketNoSummation(input, frame_number, module_number, packet_number, data_stream);
-    else
-        ProcessPacketSummation(input, frame_number, module_number, packet_number, data_stream);
 }
 
 int16_t *FrameTransformation::GetPreview16BitImage() {

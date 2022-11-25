@@ -18,7 +18,7 @@ void JFJochReceiverClient::Connect(const std::string& addr)
 
 void JFJochReceiverClient::Start(const DiffractionExperiment &experiment, const JFCalibration *calibration,
                                  const std::vector<std::string> &writer_zmq_addr) {
-    JFJochProtoBuf::JFJochReceiverInput receiver_input;
+    JFJochProtoBuf::ReceiverInput receiver_input;
 
     *receiver_input.mutable_jungfraujoch_settings() = experiment;
     if (calibration != nullptr)
@@ -55,8 +55,8 @@ void JFJochReceiverClient::Abort() {
     }
 };
 
-JFJochProtoBuf::JFJochReceiverOutput JFJochReceiverClient::Stop() {
-    JFJochProtoBuf::JFJochReceiverOutput ret;
+JFJochProtoBuf::ReceiverOutput JFJochReceiverClient::Stop() {
+    JFJochProtoBuf::ReceiverOutput ret;
     if (_stub) {
         grpc::ClientContext context;
         JFJochProtoBuf::Empty empty;
@@ -103,14 +103,18 @@ JFJochProtoBuf::PreviewFrame JFJochReceiverClient::GetPreviewFrame() {
     return ret;
 }
 
-JFJochProtoBuf::JFJochReceiverNetworkConfig JFJochReceiverClient::GetNetworkConfig() {
-    JFJochProtoBuf::JFJochReceiverNetworkConfig ret;
+JFJochProtoBuf::ReceiverNetworkConfig JFJochReceiverClient::GetNetworkConfig() {
+    JFJochProtoBuf::ReceiverNetworkConfig ret;
     if (_stub) {
         grpc::ClientContext context;
         JFJochProtoBuf::Empty empty;
         auto status = _stub->GetNetworkConfig(&context, empty, &ret);
         if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
                                                 "JFJochReceiver: " + status.error_message());
+    } else {
+        // For tests to work, dummy receiver needs to replay with nonsense MAC addresses
+        ret.add_fpga_mac_addr("00:00:00:00:00:00");
+        ret.add_fpga_mac_addr("00:00:00:00:00:01");
     }
     return ret;
 }

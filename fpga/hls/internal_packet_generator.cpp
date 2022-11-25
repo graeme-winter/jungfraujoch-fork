@@ -30,18 +30,22 @@ void internal_packet_generator(STREAM_512 &data_in, STREAM_512 &data_out,
     ap_uint<64> mode                     = ACT_REG_MODE(packet_in.data);
     ap_uint<1> internal_packet_generator = (mode & MODE_INTERNAL_PACKET_GEN) ? 1 : 0;
     ap_uint<32> frames_per_trigger       = ACT_REG_FRAMES_PER_TRIGGER(packet_in.data);
-    ap_uint<5>  storage_cells = ACT_REG_NSTORAGE_CELLS(packet_in.data);
+    ap_uint<5>  storage_cells            = ACT_REG_NSTORAGE_CELLS(packet_in.data);
+    ap_uint<1> use_8kB_addr              = (mode & MODE_INTERNAL_PACKET_GEN_4KB) ? 0 : 1;
+    ap_uint<1> conversion                = (mode & MODE_CONV) ? 1 : 0;
 
     data_out << packet_in;
     ap_uint<ADDR_STREAM_WIDTH> addr;
     addr_in >> addr;
     addr_out << addr;
 
-    forward_gain:
-    for (int i = 0; i < modules * (3 + storage_cells * 3) * (RAW_MODULE_SIZE * 2 / 64); i++) {
+    if (conversion) {
+        forward_gain:
+        for (int i = 0; i < modules * (3 + storage_cells * 3) * (RAW_MODULE_SIZE * 2 / 64); i++) {
 #pragma HLS PIPELINE II=1
-        data_in >> packet_in;
-        data_out << packet_in;
+            data_in >> packet_in;
+            data_out << packet_in;
+        }
     }
 
     for (int i = 0; i < MODULES_INTERNAL_PACKET_GEN * (RAW_MODULE_SIZE * 2 / 64); i++) {
@@ -49,26 +53,26 @@ void internal_packet_generator(STREAM_512 &data_in, STREAM_512 &data_out,
         data_in >> packet_in;
         module_cache[i] = packet_in.data;
     }
-
     if (internal_packet_generator) {
         generate_frames:
         for (uint32_t frame_number = 1; frame_number <= frames_per_trigger; frame_number++ ) {
-            ap_uint<1> cancel = in_cancel;
-            if (cancel)
-                break;
-            for (uint32_t eth_packet = 0; eth_packet < RAW_MODULE_SIZE / 4096; eth_packet++) {
-                for (uint32_t module = 0; module < modules; module++) {
-                    addr_out << addr_packet(eth_packet, module, frame_number,
-                                            0, 0, 0, 0xABCDEF, 0);
-                    for (uint32_t axis_packet = 0; axis_packet < 128; axis_packet++) {
+            for (uint8_t module = 0; module < modules; module++) {
+                ap_uint<1> cancel = in_cancel;
+                if (cancel)
+                    break;
+
+                for (uint32_t i = 0; i < RAW_MODULE_SIZE / 2048 * 64; i++) {
 #pragma HLS PIPELINE II=1
-                        packet_out.user = 0;
-                        packet_out.id   = 0;
-                        packet_out.last = (axis_packet == 127) ? 1 : 0;
-                        packet_out.data = module_cache[(module % MODULES_INTERNAL_PACKET_GEN) * (RAW_MODULE_SIZE / 32)
-                                                       + eth_packet * 128 + axis_packet];
-                        data_out << packet_out;
-                    }
+                    uint32_t eth_packet = i / 64;
+                    uint32_t axis_packet = i % 64;
+                    if (axis_packet == 0)
+                        addr_out << addr_packet(eth_packet, module, frame_number, 0, 0xABCDEF, 0, use_8kB_addr);
+                    packet_out.user = 0;
+                    packet_out.id   = 0;
+                    packet_out.last = (axis_packet == 63) ? 1 : 0;
+                    packet_out.data = module_cache[(module % MODULES_INTERNAL_PACKET_GEN) * (RAW_MODULE_SIZE / 32)
+                                                   + eth_packet * 64 + axis_packet];
+                    data_out << packet_out;
                 }
             }
         }
@@ -78,13 +82,13 @@ void internal_packet_generator(STREAM_512 &data_in, STREAM_512 &data_out,
 
     forward_packets:
     while (!addr_last_flag(addr)) {
-#pragma HLS PIPELINE II=128
-        for (int i = 0; i < 128; i ++) {
-            data_in >> packet_in;
-            data_out << packet_in;
+#pragma HLS PIPELINE II=1
+        data_in >> packet_in;
+        data_out << packet_in;
+        if (packet_in.last) {
+            addr_out << addr;
+            addr_in >> addr;
         }
-        addr_out << addr;
-        addr_in >> addr;
     }
 
     addr_out << addr;

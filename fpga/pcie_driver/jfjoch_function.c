@@ -18,7 +18,8 @@ u32 parity(uint32_t values[4]) {
 
 void jfjoch_start(struct jfjoch_drvdata *drvdata) {
     u32 run_val = XDMA_CTRL_RUN_STOP | XDMA_CTRL_IE_DESC_ALIGN_MISMATCH | XDMA_CTRL_IE_DESC_ERROR | XDMA_CTRL_IE_READ_ERROR
-                  | XDMA_CTRL_IE_WRITE_ERROR | XDMA_CTRL_IE_DESC_COMPLETED;
+                  | XDMA_CTRL_IE_WRITE_ERROR | XDMA_CTRL_IE_DESC_COMPLETED
+                  | XDMA_CTRL_STM_MODE_WB; // Disable stream writeback
 
     // Set PCIe beats counters
     iowrite32((1 << 1), drvdata->bar0 + PCIE_OFFSET + (0<<12) + 0xC0);

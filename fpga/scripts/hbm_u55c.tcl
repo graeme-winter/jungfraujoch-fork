@@ -42,8 +42,11 @@ proc create_hier_cell_hbm_infrastructure { parentCell nameHier } {
   create_bd_pin -dir I -type clk refclk100
 
   set hbm_temperature_0 [ create_bd_pin -dir O -from 6 -to 0 hbm_temperature_0 ]
+  set hbm_temperature_1 [ create_bd_pin -dir O -from 6 -to 0 hbm_temperature_1 ]
   set hbm_temp_trip_0 [ create_bd_pin -dir O hbm_temp_trip_0 ]
+  set hbm_temp_trip_1 [ create_bd_pin -dir O hbm_temp_trip_1 ]
   set apb_complete_0 [ create_bd_pin -dir O apb_complete_0 ]
+  set apb_complete_1 [ create_bd_pin -dir O apb_complete_1 ]
 
   # Create instance: resetn_sync_0, and set properties
   create_bd_cell -type module -reference {resetn_sync} {resetn_sync_0}
@@ -60,9 +63,11 @@ proc create_hier_cell_hbm_infrastructure { parentCell nameHier } {
    CONFIG.USER_APB_PCLK_PERIOD_0 {10.0} \
    CONFIG.USER_AUTO_POPULATE {yes} \
    CONFIG.USER_CLK_SEL_LIST0 {AXI_05_ACLK} \
+   CONFIG.USER_CLK_SEL_LIST1 {AXI_16_ACLK} \
    CONFIG.USER_DFI_CLK0_FREQ {450.000} \
    CONFIG.USER_HBM_CP_0 {6} \
    CONFIG.USER_HBM_CP_1 {6} \
+   CONFIG.USER_HBM_DENSITY {16GB} \
    CONFIG.USER_HBM_FBDIV_0 {36} \
    CONFIG.USER_HBM_FBDIV_1 {36} \
    CONFIG.USER_HBM_HEX_CP_RES_0 {0x0000A600} \
@@ -81,7 +86,7 @@ proc create_hier_cell_hbm_infrastructure { parentCell nameHier } {
    CONFIG.USER_HBM_REF_OUT_CLK_0 {1800} \
    CONFIG.USER_HBM_RES_0 {10} \
    CONFIG.USER_HBM_RES_1 {10} \
-   CONFIG.USER_HBM_STACK {1} \
+   CONFIG.USER_HBM_STACK {2} \
    CONFIG.USER_HBM_TCK_0 {900} \
    CONFIG.USER_HBM_TCK_0_PERIOD {1.1111111111111112} \
    CONFIG.USER_MC0_ENABLE_ECC_CORRECTION {true} \
@@ -222,8 +227,28 @@ proc create_hier_cell_hbm_infrastructure { parentCell nameHier } {
    CONFIG.USER_MC9_TRAFFIC_OPTION {Linear} \
    CONFIG.USER_MC_ENABLE_06 {FALSE} \
    CONFIG.USER_MC_ENABLE_07 {FALSE} \
+   CONFIG.USER_MC_ENABLE_08 {FALSE} \
+   CONFIG.USER_MC_ENABLE_09 {FALSE} \
+   CONFIG.USER_MC_ENABLE_10 {FALSE} \
+   CONFIG.USER_MC_ENABLE_11 {FALSE} \
+   CONFIG.USER_MC_ENABLE_12 {FALSE} \
+   CONFIG.USER_MC_ENABLE_13 {FALSE} \
+   CONFIG.USER_MC_ENABLE_14 {FALSE} \
+   CONFIG.USER_MC_ENABLE_15 {FALSE} \
+   CONFIG.USER_MC_ENABLE_APB_01 {FALSE} \
+   CONFIG.USER_MEMORY_DISPLAY {16384} \
+   CONFIG.USER_PHY_ENABLE_08 {TRUE} \
+   CONFIG.USER_PHY_ENABLE_09 {TRUE} \
+   CONFIG.USER_PHY_ENABLE_10 {TRUE} \
+   CONFIG.USER_PHY_ENABLE_11 {TRUE} \
+   CONFIG.USER_PHY_ENABLE_12 {TRUE} \
+   CONFIG.USER_PHY_ENABLE_13 {TRUE} \
+   CONFIG.USER_PHY_ENABLE_14 {TRUE} \
+   CONFIG.USER_PHY_ENABLE_15 {TRUE} \
+   CONFIG.USER_SAXI_31 {false} \
    CONFIG.USER_SINGLE_STACK_SELECTION {LEFT} \
    CONFIG.USER_SWITCH_ENABLE_00 {FALSE} \
+   CONFIG.USER_SWITCH_ENABLE_01 {FALSE} \
    CONFIG.USER_TEMP_POLL_CNT_0 {100000} \
    CONFIG.USER_XSDB_INTF_EN {TRUE} \
    CONFIG.USER_tFAW_0 {0x00F} \
@@ -239,15 +264,17 @@ proc create_hier_cell_hbm_infrastructure { parentCell nameHier } {
    CONFIG.USER_tRREFD_0 {0x8} \
    CONFIG.USER_tWR_0 {0x0F} \
    CONFIG.USER_tXP_0 {0x07} \
- ] $hbm
-
+   ] $hbm
   connect_bd_net [get_bd_pins hbm_temperature_0] [get_bd_pins hbm/DRAM_0_STAT_TEMP]
+  connect_bd_net [get_bd_pins hbm_temperature_1] [get_bd_pins hbm/DRAM_1_STAT_TEMP]
   connect_bd_net [get_bd_pins hbm_temp_trip_0] [get_bd_pins hbm/DRAM_0_STAT_CATTRIP]
+  connect_bd_net [get_bd_pins hbm_temp_trip_1] [get_bd_pins hbm/DRAM_1_STAT_CATTRIP]
   connect_bd_net [get_bd_pins apb_complete_0] [get_bd_pins hbm/apb_complete_0]
+  connect_bd_net [get_bd_pins apb_complete_1] [get_bd_pins hbm/apb_complete_1]
 
   connect_bd_net [get_bd_pins axi_resetn] [get_bd_pins resetn_sync_0/in_resetn]
-  connect_bd_net [get_bd_pins refclk100] [get_bd_pins hbm/APB_0_PCLK] [get_bd_pins resetn_sync_0/clk] [get_bd_pins hbm/HBM_REF_CLK_0]
-  connect_bd_net [get_bd_pins hbm/APB_0_PRESET_N] [get_bd_pins resetn_sync_0/out_resetn]
+  connect_bd_net [get_bd_pins refclk100] [get_bd_pins hbm/APB_0_PCLK] [get_bd_pins hbm/APB_1_PCLK] [get_bd_pins resetn_sync_0/clk] [get_bd_pins hbm/HBM_REF_CLK_0] [get_bd_pins hbm/HBM_REF_CLK_1]
+  connect_bd_net [get_bd_pins hbm/APB_0_PRESET_N] [get_bd_pins hbm/APB_1_PRESET_N] [get_bd_pins resetn_sync_0/out_resetn]
 
   for {set i 0} {$i < 12} {incr i} {
       create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_hbm_$i

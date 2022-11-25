@@ -57,53 +57,31 @@ buffer_err(RAW_MODULE_SIZE), internal_pkt_gen_frame(RAW_MODULE_SIZE) {
         internal_pkt_gen_frame[i] = i % 65536;
 }
 
-uint16_t AcquisitionDevice::GetPacketCount(size_t frame, uint8_t module) const {
-    return counters.GetPacketCount(frame, module);
+bool AcquisitionDevice::IsFullModuleCollected(size_t frame, uint8_t module) const {
+    return counters.IsFullModuleCollected(frame, module);
 }
 
-uint16_t AcquisitionDevice::GetPacketCountHalfModule(size_t frame, uint8_t module) const {
-    return counters.GetPacketCountHalfModule(frame, module);
-}
-
-bool AcquisitionDevice::GetTriggerField(size_t frame, uint8_t module) const {
-    return counters.GetTriggerField(frame, module);
-}
-
-uint16_t AcquisitionDevice::GetBufferHandle(size_t frame, uint8_t module) const {
+uint64_t AcquisitionDevice::GetBufferHandle(size_t frame, uint8_t module) const {
     return counters.GetBufferHandle(frame, module);
 }
 
 void AcquisitionDevice::FillActionRegister(const DiffractionExperiment& x, ActionConfig &job) {
 
-    job.fpga_ipv4_addr      = x.GetDestIPv4Address(data_stream);
-    job.nmodules            = x.GetModulesNum(data_stream);
-
-    // Taken from DiffrationExperiment class
+    job.fpga_ipv4_addr             = x.GetDestIPv4Address(data_stream);
+    job.nmodules                   = x.GetModulesNum(data_stream);
     job.frames_internal_packet_gen = x.GetFrameNum();
+    job.one_over_energy            = std::lround((1<<20)/ x.GetPhotonEnergy_keV());
+    job.nstorage_cells             = x.GetStorageCellNumber() - 1;
+    job.mode                       = 0;
 
-    // Convert floats to fixed point numbers
-    job.one_over_energy = std::lround((1<<20)/ x.GetPhotonEnergy_keV());
+    if ((x.GetDetectorMode() == DetectorMode::Conversion) && (x.GetDetectorType() == JFJochProtoBuf::JUNGFRAU))
+        job.mode |= MODE_CONV;
 
-    job.nstorage_cells = x.GetStorageCellNumber() - 1;
-
-    uint64_t mode = 0;
-
-    switch (x.GetDetectorMode()) {
-        case DetectorMode::Conversion:
-            mode |= MODE_CONV;
-            break;
-        case DetectorMode::Raw:
-        case DetectorMode::PedestalG0:
-        case DetectorMode::PedestalG1:
-        case DetectorMode::PedestalG2:
-            mode |= MODE_RAW;
-            break;
+    if (x.IsUsingInternalPacketGen()) {
+        job.mode |= MODE_INTERNAL_PACKET_GEN;
+        if (x.GetDetectorType() == JFJochProtoBuf::EIGER)
+            job.mode |= MODE_INTERNAL_PACKET_GEN_4KB;
     }
-
-    if (x.IsUsingInternalPacketGen())
-        mode |= MODE_INTERNAL_PACKET_GEN;
-
-    job.mode = mode;
 }
 
 void AcquisitionDevice::PrepareAction(const DiffractionExperiment &experiment) {
@@ -135,7 +113,8 @@ void AcquisitionDevice::StartAction(const DiffractionExperiment &experiment) {
     }
 
     counters.Reset(experiment, data_stream);
-    counters.Reset(experiment, data_stream);
+    completion_vector.Reset(experiment, data_stream);
+    expected_frames = experiment.GetFrameNum();
 
     ActionConfig cfg_in{}, cfg_out{};
 
@@ -159,6 +138,10 @@ void AcquisitionDevice::StartAction(const DiffractionExperiment &experiment) {
         throw JFJochException(JFJochExceptionCategory::OpenCAPIError,
                               "Mismatch between expected and actual values of configuration registers (#modules)");
 
+    // Ensure internal queues are empty
+    work_request_queue.Clear();
+    work_completion_queue.Clear();
+
     HW_StartAction();
 
     send_work_request_future = std::async(std::launch::async, &AcquisitionDevice::SendWorkRequestThread, this);
@@ -168,11 +151,10 @@ void AcquisitionDevice::StartAction(const DiffractionExperiment &experiment) {
         SendWorkRequest(i);
 
     start_time = std::chrono::system_clock::now();
-    filter = AcquisitionDeviceFilter(experiment);
 }
 
 void AcquisitionDevice::CopyInternalPacketGenFrameToDeviceBuffer() {
-    memcpy(buffer_device[max_modules * (3 + 3 * 16)], internal_pkt_gen_frame.data(),
+    memcpy(buffer_device[0], internal_pkt_gen_frame.data(),
            RAW_MODULE_SIZE * sizeof(uint16_t));
 }
 
@@ -190,6 +172,10 @@ void AcquisitionDevice::SetCustomInternalGeneratorFrame(const std::vector<uint16
                               "Error in size of custom internal generator frame");
     for (int i = 0; i < RAW_MODULE_SIZE; i++)
         internal_pkt_gen_frame[i] = v[i];
+}
+
+const std::vector<uint16_t> &AcquisitionDevice::GetInternalGeneratorFrame() const {
+    return internal_pkt_gen_frame;
 }
 
 void AcquisitionDevice::ReadWorkCompletionThread() {
@@ -215,13 +201,14 @@ Completion AcquisitionDevice::ReadCompletion() {
     ReadMailbox(tmp);
 
     if (tmp[0] == UINT32_MAX) {
-        packets_ok = tmp[1];
+        bytes_received = tmp[1] * 4096LU;
         c.frame_number = Completion::MeasurementDone;
         return c;
     }
 
     c.handle       = tmp[0];
     c.module       = tmp[1] & 0xFF;
+    c.packet_count = (tmp[1] & (0xFFFF0000)) >> 16;
     bool all_packets_ok = tmp[1] & (1 << 8);
 
     uint64_t detector_frame_number = bit_concat(tmp[2], tmp[3]);
@@ -235,18 +222,27 @@ Completion AcquisitionDevice::ReadCompletion() {
     // Read debug, timestamp, and bunch ID
     ReadMailbox(tmp);
 
-    c.trigger      = tmp[0] & (1 << 31u);
-    c.frame_number = detector_frame_number;
-    c.timestamp    = tmp[1];
+    if (detector_frame_number == 0)
+        throw JFJochException(JFJochExceptionCategory::HardwareParityError, "Detector frame number cannot be zero");
+    else
+        c.frame_number = detector_frame_number - 1;
+    c.debug          = tmp[0];
+    c.timestamp      = tmp[1];
+    c.bunchid        = bit_concat(tmp[2], tmp[3]);
 
     if (all_packets_ok) {
         // All packets arrived, no more messages in completion coming
         c.packet_mask[0] = UINT64_MAX;
         c.packet_mask[1] = UINT64_MAX;
+        c.packet_mask[2] = UINT64_MAX;
+        c.packet_mask[3] = UINT64_MAX;
     } else {
         ReadMailbox(tmp);
         c.packet_mask[0] = bit_concat(tmp[2], tmp[3]);
         c.packet_mask[1] = bit_concat(tmp[0], tmp[1]);
+        ReadMailbox(tmp);
+        c.packet_mask[2] = bit_concat(tmp[2], tmp[3]);
+        c.packet_mask[3] = bit_concat(tmp[0], tmp[1]);
     }
 
     return c;
@@ -256,18 +252,15 @@ void AcquisitionDevice::WaitForActionComplete() {
     auto c = work_completion_queue.GetBlocking();
 
     while (c.frame_number != Completion::MeasurementDone) {
-        c.frame_number = filter.ProcessCompletion(c.frame_number, c.trigger);
 
-        if (c.frame_number == Completion::FrameAfterFilterEnd) {
+        if (c.frame_number >= expected_frames) {
             HW_SetCancelDataCollectionBit();
-        }
-
-        if ((c.frame_number != Completion::FrameAfterFilterEnd) && (c.frame_number != Completion::FrameIgnore))
-            counters.UpdateCounters(&c);
-        else {
             // this frame is not of any interest, therefore its location can be immediately released
             SendWorkRequest(c.handle);
             c.handle = UINT32_MAX;
+        } else {
+            counters.UpdateCounters(&c);
+            completion_vector.Add(c);
         }
 
         if (logger != nullptr)
@@ -275,8 +268,7 @@ void AcquisitionDevice::WaitForActionComplete() {
                           + " completion frame number " + std::to_string(c.frame_number)
                           + " module " + std::to_string(c.module)
                           + " handle " + std::to_string(c.handle)
-                          + " timestamp " + std::to_string(c.timestamp)
-                          + " trigger value " + std::to_string(c.trigger));
+                          + " timestamp " + std::to_string(c.timestamp));
 
         c = work_completion_queue.GetBlocking();
     }
@@ -296,68 +288,26 @@ void AcquisitionDevice::WaitForActionComplete() {
 
 void AcquisitionDevice::EndWorkRequestAndSignalQueues() {
     HW_SetCancelDataCollectionBit();
-    work_request_queue.Put(UINT32_MAX);
+    work_request_queue.Put(0); // We use 0 for end of data collection - so if this is put into the queue, it will be
     send_work_request_future.get();
 }
 
 void AcquisitionDevice::SendWorkRequest(uint32_t handle) {
-    work_request_queue.Put(handle);
+    work_request_queue.Put(handle+1);
 }
 
-uint32_t AcquisitionDevice::GetPacketsOK() const {
-    return packets_ok;
+uint64_t AcquisitionDevice::GetBytesReceived() const {
+    return bytes_received;
 }
 
 void AcquisitionDevice::SaveStatistics(const DiffractionExperiment &experiment,
                                        JFJochProtoBuf::AcquisitionDeviceStatistics &statistics) const {
-    size_t expected_images = experiment.GetImageNum();
-    if ((experiment.GetDetectorMode() == DetectorMode::PedestalG0) ||
-        (experiment.GetDetectorMode() == DetectorMode::PedestalG1) ||
-        (experiment.GetDetectorMode() == DetectorMode::PedestalG2))
-        expected_images = experiment.GetFrameNum();
 
-    uint32_t expected_packets = experiment.GetModulesNum(data_stream) * expected_images * experiment.GetSummation() * 128;
-
-    auto summation = experiment.GetSummation();
-    statistics.set_packets_expected_per_image(experiment.GetModulesNum(data_stream) * summation * 128L);
-
-    uint32_t total_packets_received = 0;
-
-    for (int image = 0; image < expected_images; image++) {
-        uint32_t packets_received = 0;
-        for (int frame = 0; frame < summation; frame++) {
-            for (int module = 0; module < experiment.GetModulesNum(data_stream); module++)
-                packets_received += GetPacketCount(image * summation + frame, module);
-        }
-        statistics.add_packets_received_per_image(packets_received);
-        total_packets_received += packets_received;
-    }
-
-    statistics.set_good_packets(total_packets_received);
-    statistics.set_packets_expected(expected_packets);
-
-    if (total_packets_received == expected_packets)
-        statistics.set_efficiency(1.0);
-    else
-        statistics.set_efficiency(total_packets_received / static_cast<double>(expected_packets));
-
-    statistics.set_ok_eth_packets(packets_ok);
-
+    statistics.set_bytes_received(GetBytesReceived());
     statistics.set_start_timestamp(start_time.time_since_epoch().count());
     statistics.set_end_timestamp(end_time.time_since_epoch().count());
 
-    auto tmp_v = filter.TriggerSequenceFrameNumbers();
-    if (!tmp_v.empty())
-        *statistics.mutable_trigger_sequence_frame_numbers() = {tmp_v.begin(), tmp_v.end()};
-
-    auto tmp_v2 = counters.PacketMaskHalfModule();
-    if (!tmp_v2.empty())
-        *statistics.mutable_packet_mask_half_module() = {tmp_v2.begin(), tmp_v2.end()};
-
-    auto tmp_v3 = counters.Timestamps();
-    if (!tmp_v3.empty())
-        *statistics.mutable_timestamp() = {tmp_v3.begin(), tmp_v3.end()};
-
+    completion_vector.FillStatistics(experiment, data_stream, statistics);
     *statistics.mutable_fpga_status() = GetStatus();
 }
 
@@ -370,28 +320,11 @@ uint64_t AcquisitionDevice::GetSlowestHead() const {
 }
 
 bool AcquisitionDevice::IsDone() const {
-    return counters.GetAcqusitionFinished();
+    return counters.IsAcquisitionFinished();
 }
 
 void AcquisitionDevice::ActionAbort() {
     HW_SetCancelDataCollectionBit();
-}
-
-uint64_t AcquisitionDevice::GetPacketMaskHalfModule(size_t frame, uint8_t module) const {
-    return counters.GetPacketMaskHalfModule(frame, module);
-}
-
-const int16_t *AcquisitionDevice::GetPacketBuffer(size_t frame_number, uint16_t module, uint16_t packet) {
-    if (packet > 127)
-        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Wrong packet number");
-
-    auto handle = GetBufferHandle(frame_number, module);
-
-    if (counters.IsPacketCollected(frame_number, module, packet) &&
-        (handle != HandleNotValid))
-        return (int16_t *) buffer_device.at(handle) + packet * RAW_MODULE_COLS * 4;
-    else
-        return buffer_err.data();
 }
 
 const int16_t *AcquisitionDevice::GetFrameBuffer(size_t frame_number, uint16_t module) const {
@@ -399,9 +332,12 @@ const int16_t *AcquisitionDevice::GetFrameBuffer(size_t frame_number, uint16_t m
     if (handle != HandleNotValid)
         return (int16_t *) buffer_device.at(handle);
     else
-        return buffer_err.data();
+        return GetErrorFrameBuffer();
 }
 
+const int16_t *AcquisitionDevice::GetErrorFrameBuffer() const {
+    return buffer_err.data();
+}
 
 int16_t *AcquisitionDevice::GetDeviceBuffer(size_t handle) {
     if (handle >= buffer_device.size())
@@ -417,7 +353,7 @@ void AcquisitionDevice::InitializeCalibration(const DiffractionExperiment &exper
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                               "Mismatch regarding module count in calibration and experiment description");
 
-    if (calib.GetStorageCellNum() != calib.GetStorageCellNum())
+    if (calib.GetStorageCellNum() != experiment.GetStorageCellNumber())
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                               "Mismatch regarding storage cell count in calibration and experiment description");
 
@@ -425,18 +361,22 @@ void AcquisitionDevice::InitializeCalibration(const DiffractionExperiment &exper
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                               "Gain factors not loaded");
 
+    if (1 + max_modules * (3 + 3 * experiment.GetStorageCellNumber()) > buffer_device.size())
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Not enough host/FPGA buffers to load all calibration constants");
+
     for (int m = 0; m < experiment.GetModulesNum(data_stream); m++) {
-        memcpy(buffer_device[m],          gain0[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
-        memcpy(buffer_device[m + max_modules],     gain1[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
-        memcpy(buffer_device[m + max_modules * 2], gain2[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
+        memcpy(buffer_device[1 + m],          gain0[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
+        memcpy(buffer_device[1 + m + max_modules],     gain1[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
+        memcpy(buffer_device[1 + m + max_modules * 2], gain2[m].data(), RAW_MODULE_SIZE * sizeof(uint16_t));
     }
 
     for (int s = 0; s < experiment.GetStorageCellNumber(); s++) {
         for (int m = 0; m < experiment.GetModulesNum(data_stream); m++) {
             for (int i = 0; i < RAW_MODULE_SIZE; i++) {
-                buffer_device[m + (3 + 0 * 16 + s) * max_modules][i] = calib.Pedestal(offset + m, 0,s)[i];
-                buffer_device[m + (3 + 1 * 16 + s) * max_modules][i] = calib.Pedestal(offset + m, 1,s)[i];
-                buffer_device[m + (3 + 2 * 16 + s) * max_modules][i] = calib.Pedestal(offset + m, 2,s)[i];
+                buffer_device[1 + m + (3 + 0 * 16 + s) * max_modules][i] = calib.Pedestal(offset + m, 0,s)[i];
+                buffer_device[1 + m + (3 + 1 * 16 + s) * max_modules][i] = calib.Pedestal(offset + m, 1,s)[i];
+                buffer_device[1 + m + (3 + 2 * 16 + s) * max_modules][i] = calib.Pedestal(offset + m, 2,s)[i];
             }
         }
     }
@@ -457,12 +397,12 @@ void AcquisitionDevice::UnmapBuffers() {
         if (i != nullptr) munmap(i, FPGA_BUFFER_LOCATION_SIZE);
 }
 
-template <class T>
-void AcquisitionDevice::LoadModuleGain(const std::vector<T> &vector, uint16_t module) {
+void AcquisitionDevice::LoadModuleGain(const JFModuleGainCalibration &gain_calibration, uint16_t module) {
     if (module >= max_modules)
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                               "Module number out of bounds");
 
+    auto &vector = gain_calibration.GetGainCalibration();
     if (gain0.empty())
         gain0.resize(max_modules);
     for (int i = 0; i < RAW_MODULE_SIZE; i++)
@@ -481,32 +421,23 @@ void AcquisitionDevice::LoadModuleGain(const std::vector<T> &vector, uint16_t mo
 
 void AcquisitionDevice::SendWorkRequestThread() {
     auto handle = work_request_queue.GetBlocking();
-    while (handle != UINT32_MAX) {
+    while (handle != 0) {
         // Preferably use the smallest handle (to reduce buffer size for better TLB usage)
         // So if work request cannot be sent, return handle and check again for the smallest one
-        if (!HW_SendWorkRequest(handle)) {
+        if (!HW_SendWorkRequest(handle - 1)) {
             work_request_queue.Put(handle);
             std::this_thread::sleep_for(std::chrono::microseconds(10));
         }
         handle = work_request_queue.GetBlocking();
     }
-    while (!HW_SendWorkRequest(handle))
+    while (!HW_SendWorkRequest(UINT32_MAX))
         std::this_thread::sleep_for(std::chrono::microseconds(10));
-}
-
-void AcquisitionDevice::LoadModuleGain(const std::string &filename, uint16_t module) {
-    std::fstream file(filename.c_str(), std::fstream::in | std::fstream::binary);
-    if (!file.is_open())
-        throw JFJochException(JFJochExceptionCategory::GainFileOpenError, "Gain file cannot be opened");
-    std::vector<double> gain_input(RAW_MODULE_SIZE*3);
-    file.read((char *) gain_input.data(), gain_input.size() * sizeof(double));
-    LoadModuleGain(gain_input, module);
 }
 
 void AcquisitionDevice::FrameBufferRelease(size_t frame_number, uint16_t module) {
     auto handle = counters.GetBufferHandleAndClear(frame_number, module);
-    if (handle != AcquisitionDeviceCounters::HandleNotFound)
-        work_request_queue.Put(handle);
+    if (handle != AcquisitionOnlineCounters::HandleNotFound)
+        SendWorkRequest(handle);
 }
 
 void AcquisitionDevice::EnableLogging(Logger *in_logger) {

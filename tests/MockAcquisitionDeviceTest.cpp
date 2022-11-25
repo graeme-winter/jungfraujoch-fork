@@ -9,11 +9,13 @@ TEST_CASE("MockAcquisitionDevice") {
 
     DiffractionExperiment experiment(2, {4,4});
 
-    experiment.NumTriggers(0).ImagesPerTrigger(5);
+    experiment.NumTriggers(1).ImagesPerTrigger(5);
     MockAcquisitionDevice device(0, 128);
 
+    auto gain_from_file = GainCalibrationFromTestFile();
+
     for (int m = 0; m < experiment.GetModulesNum(0); m++)
-        device.LoadModuleGain("../../tests/test_data/gainMaps_M049.bin", m);
+        device.LoadModuleGain(gain_from_file, m);
 
     device.StartAction(experiment);
 
@@ -25,10 +27,16 @@ TEST_CASE("MockAcquisitionDevice") {
     device.Terminate();
     device.WaitForActionComplete();
 
-    REQUIRE(device.GetPacketCount(0,0) == 128);
-    REQUIRE(device.GetPacketCount(0,1) == 128);
-    REQUIRE(device.GetPacketCount(3,0) == 128);
-    REQUIRE(device.GetPacketCount(4,1) == 128);
+    JFJochProtoBuf::AcquisitionDeviceStatistics device_statistics;
+    REQUIRE_NOTHROW(device.SaveStatistics(experiment, device_statistics));
+    REQUIRE(device_statistics.packets_received_per_module_size() == 5 * 4);
+    REQUIRE(device_statistics.packets_received_per_module(4*0+0) == 128);
+    REQUIRE(device_statistics.packets_received_per_module(4*0+1) == 128);
+    REQUIRE(device_statistics.packets_received_per_module(4*1+0) == 0);
+    REQUIRE(device_statistics.packets_received_per_module(4*2+5) == 0);
+    REQUIRE(device_statistics.packets_received_per_module(4*3+7) == 0);
+    REQUIRE(device_statistics.packets_received_per_module(4*3+0) == 128);
+    REQUIRE(device_statistics.packets_received_per_module(4*4+1) == 128);
 
     REQUIRE(memcmp(device.GetFrameBuffer(0,0), module_data.data(),
                    RAW_MODULE_SIZE * sizeof(uint16_t)) == 0);

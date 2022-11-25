@@ -1,0 +1,9 @@
+// Copyright (2019-2022) Paul Scherrer Institute
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef JUNGFRAUJOCH_COMPRESSIONALGORITHMENUM_H
+#define JUNGFRAUJOCH_COMPRESSIONALGORITHMENUM_H
+
+enum class CompressionAlgorithm {NO_COMPRESSION, BSHUF_LZ4, BSHUF_ZSTD};
+
+#endif //JUNGFRAUJOCH_COMPRESSIONALGORITHMENUM_H

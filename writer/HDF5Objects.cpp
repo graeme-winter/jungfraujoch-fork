@@ -6,7 +6,6 @@
 
 #include <bitshuffle/bshuf_h5filter.h>
 #include "HDF5Objects.h"
-#include "../common/JFJochException.h"
 
 std::mutex hdf5_mutex;
 
@@ -110,28 +109,47 @@ HDF5DataType::HDF5DataType(bool val) : HDF5Id() {
     id = H5Tcopy(H5T_NATIVE_HBOOL);
 }
 
-HDF5DataType::HDF5DataType(uint16_t val) : HDF5Id() {
-    id = H5Tcopy(H5T_NATIVE_UINT16);
-}
+HDF5DataType::HDF5DataType(uint8_t val) : HDF5DataType(1, false) {}
+HDF5DataType::HDF5DataType(int8_t val) : HDF5DataType(1, true) {}
 
-HDF5DataType::HDF5DataType(uint32_t val) : HDF5Id() {
-    id = H5Tcopy(H5T_NATIVE_UINT32);
-}
+HDF5DataType::HDF5DataType(uint16_t val) : HDF5DataType(2, false) {}
+HDF5DataType::HDF5DataType(int16_t val) : HDF5DataType(2, true) {}
 
-HDF5DataType::HDF5DataType(uint64_t val) : HDF5Id() {
-    id = H5Tcopy(H5T_NATIVE_UINT64);
-}
+HDF5DataType::HDF5DataType(uint32_t val) : HDF5DataType(4, false) {}
+HDF5DataType::HDF5DataType(int32_t val) : HDF5DataType(4, true) {}
 
-HDF5DataType::HDF5DataType(int16_t val) : HDF5Id() {
-    id = H5Tcopy(H5T_NATIVE_INT16);
-}
+HDF5DataType::HDF5DataType(uint64_t val) : HDF5DataType(8, false) {}
+HDF5DataType::HDF5DataType(int64_t val) : HDF5DataType(8, true) {}
 
-HDF5DataType::HDF5DataType(int32_t val) : HDF5Id() {
-    id = H5Tcopy(H5T_NATIVE_INT32);
-}
-
-HDF5DataType::HDF5DataType(int64_t val) : HDF5Id() {
-    id = H5Tcopy(H5T_NATIVE_INT64);
+HDF5DataType::HDF5DataType(uint64_t size_in_bytes, bool is_signed) : HDF5Id() {
+    switch (size_in_bytes) {
+        case 1:
+            if (is_signed)
+                id = H5Tcopy(H5T_NATIVE_INT8);
+            else
+                id = H5Tcopy(H5T_NATIVE_UINT8);
+            break;
+        case 2:
+            if (is_signed)
+                id = H5Tcopy(H5T_NATIVE_INT16);
+            else
+                id = H5Tcopy(H5T_NATIVE_UINT16);
+            break;
+        case 4:
+            if (is_signed)
+                id = H5Tcopy(H5T_NATIVE_INT32);
+            else
+                id = H5Tcopy(H5T_NATIVE_UINT32);
+            break;
+        case 8:
+            if (is_signed)
+                id = H5Tcopy(H5T_NATIVE_INT64);
+            else
+                id = H5Tcopy(H5T_NATIVE_UINT64);
+            break;
+        default:
+            throw JFJochException(JFJochExceptionCategory::HDF5, "Type outside of standard types");
+    }
 }
 
 HDF5DataType::HDF5DataType(const std::string& str) : HDF5Id() {
@@ -143,15 +161,6 @@ HDF5DataType::HDF5DataType(const char * str) : HDF5Id() {
     id = H5Tcopy(H5T_C_S1);
     size_t length = strnlen(str,512);
     H5Tset_size(id, length + 1);
-}
-
-HDF5DataType::HDF5DataType(const DiffractionExperiment &experiment) : HDF5Id() {
-    if (experiment.GetDetectorMode() == DetectorMode::Conversion) {
-        if (experiment.GetPixelDepth() == 2) id = H5Tcopy(H5T_NATIVE_INT16);
-        else id = H5Tcopy(H5T_NATIVE_INT32);
-    } else
-        // Raw data with unsigned int
-        id = H5Tcopy(H5T_NATIVE_UINT16);
 }
 
 HDF5DataType::HDF5DataType(const HDF5DataSet &data_set) :HDF5Id() {
@@ -286,10 +295,6 @@ HDF5Object & HDF5Object::Attr(const std::string &name, double val) {
     return *this;
 }
 
-HDF5Object & HDF5Object::Attr(const std::string &name, const Coord &val) {
-    return Attr(name, std::vector<double>{val.x, val.y, val.z});
-}
-
 HDF5Object & HDF5Object::Attr(const std::string &name, const std::vector<double> &val) {
     HDF5DataSpace dataspace({val.size()});
     if (val.empty()) throw JFJochException(JFJochExceptionCategory::HDF5, "Empty array cannot be written");
@@ -315,7 +320,7 @@ HDF5Object & HDF5Object::NXClass(const std::string &val) {
 
 HDF5Object& HDF5Object::Transformation(const std::string& units, const std::string& depends_on,
                            const std::string& equipment, const std::string& equipment_component,
-                           const std::string& transformation_type, const Coord& vector) {
+                           const std::string& transformation_type, const std::vector<double>& vector) {
     if (!units.empty()) Attr("units", units);
     if (!depends_on.empty()) Attr("depends_on", depends_on);
     if (!equipment.empty()) Attr("equipment", equipment);
@@ -327,8 +332,8 @@ HDF5Object& HDF5Object::Transformation(const std::string& units, const std::stri
 
 HDF5Object& HDF5Object::Transformation(const std::string& units, const std::string& depends_on,
                            const std::string& equipment, const std::string& equipment_component,
-                           const std::string& transformation_type, const Coord& vector, const Coord &offset,
-                           const std::string& offset_units) {
+                           const std::string& transformation_type, const std::vector<double>& vector,
+                           const std::vector<double> &offset, const std::string& offset_units) {
     Transformation(units, depends_on, equipment, equipment_component, transformation_type, vector);
     Attr("offset", offset);
     if (!offset_units.empty()) Attr("offset_units", offset_units);
@@ -533,7 +538,7 @@ void HDF5Dcpl::SetCompression(CompressionAlgorithm c, size_t elem_size, size_t b
 #else
             throw SLSException(SLSExceptionCategory::Compression, "ZSTD support not available");
 #endif
-        case CompressionAlgorithm::None:
+        case CompressionAlgorithm::NO_COMPRESSION:
             break;
     }
 

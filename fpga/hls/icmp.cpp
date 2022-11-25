@@ -86,7 +86,7 @@ void icmp(AXI_STREAM& eth_in, AXI_STREAM& eth_out, uint64_t& counter) {
 #pragma HLS INTERFACE axis register both port=eth_out name=m_axis_icmp
 #pragma HLS INTERFACE ap_vld port=counter
 
-#pragma HLS pipeline II=1 enable_flush
+#pragma HLS pipeline II=1 style=flp
 
     enum   icmp_state {INSPECT_HEADER, FORWARD, DROP_PACKET};
     static icmp_state state = INSPECT_HEADER;

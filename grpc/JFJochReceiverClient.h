@@ -19,10 +19,10 @@ public:
     void Abort();
     void Cancel();
     void SetDataProcessingSettings(const JFJochProtoBuf::DataProcessingSettings& settings);
-    JFJochProtoBuf::JFJochReceiverOutput Stop();
+    JFJochProtoBuf::ReceiverOutput Stop();
     JFJochProtoBuf::ReceiverStatus GetStatus();
     JFJochProtoBuf::PreviewFrame GetPreviewFrame();
-    JFJochProtoBuf::JFJochReceiverNetworkConfig GetNetworkConfig();
+    JFJochProtoBuf::ReceiverNetworkConfig GetNetworkConfig();
 };
 
 

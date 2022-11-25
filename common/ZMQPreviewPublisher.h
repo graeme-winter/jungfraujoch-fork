@@ -4,10 +4,11 @@
 #ifndef JUNGFRAUJOCH_ZMQPREVIEWPUBLISHER_H
 #define JUNGFRAUJOCH_ZMQPREVIEWPUBLISHER_H
 
+#include <jfjoch.pb.h>
+
 #include "ZMQWrappers.h"
 #include "DiffractionExperiment.h"
 #include "JFCalibration.h"
-#include "jfjoch.pb.h"
 
 class ZMQPreviewPublisher  {
     ZMQSocket socket;

@@ -3,7 +3,4 @@
 
 #include "Completion.h"
 
-// UINT64_MAX-1 is reserved for pedestal
-const uint64_t Completion::FrameAfterFilterEnd = (UINT64_MAX-2);
-const uint64_t Completion::FrameIgnore = (UINT64_MAX-3);
 const uint64_t Completion::MeasurementDone = UINT64_MAX;

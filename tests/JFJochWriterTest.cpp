@@ -24,17 +24,16 @@ TEST_CASE("JFJochWriterTest_ZMQ","[JFJochWriter]") {
             .UseInternalPacketGenerator(true).DataStreamModuleSize(1, {2})
             .Mode(DetectorMode::Raw).PedestalG0Frames(0);
 
-    JFJochProtoBuf::JFJochReceiverInput receiver_input;
+    JFJochProtoBuf::ReceiverInput receiver_input;
     *receiver_input.mutable_jungfraujoch_settings() = x;
     receiver_input.add_writer_zmq_address(zmq_addr);
 
-    std::vector<double> empty_gain(3*RAW_MODULE_SIZE);
-
+    JFModuleGainCalibration gain;
     std::vector<std::unique_ptr<AcquisitionDevice>>  aq_devices;
     for (int i = 0; i < x.GetDataStreamsNum(); i++) {
         auto test = new HLSSimulatedDevice(i, 64);
         for (int m = 0; m < x.GetModulesNum(i); m++)
-            test->LoadModuleGain(empty_gain, m);
+            test->LoadModuleGain(gain, m);
         aq_devices.emplace_back(test);
     }
 
@@ -42,21 +41,24 @@ TEST_CASE("JFJochWriterTest_ZMQ","[JFJochWriter]") {
     for (const auto &i: aq_devices)
         tmp_devices.emplace_back(i.get());
 
-    JFJochReceiverService fpga_receiver_service(tmp_devices, context, logger);
+    ZMQImagePusher pusher (context, {zmq_addr});
+    JFJochReceiverService fpga_receiver_service(tmp_devices, logger, pusher);
 
-    JFJochProtoBuf::JFJochWriterInput writer_input;
-    *writer_input.mutable_jungfraujoch_settings() = x;
+    JFJochProtoBuf::WriterInput writer_input = x;
+    writer_input.set_zmq_receiver_address(zmq_addr);
 
-    JFJochProtoBuf::JFJochReceiverOutput receiver_output;
-    JFJochProtoBuf::JFJochWriterOutput writer_output;
+    JFJochProtoBuf::ReceiverOutput receiver_output;
+    JFJochProtoBuf::WriterOutput writer_output;
 
     std::unique_ptr<JFJochWriter> writer;
     REQUIRE(x.GetImageNum() == 5);
-    REQUIRE_NOTHROW(writer = std::make_unique<JFJochWriter>(x, context, zmq_addr, logger));
+    REQUIRE_NOTHROW(writer = std::make_unique<JFJochWriter>(writer_input, context, logger));
 
     REQUIRE(fpga_receiver_service.Start(&grpc_context, &receiver_input, &empty).ok());
 
     REQUIRE(fpga_receiver_service.Stop(&grpc_context, &empty, &receiver_output).ok());
+    CHECK(receiver_output.images_sent() == 5);
+
     REQUIRE_NOTHROW(writer->Stop());
 
     // HDF5 file can be opened
@@ -83,7 +85,7 @@ TEST_CASE("JFJochWriterServiceTest_ZMQ","[JFJochWriter]") {
     ZMQContext context;
     std::string zmq_addr = "inproc://#1";
 
-    JFJochWriterService writer(context, zmq_addr, logger);
+    JFJochWriterService writer(context, logger);
 
     grpc::ServerContext grpc_context;
     JFJochProtoBuf::Empty empty;
@@ -94,11 +96,11 @@ TEST_CASE("JFJochWriterServiceTest_ZMQ","[JFJochWriter]") {
         .Mode(DetectorMode::Raw).PedestalG0Frames(0);
 
 
-    JFJochProtoBuf::JFJochReceiverInput receiver_input;
+    JFJochProtoBuf::ReceiverInput receiver_input;
     *receiver_input.mutable_jungfraujoch_settings() = x;
     receiver_input.add_writer_zmq_address(zmq_addr);
 
-    std::vector<double> empty_gain(3*RAW_MODULE_SIZE);
+    JFModuleGainCalibration empty_gain;
 
     std::vector<std::unique_ptr<AcquisitionDevice>>  aq_devices;
     for (int i = 0; i < x.GetDataStreamsNum(); i++) {
@@ -112,21 +114,22 @@ TEST_CASE("JFJochWriterServiceTest_ZMQ","[JFJochWriter]") {
     for (const auto &i: aq_devices)
         tmp_devices.emplace_back(i.get());
 
-    JFJochReceiverService fpga_receiver_service(tmp_devices, context, logger);
+    ZMQImagePusher pusher (context, {zmq_addr});
+    JFJochReceiverService fpga_receiver_service(tmp_devices, logger, pusher);
 
-    JFJochProtoBuf::JFJochWriterInput writer_input;
-    *writer_input.mutable_jungfraujoch_settings() = x;
+    JFJochProtoBuf::WriterInput writer_input = x;
+    writer_input.set_zmq_receiver_address(zmq_addr);
 
-    JFJochProtoBuf::JFJochReceiverOutput receiver_output;
-    JFJochProtoBuf::JFJochWriterOutput writer_output;
+    JFJochProtoBuf::ReceiverOutput receiver_output;
+    JFJochProtoBuf::WriterOutput writer_output;
 
     REQUIRE(x.GetImageNum() == 5);
     REQUIRE(writer.Start(&grpc_context, &writer_input, &empty).ok());
 
     REQUIRE(fpga_receiver_service.Start(&grpc_context, &receiver_input, &empty).ok());
-
     REQUIRE(fpga_receiver_service.Stop(&grpc_context, &empty, &receiver_output).ok());
-    REQUIRE(writer.Stop(&grpc_context, &empty, &empty).ok());
+    REQUIRE(writer.Stop(&grpc_context, &empty, &writer_output).ok());
 
+    REQUIRE(writer_output.nimages() == 5);
     //TODO: Check contest of HDF5 file
 }

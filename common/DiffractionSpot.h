@@ -4,9 +4,10 @@
 #ifndef JUNGFRAUJOCH_DIFFRACTIONSPOT_H
 #define JUNGFRAUJOCH_DIFFRACTIONSPOT_H
 
+#include <jfjoch.pb.h>
 #include "Coord.h"
 #include "DiffractionExperiment.h"
-#include "jfjoch.pb.h"
+#include "SpotToSave.h"
 
 // Definition of Bragg spot
 class DiffractionSpot {
@@ -29,12 +30,11 @@ public:
     int64_t Count() const;
     int64_t MaxCount() const;
     double Frame() const;
-    double OmegaRad(const DiffractionExperiment &experiment) const;
     Coord RawCoord() const;
     Coord LabCoord(const DiffractionExperiment &experiment, uint16_t data_stream = TASK_NO_DATA_STREAM) const;
     double GetResolution(const DiffractionExperiment &experiment, uint16_t data_stream = TASK_NO_DATA_STREAM) const;
     Coord ReciprocalCoord(const DiffractionExperiment &experiment, uint16_t data_stream = TASK_NO_DATA_STREAM) const;
-    Coord ReciprocalCoord3D(const DiffractionExperiment &experiment, uint16_t data_stream = TASK_NO_DATA_STREAM) const;
+    operator SpotToSave() const;
 };
 
 #endif //JUNGFRAUJOCH_DIFFRACTIONSPOT_H

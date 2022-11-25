@@ -5,7 +5,7 @@
 #define INDEX_COORD_H
 
 #include <ostream>
-#include "jfjoch.pb.h"
+#include <jfjoch.pb.h>
 
 class Coord {
 public:

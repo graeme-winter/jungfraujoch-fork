@@ -14,8 +14,8 @@ int main(int argc, char **argv) {
     Logger logger("jfjoch_xgandalf");
 
     nlohmann::json runtime_params_json;
-    if (argc != 2) {
-        std::cout << "Usage: ./jfjoch_xgandalf <config.json>" << std::endl;
+    if ((argc != 2) && (argc != 3)) {
+        std::cout << "Usage: ./jfjoch_xgandalf <config.json> <gRPC port>" << std::endl;
         exit(EXIT_FAILURE);
     }
     std::ifstream input(argv[1]);

@@ -173,7 +173,7 @@ void bshuf1k_shuffle(BSHUF_STREAM &in, BSHUF_STREAM &out) {
 
             for (int i = 0; i < 4; i++) {
                 packet_in[i].data = tmp_reg_out(512*i+511,512*i);
-                packet_in[i].dest = (counter / 4) % 8;
+                packet_in[i].dest = (counter / 4) % 4;
                 out << packet_in[i];
             }
             counter += 1;
@@ -192,15 +192,11 @@ void bshuf1k_shuffle(BSHUF_STREAM &in, BSHUF_STREAM &out) {
     out << packet_in[0];
 }
 
-void bshuf8k_axis_split(BSHUF_STREAM &in,
+void bshuf4k_axis_split(BSHUF_STREAM &in,
                         BSHUF_STREAM &out_0,
                         BSHUF_STREAM &out_1,
                         BSHUF_STREAM &out_2,
-                        BSHUF_STREAM &out_3,
-                        BSHUF_STREAM &out_4,
-                        BSHUF_STREAM &out_5,
-                        BSHUF_STREAM &out_6,
-                        BSHUF_STREAM &out_7) {
+                        BSHUF_STREAM &out_3) {
     bshuf_packet packet_in;
     in >> packet_in;
     ap_uint<1> shuffle = (ACT_REG_MODE(packet_in.data) & MODE_BITSHUFFLE_FPGA) ? 1 : 0;
@@ -217,14 +213,6 @@ void bshuf8k_axis_split(BSHUF_STREAM &in,
             out_2 << packet_in;
         else if (packet_in.dest == 3)
             out_3 << packet_in;
-        else if (packet_in.dest == 4)
-            out_4 << packet_in;
-        else if (packet_in.dest == 5)
-            out_5 << packet_in;
-        else if (packet_in.dest == 6)
-            out_6 << packet_in;
-        else if (packet_in.dest == 7)
-            out_7 << packet_in;
         else
             out_0 << packet_in;
         in >> packet_in;
@@ -232,8 +220,7 @@ void bshuf8k_axis_split(BSHUF_STREAM &in,
     out_0 << packet_in;
 }
 
-void bshuf8k_axis_combine(BSHUF_STREAM &in_0, BSHUF_STREAM &in_1, BSHUF_STREAM &in_2, BSHUF_STREAM &in_3,
-                          BSHUF_STREAM &in_4, BSHUF_STREAM &in_5, BSHUF_STREAM &in_6, BSHUF_STREAM &in_7,
+void bshuf4k_axis_combine(BSHUF_STREAM &in_0, BSHUF_STREAM &in_1, BSHUF_STREAM &in_2, BSHUF_STREAM &in_3,
                           STREAM_512 &out) {
     bshuf_packet packet_in;
     packet_512_t packet_out;
@@ -251,7 +238,7 @@ void bshuf8k_axis_combine(BSHUF_STREAM &in_0, BSHUF_STREAM &in_1, BSHUF_STREAM &
     if (shuffle)
         bitshuffle_loop:
         while (!packet_in.user) {
-#pragma HLS PIPELINE II=8
+#pragma HLS PIPELINE II=4
             packet_out.data = packet_in.data;
             packet_out.last = packet_in.last;
             packet_out.user = packet_in.user;
@@ -273,34 +260,6 @@ void bshuf8k_axis_combine(BSHUF_STREAM &in_0, BSHUF_STREAM &in_1, BSHUF_STREAM &
             out << packet_out;
 
             in_3 >> packet_in;
-            packet_out.data = packet_in.data;
-            packet_out.last = packet_in.last;
-            packet_out.user = packet_in.user;
-            packet_out.id   = packet_in.id;
-            out << packet_out;
-
-            in_4 >> packet_in;
-            packet_out.data = packet_in.data;
-            packet_out.last = packet_in.last;
-            packet_out.user = packet_in.user;
-            packet_out.id   = packet_in.id;
-            out << packet_out;
-
-            in_5 >> packet_in;
-            packet_out.data = packet_in.data;
-            packet_out.last = packet_in.last;
-            packet_out.user = packet_in.user;
-            packet_out.id   = packet_in.id;
-            out << packet_out;
-
-            in_6 >> packet_in;
-            packet_out.data = packet_in.data;
-            packet_out.last = packet_in.last;
-            packet_out.user = packet_in.user;
-            packet_out.id   = packet_in.id;
-            out << packet_out;
-
-            in_7 >> packet_in;
             packet_out.data = packet_in.data;
             packet_out.last = packet_in.last;
             packet_out.user = packet_in.user;
@@ -362,23 +321,11 @@ void bitshuffle(STREAM_512 &data_in, STREAM_512 &data_out) {
 #pragma HLS STREAM variable=fifo_4_2 depth=32
     BSHUF_STREAM fifo_4_3;
 #pragma HLS STREAM variable=fifo_4_3 depth=32
-    BSHUF_STREAM fifo_4_4;
-#pragma HLS STREAM variable=fifo_4_4 depth=32
-    BSHUF_STREAM fifo_4_5;
-#pragma HLS STREAM variable=fifo_4_5 depth=32
-    BSHUF_STREAM fifo_4_6;
-#pragma HLS STREAM variable=fifo_4_6 depth=32
-    BSHUF_STREAM fifo_4_7;
-#pragma HLS STREAM variable=fifo_4_7 depth=32
 
     bshuf256(data_in, fifo_0);
     bshuf1k_axis_split(fifo_0, fifo_1_0, fifo_1_1, fifo_1_2, fifo_1_3);
     bshuf1k_axis_combine(fifo_1_0, fifo_1_1, fifo_1_2, fifo_1_3, fifo_2);
     bshuf1k_shuffle(fifo_2, fifo_3);
-    bshuf8k_axis_split(fifo_3,
-                       fifo_4_0, fifo_4_1, fifo_4_2, fifo_4_3,
-                       fifo_4_4, fifo_4_5, fifo_4_6, fifo_4_7);
-    bshuf8k_axis_combine(fifo_4_0, fifo_4_1, fifo_4_2, fifo_4_3,
-                         fifo_4_4, fifo_4_5, fifo_4_6, fifo_4_7,
-                         data_out);
+    bshuf4k_axis_split(fifo_3,fifo_4_0, fifo_4_1, fifo_4_2, fifo_4_3);
+    bshuf4k_axis_combine(fifo_4_0, fifo_4_1, fifo_4_2, fifo_4_3,data_out);
 }

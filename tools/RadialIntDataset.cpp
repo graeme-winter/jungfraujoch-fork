@@ -29,7 +29,8 @@ std::vector<uint8_t> GetOneByteMask(DiffractionExperiment &x, HDF5Object &master
     return ret;
 }
 
-void CalcRadialIntegration(DiffractionExperiment &x, RadialIntegration &rad, const char *file_name) {
+void CalcRadialIntegration(DiffractionExperiment &x, RadialIntegration &rad, const char *file_name,
+                           hsize_t first, hsize_t last) {
     HDF5ReadOnlyFile data_file(file_name);
     HDF5DataSet dataset(data_file, "/entry/data/data");
     HDF5DataSpace file_space(dataset);
@@ -41,7 +42,10 @@ void CalcRadialIntegration(DiffractionExperiment &x, RadialIntegration &rad, con
 
     std::vector<int16_t> source(x.GetPixelsNum());
 
-    for (hsize_t i = 0; i < file_space.GetDimensions()[3]; i++) {
+    first = std::min(first, file_space.GetDimensions()[0] - 1);
+    last = std::min(last, file_space.GetDimensions()[0] - 1);
+    std::cout << "# " << first << " " << last << std::endl;
+    for (hsize_t i = first; i < last; i++) {
         std::vector<hsize_t> start = {i, 0, 0};
         std::vector<hsize_t> dim = {1, (hsize_t) x.GetYPixelsNum(), (hsize_t) x.GetXPixelsNum()};
         dataset.ReadVector(source, start, dim);
@@ -60,12 +64,19 @@ void GetGeometry(DiffractionExperiment &x, HDF5Object &master_file) {
 
 int main(int argc, char **argv) {
 
+    hsize_t first, last;
     DiffractionExperiment x(2, {8}, 8, 36);
 
     RegisterHDF5Filter();
 
-    if (argc != 3) {
-        std::cout << "Usage ./ImageAverage <name of master dataset> <name of data dataset>" << std::endl;
+    if (argc == 3) {
+        first = 0;
+        last = INT32_MAX;
+    } else if (argc == 5) {
+        first = std::strtol(argv[3], nullptr, 10);
+        last = std::strtol(argv[4], nullptr, 10);
+    } else {
+        std::cout << "Usage ./ImageAverage <name of master dataset> <name of data dataset> {<first image> <last image>}" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -77,7 +88,7 @@ int main(int argc, char **argv) {
     RadialIntegrationMapping rad_int_map(x, one_byte_mask.data());
     RadialIntegration rad_int(rad_int_map);
 
-    CalcRadialIntegration(x, rad_int, argv[2]);
+    CalcRadialIntegration(x, rad_int, argv[2], first, last);
 
     auto result_x = rad_int_map.GetBinToQ();
     std::vector<float> result_y;

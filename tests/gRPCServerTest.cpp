@@ -12,6 +12,7 @@
 
 
 #include <grpcpp/grpcpp.h>
+#include "../../common/ZMQImagePusher.h"
 
 TEST_CASE("JFJochReceiver_gRPC_server", "[gRPC]") {
     DiffractionExperiment x;
@@ -27,7 +28,9 @@ TEST_CASE("JFJochReceiver_gRPC_server", "[gRPC]") {
 
     ZMQContext zmq_context;
     Logger logger("receiver");
-    JFJochReceiverService service(tmp_devices, zmq_context,logger);
+
+    ZMQImagePusher pusher(zmq_context, {"inproc://1"});
+    JFJochReceiverService service(tmp_devices, logger, pusher);
 
     auto server = gRPCServer("unix:receiver_test", service);
     {

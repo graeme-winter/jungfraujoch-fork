@@ -5,7 +5,10 @@ ADD_LIBRARY(Compression STATIC
         bitshuffle/bitshuffle_core.c
         bitshuffle/iochain.c
         JFJochZstdCompressor.cpp
-        JFJochZstdCompressor.h)
+        JFJochZstdCompressor.h
+        JFJochCompressor.cpp
+        JFJochCompressor.h
+        JFJochDecompress.h)
 
 TARGET_COMPILE_DEFINITIONS(Compression PUBLIC -DZSTD_SUPPORT -DUSE_ZSTD)
 TARGET_LINK_LIBRARIES(Compression libzstd_static)

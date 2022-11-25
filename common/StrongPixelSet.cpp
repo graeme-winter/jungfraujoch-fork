@@ -10,19 +10,18 @@ void StrongPixelSet::AddStrongPixel(uint16_t col, uint16_t line, uint32_t image,
     strong_pixel_map[key] = photons;
 }
 
-inline void StrongPixelSet::AddNeighbor(DiffractionSpot &spot, uint16_t col, uint16_t line, uint32_t image, bool connect_frames) {
+inline void StrongPixelSet::AddNeighbor(DiffractionSpot &spot, uint16_t col, uint16_t line, uint32_t image) {
     uint64_t coord = strong_pixel_coord(col, line, image);
     auto iter = strong_pixel_map.find(coord);
 
     if (iter != strong_pixel_map.end())
-        spot += BuildSpot(iter, connect_frames);
+        spot += BuildSpot(iter);
 }
 
 // Creates a continuous spot
 // strong pixels are loaded into dictionary (one dictionary per frame)
 // and routine checks if neighboring pixels are also in dictionary (likely in log(N) time)
-DiffractionSpot StrongPixelSet::BuildSpot(std::unordered_map<uint64_t, int64_t>::iterator &it,
-                                          bool connect_frames) {
+DiffractionSpot StrongPixelSet::BuildSpot(std::unordered_map<uint64_t, int64_t>::iterator &it) {
 
     uint16_t col = col_from_strong_pixel(it->first);
     uint16_t line = line_from_strong_pixel(it->first);
@@ -32,21 +31,16 @@ DiffractionSpot StrongPixelSet::BuildSpot(std::unordered_map<uint64_t, int64_t>:
 
     strong_pixel_map.erase(it); // Remove strong pixel from the dictionary, so it is not processed again
 
-    AddNeighbor(spot, col+1, line  , frame, connect_frames);
-    AddNeighbor(spot, col+1, line+1, frame, connect_frames);
-    AddNeighbor(spot, col+1, line-1, frame, connect_frames);
+    AddNeighbor(spot, col+1, line  , frame);
+    AddNeighbor(spot, col+1, line+1, frame);
+    AddNeighbor(spot, col+1, line-1, frame);
 
-    AddNeighbor(spot, col-1, line, frame, connect_frames);
-    AddNeighbor(spot, col-1, line+1, frame, connect_frames);
-    AddNeighbor(spot, col-1, line-1, frame, connect_frames);
+    AddNeighbor(spot, col-1, line, frame);
+    AddNeighbor(spot, col-1, line+1, frame);
+    AddNeighbor(spot, col-1, line-1, frame);
 
-    AddNeighbor(spot, col, line+1, frame, connect_frames);
-    AddNeighbor(spot, col, line-1, frame, connect_frames);
-
-    if (connect_frames) {
-        AddNeighbor(spot, col, line, frame + 1, connect_frames);
-        if (frame - 1 >= 0) AddNeighbor(spot, col, line, frame - 1, connect_frames);
-    }
+    AddNeighbor(spot, col, line+1, frame);
+    AddNeighbor(spot, col, line-1, frame);
 
     return spot;
 }
@@ -59,12 +53,11 @@ void StrongPixelSet::FindSpots(const DiffractionExperiment &experiment, const JF
 
     while (!strong_pixel_map.empty()) {
         auto iter = strong_pixel_map.begin();
-        DiffractionSpot spot = BuildSpot(iter, settings.enable_3d_spot_finding());
+        DiffractionSpot spot = BuildSpot(iter);
         double d = spot.GetResolution(experiment);
 
         if ((spot.PixelCount() <= settings.max_pix_per_spot())
             && (spot.PixelCount() >= settings.min_pix_per_spot())
-            && (!settings.enable_3d_spot_finding() || (spot.Depth() <= settings.max_depth()))
             && (!settings.has_low_resolution_limit() || (d <= settings.low_resolution_limit()))
             && (!settings.has_high_resolution_limit() || (d >= settings.high_resolution_limit())))
             spots_map.insert(std::make_pair(-static_cast<float>(d), spot));
@@ -73,8 +66,8 @@ void StrongPixelSet::FindSpots(const DiffractionExperiment &experiment, const JF
     for (auto &[x, spot]: spots_map)
         spots.push_back(spot);
 
-    if (settings.has_max_spots())
-        spots.resize(std::min<size_t>(spots.size(), settings.max_spots()));
+    if (experiment.GetMaxSpotCount() > 0)
+        spots.resize(std::min<size_t>(spots.size(), experiment.GetMaxSpotCount()));
 }
 
 size_t StrongPixelSet::Count() const {

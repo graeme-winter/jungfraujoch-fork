@@ -21,6 +21,7 @@ public:
     explicit JFCalibration(const DiffractionExperiment& experiment);
     JFCalibration(const JFJochProtoBuf::JFCalibration &input);
 
+    void Export(const DiffractionExperiment& experiment, JFJochProtoBuf::WriterMetadataInput &request) const;
     [[nodiscard]] operator JFJochProtoBuf::JFCalibration() const;
     [[nodiscard]] operator JFJochProtoBuf::JFCalibrationStatistics() const;
 
@@ -42,7 +43,8 @@ public:
     [[nodiscard]] JFJochProtoBuf::JFCalibrationStatistics GetModuleStatistics(size_t storage_cell) const;
     [[nodiscard]] JFJochProtoBuf::JFCalibrationStatistics GetModuleStatistics() const;
 
-    [[nodiscard]] std::vector<float> GetPedestal(size_t gain_level, size_t storage_cell = 0) const;
+    [[nodiscard]] std::vector<float> GetPedestalFP(size_t gain_level, size_t storage_cell = 0) const;
+    [[nodiscard]] std::vector<uint16_t> GetPedestal(size_t gain_level, size_t storage_cell = 0) const;
     [[nodiscard]] std::vector<int16_t> GetPedestalRMS(size_t gain_level, size_t storage_cell = 0) const;
 
     template <class T> void LoadMask(const DiffractionExperiment &experiment, const std::vector<T> &conv_mask,

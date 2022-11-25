@@ -9,11 +9,16 @@
 #include "../common/RawToConvertedGeometry.h"
 #include "../common/SpotFinder.h"
 #include "../indexing/XgandalfWrapper.h"
+#ifdef CUDA_SPOT_FINDING
+#include "../indexing/FastFeedbackIndexerWrapper.h"
+#endif
 #include "../common/RadialIntegration.h"
+#include "../common/Logger.h"
+
+Logger logger{"DataAnalysisPerfTest"};
 
 void TestIndexing() {
-    const int nexec_std  = 2;
-    const int nexec_fast = 20;
+    constexpr const int nexec  = 5;
 
     std::vector<Coord> hkl;
     for (int i = 1; i < 7; i++)
@@ -28,9 +33,15 @@ void TestIndexing() {
     cells.emplace_back(make_unit_cell(80,80,150,90,90,90));
     cells.emplace_back(make_unit_cell(30,40,50,90,90,90));
 
+    std::map<std::string, std::unique_ptr<IndexerWrapper>> indexer;
+    indexer["Xgandalf"] = std::make_unique<XgandalfWrapper>(false);
+    indexer["Xgandalf_fast"] = std::make_unique<XgandalfWrapper>(true);
+#ifdef CUDA_SPOT_FINDING
+    indexer["fast_feedback"] = std::make_unique<FastFeedbackIndexerWrapper>();
+#endif
     IndexingSettings settings;
-    settings.algorithm = IndexingAlgorithm::Xgandalf_fast;
     settings.max_indexing_spots = 30;
+    settings.centering = 'P';
 
     for (auto &c: cells) {
         settings.unit_cell = c;
@@ -43,38 +54,19 @@ void TestIndexing() {
         for (const auto &i: hkl)
             recip.emplace_back(i.x * recip_l.vec[0] + i.y * recip_l.vec[1] + i.z * recip_l.vec[2]);
 
-        DiffractionExperiment experiment;
-        experiment.SetUnitCell(make_unit_cell(36.9, 78.95, 78.95, 90, 90, 90));
+        for (const auto& [x,y]: indexer) {
+            auto start_time = std::chrono::system_clock::now();
+            y->Setup(settings);
+            for (int i = 0; i < nexec; i++) {
+                if (y->Run(recip).empty())
+                    logger.Warning("WARNING! No solution found");
+            }
 
-        XgandalfWrapper wrapper;
-        settings.algorithm = IndexingAlgorithm::Xgandalf;
-        settings.centering = 'P';
+            auto end_time = std::chrono::system_clock::now();
 
-        auto start_time = std::chrono::system_clock::now();
-
-        for (int i = 0; i < nexec_std; i++) {
-
-            if (wrapper.Run(settings, recip).empty())
-                std::cout << "WARNING! No solution found" << std::endl;
+            auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+            logger.Info("{:20s} {:8.1f} ms/image", x, elapsed.count() / (1000.0 * nexec));
         }
-
-        auto end_time = std::chrono::system_clock::now();
-
-        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-        std::cout << "Xgandalf    (std.  ) " << std::setw(5) << (uint32_t)(elapsed.count() / 1000.0 / nexec_std) << " ms/image " << std::endl;
-
-        settings.algorithm = IndexingAlgorithm::Xgandalf_fast;
-        start_time = std::chrono::system_clock::now();
-
-        for (int i = 0; i < nexec_fast; i++) {
-            if (wrapper.Run(settings, recip).empty())
-                std::cout << "WARNING! No solution found" << std::endl;
-        }
-
-        end_time = std::chrono::system_clock::now();
-
-        elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-        std::cout << "Xgandalf    (fast  ) " << std::setw(5) << (uint32_t)std::lround(elapsed.count() / 1000.0 / nexec_fast) << " ms/image" << std::endl;
     }
 }
 
@@ -99,8 +91,9 @@ auto TestSpotFinder(const DiffractionExperiment &experiment, const JFJochProtoBu
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
 
     std::ostringstream strstream;
-    strstream << std::setw(5) <<   std::lround(elapsed.count() / (1000.0 * (double) nimages)) <<  " ms/image  "
-              << std::setw(7) <<  spots.size() << " spots";
+    logger.Info("{:20s} {:8.1f} ms/image   {:5d} spots", "Spot finding",
+                elapsed.count() / (1000.0 * (double) nimages), spots.size());
+
     return strstream.str();
 }
 #endif
@@ -123,14 +116,14 @@ auto TestRadialIntegration(const DiffractionExperiment &experiment, const JFJoch
     auto end_time = std::chrono::system_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
 
-    return std::lround(elapsed.count() / (1000.0 * (double) nimages * nredo));
+    return elapsed.count() / (1000.0 * (double) nimages * nredo);
 }
 
 int main(int argc, char **argv) {
     RegisterHDF5Filter();
 
     if (argc != 2) {
-        std::cout << "Usage: ./DataAnalysisPerfTest <JF4M hdf5 file>" << std::endl;
+        logger.Info("Usage: ./DataAnalysisPerfTest <JF4M hdf5 file>");
         exit(EXIT_FAILURE);
     }
 
@@ -141,23 +134,23 @@ int main(int argc, char **argv) {
     HDF5DataSpace file_space(dataset);
 
     if (file_space.GetNumOfDimensions() != 3) {
-        std::cout << "/entry/data/data must be 3D" << std::endl;
+        logger.Error("/entry/data/data must be 3D");
         exit(EXIT_FAILURE);
     }
 
     DiffractionExperiment x;
 
     if ((file_space.GetDimensions()[1] == 2164) && (file_space.GetDimensions()[2] == 2068)) {
-        std::cout << "JF4M with gaps detected (2068 x 2164)" << std::endl;
+        logger.Info("JF4M with gaps detected (2068 x 2164)");
         x.DataStreamModuleSize(2, {8}, 8, 36);
     } else {
-        std::cout << "Unknown geometry - exiting" << std::endl;
+        logger.Error("Unknown geometry - exiting");
         exit(EXIT_FAILURE);
     }
     uint64_t nimages = file_space.GetDimensions()[0];
     uint64_t npixel = file_space.GetDimensions()[1] * file_space.GetDimensions()[2];
 
-    std::cout << "Number of images in the dataset: " << nimages << std::endl;
+    logger.Info("Number of images in the dataset: {}", nimages);
 
     x.Mode(DetectorMode::Conversion);
 
@@ -166,13 +159,11 @@ int main(int argc, char **argv) {
     std::vector<hsize_t> start = {0,0,0};
     dataset.ReadVector(image_conv, start, file_space.GetDimensions());
 
-    std::cout << "Images loaded" << std::endl;
+    logger.Info("Images loaded");
 
-    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).OmegaStart(0)
-            .OmegaIncrement(0.088).Wavelength_A(1.0);
+    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).Wavelength_A(1.0);
 
     JFJochProtoBuf::DataProcessingSettings settings;
-    settings.set_enable_3d_spot_finding(false);
     settings.set_signal_to_noise_threshold(2.5);
     settings.set_photon_count_threshold(5);
     settings.set_min_pix_per_spot(3);
@@ -182,25 +173,21 @@ int main(int argc, char **argv) {
     settings.set_local_bkg_size(5);
 
 #ifdef CUDA_SPOT_FINDING
-    std::cout << "COLSPOT NBX=NBY=5" << std::endl;
+    logger.Info("COLSPOT NBX=NBY=5");
     if (SpotFinder::GPUPresent()) {
-        SpotFinder local_peakfinder_gpu(x);
-        std::cout << "COLSPOT/GPU (JFjoch) " << std::setw(5) << TestSpotFinder(x, settings, local_peakfinder_gpu,
-                                                                               image_conv.data(), nimages) << std::endl;
+        SpotFinder local_peakfinder_gpu(x.GetXPixelsNum(), x.GetYPixelsNum());
+        TestSpotFinder(x, settings, local_peakfinder_gpu,image_conv.data(), nimages);
     }
     settings.set_local_bkg_size(3);
-    std::cout << "COLSPOT NBX=NBY=3" << std::endl;
+    logger.Info("COLSPOT NBX=NBY=3");
     if (SpotFinder::GPUPresent()) {
-        SpotFinder local_peakfinder_gpu(x);
-        std::cout << "COLSPOT/GPU (JFjoch) " << std::setw(5) << TestSpotFinder(x, settings, local_peakfinder_gpu,
-                                                                               image_conv.data(), nimages) << std::endl;
+        SpotFinder local_peakfinder_gpu(x.GetXPixelsNum(), x.GetYPixelsNum());
+        TestSpotFinder(x, settings, local_peakfinder_gpu,image_conv.data(), nimages);
     }
 #endif
 
-    std::cout << "Radial int. (JFjoch) " << std::setw(5) << TestRadialIntegration(x, settings,
-                                                                                  image_conv.data(), nimages) << " ms/image" << std::endl;
-
-    std::cout << std::endl;
+    logger.Info("{:20s} {:8.1f} ms/image", "Radial int. (JFjoch)", TestRadialIntegration(x, settings,
+                                                                                        image_conv.data(), nimages));
 
     TestIndexing();
 }

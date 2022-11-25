@@ -6,13 +6,13 @@
 
 #include <iostream>
 #include <fstream>
-#include "../fpga/hls/hls_jfjoch.h"
 #include "../common/DiffractionExperiment.h"
 #include "../common/RawToConvertedGeometry.h"
 #include "../common/JFJochException.h"
 #include "../common/JFCalibration.h"
+#include "../common/JFModuleGainCalibration.h"
 
-template <class T> void LoadBinaryFile(const std::string& filename, T* output, size_t size) {
+template <class T> void LoadBinaryFile(std::string filename, T* output, size_t size) {
     std::fstream file(filename.c_str(), std::fstream::in | std::fstream::binary);
     if (file.is_open())
         file.read((char *) output, size * sizeof(T));
@@ -21,18 +21,17 @@ template <class T> void LoadBinaryFile(const std::string& filename, T* output, s
 }
 
 inline void CalcConvertedRef(const DiffractionExperiment &experiment, const JFCalibration &calib,
-                             const uint16_t *raw, double *converted, uint8_t *gain_mask, const std::string& gain_file,
+                             const JFModuleGainCalibration &gain_calibration,
+                             const uint16_t *raw, double *converted, uint8_t *gain_mask,
                              size_t pixels = 0, size_t storage_cell = 0) {
 
     double one_over_gain;
     double energy = experiment.GetPhotonEnergy_keV();
 
-    std::vector<double> gain_arr(RAW_MODULE_SIZE*3);
-    LoadBinaryFile(gain_file, gain_arr.data(), gain_arr.size());
-
-    auto pedestal_G0 = calib.GetPedestal(0, storage_cell);
-    auto pedestal_G1 = calib.GetPedestal(1, storage_cell);
-    auto pedestal_G2 = calib.GetPedestal(2, storage_cell);
+    auto &gain_arr = gain_calibration.GetGainCalibration();
+    auto pedestal_G0 = calib.GetPedestalFP(0, storage_cell);
+    auto pedestal_G1 = calib.GetPedestalFP(1, storage_cell);
+    auto pedestal_G2 = calib.GetPedestalFP(2, storage_cell);
 
     if (pixels == 0) pixels = experiment.GetModulesNum() * RAW_MODULE_SIZE;
 
@@ -79,9 +78,10 @@ inline void CalcConvertedRef(const DiffractionExperiment &experiment, const JFCa
     }
 }
 
-template <class T> double CheckConversion(const DiffractionExperiment &experiment, const JFCalibration &calib,
+template <class T> double CheckConversion(const DiffractionExperiment &experiment,
+                                          const JFCalibration &calib,
+                                          const JFModuleGainCalibration &gain,
                                           const uint16_t *raw, T *converted, size_t pixels,
-                                          const std::string& gain_file = "../../tests/test_data/gainMaps_M049.bin",
                                           size_t storage_cell = 0) {
 
     double result = 0;
@@ -90,7 +90,8 @@ template <class T> double CheckConversion(const DiffractionExperiment &experimen
     std::vector<double> conversion_ref(pixels);
     std::vector<uint8_t> gain_mask_ref(pixels);
 
-    CalcConvertedRef(experiment, calib, raw, conversion_ref.data(), gain_mask_ref.data(), gain_file, pixels, storage_cell);
+    CalcConvertedRef(experiment, calib, gain, raw, conversion_ref.data(), gain_mask_ref.data(),
+                     pixels, storage_cell);
 
     for (size_t i = 0; i < pixels; i++) {
         double diff = conversion_ref[i] - converted[i];
@@ -101,9 +102,10 @@ template <class T> double CheckConversion(const DiffractionExperiment &experimen
     return sqrt(result / count);
 }
 
-template <class T> double CheckConversionWithGeomTransform(const DiffractionExperiment &experiment, const JFCalibration &calib,
+template <class T> double CheckConversionWithGeomTransform(const DiffractionExperiment &experiment,
+                                                           const JFCalibration &calib,
+                                                           const JFModuleGainCalibration &gain,
                                                            const uint16_t *raw, T *converted,
-                                                           const std::string &gain_file = "../../tests/test_data/gainMaps_M049.bin",
                                                            size_t storage_cell = 0) {
 
     double result = 0;
@@ -112,8 +114,8 @@ template <class T> double CheckConversionWithGeomTransform(const DiffractionExpe
     std::vector<double> conversion_ref(experiment.GetModulesNum() * RAW_MODULE_SIZE);
     std::vector<uint8_t> gain_mask_ref(experiment.GetModulesNum() * RAW_MODULE_SIZE);
 
-    CalcConvertedRef(experiment, calib, raw, conversion_ref.data(), gain_mask_ref.data(),
-                     gain_file, experiment.GetModulesNum() * RAW_MODULE_SIZE, storage_cell);
+    CalcConvertedRef(experiment, calib, gain, raw, conversion_ref.data(), gain_mask_ref.data(),
+                     experiment.GetModulesNum() * RAW_MODULE_SIZE, storage_cell);
 
     std::vector<double> conversion_ref_transformed(experiment.GetPixelsNum());
     std::vector<uint8_t> gain_mask_ref_transformed(experiment.GetPixelsNum());

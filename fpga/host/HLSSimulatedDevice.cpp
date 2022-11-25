@@ -51,7 +51,7 @@ HLSSimulatedDevice::HLSSimulatedDevice(uint16_t data_stream, size_t in_frame_buf
 }
 
 void HLSSimulatedDevice::CreateFinalPacket(const DiffractionExperiment& experiment) {
-    CreatePacket(experiment, UINT64_MAX, 0, 0, nullptr, 0);
+    CreatePacketEIGER(experiment, UINT64_MAX, 0, 0, nullptr, 0);
 }
 
 void HLSSimulatedDevice::SendPacket(char *buffer, int len, uint8_t user) {
@@ -68,8 +68,8 @@ void HLSSimulatedDevice::SendPacket(char *buffer, int len, uint8_t user) {
     }
 
 }
-void HLSSimulatedDevice::CreatePacket(const DiffractionExperiment& experiment, uint64_t frame_number, uint32_t eth_packet,
-                                      uint32_t module, const uint16_t *data, bool trigger, int8_t adjust_axis, uint8_t user) {
+void HLSSimulatedDevice::CreatePacketJF(const DiffractionExperiment& experiment, uint64_t frame_number, uint32_t eth_packet,
+                                        uint32_t module, const uint16_t *data, bool trigger, int8_t adjust_axis, uint8_t user) {
 
     char buff[256*64];
     memset(buff, 0, 256*64);
@@ -105,9 +105,51 @@ void HLSSimulatedDevice::CreatePacket(const DiffractionExperiment& experiment, u
         for (int i = 0; i < 4096; i++)
             packet->data[i] = data[i];
     }
-    packet->udp_checksum = htons(checksum( (uint16_t *) (buff+18+24), 8192+8));
+    packet->udp_checksum = htons(checksum( (uint16_t *) (buff+42), 8192+48));
 
     SendPacket(buff, (130+adjust_axis)*64, user);
+}
+
+void HLSSimulatedDevice::CreatePacketEIGER(const DiffractionExperiment& experiment, uint64_t frame_number, uint32_t eth_packet,
+                                        uint32_t module, const uint16_t *data, bool trigger, int8_t adjust_axis, uint8_t user) {
+
+    char buff[256*64];
+    memset(buff, 0, 256*64);
+
+    auto packet = (RAW_JFUDP_Packet *)buff;
+
+    packet->ether_type = htons(0x0800);
+    packet->sour_mac[0] = 0x00; // module 0
+
+    uint64_t tmp_mac = fpga_mac_addr;
+    for (int i = 0; i < 6; i++)
+        packet->dest_mac[i] = (tmp_mac >> (8*i)) % 256;
+
+    packet->ipv4_header_h = htons(0x4500); // Big endian in IP header!
+    packet->ipv4_header_total_length = htons(4096 + 48 + 8 + 20); // Big endian in IP header!
+    packet->ipv4_header_dest_ip = experiment.GetDestIPv4Address(data_stream); // Big endian in IP header!
+    packet->ipv4_header_sour_ip = 0;
+
+    packet->ipv4_header_ttl_protocol = htons(0x0011);
+    packet->ipv4_header_checksum = checksum( (uint16_t *) &packet->ipv4_header_h, 20); // checksum is already in network order
+
+    packet->udp_dest_port = htons(experiment.GetDestUDPPort(data_stream, module) + (eth_packet / 64)); // module number
+    packet->udp_sour_port = htons(0xDFAC);
+    packet->udp_length = htons(4096 + 48 + 8);
+
+    // JF headers are little endian
+    packet->timestamp = 0xABCDEF0000FEDCBAL;
+    packet->bunchid   = 0x1234567898765431L;
+    packet->framenum = frame_number;
+    packet->packetnum = eth_packet % 64;
+    if (trigger) packet->debug =  1<<31;
+    if (data != nullptr) {
+        for (int i = 0; i < 2048; i++)
+            packet->data[i] = data[i];
+    }
+    packet->udp_checksum = htons(checksum( (uint16_t *) (buff+42), 4096+48));
+
+    SendPacket(buff, (64 + 2 + adjust_axis)*64, user);
 }
 
 void HLSSimulatedDevice::CreatePackets(const DiffractionExperiment& experiment, uint64_t frame_number_0, uint64_t frames,
@@ -115,7 +157,8 @@ void HLSSimulatedDevice::CreatePackets(const DiffractionExperiment& experiment, 
                                        uint8_t user) {
     for (uint64_t i = 0; i < frames; i++) {
         for (int j = 0; j < 128; j++)
-            CreatePacket(experiment, frame_number_0 + i, j, module, data + (i * 128 + j) * 4096, trigger, adjust_axis, user);
+            CreatePacketJF(experiment, frame_number_0 + i, j, module, data + (i * 128 + j) * 4096, trigger, adjust_axis,
+                           user);
     }
 }
 
@@ -256,7 +299,7 @@ void hls_action(hls::stream<axis_datamover_ctrl> &in_datamover_cmd_stream,
     hls::stream<ap_uint<UDP_METADATA_STREAM_WIDTH> > udp_metadata;
     ap_uint<1> idle_data_collection;
 
-    ap_uint<4> err_reg;
+    ap_uint<8> err_reg;
 
     while(!din_eth.empty())
         ethernet(din_eth, ip1, arp1, fpga_mac_addr, eth_packets);

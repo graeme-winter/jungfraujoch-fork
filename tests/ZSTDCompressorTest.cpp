@@ -6,7 +6,9 @@
 #include <zstd.h>
 #include <iostream>
 
-#include "../common/JFJochCompressor.h"
+#include "../compression/JFJochCompressor.h"
+#include "../compression/JFJochDecompress.h"
+#include "../common/DiffractionExperiment.h"
 
 TEST_CASE("JFjochZstdCompressor_Raw_Block","[ZSTD]") {
     uint8_t src[128*8];
@@ -226,54 +228,61 @@ TEST_CASE("JFjochZstdCompressor_Frame_ones","[ZSTD]") {
 
 TEST_CASE("JFJochCompressor_JFJochDecompressor_ZSTD","[ZSTD]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.Compression(CompressionAlgorithm::BSHUF_ZSTD).CompressionBlockSize(8192);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD).CompressionBlockSize(8192).Summation(34);
 
-    std::vector<int32_t> image(x.GetPixelsNum() * sizeof(int32_t));
+    std::vector<int32_t> image(x.GetPixelsNum());
 
-    JFJochBitShuffleCompressor compressor(x);
-    JFJochDecompressor decompressor(x);
+    for (auto &i: image)
+        i = 345;
 
+    JFJochBitShuffleCompressor compressor(x.GetCompressionAlgorithmEnum(), x.GetCompressionBlockSize(),
+                                          x.GetCompressionLevel());
     std::vector<char> tmp(x.GetPixelsNum() * sizeof(int32_t) * 4 + 12);
 
-    auto tmp_size =
-            compressor.Compress(tmp.data() + 12, (char *) image.data(), x.GetPixelsNum(), sizeof(int32_t)) + 12;
+    auto tmp_size = compressor.Compress(tmp.data(), image);
+    tmp.resize(tmp_size);
 
-    const char *output;
-
-    REQUIRE_NOTHROW(output = decompressor.Decompress(tmp.data(), tmp_size, x.GetPixelsNum(), sizeof(uint32_t)));
-    REQUIRE(memcmp(image.data(), output, x.GetPixelsNum() * sizeof(int32_t)) == 0);
+    std::vector<int32_t> output;
+    REQUIRE_NOTHROW(JFJochDecompress(output, x.GetCompressionAlgorithmEnum(), tmp, x.GetPixelsNum()));
+    REQUIRE(output.size() == x.GetPixelsNum() * x.GetPixelDepth());
+    REQUIRE(memcmp(image.data(), output.data(), x.GetPixelsNum() * sizeof(int32_t)) == 0);
 }
 
 TEST_CASE("JFJochCompressor_JFJochDecompressor_LZ4","[ZSTD]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.Compression(CompressionAlgorithm::BSHUF_LZ4).CompressionBlockSize(8192);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4).CompressionBlockSize(8192).Summation(45);
 
-    std::vector<int32_t> image(x.GetPixelsNum() * sizeof(int32_t));
+    std::vector<int32_t> image(x.GetPixelsNum());
 
-    JFJochBitShuffleCompressor compressor(x);
-    JFJochDecompressor decompressor(x);
+    for (auto &i: image)
+        i = 5678;
+
+    JFJochBitShuffleCompressor compressor(x.GetCompressionAlgorithmEnum(), x.GetCompressionBlockSize(),
+                                          x.GetCompressionLevel());
 
     std::vector<char> tmp(x.GetPixelsNum() * sizeof(int32_t) * 4 + 12);
 
-    auto tmp_size =
-            compressor.Compress(tmp.data() + 12, (char *) image.data(), x.GetPixelsNum(), sizeof(int32_t)) + 12;
+    auto tmp_size = compressor.Compress(tmp.data(), image);
+    tmp.resize(tmp_size);
 
-    const char *output;
-
-    REQUIRE_NOTHROW(output = decompressor.Decompress(tmp.data(), tmp_size, x.GetPixelsNum(), sizeof(uint32_t)));
-    REQUIRE(memcmp(image.data(), output, x.GetPixelsNum() * sizeof(int32_t)) == 0);
+    std::vector<int32_t> output;
+    REQUIRE_NOTHROW(JFJochDecompress(output, x.GetCompressionAlgorithmEnum(), tmp, x.GetPixelsNum()));
+    REQUIRE(output.size() == x.GetPixelsNum() * x.GetPixelDepth());
+    REQUIRE(memcmp(image.data(), output.data(), x.GetPixelsNum() * sizeof(int32_t)) == 0);
 }
 
 TEST_CASE("JFJochDecompressor_None","[ZSTD]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.Compression(CompressionAlgorithm::None).CompressionBlockSize(8192);
+    x.Compression(JFJochProtoBuf::NO_COMPRESSION).CompressionBlockSize(8192).Summation(45);
 
-    std::vector<int32_t> image(x.GetPixelsNum() * sizeof(int32_t));
+    std::vector<int32_t> image(x.GetPixelsNum());
+    for (auto &i: image)
+        i = 578;
 
-    JFJochDecompressor decompressor(x);
-
-    REQUIRE_NOTHROW((char *) image.data() == decompressor.Decompress((char *) image.data(), x.GetPixelsNum() * sizeof(int32_t),
-                                                            x.GetPixelsNum(), sizeof(uint32_t)));
+    std::vector<int32_t> output;
+    REQUIRE_NOTHROW(JFJochDecompress(output, x.GetCompressionAlgorithmEnum(), image, x.GetPixelsNum()));
+    REQUIRE(output.size() == x.GetPixelsNum() * x.GetPixelDepth());
+    REQUIRE(memcmp(image.data(), output.data(), x.GetPixelsNum() * sizeof(int32_t)) == 0);
 }
 
 TEST_CASE("Bitshuffle_ZSTD","[ZSTD]") {

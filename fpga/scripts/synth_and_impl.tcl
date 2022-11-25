@@ -93,10 +93,11 @@ if {$WNSPLACE > -1.000} {
         write_bitstream -force -file ${bitstream_name} >> bitstream.log
         if {$part eq {xcu55c-fsvh2892-2L-e}} {
             write_cfgmem -force -size 128 -format mcs -interface SPIx4 -loadbit "up 0x01002000 ${bitstream_name}.bit" ${bitstream_name} >> cfgmem.log
+            puts "    ***** Bitstream ${bitstream_name}.mcs written! *****"
         } else {
             write_cfgmem -force -size ${fpga_flash_size} -format bin -interface ${interface} -loadbit "up 0x0 ${bitstream_name}.bit" ${bitstream_name} >> cfgmem.log
+            puts "    ***** Bitstream ${bitstream_name}.bin written! *****"
         }
-        puts "    ***** Bitstream ${bitstream_name}.bin written! *****"
         puts ""
     } else {
         puts "    ***** Cannot write bitstream due to negative WNS *****"

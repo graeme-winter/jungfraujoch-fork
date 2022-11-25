@@ -5,7 +5,7 @@
 #define JUNGFRAUJOCH_FRAMETRANSFORMATION_H
 
 #include "DiffractionExperiment.h"
-#include "JFJochCompressor.h"
+#include "../compression/JFJochCompressor.h"
 
 class FrameTransformation {
     const DiffractionExperiment& experiment;
@@ -21,17 +21,14 @@ class FrameTransformation {
 
     const size_t summation;
     const size_t pixel_depth;
-
-    void ProcessPacketNoSummation(const int16_t *input, size_t frame_number, uint16_t module_number, uint16_t packet_number, int data_stream);
-    void ProcessPacketSummation(const int16_t *input, size_t frame_number, uint16_t module_number, uint16_t packet_number, int data_stream);
+    const int64_t line_shift;
+    void PackSummation(); // transfer summed image to converted coordinates, clear summation buffer, no compression
 public:
     FrameTransformation(const DiffractionExperiment &experiment);
     FrameTransformation& SetOutput(void *output);
     void ProcessModule(const int16_t *input, size_t frame_number, uint16_t module_number, int data_stream);
-    void ProcessPacket(const int16_t *input, size_t frame_number, uint16_t module_number, uint16_t packet_number, int data_stream);
 
     size_t PackStandardOutput(); // transfer summed image to converted coordinates, clear summation buffer, compress
-    void PackUncompressed(); // transfer summed image to converted coordinates, clear summation buffer, no compression
 
     int16_t *GetPreview16BitImage();
 };

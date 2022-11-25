@@ -37,10 +37,11 @@ void data_collection_fsm(AXI_STREAM &eth_in,
     packet_512_t packet_in;
     packet_512_t packet_out;
     ap_uint<ADDR_STREAM_WIDTH> addr;
+    ap_uint<64> max_frame_number = UINT64_MAX;
 
-    enum rcv_state_t {RCV_WAIT_FOR_START = 0, RCV_WAIT_FOR_START_LOW = 1, RCV_START = 2, RCV_INIT = 3, RCV_GOOD = 4, RCV_FLUSH = 5, RCV_LAST = 6, RCV_FLUSH_IDLE = 7};
+    enum rcv_state_t {RCV_WAIT_FOR_START = 0, RCV_WAIT_FOR_START_LOW = 1, RCV_START = 2, RCV_INIT = 3, RCV_GOOD = 4,
+            RCV_FLUSH = 5, RCV_LAST = 6, RCV_FLUSH_IDLE = 7, RCV_IGNORE = 8};
     static rcv_state_t rcv_state = RCV_WAIT_FOR_START;
-    static ap_uint<8> axis_packet = 0; // used in for loops, so need one extra bit to allow loop termination
 
 #pragma HLS RESET variable=rcv_state
 
@@ -53,19 +54,17 @@ void data_collection_fsm(AXI_STREAM &eth_in,
                 out_idle = 0;
             } else if (!addr_in.empty()) {
                 addr_in.read();
-                axis_packet = 0;
                 rcv_state = RCV_FLUSH_IDLE;
                 out_idle = 1;
             } else
                 out_idle = 1;
             break;
         case RCV_FLUSH_IDLE:
-            out_idle = 1;
             eth_in >> packet_in;
-            if (axis_packet == 127)
+            if (packet_in.last) {
+                out_idle = 1;
                 rcv_state = RCV_WAIT_FOR_START;
-            else
-                axis_packet++;
+            }
             break;
         case RCV_WAIT_FOR_START_LOW:
             out_idle = 0;
@@ -80,6 +79,7 @@ void data_collection_fsm(AXI_STREAM &eth_in,
             ACT_REG_FRAMES_PER_TRIGGER(packet_out.data) = frames_per_trigger;
             ACT_REG_NMODULES(packet_out.data) = nmodules;
             ACT_REG_NSTORAGE_CELLS(packet_out.data) = nstorage_cells + 1;
+            max_frame_number = frames_per_trigger + DELAY_FRAMES_STOP_AND_QUIT;
             packet_out.user = 0;
             packet_out.last = 0;
             packet_out.dest = 0;
@@ -102,13 +102,14 @@ void data_collection_fsm(AXI_STREAM &eth_in,
                 rcv_state = RCV_LAST;
             else if (!addr_in.empty()) {
                 addr_in >> addr;
-                axis_packet = 0;
-                rcv_state = RCV_GOOD;
-                if (addr_frame_number(addr) == UINT64_MAX) {
+
+                if (addr_frame_number(addr) >= max_frame_number)
                     rcv_state = RCV_FLUSH;
-                } else {
+                else if (!addr_out.full()) {
                     addr_out << addr;
-                }
+                    rcv_state = RCV_GOOD;
+                } else
+                    rcv_state = RCV_IGNORE;
             }
             break;
         case RCV_GOOD:
@@ -117,18 +118,20 @@ void data_collection_fsm(AXI_STREAM &eth_in,
             packet_in.user = 0;
             packet_in.id   = 0;
             data_out << packet_in;
-            if (axis_packet == 127)
+            if (packet_in.last)
                 rcv_state = RCV_INIT;
-            else
-                axis_packet++;
+            break;
+        case RCV_IGNORE:
+            out_idle = 0;
+            eth_in >> packet_in;
+            if (packet_in.last)
+                rcv_state = RCV_INIT;
             break;
         case RCV_FLUSH:
             out_idle = 0;
             eth_in >> packet_in;
-            if (axis_packet == 127)
+            if (packet_in.last)
                 rcv_state = RCV_LAST;
-            else
-                axis_packet++;
             break;
         case RCV_LAST:
             out_idle = 0;

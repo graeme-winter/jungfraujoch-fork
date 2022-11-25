@@ -75,10 +75,6 @@ int64_t DiffractionSpot::PixelCount() const {
     return pixel_count;
 }
 
-double DiffractionSpot::OmegaRad(const DiffractionExperiment &experiment) const {
-    return experiment.GetOmega(Frame()) * M_PI / 180.0;
-}
-
 Coord DiffractionSpot::LabCoord(const DiffractionExperiment &experiment, uint16_t data_stream) const {
     return experiment.LabCoord(coord.x  / (double)photons, coord.y / (double)photons);
 }
@@ -96,7 +92,7 @@ Coord DiffractionSpot::ReciprocalCoord(const DiffractionExperiment &experiment, 
     return LabCoord(experiment, data_stream).Normalize() / experiment.GetWavelength_A()
             - experiment.GetScatteringVector();
 }
-
+/*
 Coord DiffractionSpot::ReciprocalCoord3D(const DiffractionExperiment &experiment, uint16_t data_stream) const {
     Coord p = ReciprocalCoord(experiment, data_stream);
     Coord S0 = experiment.GetScatteringVector();
@@ -107,7 +103,7 @@ Coord DiffractionSpot::ReciprocalCoord3D(const DiffractionExperiment &experiment
     m3 = m1 % m2;
     Coord p0 = reciprocal_rotate(p, m1, m2, m3, OmegaRad(experiment));
     return p0;
-}
+} */
 
 double DiffractionSpot::GetResolution(const DiffractionExperiment &experiment, uint16_t data_stream) const {
     return experiment.PxlToRes(coord.x  / (double)photons, coord.y / (double)photons);
@@ -117,4 +113,12 @@ DiffractionSpot DiffractionSpot::TransformCoordinates(const DiffractionExperimen
     DiffractionSpot ret(*this);
     ret.coord = RawToConvertedCoordinate(experiment, data_stream, RawCoord()) * photons;
     return ret;
+}
+
+DiffractionSpot::operator SpotToSave() const {
+    return {
+            .x = static_cast<float>(coord.x)  / static_cast<float>(photons),
+            .y = static_cast<float>(coord.y)  / static_cast<float>(photons),
+            .intensity = static_cast<float>(photons)
+    };
 }

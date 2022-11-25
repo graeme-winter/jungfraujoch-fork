@@ -21,10 +21,8 @@ JFJochIndexerClient &JFJochIndexerClient::ZMQReceiverAddr(const std::string &rec
 }
 
 void JFJochIndexerClient::Start(const DiffractionExperiment &x) {
-    JFJochProtoBuf::JFJochIndexerInput input;
-    *input.mutable_jungfraujoch_settings() = x;
+    JFJochProtoBuf::IndexerInput input = x;
     input.set_zmq_recv_pub_addr(zmq_addr);
-    input.set_bin_size(x.GetSpotFindingBin());
 
     if (_stub) {
         grpc::ClientContext context;
@@ -35,8 +33,8 @@ void JFJochIndexerClient::Start(const DiffractionExperiment &x) {
     }
 }
 
-JFJochProtoBuf::JFJochIndexerOutput JFJochIndexerClient::Stop() {
-    JFJochProtoBuf::JFJochIndexerOutput ret;
+JFJochProtoBuf::IndexerOutput JFJochIndexerClient::Stop() {
+    JFJochProtoBuf::IndexerOutput ret;
     if (_stub) {
         JFJochProtoBuf::Empty empty;
         grpc::ClientContext context;

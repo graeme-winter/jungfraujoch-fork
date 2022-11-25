@@ -19,10 +19,10 @@ class JFJochIndexerService : public JFJochProtoBuf::gRPC_JFJochIndexer::Service 
 public:
     JFJochIndexerService(ZMQContext &zmq_context, Logger &logger);
     JFJochIndexerService &NumThreads(int64_t input);
-    grpc::Status Start(grpc::ServerContext *context, const JFJochProtoBuf::JFJochIndexerInput *request,
+    grpc::Status Start(grpc::ServerContext *context, const JFJochProtoBuf::IndexerInput *request,
                        JFJochProtoBuf::Empty *response) override;
     grpc::Status Stop(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
-                      JFJochProtoBuf::JFJochIndexerOutput *response) override;
+                      JFJochProtoBuf::IndexerOutput *response) override;
     grpc::Status GetStatus(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                            JFJochProtoBuf::IndexerStatus *response) override;
 };

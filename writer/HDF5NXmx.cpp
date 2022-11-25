@@ -1,43 +1,25 @@
 // Copyright (2019-2022) Paul Scherrer Institute
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <cmath>
 #include "HDF5NXmx.h"
+
 #include "../common/GitInfo.h"
 
-void HDF5Metadata::NXmx(HDF5File *hdf5_file, const DiffractionExperiment& experiment,
-                        const JFJochProtoBuf::JFJochWriterMetadataInput &input) {
-    auto output = input.receiver_output();
+#define WVL_1A_IN_KEV           12.39854
 
+void HDF5Metadata::NXmx(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
     hdf5_file->Attr("HDF5_Version", hdf5_version());
-
     HDF5Group(*hdf5_file, "/entry").NXClass("NXentry").SaveScalar("definition", "NXmx");
 
-    if ((output.max_image_number_sent() != 0) && (experiment.GetImageNum() > 0))
-        HDF5Metadata::LinkToData(hdf5_file, experiment, output.max_image_number_sent() + 1);
-
-    HDF5Group(*hdf5_file, "/entry/source").NXClass("NXsource");
-    SaveScalar(*hdf5_file, "/entry/source/name", experiment.GetSourceName())->Attr("short_name", experiment.GetSourceNameShort());
-
-    HDF5Group(*hdf5_file, "/entry/instrument").NXClass("NXinstrument");
-    SaveScalar(*hdf5_file, "/entry/instrument/name", experiment.GetInstrumentName())->Attr("short_name", experiment.GetInstrumentNameShort());
-
-    Time(hdf5_file, experiment, output);
-    DetectorGroup(hdf5_file, experiment);
-    Detector(hdf5_file, experiment);
-    Metrology(hdf5_file, experiment);
-    Beam(hdf5_file, experiment);
-    Sample(hdf5_file, experiment);
-    Attenuator(hdf5_file, experiment);
-
-    if (input.has_calibration()) {
-        Mask(hdf5_file, experiment, input.calibration());
-        Calibration(hdf5_file, input.calibration());
-    }
-
-    if (output.has_indexer_output())
-        Processing(hdf5_file, experiment, output.indexer_output());
-
-    FinalSettings(hdf5_file, output);
+    LinkToData(hdf5_file, input);
+    Facility(hdf5_file, input);
+    Time(hdf5_file, input);
+    Detector(hdf5_file, input);
+    Metrology(hdf5_file, input);
+    Beam(hdf5_file, input);
+    Sample(hdf5_file, input);
+    Calibration(hdf5_file, input);
 }
 
 inline std::string time_UTC(int64_t time_ms) {
@@ -48,429 +30,312 @@ inline std::string time_UTC(int64_t time_ms) {
     return std::string(buf1) + std::string(buf2) + "Z";
 }
 
-void HDF5Metadata::Time(HDF5File *hdf5_file, const DiffractionExperiment& experiment, const JFJochProtoBuf::JFJochReceiverOutput &output) {
+void HDF5Metadata::Time(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
     hdf5_file->Attr("file_time", time_UTC(time(nullptr)));
 
-    hdf5_file->SaveScalar("/entry/start_time", time_UTC(output.start_time_ms()));
-    auto expected_time_in_ms =
-            std::chrono::duration_cast<std::chrono::milliseconds>(experiment.GetFrameNum() * experiment.GetFrameTime()).count();
-    hdf5_file->SaveScalar("/entry/end_time_estimated", time_UTC( output.start_time_ms() + expected_time_in_ms));
-
-    SaveScalar(*hdf5_file, "/entry/end_time", time_UTC(output.end_time_ms()));
-
-}
-
-void HDF5Metadata::DataVDS(HDF5File *hdf5_file, const DiffractionExperiment &experiment, int64_t actual_image_number) {
-    hsize_t total_images = experiment.GetImageNum();
-    if (actual_image_number >= 0)
-        total_images = actual_image_number;
-
-    HDF5DataType data_type(experiment);
-    HDF5DataSpace full_data_space(
-            {(hsize_t) total_images, (hsize_t) experiment.GetYPixelsNum(), (hsize_t) experiment.GetXPixelsNum()});
-
-    HDF5Dcpl dcpl;
-
-    if (experiment.GetPixelDepth() == 2)
-        dcpl.SetFillValue16(INT16_MIN);
-    else
-        dcpl.SetFillValue32(INT32_MIN);
-
-    for (uint32_t file_id = 0; file_id < experiment.GetFilesNum(actual_image_number); file_id++) {
-        hsize_t image0 = file_id * experiment.GetImagesPerFile();
-        hsize_t images = experiment.GetImagesInFile(file_id, actual_image_number);
-
-        HDF5DataSpace src_data_space(
-                {images, (hsize_t) experiment.GetYPixelsNum(), (hsize_t) experiment.GetXPixelsNum()});
-        HDF5DataSpace virtual_data_space(
-                {total_images, (hsize_t) experiment.GetYPixelsNum(),
-                 (hsize_t) experiment.GetXPixelsNum()});
-        virtual_data_space.SelectHyperslab({image0, 0, 0}, {images, (hsize_t) experiment.GetYPixelsNum(),
-                                                            (hsize_t) experiment.GetXPixelsNum()});
-        dcpl.SetVirtual(experiment.GenerateDataFilename(file_id), "/entry/data/data",
-                        src_data_space, virtual_data_space);
-    }
-    HDF5DataSet dataset(*hdf5_file, "/entry/data/data", data_type, full_data_space, dcpl);
-    dataset.Attr("image_nr_low", (int32_t) 1).Attr("image_nr_high", (int32_t) total_images);
-
-    if (experiment.GetDetectorMode() == DetectorMode::Conversion)
-        dataset.Units("photon");
-    else
-        dataset.Units("ADU");
+    hdf5_file->SaveScalar("/entry/start_time", time_UTC(input.start_time_ms()));
+    if (input.has_end_time_ms())
+        hdf5_file->SaveScalar("/entry/end_time", time_UTC(input.end_time_ms()));
+    int64_t end_time_ms = input.start_time_ms() + input.image_number() * input.detector_metadata().image_time_us() / 1000;
+    hdf5_file->SaveScalar("/entry/end_time_estimated", time_UTC(end_time_ms));
 }
 
 
-void HDF5Metadata::DataVDS_TimeResolved(HDF5File *hdf5_file, const DiffractionExperiment &experiment,
-                                        int64_t actual_image_number) {
-    hsize_t total_images = experiment.GetImageNum();
-    if (actual_image_number >= 0)
-        total_images = (actual_image_number / experiment.GetFilesNum()) * experiment.GetFilesNum();
+void HDF5Metadata::Facility(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
+    const auto &facility_metadata = input.facility_metadata();
 
-    if (total_images == 0)
-        return;
+    HDF5Group(*hdf5_file, "/entry/source").NXClass("NXsource");
+    SaveScalar(*hdf5_file, "/entry/source/name", facility_metadata.source_name())
+            ->Attr("short_name", facility_metadata.source_name_short());
 
-    HDF5DataType data_type(experiment);
-    HDF5DataSpace full_data_space(
-            {(hsize_t) total_images, (hsize_t) experiment.GetYPixelsNum(), (hsize_t) experiment.GetXPixelsNum()});
-
-    HDF5Dcpl dcpl;
-
-    if (experiment.GetPixelDepth() == 2)
-        dcpl.SetFillValue16(INT16_MIN);
-    else
-        dcpl.SetFillValue32(INT32_MIN);
-
-    for (uint32_t file_id = 0; file_id < experiment.GetFilesNum(); file_id++) {
-        hsize_t image0 = file_id;
-        hsize_t images = total_images / experiment.GetFilesNum();
-
-        HDF5DataSpace src_data_space(
-                {images, (hsize_t) experiment.GetYPixelsNum(), (hsize_t) experiment.GetXPixelsNum()});
-        HDF5DataSpace virtual_data_space(
-                {total_images, (hsize_t) experiment.GetYPixelsNum(),
-                 (hsize_t) experiment.GetXPixelsNum()});
-        virtual_data_space.SelectHyperslabWithStride({image0, 0, 0},
-                                                     {images, (hsize_t) experiment.GetYPixelsNum(),
-                                                                      (hsize_t) experiment.GetXPixelsNum()},
-                                                     {(hsize_t) experiment.GetFilesNum(), 1, 1});
-        dcpl.SetVirtual(experiment.GenerateDataFilename(file_id), "/entry/data/data",
-                        src_data_space, virtual_data_space);
-    }
-    HDF5DataSet dataset(*hdf5_file, "/entry/data/data", data_type, full_data_space, dcpl);
-    dataset.Attr("image_nr_low", (int32_t) 1).Attr("image_nr_high", (int32_t) total_images);
-
-    if (experiment.GetDetectorMode() == DetectorMode::Conversion)
-        dataset.Units("photon");
-    else
-        dataset.Units("ADU");
+    HDF5Group(*hdf5_file, "/entry/instrument").NXClass("NXinstrument");
+    SaveScalar(*hdf5_file, "/entry/instrument/name", facility_metadata.instrument_name())
+            ->Attr("short_name", facility_metadata.instrument_name_short());
 }
 
-void HDF5Metadata::LinkToData(HDF5File *hdf5_file, const DiffractionExperiment &experiment, int64_t actual_image_number) {
-    HDF5Group(*hdf5_file, "/entry/data").NXClass("NXdata");
-
-    if (experiment.GetTimeResolvedMode())
-        DataVDS_TimeResolved(hdf5_file, experiment, actual_image_number);
-    else
-        DataVDS(hdf5_file, experiment, actual_image_number);
-}
-
-void HDF5Metadata::Attenuator(HDF5File *hdf5_file, const DiffractionExperiment &experiment) {
-    if (experiment.GetTransmission() >= 0.0) {
-        HDF5Group(*hdf5_file, "/entry/instrument/filter").NXClass("NXattenuator");
-        SaveScalar(*hdf5_file, "/entry/instrument/filter/attenuator_transmission",
-                   experiment.GetTransmission());
-    }
-}
-
-void HDF5Metadata::DetectorGroup(HDF5File *hdf5_file, const DiffractionExperiment &experiment) {
-    HDF5Group group(*hdf5_file, "/entry/instrument/" DETECTOR_NAME);
-    group.NXClass("NXdetector_group");
-    group.SaveVector("group_names", std::vector<std::string>{DETECTOR_NAME, "detector"});
-    group.SaveVector("group_index", std::vector<int32_t>{1,2});
-    group.SaveVector("group_parent", std::vector<int32_t>{-1,1});
-    group.SaveVector("group_type", std::vector<int32_t>{1,2});
-}
-
-void HDF5Metadata::Detector(HDF5File *hdf5_file, const DiffractionExperiment &experiment) {
+void HDF5Metadata::Detector(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
+    const auto &det = input.detector_metadata();
+    const auto &geom = input.geometry_metadata();
     HDF5Group group(*hdf5_file, "/entry/instrument/detector");
     group.NXClass("NXdetector");
-    SaveScalar(group, "beam_center_x", experiment.GetBeamX_pxl())->Units("pixel");
-    SaveScalar(group, "beam_center_y", experiment.GetBeamY_pxl())->Units("pixel");
-    SaveScalar(group, "count_time", (double)experiment.GetImageCountTime().count()/1e6)->Units("s");
-    SaveScalar(group, "frame_time", (double)experiment.GetImageTime().count()/1e6)->Units("s");
-    SaveScalar(group, "distance", experiment.GetDetectorDistance_mm() / 1e3)->Units("m");
-    SaveScalar(group, "detector_distance", experiment.GetDetectorDistance_mm() / 1e3)->Units("m");
-    SaveScalar(group, "sensor_thickness", SENSOR_THICKNESS_IN_UM/1e6)->Units("m");
-    SaveScalar(group, "x_pixel_size", PIXEL_SIZE_IN_UM/1e6)->Units("m");
-    SaveScalar(group, "y_pixel_size", PIXEL_SIZE_IN_UM/1e6)->Units("m");
-    SaveScalar(group, "sensor_material", SENSOR_MATERIAL);
-    SaveScalar(group, "description", experiment.GetDetectorName());
+    SaveScalar(group, "beam_center_x", geom.beam_x_pxl())->Units("pixel");
+    SaveScalar(group, "beam_center_y", geom.beam_y_pxl())->Units("pixel");
+    SaveScalar(group, "distance", geom.distance_mm() / 1e3)->Units("m");
+    SaveScalar(group, "detector_distance", geom.distance_mm() / 1e3)->Units("m");
+
+    SaveScalar(group, "count_time", static_cast<double>(det.image_time_us()) / 1e6)->Units("s");
+    SaveScalar(group, "frame_time", static_cast<double>(det.count_time_us()) / 1e6)->Units("s");
+
+    SaveScalar(group, "sensor_thickness", static_cast<double>(det.sensor_thickness_um())/1e6)->Units("m");
+    SaveScalar(group, "x_pixel_size", static_cast<double>(det.pixel_size_mm())/1e6)->Units("m");
+    SaveScalar(group, "y_pixel_size", static_cast<double>(det.pixel_size_mm())/1e6)->Units("m");
+    SaveScalar(group, "sensor_material", det.sensor_material());
+
+    switch (det.type()) {
+        case JFJochProtoBuf::EIGER:
+            SaveScalar(group, "description", "PSI EIGER");
+            SaveScalar(group, "type", "photon-counting pixel array detector");
+            break;
+        case JFJochProtoBuf::JUNGFRAU:
+            SaveScalar(group, "description", "PSI JUNGFRAU");
+            SaveScalar(group, "type", "adaptive gain switching pixel array detector");
+            break;
+        default:
+            SaveScalar(group, "description", "unknown");
+            break;
+    }
+
     SaveScalar(group, "gain_setting", "auto");
-    SaveScalar(group, "bit_depth_image", experiment.GetPixelDepth()*8);
+    SaveScalar(group, "bit_depth_image", det.pixel_depth_byte() * 8);
     SaveScalar(group, "bit_depth_readout",16);
-    SaveScalar(group, "saturation_value", experiment.GetOverflow());
-    SaveScalar(group, "underload_value", experiment.GetUnderflow());
+    SaveScalar(group, "saturation_value", det.overload());
+    if (det.has_underload())
+        SaveScalar(group, "underload_value", det.underload());
     SaveScalar(group, "flatfield_applied", false);
     SaveScalar(group, "pixel_mask_applied", false);
-    SaveScalar(group, "type", "adaptive gain switching pixel array detector");
     SaveScalar(group, "acquisition_type", "triggered");
     SaveScalar(group, "countrate_correction_applied", false);
-    // H5Lcreate_soft("/entry/data/data_000001", group.GetID(), "data", H5P_DEFAULT, H5P_DEFAULT);
 
     HDF5Group(group, "geometry").NXClass("NXgeometry");
 
-    HDF5Group det_specific(group, "detectorSpecific");
+    // DIALS likes to have this soft link
+    H5Lcreate_soft("/entry/data/data", group.GetID(), "data",
+                   H5P_DEFAULT, H5P_DEFAULT);
 
-    if (experiment.GetNumTriggers() > 0) {
-        SaveScalar(det_specific, "nimages", experiment.GetImageNum() / experiment.GetNumTriggers());
-        SaveScalar(det_specific, "ntrigger", experiment.GetNumTriggers());
-    } else {
-        SaveScalar(det_specific, "nimages", experiment.GetImageNum());
-        SaveScalar(det_specific, "ntrigger", 1);
-    }
-    SaveScalar(det_specific, "x_pixels_in_detector", (uint32_t)experiment.GetXPixelsNum());
-    SaveScalar(det_specific, "y_pixels_in_detector", (uint32_t)experiment.GetYPixelsNum());
+    HDF5Group det_specific(group, "detectorSpecific");
+    det_specific.NXClass("NXcollection");
+
+    SaveScalar(det_specific, "nimages", input.image_number() / det.ntrigger());
+    SaveScalar(det_specific, "ntrigger", det.ntrigger());
+
+    SaveScalar(det_specific, "x_pixels_in_detector", static_cast<uint32_t>(det.width_pxl()));
+    SaveScalar(det_specific, "y_pixels_in_detector", static_cast<uint32_t>(det.height_pxl()));
     SaveScalar(det_specific, "software_git_commit", jfjoch_git_sha1());
     SaveScalar(det_specific, "software_git_date", jfjoch_git_date());
-    SaveScalar(det_specific, "internal_packet_generator", experiment.IsUsingInternalPacketGen());
-    SaveScalar(det_specific, "detector_full_speed", experiment.IsDetectorFullSpeed());
-    SaveScalar(det_specific, "storage_cell_number", experiment.GetStorageCellNumber());
-    SaveScalar(det_specific, "storage_cell_start", experiment.GetStorageCellStart());
-    SaveScalar(det_specific, "time_resolved_mode", experiment.GetTimeResolvedMode());
-    SaveScalar(det_specific, "delay_after_trigger", experiment.GetDetectorDelayAfterTrigger().count())->Units("us");
+    SaveScalar(det_specific, "storage_cell_number", det.storage_cell_number());
+    SaveScalar(det_specific, "time_resolved_mode", det.time_resolved_mode());
+    SaveScalar(det_specific, "delay_after_trigger", det.delay_after_trigger_us())->Units("us");
 }
 
-void HDF5Metadata::Beam(HDF5File *hdf5_file, const DiffractionExperiment &experiment) {
+void HDF5Metadata::Beam(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
+    const auto &beam = input.beam_metadata();
+
     HDF5Group group(*hdf5_file, "/entry/instrument/beam");
     group.NXClass("NXbeam");
-    SaveScalar(group, "incident_wavelength", experiment.GetWavelength_A())->Units("angstrom");
-    SaveScalar(group, "total_flux", experiment.GetTotalFlux())->Units("Hz");
-    std::vector<double> beam_size = experiment.GetBeamSize();
-    if (beam_size[0] > 0.0) SaveVector(group, "incident_beam_size", beam_size);
-}
-
-void HDF5Metadata::Mask(HDF5File *hdf5_file, const DiffractionExperiment &experiment, const JFCalibration &calib) {
-    for (int i = 0; i < calib.GetStorageCellNum(); i++) {
-        std::string suffix = (i == 0) ? "" : ("_sc" + std::to_string(i));
-
-        auto mask = calib.CalculateNexusMask(experiment, i);
-        SaveVector(*hdf5_file, "/entry/instrument/detector/pixel_mask"+suffix, mask,
-                   {(hsize_t) experiment.GetYPixelsNum(), (hsize_t) experiment.GetXPixelsNum()},
-                   experiment.GetCompressionAlgorithm()); // use the same compression algorithm as data
+    SaveScalar(group, "incident_wavelength", WVL_1A_IN_KEV / beam.energy_kev())->Units("angstrom");
+    if (beam.has_total_flux_phs())
+        SaveScalar(group, "total_flux", beam.total_flux_phs())->Units("Hz");
+    if (beam.has_beam_size_x_um() && beam.has_beam_size_y_um()) {
+        std::vector<double> beam_size = {beam.beam_size_x_um(), beam.beam_size_y_um()};
+        SaveVector(group, "incident_beam_size", beam_size);
     }
-
-    hdf5_file->HardLink("/entry/instrument/detector/pixel_mask",
-                        "/entry/instrument/detector/detectorSpecific/pixel_mask");
+    if (beam.has_transmission()) {
+        HDF5Group(*hdf5_file, "/entry/instrument/filter").NXClass("NXattenuator");
+        SaveScalar(*hdf5_file, "/entry/instrument/filter/attenuator_transmission",
+                   beam.transmission());
+    }
 }
 
-void HDF5Metadata::Sample(HDF5File *hdf5_file, const DiffractionExperiment &experiment) {
+void HDF5Metadata::Sample(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
+    const auto &sample_metadata = input.sample_metadata();
+
     HDF5Group group(*hdf5_file, "/entry/sample");
     group.NXClass("NXsample");
-    group.SaveScalar("name", experiment.GetSampleName());
+    group.SaveScalar("name", sample_metadata.name());
 
-    if (experiment.GetSampleTemperature() > 0.0)
-        group.SaveScalar("temperature", experiment.GetSampleTemperature())->Units("K");
+    if (sample_metadata.has_temperature_k())
+        group.SaveScalar("temperature", sample_metadata.temperature_k())->Units("K");
 
-    if (experiment.GetSpaceGroupNumber() > 0)
-        group.SaveScalar("space_group", experiment.GetSpaceGroupNumber());
+    if (sample_metadata.has_space_group())
+        group.SaveScalar("space_group", sample_metadata.space_group());
 
-    if (experiment.HasUnitCell()) {
-        auto unit_cell = experiment.GetUnitCell();
+    if (sample_metadata.has_unit_cell()) {
+        const auto &unit_cell = sample_metadata.unit_cell();
         std::vector<double> v = {unit_cell.a(), unit_cell.b(), unit_cell.c(),
                                  unit_cell.alpha(), unit_cell.beta(), unit_cell.gamma()};
         group.SaveVector("unit_cell", v);
     }
 
-    if (experiment.GetOmegaIncrement() != 0) {
+    if ((input.image_number() > 0) && sample_metadata.has_omega()) {
         group.SaveScalar("depends_on", "/entry/sample/transformations/omega");
         HDF5Group transformations(group, "transformations");
         transformations.NXClass("NXtransformations");
-        std::vector<double> angle_container(experiment.GetImageNum());
-        for (int i = 0; i < experiment.GetImageNum(); i++) angle_container[i] = experiment.GetOmega(i);
-        if (!angle_container.empty())
-            SaveVector(transformations, "omega", angle_container)->
+        std::vector<double> angle_container(input.image_number());
+
+        for (int i = 0; i < input.image_number(); i++) angle_container[i] = sample_metadata.omega().start_angle_deg()
+                + i * sample_metadata.omega().angle_incr_per_image_deg();
+        SaveVector(transformations, "omega", angle_container)->
                     Transformation("deg", ".", "", "", "rotation",
-                                   experiment.GetRotationAxis(), Coord(), "");
-    } else {
+                                   {sample_metadata.omega().rotation_axis().x(),
+                                    sample_metadata.omega().rotation_axis().y(),
+                                    sample_metadata.omega().rotation_axis().z()},
+                                    {0,0,0}, "");
+    } else
         group.SaveScalar("depends_on", ".");
-    }
 }
 
-void HDF5Metadata::Metrology(HDF5File *hdf5_file, const DiffractionExperiment &experiment) {
-    uint16_t nmodules = experiment.GetModulesNum();
-    Coord module_origin[nmodules];
+void HDF5Metadata::Metrology(HDF5File *hdf5_file,  const JFJochProtoBuf::WriterMetadataInput &input) {
+    const auto &det = input.detector_metadata();
+    const auto &geom = input.geometry_metadata();
 
-    Coord detector_center{0.0, 0.0, 0.0};
-    Coord beam_position{experiment.GetBeamX_pxl() * PIXEL_SIZE_IN_MM, experiment.GetBeamY_pxl() * PIXEL_SIZE_IN_MM, 0};
-
-    for (int i = 0; i < nmodules; i ++) {
-
-        module_origin[i] = beam_position - experiment.GetModulePosition(i);
-
-        Coord module_center = module_origin[i] +
-                (CONVERTED_MODULE_COLS * experiment.GetModuleFastAxis(i) + CONVERTED_MODULE_LINES * experiment.GetModuleSlowAxis(i))
-                * PIXEL_SIZE_IN_MM / 2;
-
-        // 3. Find detector center
-        detector_center += module_center;
-    }
-    detector_center /= nmodules;
-
-    HDF5Group transformations(*hdf5_file, "/entry/instrument/" DETECTOR_NAME "/transformations");
+    HDF5Group transformations(*hdf5_file, "/entry/instrument/detector/transformations");
     transformations.NXClass("NXtransformations");
 
+    std::vector<double> vector{geom.beam_x_pxl() * det.pixel_size_mm(), geom.beam_y_pxl() * det.pixel_size_mm(),
+                               geom.distance_mm()};
 
-    Coord rail_vector{0,0,1};
-    SaveScalar(transformations, "AXIS_RAIL", experiment.GetDetectorDistance_mm())->
-    Transformation("mm", ".", "detector", "detector_arm",
-                   "translation", rail_vector);
+    double vector_length = sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
+    std::vector<double> vector_norm{vector[0] / vector_length, vector[1]/vector_length, vector[2]/vector_length};
 
-    Coord d0_vector{0,0,1};
-    SaveScalar(transformations, "AXIS_D0", 0.0)->
-    Transformation("mm", "AXIS_RAIL","detector", "detector_arm",
-                   "translation", d0_vector, detector_center, "mm");
+    SaveScalar(transformations, "translation", vector_length / 1e3)->
+    Transformation("m", ".", "detector", "detector_arm",
+                   "translation", vector_norm);
 
+    std::vector<int32_t> origin = {0, 0};
+    std::vector<int32_t> size = {static_cast<int32_t>(det.width_pxl()),
+                                 static_cast<int32_t>(det.height_pxl())};
 
-    for (int i = 0; i < nmodules; i++)
-        SaveScalar(transformations, "AXIS_D0M" + std::to_string(i), 0.0)->
-        Transformation("mm", "AXIS_D0", "detector", "detector_module",
-                       "translation", d0_vector, module_origin[i] - detector_center, "mm");
-
-
-    for (uint32_t i = 0; i < nmodules; i++) {
-        HDF5Group module_group(*hdf5_file, "/entry/instrument/detector/ARRAY_D0M" + std::to_string(i));
-
-        module_group.NXClass("NXdetector_module");
-
-        std::vector<int32_t> origin = {static_cast<int32_t>(experiment.GetPixel0OfModule(i) / experiment.GetXPixelsNum()),
-                                       static_cast<int32_t>(experiment.GetPixel0OfModule(i) % experiment.GetXPixelsNum())};
-        std::vector<int32_t> size = {static_cast<int32_t>(CONVERTED_MODULE_LINES),
-                                     static_cast<int32_t>(CONVERTED_MODULE_COLS)};
-        module_group.SaveVector("data_origin", origin);
-        module_group.SaveVector("data_size", size);
-
-        SaveScalar(module_group, "fast_pixel_direction", PIXEL_SIZE_IN_MM)->
-        Transformation("mm", "/entry/instrument/" DETECTOR_NAME "/transformations/AXIS_D0M" + std::to_string(i),
-                       "", "", "translation", experiment.GetModuleFastAxis(i),
-                       Coord{0,0,0}, "");
-
-        SaveScalar(module_group, "slow_pixel_direction", PIXEL_SIZE_IN_MM)->
-        Transformation("mm", "/entry/instrument/" DETECTOR_NAME "/transformations/AXIS_D0M" + std::to_string(i),
-                       "", "", "translation", experiment.GetModuleSlowAxis(i),
-                       Coord{0,0,0}, "");
-    }
+    DetectorModule(hdf5_file, "detector_module", origin, size,
+                   {1,0,0}, {0,1,0}, "translation", det.pixel_size_mm());
 }
 
-void HDF5Metadata::Calibration(HDF5File *hdf5_file, const JFCalibration &calib) {
-    for (int i = 0; i < calib.GetStorageCellNum(); i++) {
-        std::vector<hsize_t> detector_size = {(hsize_t) (calib.GetModulesNum() * RAW_MODULE_LINES), RAW_MODULE_COLS};
+void HDF5Metadata::DetectorModule(HDF5File *hdf5_file, const std::string &name, const std::vector<int32_t> &origin,
+                                  const std::vector<int32_t> &size, const std::vector<double> &fast_axis,
+                                  const std::vector<double> &slow_axis,
+                                  const std::string &nx_axis, double pixel_size_mm) {
+    HDF5Group module_group(*hdf5_file, "/entry/instrument/detector/" + name);
 
-        std::string suffix = (i == 0) ? "" : ("_sc" + std::to_string(i));
+    module_group.NXClass("NXdetector_module");
 
-        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG0"+suffix,
-                   calib.GetPedestal(0, i),
-                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
-                ->Units("ADU")
-                .Attr("timestamp", time_UTC(calib.Pedestal(0, 0).collection_time))
-                .Attr("timestamp_unix", calib.Pedestal(0, 0).collection_time)
-                .Attr("frames", calib.Pedestal(0, 0).frames);
+    module_group.SaveVector("data_origin", origin);
+    module_group.SaveVector("data_size", size);
 
-        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG1"+suffix,
-                   calib.GetPedestal(1, i),
-                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
-                ->Units("ADU")
-                .Attr("timestamp", time_UTC(calib.Pedestal(0, 1).collection_time))
-                .Attr("timestamp_unix", calib.Pedestal(0, 1).collection_time)
-                .Attr("frames", calib.Pedestal(0, 1).frames);
+    SaveScalar(module_group, "fast_pixel_direction", pixel_size_mm)->
+            Transformation("mm", "/entry/instrument/detector/transformations/" + nx_axis,
+                           "", "", "translation", fast_axis,
+                           {0,0,0}, "");
 
-        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG2"+suffix,
-                   calib.GetPedestal(2, i),
-                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
-                ->Units("ADU")
-                .Attr("timestamp", time_UTC(calib.Pedestal(0, 2).collection_time))
-                .Attr("timestamp_unix", calib.Pedestal(0, 2).collection_time)
-                .Attr("frames", calib.Pedestal(0, 2).frames);
-
-        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG0_RMS"+suffix,
-                   calib.GetPedestalRMS(0, i),
-                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
-                ->Units("0.5 ADU");
-
-        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG1_RMS"+suffix,
-                   calib.GetPedestalRMS(1, i),
-                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
-                ->Units("0.5 ADU");
-
-        SaveVector(*hdf5_file, "/entry/instrument/detector/detectorSpecific/pedestalG2_RMS"+suffix,
-                   calib.GetPedestalRMS(2, i),
-                   detector_size, CompressionAlgorithm::BSHUF_LZ4)
-                ->Units("0.5 ADU");
-    }
+    SaveScalar(module_group, "slow_pixel_direction", pixel_size_mm)->
+            Transformation("mm", "/entry/instrument/detector/transformations/" + nx_axis,
+                           "", "", "translation", slow_axis,
+                           {0,0,0}, "");
 }
 
-void HDF5Metadata::Processing(HDF5File *hdf5_file, const DiffractionExperiment& experiment, const JFJochProtoBuf::JFJochIndexerOutput &output) {
-    if (experiment.GetImageNum() > 0) {
-        HDF5Group group(*hdf5_file, "/entry/processing");
-        SaveScalar(group, "indexing_time_per_image_ms", output.ms_per_image());
-        SaveScalar(group, "images_indexed", output.indexed_images());
-        SaveScalar(group, "images_analyzed", output.image_output_size());
-
-        std::vector<int16_t> indexed(experiment.GetImageNum(), -1);
-        std::vector<int16_t> spot_count(experiment.GetImageNum(), -1);
-
-        for (const auto &i: output.image_output()) {
-            indexed.at(i.image_number()) = i.indexed() ? 1 : 0;
-            if (i.spot_count() > INT16_MAX)
-                indexed.at(i.image_number()) = INT16_MAX;
-            if (i.spot_count() < 0) // unlikely...
-                indexed.at(i.image_number()) = -1;
-            else
-                indexed.at(i.image_number()) = static_cast<int16_t>(i.spot_count());
-        }
-
-        SaveVector(group, "spot_count", spot_count);
-        SaveVector(group, "indexed", indexed);
-    }
-}
-
-void HDF5Metadata::FinalSettings(HDF5File *hdf5_file, const JFJochProtoBuf::JFJochReceiverOutput &output) {
-    SaveScalar(*hdf5_file, "/entry/instrument/detector/detectorSpecific/max_receive_delay", output.max_receive_delay());
-    SaveScalar(*hdf5_file, "/entry/instrument/detector/detectorSpecific/efficiency", output.efficiency());
-
-    for (int i = 0; i < output.device_statistics_size(); i++) {
-        HDF5Group group(*hdf5_file, "/entry/instrument/detector/detectorSpecific/fpga"+ std::to_string(i));
-
-        std::vector<int64_t> packets_received_per_image = {output.device_statistics(i).packets_received_per_image().begin() ,
-                                                           output.device_statistics(i).packets_received_per_image().end() };
-
-        if (!packets_received_per_image.empty())
-            group.SaveVector("packets_per_image", packets_received_per_image);
-
-        std::vector<int64_t> trigger_sequence = {output.device_statistics(i).trigger_sequence_frame_numbers().begin(),
-                                                 output.device_statistics(i).trigger_sequence_frame_numbers().end()};
-
-        if (!trigger_sequence.empty())
-            group.SaveVector("trigger_sequence", trigger_sequence);
-
-        std::vector<uint64_t> packet_mask_half_module = {output.device_statistics(i).packet_mask_half_module().begin(),
-                                                         output.device_statistics(i).packet_mask_half_module().end()};
-        if (!packet_mask_half_module.empty())
-            group.SaveVector("packet_mask_half_module", packet_mask_half_module);
-
-        std::vector<uint32_t> timestamp = {output.device_statistics(i).timestamp().begin(),
-                                           output.device_statistics(i).timestamp().end()};
-
-        if (!timestamp.empty())
-            group.SaveVector("timestamp", timestamp);
-
-        if (output.device_statistics(i).has_fpga_status()) {
-            group.SaveScalar("stalls_hbm", output.device_statistics(i).fpga_status().stalls_hbm());
-            group.SaveScalar("stalls_host", output.device_statistics(i).fpga_status().stalls_host());
-            group.SaveScalar("fpga_status_register", output.device_statistics(i).fpga_status().full_status_register());
-            group.SaveScalar("max_hbm_temperature", output.device_statistics(i).fpga_status().max_hbm_temp());
-            group.SaveScalar("fpga_git_sha1", output.device_statistics(i).fpga_status().git_sha1());
-        }
-    }
-}
-
-
-std::unique_ptr<HDF5DataSet> HDF5Data::Data(HDF5File *hdf5_file, const DiffractionExperiment &experiment, size_t image0, size_t nimages,
-                    size_t ypixel) {
+inline void DirectChunkWrite(HDF5File *hdf5_file, const std::string &hdf5_path,
+                             const JFJochProtoBuf::WriterMetadataInput &input,
+                             int64_t pixel_depth_bytes, const std::string &str,
+                             const std::string &units = "") {
+    hsize_t xpixel = input.detector_metadata().width_pxl();
+    hsize_t ypixel = input.detector_metadata().height_pxl();
 
     HDF5Dcpl dcpl;
-    dcpl.SetCompression(experiment.GetCompressionAlgorithm(), experiment.GetPixelDepth(), experiment.GetCompressionBlockSize());
-    dcpl.SetChunking( {1, ypixel, (hsize_t) experiment.GetXPixelsNum()});
-    HDF5DataType data_type(experiment);
-    HDF5DataSpace data_space({1, ypixel, (hsize_t) experiment.GetXPixelsNum()},
-                             {H5S_UNLIMITED, ypixel, (hsize_t) experiment.GetXPixelsNum()});
-    auto data_set = std::make_unique<HDF5DataSet>(*hdf5_file, "/entry/data/data", data_type, data_space, dcpl);
+    dcpl.SetCompression(CompressionAlgorithm::BSHUF_LZ4,pixel_depth_bytes,4096);
+    dcpl.SetChunking( {ypixel, xpixel});
+    HDF5DataType data_type(pixel_depth_bytes, false);
+    HDF5DataSpace data_space({ypixel, xpixel},{ypixel, xpixel});
+    HDF5DataSet data_set(*hdf5_file, hdf5_path, data_type, data_space, dcpl);
+    data_set.WriteDirectChunk(str.data(), str.size(), {0,0});
+    if (!units.empty())
+        data_set.Units(units);
+}
 
-    data_set->Attr("image_nr_low", (int32_t) (image0 + 1)).Attr("image_nr_high", (int32_t) (image0 + nimages));
+void HDF5Metadata::Calibration(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
+    const auto &calib = input.calibration_metadata();
 
-    if (experiment.GetDetectorMode() == DetectorMode::Conversion)
-        data_set->Units("photon");
+    if (calib.has_mask_bshuf_lz4()) {
+        DirectChunkWrite(hdf5_file, "/entry/instrument/detector/pixel_mask", input, 2,
+                         calib.mask_bshuf_lz4());
+        hdf5_file->HardLink("/entry/instrument/detector/pixel_mask",
+                            "/entry/instrument/detector/detectorSpecific/pixel_mask");
+    }
+    for (const auto &i: calib.calibration())
+        DirectChunkWrite(hdf5_file,"/entry/instrument/detector/detectorSpecific/" + i.name(),
+                         input,2, i.compressed_bshuf_lz4());
+}
+
+void HDF5Metadata::LinkToData(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
+    hsize_t total_images = input.image_number();
+    const auto& det = input.detector_metadata();
+
+    HDF5Dcpl dcpl;
+
+    if (det.time_resolved_mode()) {
+        total_images -= total_images % input.images_per_trigger();
+        // For TR data at least one full trigger sequence must be collected
+        if (total_images < input.images_per_trigger())
+            return;
+        DataVDS_TimeResolved(dcpl, input, total_images);
+    } else {
+        // For standard data collecting one image is fine
+        if (input.image_number() == 0)
+            return;
+        DataVDS(dcpl, input);
+    }
+
+    HDF5Group(*hdf5_file, "/entry/data").NXClass("NXdata");
+
+    HDF5DataType data_type(det.pixel_depth_byte(), det.signed_pxl());
+    HDF5DataSpace full_data_space({(hsize_t) total_images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
+
+    if (det.pixel_depth_byte() == 2)
+        dcpl.SetFillValue16(INT16_MIN);
     else
-        data_set->Units("ADU");
+        dcpl.SetFillValue32(INT32_MIN);
 
-    return data_set;
+    HDF5DataSet dataset(*hdf5_file, "/entry/data/data", data_type, full_data_space, dcpl);
+    dataset.Attr("image_nr_low", (int32_t) 1).Attr("image_nr_high", (int32_t) total_images);
+
+    /*
+    if (experiment.GetDetectorMode() == DetectorMode::Conversion)
+        dataset.Units("photon");
+    else
+        dataset.Units("ADU");
+        */
+}
+
+void HDF5Metadata::DataVDS(HDF5Dcpl &dcpl, const JFJochProtoBuf::WriterMetadataInput &input) {
+    const auto& det = input.detector_metadata();
+    hsize_t total_images = input.image_number();
+    hsize_t images_per_file = input.images_per_file();
+
+    hsize_t file_count = total_images / images_per_file;
+    if (total_images % images_per_file > 0)
+        file_count++;
+
+    for (uint32_t file_id = 0; file_id < file_count; file_id++) {
+        hsize_t image0 = file_id * input.images_per_file();
+        hsize_t images = std::min(images_per_file, total_images - image0);
+
+        HDF5DataSpace src_data_space({images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
+
+        HDF5DataSpace virtual_data_space({total_images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
+        virtual_data_space.SelectHyperslabWithStride({image0, 0, 0},
+                                                     {images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()},
+                                                     {1,1,1});
+        dcpl.SetVirtual(input.data_files(file_id).filename(), "/entry/data/data",
+                        src_data_space, virtual_data_space);
+    }
+
+}
+
+void HDF5Metadata::DataVDS_TimeResolved(HDF5Dcpl &dcpl, const JFJochProtoBuf::WriterMetadataInput &input, hsize_t total_images) {
+    const auto& det = input.detector_metadata();
+    hsize_t images = total_images / input.images_per_trigger();
+    hsize_t stride = input.images_per_trigger();
+
+    if (input.data_files_size() != stride)
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Mismatch between number of images/trigger and number of data files in time resolved mode");
+    for (uint32_t file_id = 0; file_id < input.data_files_size(); file_id++) {
+        hsize_t image0 = file_id;
+
+        HDF5DataSpace src_data_space({images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
+
+        HDF5DataSpace virtual_data_space({total_images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
+        virtual_data_space.SelectHyperslabWithStride({image0, 0, 0},
+                                                     {images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()},
+                                                     {stride, 1, 1});
+        dcpl.SetVirtual(input.data_files(file_id).filename(), "/entry/data/data",
+                        src_data_space, virtual_data_space);
+    }
 }

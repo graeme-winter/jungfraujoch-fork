@@ -11,18 +11,22 @@
 int64_t JFJochReceiver::AcquireThread(uint16_t data_stream) {
     try {
         if (calib)
-            open_capi_device[data_stream]->InitializeCalibration(experiment, calib.value());
-        open_capi_device[data_stream]->PrepareAction(experiment);
+            acquisition_device[data_stream]->InitializeCalibration(experiment, calib.value());
+        acquisition_device[data_stream]->PrepareAction(experiment);
+
+        logger.Debug("Device thread {} prepare FPGA action", data_stream);
 
         data_acquisition_prepared->CountDown();
         frame_transformation_ready->Wait();
 
-        open_capi_device[data_stream]->StartAction(experiment);
+        logger.Debug("Device thread {} start FPGA action", data_stream);
+        acquisition_device[data_stream]->StartAction(experiment);
         data_acquisition_ready->CountDown();
-        open_capi_device[data_stream]->WaitForActionComplete();
+        logger.Debug("Device thread {} wait for FPGA action complete", data_stream);
+        acquisition_device[data_stream]->WaitForActionComplete();
 
     } catch (const JFJochException &e) { Abort(e); }
-    logger.Debug("open-capi-done-" + std::to_string(data_stream));
+    logger.Debug("Device thread {} done", data_stream);
     return -1;
 }
 
@@ -51,20 +55,21 @@ int64_t JFJochReceiver::MeasurePedestalThread(uint16_t data_stream, uint16_t mod
         frame_stride = 1;
     }
 
+    logger.Debug("Pedestal calculation thread for data stream {} module {} starting", data_stream, module);
     try {
         for (size_t frame = staring_frame; frame < experiment.GetFrameNum(); frame += frame_stride) {
             // Frame will be processed only if one already collects frame+2
-            open_capi_device[data_stream]->WaitForFrame(frame+2, module);
+            acquisition_device[data_stream]->WaitForFrame(frame + 2, module);
             if (!storage_cell_G1G2 || (frame % 2 == 1)) {
                 // Partial packets will bring more problems, than benefit
-                if (open_capi_device[data_stream]->GetPacketCount(frame, module) == 128) {
+                if (acquisition_device[data_stream]->IsFullModuleCollected(frame, module)) {
                     pedestal_calc->AnalyzeImage(
-                            (uint16_t *) open_capi_device[data_stream]->GetFrameBuffer(frame, module));
+                            (uint16_t *) acquisition_device[data_stream]->GetFrameBuffer(frame, module));
                 }
             }
-            open_capi_device[data_stream]->FrameBufferRelease(frame, module);
+            acquisition_device[data_stream]->FrameBufferRelease(frame, module);
 
-            delay = std::max(delay, open_capi_device[data_stream]->CalculateDelay(frame, module));
+            delay = std::max(delay, acquisition_device[data_stream]->CalculateDelay(frame, module));
         }
 
         if (experiment.GetDetectorMode() == DetectorMode::PedestalG0)
@@ -74,12 +79,13 @@ int64_t JFJochReceiver::MeasurePedestalThread(uint16_t data_stream, uint16_t mod
         pedestal_result[offset].frames = experiment.GetFrameNum();
         pedestal_result[offset].collection_time = start_time.time_since_epoch().count() / 1e9;
     } catch (const JFJochException &e) { Abort(e); }
-    logger.Debug("pedestal-thread-done");
+    logger.Debug("Pedestal calculation thread for data stream {} module {} done", data_stream, module);
     return delay;
 }
 
-void JFJochReceiver::SendImage(void *buffer, size_t image_number, size_t image_size) {
-    image_pusher.SendData(buffer, image_number, image_size);
+void JFJochReceiver::SendImage(void *buffer, size_t image_number, size_t image_size, const std::vector<DiffractionSpot>& spots) {
+    if (push_images_to_writer)
+        image_pusher.SendData(buffer, experiment.GetImageLocationInFile(image_number), image_size, spots);
     {
         std::unique_lock<std::mutex> ul(max_image_number_sent_mutex);
         if (image_number > max_image_number_sent)
@@ -97,7 +103,7 @@ int64_t JFJochReceiver::FrameTransformationThread() {
     std::unique_ptr<SpotFinder> spot_finder;
 
     try {
-        spot_finder = std::make_unique<SpotFinder>(experiment);
+        spot_finder = std::make_unique<SpotFinder>(experiment.GetXPixelsNum(), experiment.GetYPixelsNum());
         spot_finder->SetInputBuffer(transformation.GetPreview16BitImage());
         spot_finder->RegisterBuffer();
         spot_finder->LoadMask(one_byte_mask);
@@ -113,14 +119,12 @@ int64_t JFJochReceiver::FrameTransformationThread() {
     if (rad_int_mapping)
         rad_int = std::make_unique<RadialIntegration>(*rad_int_mapping);
 
-    std::vector<char> writer_buffer(sizeof(ImageMetadata) + experiment.GetMaxCompressedSize());
-    auto image_metadata = (ImageMetadata *) writer_buffer.data();
-    image_metadata->version = IMAGE_METADATA_VERSION;
+    std::vector<char> writer_buffer(experiment.GetMaxCompressedSize());
 
     int64_t max_thread_delay = 0;
     uint64_t image_number;
 
-    transformation.SetOutput(writer_buffer.data() + sizeof(ImageMetadata));
+    transformation.SetOutput(writer_buffer.data());
 
     frame_transformation_ready->CountDown();
 
@@ -137,48 +141,42 @@ int64_t JFJochReceiver::FrameTransformationThread() {
             if ((rad_int != nullptr) && (bkg_estimate_stride > 0) && (image_number % bkg_estimate_stride == 0))
                 send_bkg_estimate = true;
 
-            size_t image_packets = 0;
+            bool send_image = false; // We send image if at least one module was collected in full
 
             bool send_spots = (spot_publisher != nullptr) && (spotfinder_stride > 0) && (image_number % spotfinder_stride == 0);
 
             for (int j = 0; j < experiment.GetSummation(); j++) {
                 size_t frame_number = image_number * experiment.GetSummation() + j;
-                size_t frame_packets = 0;
 
-                for (int d = 0; d < open_capi_device.size(); d++) {
-                    open_capi_device[d]->WaitForFrame(frame_number+2);
+                for (int d = 0; d < acquisition_device.size(); d++) {
+                    acquisition_device[d]->WaitForFrame(frame_number + 2);
 
                     for (int m = 0; m < experiment.GetModulesNum(d); m++) {
-                        size_t packets = open_capi_device[d]->GetPacketCount(frame_number, m);
-                        frame_packets += packets;
-                        if (packets == 128) {
-                            auto src = open_capi_device[d]->GetFrameBuffer(frame_number, m);
-                            transformation.ProcessModule(src, frame_number, m, d);
+                        const int16_t *src;
 
-                        } else if (packets > 0) {
-                            // handle eth packets
-                            for (int packet = 0; packet < 128; packet++) {
-                                auto src = open_capi_device[d]->GetPacketBuffer(frame_number, m, packet);
-                                transformation.ProcessPacket(src, frame_number, m, packet, d);
-                            }
-                        }
-                        open_capi_device[d]->FrameBufferRelease(frame_number, m);
+                        if (acquisition_device[d]->IsFullModuleCollected(frame_number, m)) {
+                            src = acquisition_device[d]->GetFrameBuffer(frame_number, m);
+                            send_image = true;
+                        } else
+                            src = acquisition_device[d]->GetErrorFrameBuffer();
+
+                        transformation.ProcessModule(src, frame_number, m, d);
+                        acquisition_device[d]->FrameBufferRelease(frame_number, m);
                     }
-                    max_thread_delay = std::max(max_thread_delay, open_capi_device[d]->CalculateDelay(frame_number));
+                    max_thread_delay = std::max(max_thread_delay, acquisition_device[d]->CalculateDelay(frame_number));
                 }
-                image_packets += frame_packets;
             }
 
-            if (image_packets > 0) {
+            if (send_image) {
                 size_t image_size = transformation.PackStandardOutput();
+
+                std::vector<DiffractionSpot> spots;
 
 #ifdef CUDA_SPOT_FINDING
                 // Spot finding is async, so it can be sandwiched between sending image and other tasks
-                if (send_spots) {
+                if (send_spots)
                     spot_finder->RunSpotFinder(GetDataProcessingSettings());
-                }
 #endif
-                SendImage(writer_buffer.data(), image_number, image_size);
 
                 if (send_preview)
                     preview_publisher->Publish(experiment,
@@ -196,12 +194,12 @@ int64_t JFJochReceiver::FrameTransformationThread() {
 
 #ifdef CUDA_SPOT_FINDING
                 if (send_spots) {
-                    std::vector<DiffractionSpot> spots;
                     spot_finder->GetResults(experiment, GetDataProcessingSettings(), spots, 0);
                     spot_count.AddElement(image_number, spots.size());
                     spot_publisher->Publish(experiment, spots, image_number);
                 }
 #endif
+                SendImage(writer_buffer.data(), image_number, image_size, spots);
             }
         } catch (const JFJochException &e) { Abort(e); }
     }
@@ -210,19 +208,19 @@ int64_t JFJochReceiver::FrameTransformationThread() {
     spot_finder->UnregisterBuffer();
 #endif
 
-    logger.Debug("sum-and-forward-done");
+    logger.Debug("Sum&compression thread done");
 
     return max_thread_delay;
 }
 
-JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settings,
-                               std::vector<AcquisitionDevice *> &in_open_capi_device,
-                               ZMQImagePusher &in_image_sender,
+JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::ReceiverInput &settings,
+                               std::vector<AcquisitionDevice *> &in_aq_device,
+                               ImagePusher &in_image_sender,
                                Logger &in_logger, int64_t in_forward_and_sum_nthreads,
                                ZMQPreviewPublisher* in_preview_publisher,
                                ZMQSpotPublisher* in_spot_publisher) :
         experiment(settings.jungfraujoch_settings()),
-        open_capi_device(in_open_capi_device),
+        acquisition_device(in_aq_device),
         logger(in_logger),
         image_pusher(in_image_sender),
         frame_transformation_nthreads(in_forward_and_sum_nthreads),
@@ -230,7 +228,6 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settin
         spot_publisher(in_spot_publisher)
 {
     ndatastreams = experiment.GetDataStreamsNum();
-
 
     if (settings.has_calibration()) {
         calib.emplace(settings.calibration());
@@ -243,7 +240,9 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settin
     if (!experiment.CheckGitSha1Consistent())
         logger.Warning(experiment.CheckGitSha1Msg());
 
-    if (open_capi_device.size() > ndatastreams)
+    push_images_to_writer = (experiment.GetImageNum() > 0) && (!experiment.GetFilePrefix().empty());
+
+    if (acquisition_device.size() > ndatastreams)
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                               "Number of acquisition devices has to match data streams");
     if (frame_transformation_nthreads <= 0)
@@ -259,9 +258,9 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settin
     spotfinder_stride = experiment.GetSpotFindingStride();
     bkg_estimate_stride = experiment.GetBackgroundEstimationStride();
 
-    logger.Info("Preview stride: " + std::to_string(preview_stride));
-    logger.Info("Spot finder stride: " + std::to_string(spotfinder_stride));
-    logger.Info("Bkg estimate stride: " + std::to_string(bkg_estimate_stride));
+    logger.Info("Preview stride: {}", preview_stride);
+    logger.Info("Spot finder stride: {}", spotfinder_stride);
+    logger.Info("Bkg estimate stride: {}",bkg_estimate_stride);
 
     if (experiment.GetDetectorMode() == DetectorMode::Conversion) {
         if (preview_publisher != nullptr)
@@ -325,7 +324,8 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settin
     }
 
     if (experiment.GetImageNum() > 0) {
-        image_pusher.Connect(zmq_writer_addrs, settings.jungfraujoch_settings());
+        if (push_images_to_writer)
+            image_pusher.StartDataCollection();
 
         for (int i = 0; i < experiment.GetImageNum(); i++)
             images_to_go.Put(i);
@@ -344,7 +344,7 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settin
 
     data_acquisition_ready->Wait();
 
-    logger.Info("OpenCAPI devices ready");
+    logger.Info("Acquisition devices ready");
 
     start_time = std::chrono::system_clock::now();
     logger.Info("Receiving data started");
@@ -352,12 +352,12 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settin
     measurement = std::async(std::launch::async, &JFJochReceiver::FinalizeMeasurement, this);
 }
 
-void JFJochReceiver::GetStatistics(JFJochProtoBuf::JFJochReceiverOutput &ret) const {
+void JFJochReceiver::GetStatistics(JFJochProtoBuf::ReceiverOutput &ret) const {
     uint64_t expected_packets = 0;
     uint64_t received_packets = 0;
 
     for (int d = 0; d < ndatastreams; d++) {
-        open_capi_device[d]->SaveStatistics(experiment, *ret.add_device_statistics());
+        acquisition_device[d]->SaveStatistics(experiment, *ret.add_device_statistics());
         expected_packets += ret.device_statistics(d).packets_expected();
         received_packets += ret.device_statistics(d).good_packets();
     }
@@ -394,7 +394,7 @@ void JFJochReceiver::Cancel() {
     logger.Error("Cancelling on request");
 
     for (int d = 0; d < ndatastreams; d++)
-        open_capi_device[d]->ActionAbort();
+        acquisition_device[d]->ActionAbort();
 }
 
 void JFJochReceiver::Abort() {
@@ -402,7 +402,7 @@ void JFJochReceiver::Abort() {
     logger.Error("Aborting on request");
 
     for (int d = 0; d < ndatastreams; d++)
-        open_capi_device[d]->ActionAbort();
+        acquisition_device[d]->ActionAbort();
 
     abort = 1;
 }
@@ -414,7 +414,7 @@ void JFJochReceiver::Abort(const JFJochException &e) {
     abort = 1;
 
     for (int d = 0; d < ndatastreams; d++)
-        open_capi_device[d]->ActionAbort();
+        acquisition_device[d]->ActionAbort();
 }
 
 int JFJochReceiver::GetStatus() const {
@@ -435,8 +435,9 @@ void JFJochReceiver::FinalizeMeasurement() {
     }
     logger.Info("All processing threads done");
 
-    image_pusher.EndDataCollection();
-    image_pusher.Disconnect();
+    if (push_images_to_writer)
+        image_pusher.EndDataCollection();
+
     logger.Info("Disconnected from writers");
 
     end_time = std::chrono::system_clock::now();
@@ -446,7 +447,7 @@ void JFJochReceiver::FinalizeMeasurement() {
 
     // All devices can be stopped here
     for (int d = 0; d < ndatastreams; d++)
-        open_capi_device[d]->ActionAbort();
+        acquisition_device[d]->ActionAbort();
 
     for (auto &future : data_acquisition_futures) {
         auto val = future.get();
@@ -480,8 +481,8 @@ JFJochProtoBuf::DataProcessingSettings JFJochReceiver::GetDataProcessingSettings
 }
 
 void JFJochReceiver::GetPlots(JFJochProtoBuf::ReceiverStatus &status) {
-    spot_count.GetPlot(*status.mutable_spot_count(), 1000);
-    bkg_estimate.GetPlot(*status.mutable_bkg_estimate(), 1000);
+    spot_count.GetPlot(*status.mutable_spot_count(), 100);
+    bkg_estimate.GetPlot(*status.mutable_bkg_estimate(), 100);
 }
 
 

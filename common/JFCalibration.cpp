@@ -4,6 +4,7 @@
 #include "JFCalibration.h"
 
 #include <bitshuffle/bitshuffle.h>
+#include "JFJochCompressor.h"
 
 JFCalibration::JFCalibration(size_t in_nmodules, size_t in_nstorage_cells) :
 nmodules(in_nmodules),
@@ -177,11 +178,20 @@ JFCalibration::JFCalibration(const JFJochProtoBuf::JFCalibration &input) :
         throw JFJochException(JFJochExceptionCategory::ZSTDCompressionError, "Decompression error");
 }
 
-std::vector<float> JFCalibration::GetPedestal(size_t gain_level, size_t storage_cell) const {
+std::vector<float> JFCalibration::GetPedestalFP(size_t gain_level, size_t storage_cell) const {
     std::vector<float> ret(nmodules * RAW_MODULE_SIZE);
     for (int m = 0; m < nmodules; m++) {
         auto fp = Pedestal(m, gain_level, storage_cell).GetPedestalFP();
         memcpy(ret.data() + m * RAW_MODULE_SIZE, fp.data(), RAW_MODULE_SIZE * sizeof(float));
+    }
+    return ret;
+}
+
+std::vector<uint16_t> JFCalibration::GetPedestal(size_t gain_level, size_t storage_cell) const {
+    std::vector<uint16_t> ret(nmodules * RAW_MODULE_SIZE);
+    for (int m = 0; m < nmodules; m++) {
+        for (int i = 0; i < RAW_MODULE_SIZE; i++)
+            ret[m*RAW_MODULE_SIZE + i] = Pedestal(m, gain_level, storage_cell)[i];
     }
     return ret;
 }
@@ -221,4 +231,36 @@ JFCalibration::operator JFJochProtoBuf::JFCalibration() const {
 
 JFCalibration::operator JFJochProtoBuf::JFCalibrationStatistics() const {
     return GetModuleStatistics();
+}
+
+template <class T>
+std::vector<uint8_t> CompressCalibration(const std::vector<T> &c) {
+    std::vector<uint8_t> compressed_output(bshuf_compress_lz4_bound(c.size(), sizeof(T),0) + 12);
+    JFJochBitShuffleCompressor compressor(CompressionAlgorithm::BSHUF_LZ4, 0, 0);
+    compressor.Compress(compressed_output.data(), c);
+    return compressed_output;
+}
+
+void JFCalibration::Export(const DiffractionExperiment& experiment, JFJochProtoBuf::WriterMetadataInput &request) const {
+    auto compressed_mask = CompressCalibration(CalculateNexusMask(experiment));
+    request.mutable_calibration_metadata()->set_mask_bshuf_lz4(compressed_mask.data(), compressed_mask.size());
+    for (int i = 0; i < experiment.GetStorageCellNumber(); i++) {
+        std::string suffix;
+        if (experiment.GetStorageCellNumber() > 1)
+            suffix = "_sc" + std::to_string(i);
+        for (int gain = 0; gain < 3; gain++) {
+            auto entry = request.mutable_calibration_metadata()->add_calibration();
+            auto compressed_pedestal = CompressCalibration(GetPedestal(gain, i));
+            entry->set_compressed_bshuf_lz4(compressed_pedestal.data(), compressed_pedestal.size());
+            entry->set_name("pedestalG" + std::to_string(gain) + suffix);
+            entry->set_units("ADU");
+        }
+        for (int gain = 0; gain < 3; gain++) {
+            auto entry = request.mutable_calibration_metadata()->add_calibration();
+            auto compressed_pedestal = CompressCalibration(GetPedestalRMS(gain, i));
+            entry->set_compressed_bshuf_lz4(compressed_pedestal.data(), compressed_pedestal.size());
+            entry->set_name("pedestalG" + std::to_string(gain) + "_RMS" + suffix);
+            entry->set_units("0.5 ADU");
+        }
+    }
 }

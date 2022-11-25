@@ -5,7 +5,7 @@
 #include "JFJochIndexer.h"
 #include "XgandalfWrapper.h"
 
-JFJochIndexer::JFJochIndexer(ZMQContext &context, const JFJochProtoBuf::JFJochIndexerInput &input, Logger &in_logger,
+JFJochIndexer::JFJochIndexer(ZMQContext &context, const JFJochProtoBuf::IndexerInput &input, Logger &in_logger,
                              int64_t nthreads) :
 socket(context, ZMQSocketType::Sub), bin_size(input.bin_size()), logger(in_logger) {
     logger.Info("Starting ... ");
@@ -13,26 +13,20 @@ socket(context, ZMQSocketType::Sub), bin_size(input.bin_size()), logger(in_logge
     socket.Connect(input.zmq_recv_pub_addr());
     socket.SubscribeAll();
 
-    DiffractionExperiment experiment(input.jungfraujoch_settings());
-
-    logger.Info("   ... subscribed to ZeroMQ: " + input.zmq_recv_pub_addr());
+     logger.Info("   ... subscribed to ZeroMQ: " + input.zmq_recv_pub_addr());
     for (int i = 0; i < nthreads; i++)
-        processing_threads.emplace_back(std::async(std::launch::async, &JFJochIndexer::Run, this,
-                                                   experiment));
+        processing_threads.emplace_back(std::async(std::launch::async, &JFJochIndexer::Run, this, input));
     logger.Info("   ... started " + std::to_string(nthreads) + " indexing threads");
-
-    image_stride = experiment.GetSpotFindingStride();
-    if (image_stride <= 0)
-        image_stride = 1;
-    output.reserve(experiment.GetImageNum() / image_stride);
+    image_stride = input.image_stride();
+    output.reserve(input.expected_image_number());
 }
 
 JFJochIndexer::~JFJochIndexer() {
     abort = 1;
 }
 
-JFJochProtoBuf::JFJochIndexerOutput JFJochIndexer::End() {
-    JFJochProtoBuf::JFJochIndexerOutput ret;
+JFJochProtoBuf::IndexerOutput JFJochIndexer::End() {
+    JFJochProtoBuf::IndexerOutput ret;
 
     if (abort)
         return ret; // Already ended
@@ -81,22 +75,22 @@ JFJochProtoBuf::IndexerStatus JFJochIndexer::GetStatus() {
     return ret;
 }
 
-int64_t JFJochIndexer::Run(const DiffractionExperiment &in_settings) {
+int64_t JFJochIndexer::Run(const JFJochProtoBuf::IndexerInput &input) {
     XgandalfWrapper wrapper;
     int64_t total_time_ms = 0;
 
     std::string s;
 
     IndexingSettings settings;
-    settings.algorithm = IndexingAlgorithm::Xgandalf_fast;
     settings.max_indexing_spots = 0;
 
-    if (in_settings.HasUnitCell()) {
+    if (input.has_unit_cell()) {
         settings.has_unit_cell = true;
-        settings.unit_cell = in_settings.GetUnitCell();
-        settings.centering = in_settings.GetCentering();
+        settings.unit_cell = input.unit_cell();
+        settings.centering = static_cast<char>(input.centering());
     } else
         settings.has_unit_cell = false;
+    wrapper.Setup(settings);
 
     while (true) {
         if (socket.Receive(s, false) >= 0) {
@@ -110,7 +104,8 @@ int64_t JFJochIndexer::Run(const DiffractionExperiment &in_settings) {
 
             if (coord.size() >= MIN_SPOTS_TO_INDEX) {
                 auto start_time = std::chrono::system_clock::now();
-                auto indexing_result = wrapper.Run(settings, coord);
+
+                auto indexing_result = wrapper.Run(coord);
                 auto end_time = std::chrono::system_clock::now();
                 auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 

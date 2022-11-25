@@ -273,6 +273,18 @@ proc create_hier_cell_mac_100g { parentCell nameHier } {
    CONFIG.IS_ACLK_ASYNC {1} \
  ] $axis_data_fifo_tx
 
+  # Create instance: axis_register_slice_rx, and set properties
+  set axis_register_slice_rx [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.1 axis_register_slice_rx ]
+  set_property -dict [ list \
+   CONFIG.REG_CONFIG {16} \
+ ] $axis_register_slice_rx
+
+  # Create instance: axis_register_slice_tx, and set properties
+  set axis_register_slice_tx [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.1 axis_register_slice_tx ]
+  set_property -dict [ list \
+   CONFIG.REG_CONFIG {16} \
+ ] $axis_register_slice_tx
+
   # Create instance: check_eth_busy_0, and set properties
   set block_name check_eth_busy
   set block_cell_name check_eth_busy_0
@@ -347,19 +359,21 @@ proc create_hier_cell_mac_100g { parentCell nameHier } {
 
   # Create interface connections
   connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins qsfp] [get_bd_intf_pins cmac_usplus_0/gt_serial_port]
-  connect_bd_intf_net -intf_net axis_data_fifo_rx_0_M_AXIS [get_bd_intf_pins m_axis_eth_in] [get_bd_intf_pins axis_data_fifo_rx_0/M_AXIS]
+  connect_bd_intf_net -intf_net axis_data_fifo_rx_0_M_AXIS [get_bd_intf_pins axis_data_fifo_rx_0/M_AXIS] [get_bd_intf_pins axis_register_slice_rx/S_AXIS]
   connect_bd_intf_net -intf_net axis_data_fifo_tx_M_AXIS [get_bd_intf_pins axis_data_fifo_tx/M_AXIS] [get_bd_intf_pins cmac_usplus_0/axis_tx]
-  connect_bd_intf_net -intf_net axis_switch_0_M00_AXIS [get_bd_intf_pins s_axis_eth_out] [get_bd_intf_pins axis_data_fifo_tx/S_AXIS]
+  connect_bd_intf_net -intf_net axis_register_slice_0_M_AXIS [get_bd_intf_pins axis_data_fifo_tx/S_AXIS] [get_bd_intf_pins axis_register_slice_tx/M_AXIS]
+  connect_bd_intf_net -intf_net axis_register_slice_1_M_AXIS [get_bd_intf_pins m_axis_eth_in] [get_bd_intf_pins axis_register_slice_rx/M_AXIS]
   connect_bd_intf_net -intf_net check_eth_busy_0_M_AXIS [get_bd_intf_pins axis_data_fifo_rx_0/S_AXIS] [get_bd_intf_pins check_eth_busy_0/M_AXIS]
   connect_bd_intf_net -intf_net cmac_usplus_0_axis_rx [get_bd_intf_pins check_eth_busy_0/S_AXIS] [get_bd_intf_pins cmac_usplus_0/axis_rx]
   connect_bd_intf_net -intf_net gt_ref_clk_0_1 [get_bd_intf_pins qsfp_ref] [get_bd_intf_pins cmac_usplus_0/gt_ref_clk]
   connect_bd_intf_net -intf_net s_axi_1 [get_bd_intf_pins s_axi] [get_bd_intf_pins smartconnect_0/S01_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins cmac_usplus_0/s_axi] [get_bd_intf_pins smartconnect_0/M00_AXI]
   connect_bd_intf_net -intf_net smartconnect_1_M01_AXI [get_bd_intf_pins eth_ctrl/M_AXI] [get_bd_intf_pins smartconnect_0/S00_AXI]
+  connect_bd_intf_net -intf_net s_axis_eth_out_1 [get_bd_intf_pins s_axis_eth_out] [get_bd_intf_pins axis_register_slice_tx/S_AXIS]
 
   # Create port connections
   connect_bd_net -net ap_rst_n_1 [get_bd_pins ap_rst_n] [get_bd_pins resetn_sync_0/in_resetn]
-  connect_bd_net -net axi_clk_net [get_bd_pins axiclk] [get_bd_pins axis_data_fifo_rx_0/m_axis_aclk] [get_bd_pins axis_data_fifo_tx/s_axis_aclk]
+  connect_bd_net -net axi_clk_net [get_bd_pins axiclk] [get_bd_pins axis_data_fifo_rx_0/m_axis_aclk] [get_bd_pins axis_data_fifo_tx/s_axis_aclk] [get_bd_pins axis_register_slice_rx/aclk] [get_bd_pins axis_register_slice_tx/aclk]
   connect_bd_net -net check_eth_busy_0_eth_busy [get_bd_pins eth_busy] [get_bd_pins check_eth_busy_0/eth_busy]
   connect_bd_net -net cmac_usplus_0_gt_txusrclk2 [get_bd_pins axis_data_fifo_rx_0/s_axis_aclk] [get_bd_pins axis_data_fifo_tx/m_axis_aclk] [get_bd_pins check_eth_busy_0/clk] [get_bd_pins cmac_usplus_0/gt_txusrclk2] [get_bd_pins cmac_usplus_0/rx_clk]
   connect_bd_net -net cmac_usplus_0_stat_rx_aligned [get_bd_pins stat_rx_aligned] [get_bd_pins cmac_usplus_0/stat_rx_aligned] [get_bd_pins eth_ctrl/stat_rx_aligned]
@@ -367,7 +381,7 @@ proc create_hier_cell_mac_100g { parentCell nameHier } {
   connect_bd_net -net cmac_usplus_0_usr_rx_reset [get_bd_pins cmac_usplus_0/usr_rx_reset] [get_bd_pins util_vector_logic_1/Op1]
   connect_bd_net -net eth_stat_rx_status_1 [get_bd_pins stat_rx_status] [get_bd_pins cmac_usplus_0/stat_rx_status]
   connect_bd_net -net init_clk_1 [get_bd_pins refclk100] [get_bd_pins cmac_usplus_0/init_clk] [get_bd_pins cmac_usplus_0/s_axi_aclk] [get_bd_pins eth_ctrl/refclk100] [get_bd_pins resetn_sync_0/clk] [get_bd_pins smartconnect_0/aclk]
-  connect_bd_net -net resetn_1 [get_bd_pins resetn] [get_bd_pins axis_data_fifo_tx/s_axis_aresetn]
+  connect_bd_net -net resetn_1 [get_bd_pins resetn] [get_bd_pins axis_data_fifo_tx/s_axis_aresetn] [get_bd_pins axis_register_slice_rx/aresetn] [get_bd_pins axis_register_slice_tx/aresetn]
   connect_bd_net -net resetn_sync_0_out_resetn [get_bd_pins eth_ctrl/resetn] [get_bd_pins resetn_sync_0/out_resetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net util_vector_logic_0_Res [get_bd_pins cmac_usplus_0/s_axi_sreset] [get_bd_pins cmac_usplus_0/sys_reset] [get_bd_pins util_vector_logic_0/Res]
   connect_bd_net -net util_vector_logic_1_Res [get_bd_pins axis_data_fifo_rx_0/s_axis_aresetn] [get_bd_pins util_vector_logic_1/Res]

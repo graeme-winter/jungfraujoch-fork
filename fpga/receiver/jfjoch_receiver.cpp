@@ -39,8 +39,10 @@ AcquisitionDevice *SetupAcquisitionDevice(const nlohmann::json &input, uint16_t 
 #endif
 
     if (input.contains("gain_file") && (input["gain_file"].is_array())) {
-        for (int i = 0; i < input["gain_file"].size(); i++)
-            ret->LoadModuleGain(input["gain_file"][i].get<std::string>(), i);
+        for (int i = 0; i < input["gain_file"].size(); i++) {
+            JFModuleGainCalibration gain_from_file(input["gain_file"][i].get<std::string>());
+            ret->LoadModuleGain(gain_from_file, i);
+        }
     }
 
     if (input.contains("custom_test_frame")) {
@@ -110,7 +112,23 @@ int main(int argc, char **argv) {
 
     logger.Info("Enabled acquisition device count: " + std::to_string(aq_devices.size()));
 
-    JFJochReceiverService service(aq_devices_ptr, context, logger);
+    int32_t send_buffer_size = -1;
+    if (input.contains("tcp_send_buffer_size"))
+        send_buffer_size = input["tcp_send_buffer_size"];
+
+    int32_t send_buffer_high_watermark = -1;
+    if (input.contains("zmq_send_high_watermark"))
+        send_buffer_high_watermark = input["zmq_send_high_watermark"];
+
+    std::vector<std::string> zmq_addr;
+    if (input.contains("image_zmq_addr") && input["image_zmq_addr"].is_array()) {
+        for (const auto &s: input["image_zmq_addr"])
+            zmq_addr.push_back(s);
+    }
+
+    ZMQImagePusher pusher(zmq_addr, send_buffer_high_watermark, send_buffer_size);
+
+    JFJochReceiverService service(aq_devices_ptr, logger, pusher);
 
     std::unique_ptr<ZMQPreviewPublisher> preview;
     if (input.contains("preview_zmq_addr")) {
@@ -125,12 +143,6 @@ int main(int argc, char **argv) {
         service.SpotPublisher(spot_publisher.get());
         logger.Info("Spot finder available on ZMQ addr " + input["spot_zmq_addr"].get<std::string>());
     }
-
-    if (input.contains("tcp_send_buffer_size"))
-        service.SendBufferSize(input["tcp_send_buffer_size"]);
-
-    if (input.contains("zmq_send_high_watermark"))
-        service.SendBufferHighWatermark(input["zmq_send_high_watermark"]);
 
     if (input.contains("compression_threads"))
         service.NumThreads(input["compression_threads"]);

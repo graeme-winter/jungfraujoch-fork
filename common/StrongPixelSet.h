@@ -32,8 +32,8 @@ inline uint32_t image_from_strong_pixel(uint64_t strong_pixel) {
 class StrongPixelSet {
     mutable std::mutex m;
     std::unordered_map<uint64_t, int64_t> strong_pixel_map;
-    void AddNeighbor(DiffractionSpot &spot, uint16_t col, uint16_t line, uint32_t image, bool connect_frames);
-    DiffractionSpot BuildSpot(std::unordered_map<uint64_t, int64_t>::iterator &it, bool connect_frames);
+    void AddNeighbor(DiffractionSpot &spot, uint16_t col, uint16_t line, uint32_t image);
+    DiffractionSpot BuildSpot(std::unordered_map<uint64_t, int64_t>::iterator &it_frames);
 public:
     size_t Count() const;
     void AddStrongPixel(uint16_t col, uint16_t line, uint32_t image, int64_t photons = 1);

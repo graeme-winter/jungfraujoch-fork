@@ -23,16 +23,20 @@ void timer_hbm(STREAM_512 &data_in, STREAM_512 &data_out, uint64_t &counter) {
     uint64_t counter_internal = 0;
     counter = 0; // Counter is regenerated when action is starting, not earlier
     ap_uint<5> modules = ACT_REG_NMODULES(packet_in.data);
-    ap_uint<5>  storage_cells = ACT_REG_NSTORAGE_CELLS(packet_in.data);
+    ap_uint<5> storage_cells = ACT_REG_NSTORAGE_CELLS(packet_in.data);
+    ap_uint<1> conversion    = (ACT_REG_MODE(packet_in.data) & MODE_CONV) ? 1 : 0;
+
     data_out << packet_in;
 
     // Don't care about pipeline stalls when gain & pedestal are transferred
 
-    forward_gain:
-    for (int i = 0; i < modules * (3 + 3 * storage_cells) * (RAW_MODULE_SIZE * 2 / 64); i++) {
+    if (conversion) {
+        forward_calibration:
+        for (int i = 0; i < modules * (3 + 3 * storage_cells) * (RAW_MODULE_SIZE * 2 / 64); i++) {
 #pragma HLS PIPELINE II=1
-        data_in >> packet_in;
-        data_out << packet_in;
+            data_in >> packet_in;
+            data_out << packet_in;
+        }
     }
 
     for (int i = 0; i < HBM_CALIB_DELAY; i++) {

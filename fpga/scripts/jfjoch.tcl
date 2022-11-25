@@ -114,7 +114,7 @@ proc create_hier_cell_jungfraujoch { parentCell nameHier } {
   # Create instance: axis_addr_fifo_0, and set properties
   set axis_addr_fifo_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 axis_addr_fifo_0 ]
   set_property -dict [ list \
-   CONFIG.FIFO_DEPTH {512} \
+   CONFIG.FIFO_DEPTH {16} \
  ] $axis_addr_fifo_0
 
   # Create instance: axis_addr_fifo_1, and set properties
@@ -136,7 +136,7 @@ proc create_hier_cell_jungfraujoch { parentCell nameHier } {
   # Create instance: axis_data_fifo_0, and set properties
   set axis_data_fifo_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 axis_data_fifo_0 ]
   set_property -dict [ list \
-   CONFIG.FIFO_DEPTH {512} \
+   CONFIG.FIFO_DEPTH {2048} \
    CONFIG.FIFO_MEMORY_TYPE {auto} \
  ] $axis_data_fifo_0
 
@@ -189,7 +189,7 @@ proc create_hier_cell_jungfraujoch { parentCell nameHier } {
   # Create instance: axis_data_fifo_c2h_cmd, and set properties
   set axis_data_fifo_c2h_cmd [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 axis_data_fifo_c2h_cmd ]
   set_property -dict [ list \
-   CONFIG.FIFO_DEPTH {16} \
+   CONFIG.FIFO_DEPTH {32} \
    CONFIG.FIFO_MEMORY_TYPE {auto} \
    CONFIG.HAS_AEMPTY {1} \
    CONFIG.HAS_AFULL {1} \
@@ -198,7 +198,7 @@ proc create_hier_cell_jungfraujoch { parentCell nameHier } {
   # Create instance: axis_data_fifo_c2h_data, and set properties
   set axis_data_fifo_c2h_data [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 axis_data_fifo_c2h_data ]
   set_property -dict [ list \
-   CONFIG.FIFO_DEPTH {512} \
+   CONFIG.FIFO_DEPTH {2048} \
    CONFIG.FIFO_MEMORY_TYPE {auto} \
    CONFIG.HAS_AEMPTY {1} \
    CONFIG.HAS_AFULL {1} \
@@ -213,7 +213,7 @@ proc create_hier_cell_jungfraujoch { parentCell nameHier } {
   # Create instance: axis_data_fifo_h2c_data, and set properties
   set axis_data_fifo_h2c_data [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 axis_data_fifo_h2c_data ]
   set_property -dict [ list \
-   CONFIG.FIFO_DEPTH {256} \
+   CONFIG.FIFO_DEPTH {128} \
    CONFIG.FIFO_MEMORY_TYPE {block} \
    CONFIG.HAS_AEMPTY {1} \
    CONFIG.HAS_AFULL {1} \

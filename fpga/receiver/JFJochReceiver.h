@@ -14,12 +14,11 @@
 #include "../../common/FrameTransformation.h"
 #include "../../common/StrongPixelSet.h"
 #include "../../common/JFCalibration.h"
+#include "../../common/ImagePusher.h"
 
-#include "AcquisitionDevice.h"
+#include "../host/AcquisitionDevice.h"
 #include "../../common/Logger.h"
-#include "../../common/CommunicationBuffer.h"
 #include "../../common/ThreadSafeFIFO.h"
-#include "../../common/ZMQImagePusher.h"
 #include "../../common/ZMQPreviewPublisher.h"
 #include "../../common/ZMQSpotPublisher.h"
 
@@ -58,11 +57,13 @@ class JFJochReceiver {
 
     ZMQPreviewPublisher *preview_publisher = nullptr;
     ZMQSpotPublisher *spot_publisher = nullptr;
-    ZMQImagePusher &image_pusher;
+
+    ImagePusher &image_pusher;
+    bool push_images_to_writer;
 
     volatile int abort{0};
 
-    std::vector<AcquisitionDevice *> &open_capi_device;
+    std::vector<AcquisitionDevice *> &acquisition_device;
     uint16_t ndatastreams{0};
 
     std::vector<size_t> max_delay;
@@ -96,7 +97,7 @@ class JFJochReceiver {
 
     void Abort(const JFJochException &e);
     void FinalizeMeasurement();
-    void SendImage(void *buffer, size_t image_number, size_t image_size);
+    void SendImage(void *buffer, size_t image_number, size_t image_size, const std::vector<DiffractionSpot>& spots);
     JFJochProtoBuf::DataProcessingSettings GetDataProcessingSettings();
 
     void AddRadialIntegrationProfile(const std::vector<float> &result);
@@ -104,16 +105,16 @@ class JFJochReceiver {
     void GetPlots(JFJochProtoBuf::ReceiverStatus &status);
     void GetRadialIntegrationProfile(JFJochProtoBuf::ReceiverStatus &status);
 public:
-    JFJochReceiver(const JFJochProtoBuf::JFJochReceiverInput &settings,
+    JFJochReceiver(const JFJochProtoBuf::ReceiverInput &settings,
                    std::vector<AcquisitionDevice *> &open_capi_device,
-                   ZMQImagePusher &image_pusher,
+                   ImagePusher &image_pusher,
                    Logger &logger, int64_t forward_and_sum_nthreads,
                    ZMQPreviewPublisher* preview_publisher, ZMQSpotPublisher* spot_publisher);
     ~JFJochReceiver();
     JFJochReceiver(const JFJochReceiver &other) = delete;
     JFJochReceiver& operator=(const JFJochReceiver &other) = delete;
     void StopReceiver();
-    void GetStatistics(JFJochProtoBuf::JFJochReceiverOutput &out) const;
+    void GetStatistics(JFJochProtoBuf::ReceiverOutput &out) const;
 
     void Abort();
     void Cancel();

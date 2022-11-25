@@ -2,56 +2,51 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <filesystem>
-#include "HDF5Writer.h"
-#include "HDF5MasterFile.h"
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <fstream>
-#include "../common/ImageMetadata.h"
 
-HDF5Writer::HDF5Writer(const DiffractionExperiment &in_experiment) :
-experiment(in_experiment), images_remaining(in_experiment.GetFilesNum()), files(in_experiment.GetFilesNum()) {
+#include "HDF5Writer.h"
+#include "HDF5MasterFile.h"
 
-    if (experiment.GetErrorWhenOverwriting()) {
-        ErrorIfFileExists(experiment.GenerateMasterFilename());
-        ErrorIfFileExists(experiment.GenerateDataFilename(0));
+HDF5Writer::HDF5Writer(const JFJochProtoBuf::WriterInput &request) :
+images_remaining(request.data_files_size()), files(request.data_files_size()) {
+
+    CompressionAlgorithm compression;
+    switch (request.compression_algorithm()) {
+        case JFJochProtoBuf::BSHUF_LZ4:
+            compression = CompressionAlgorithm::BSHUF_LZ4;
+            break;
+        case JFJochProtoBuf::BSHUF_ZSTD:
+            compression = CompressionAlgorithm::BSHUF_ZSTD;
+            break;
+        default:
+            compression = CompressionAlgorithm::NO_COMPRESSION;
+            break;
     }
 
-    for (int i = 0; i < experiment.GetFilesNum(); i++)
-        images_remaining[i] = experiment.GetImagesInFile(i);
-
-     total_images = experiment.GetImageNum();
-
-    for (int i = 0; i < experiment.GetFilesNum(); i++)
-        files[i] = std::make_unique<HDF5DataFile>(experiment, i);
+    for (int i = 0; i < request.data_files_size(); i++) {
+        images_remaining[i] = request.data_files(i).image_count();
+        files[i] = std::make_unique<HDF5DataFile>(request.data_files(i).filename(), request.data_files(i).image0(), request.data_files(i).image_count(),
+                                                  request.width(), request.height(), request.pixel_depth_bytes(), request.signed_pxl(), compression,
+                                                  request.compression_block_size(), request.max_spot_count());
+    }
 }
 
-void HDF5Writer::WriteFromStream(const uint8_t *msg, int64_t msg_size) {
-    if (msg_size <= sizeof(ImageMetadata))
-        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Image smaller than metadata structure");
-    auto image_metadata = (const ImageMetadata *) msg;
-    Write(msg + sizeof(ImageMetadata),
-          msg_size - sizeof(ImageMetadata),
-          image_metadata->frameid);
-}
-
-void HDF5Writer::Write(const void *data, size_t data_size, size_t image_number) {
-    size_t file_number = experiment.GetFileForImage(image_number);
-
-    if (image_number >= total_images)
-        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Image number above total number of images");
+void HDF5Writer::Write(const void *data, size_t data_size, const std::vector<SpotToSave>& spots,
+                       int64_t file_number, int64_t image_number_in_file) {
+    if ((file_number < 0) || (file_number >= files.size()) || (image_number_in_file < 0))
+        throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Mismatch in image metadata");
     if (images_remaining[file_number] == 0)
         throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "All images written for the data file");
     if (!files[file_number])
         throw JFJochException(JFJochExceptionCategory::ArrayOutOfBounds, "Error with image numbers");
 
     // Zero size images won't be written, but will be included in remaining images count
-    if (data_size > 0) {
-        if (experiment.GetTimeResolvedMode())
-            files[file_number]->Write(data, data_size, image_number / experiment.GetFilesNum());
-        else
-            files[file_number]->Write(data, data_size, image_number % experiment.GetImagesPerFile());
-    }
+    if (data_size > 0)
+        files[file_number]->Write(data, data_size, image_number_in_file);
+    if (!spots.empty())
+        files[file_number]->WriteSpots(image_number_in_file, spots);
+
     // Close file if all images written
     if ((--images_remaining[file_number]) == 0)
         files[file_number].reset();

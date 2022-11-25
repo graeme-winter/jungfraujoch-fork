@@ -100,14 +100,14 @@ ap_uint<512> convert(ap_uint<512> data_in,
 }
 
 void jf_conversion(STREAM_512 &data_in, STREAM_512 &data_out,
-               hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_in,
-               hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_out,
-               hls::burst_maxi<rx100g_hbm_t> d_hbm_p0, hls::burst_maxi<rx100g_hbm_t> d_hbm_p1,
-               hls::burst_maxi<rx100g_hbm_t> d_hbm_p2, hls::burst_maxi<rx100g_hbm_t> d_hbm_p3,
-               hls::burst_maxi<rx100g_hbm_t> d_hbm_p4, hls::burst_maxi<rx100g_hbm_t> d_hbm_p5,
-               hls::burst_maxi<rx100g_hbm_t> d_hbm_p6, hls::burst_maxi<rx100g_hbm_t> d_hbm_p7,
-               hls::burst_maxi<rx100g_hbm_t> d_hbm_p8, hls::burst_maxi<rx100g_hbm_t> d_hbm_p9,
-               hls::burst_maxi<rx100g_hbm_t> d_hbm_p10, hls::burst_maxi<rx100g_hbm_t> d_hbm_p11) {
+                   hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_in,
+                   hls::stream<ap_uint<ADDR_STREAM_WIDTH> > &addr_out,
+                   hls::burst_maxi<rx100g_hbm_t> d_hbm_p0, hls::burst_maxi<rx100g_hbm_t> d_hbm_p1,
+                   hls::burst_maxi<rx100g_hbm_t> d_hbm_p2, hls::burst_maxi<rx100g_hbm_t> d_hbm_p3,
+                   hls::burst_maxi<rx100g_hbm_t> d_hbm_p4, hls::burst_maxi<rx100g_hbm_t> d_hbm_p5,
+                   hls::burst_maxi<rx100g_hbm_t> d_hbm_p6, hls::burst_maxi<rx100g_hbm_t> d_hbm_p7,
+                   hls::burst_maxi<rx100g_hbm_t> d_hbm_p8, hls::burst_maxi<rx100g_hbm_t> d_hbm_p9,
+                   hls::burst_maxi<rx100g_hbm_t> d_hbm_p10, hls::burst_maxi<rx100g_hbm_t> d_hbm_p11) {
 #pragma HLS INTERFACE ap_ctrl_none port=return
 
 #pragma HLS INTERFACE register both axis port=data_in
@@ -148,8 +148,8 @@ void jf_conversion(STREAM_512 &data_in, STREAM_512 &data_out,
     addr_out << addr;
 
     data_in >> packet_in;
-    ap_uint<8> conversion_mode = ACT_REG_MODE_SHORT(packet_in.data);
-    ap_uint<1> save_raw = (conversion_mode != MODE_CONV) ? 1 : 0;
+    ap_uint<64> mode = ACT_REG_MODE(packet_in.data);
+    ap_uint<1> conversion = (mode & MODE_CONV) ? 1 : 0;
     ap_uint<5> modules = ACT_REG_NMODULES(packet_in.data);
     ap_uint<32> in_one_over_energy = ACT_REG_ONE_OVER_ENERGY(packet_in.data);
     ap_uint<5>  storage_cells = ACT_REG_NSTORAGE_CELLS(packet_in.data);
@@ -160,166 +160,181 @@ void jf_conversion(STREAM_512 &data_in, STREAM_512 &data_out,
 
     data_out << packet_in;
 
-    // Load calibration into HBM
-    save_gainG0:
-    for (int i = 0; i < modules * (RAW_MODULE_SIZE * 2 / 64); i++) {
+    if (conversion) {
+        // Load calibration into HBM
+        save_gainG0:
+        for (int i = 0; i < modules * (RAW_MODULE_SIZE * 2 / 64); i++) {
 #pragma HLS PIPELINE II=1
-        data_in >> packet_in;
-        if (i % HBM_BURST == 0) {
-            d_hbm_p0.write_request(i, HBM_BURST);
-            d_hbm_p1.write_request(i, HBM_BURST);
+            data_in >> packet_in;
+            if (i % HBM_BURST == 0) {
+                d_hbm_p0.write_request(i, HBM_BURST);
+                d_hbm_p1.write_request(i, HBM_BURST);
+            }
+            d_hbm_p0.write(packet_in.data(255, 0));
+            d_hbm_p1.write(packet_in.data(511, 256));
+            if (i % HBM_BURST == HBM_BURST - 1) {
+                d_hbm_p0.write_response();
+                d_hbm_p1.write_response();
+            }
         }
-        d_hbm_p0.write(packet_in.data(255, 0));
-        d_hbm_p1.write(packet_in.data(511, 256));
-        if (i % HBM_BURST == HBM_BURST - 1) {
-            d_hbm_p0.write_response();
-            d_hbm_p1.write_response();
+
+        save_gainG1:
+        for (int i = 0; i < modules * (RAW_MODULE_SIZE * 2 / 64); i++) {
+#pragma HLS PIPELINE II=1
+            data_in >> packet_in;
+            if (i % HBM_BURST == 0) {
+                d_hbm_p2.write_request(i, HBM_BURST);
+                d_hbm_p3.write_request(i, HBM_BURST);
+            }
+            d_hbm_p2.write(packet_in.data(255, 0));
+            d_hbm_p3.write(packet_in.data(511, 256));
+            if (i % HBM_BURST == HBM_BURST - 1) {
+                d_hbm_p2.write_response();
+                d_hbm_p3.write_response();
+            }
+        }
+
+        save_gainG2:
+        for (int i = 0; i < modules * (RAW_MODULE_SIZE * 2 / 64); i++) {
+#pragma HLS PIPELINE II=1
+            data_in >> packet_in;
+            if (i % HBM_BURST == 0) {
+                d_hbm_p4.write_request(i, HBM_BURST);
+                d_hbm_p5.write_request(i, HBM_BURST);
+            }
+            d_hbm_p4.write(packet_in.data(255, 0));
+            d_hbm_p5.write(packet_in.data(511, 256));
+            if (i % HBM_BURST == HBM_BURST - 1) {
+                d_hbm_p4.write_response();
+                d_hbm_p5.write_response();
+            }
+        }
+
+        save_pedeG0:
+        for (int i = 0; i < modules * storage_cells * (RAW_MODULE_SIZE * 2 / 64); i++) {
+#pragma HLS PIPELINE II=1
+            data_in >> packet_in;
+            if (i % HBM_BURST == 0) {
+                d_hbm_p6.write_request(i, HBM_BURST);
+                d_hbm_p7.write_request(i, HBM_BURST);
+            }
+            d_hbm_p6.write(packet_in.data(255, 0));
+            d_hbm_p7.write(packet_in.data(511, 256));
+            if (i % HBM_BURST == HBM_BURST - 1) {
+                d_hbm_p6.write_response();
+                d_hbm_p7.write_response();
+            }
+        }
+
+        save_pedeG1:
+        for (int i = 0; i < modules * storage_cells * (RAW_MODULE_SIZE * 2 / 64); i++) {
+#pragma HLS PIPELINE II=1
+            data_in >> packet_in;
+            if (i % HBM_BURST == 0) {
+                d_hbm_p8.write_request(i, HBM_BURST);
+                d_hbm_p9.write_request(i, HBM_BURST);
+            }
+            d_hbm_p8.write(packet_in.data(255, 0));
+            d_hbm_p9.write(packet_in.data(511, 256));
+            if (i % HBM_BURST == HBM_BURST - 1) {
+                d_hbm_p8.write_response();
+                d_hbm_p9.write_response();
+            }
+        }
+
+        save_pedeG2:
+        for (int i = 0; i < modules * storage_cells * (RAW_MODULE_SIZE * 2 / 64); i++) {
+#pragma HLS PIPELINE II=1
+            data_in >> packet_in;
+            if (i % HBM_BURST == 0) {
+                d_hbm_p10.write_request(i, HBM_BURST);
+                d_hbm_p11.write_request(i, HBM_BURST);
+            }
+            d_hbm_p10.write(packet_in.data(255, 0));
+            d_hbm_p11.write(packet_in.data(511, 256));
+            if (i % HBM_BURST == HBM_BURST - 1) {
+                d_hbm_p10.write_response();
+                d_hbm_p11.write_response();
+            }
         }
     }
-
-    save_gainG1:
-    for (int i = 0; i < modules * (RAW_MODULE_SIZE * 2 / 64); i++) {
-#pragma HLS PIPELINE II=1
-        data_in >> packet_in;
-        if (i % HBM_BURST == 0) {
-            d_hbm_p2.write_request(i, HBM_BURST);
-            d_hbm_p3.write_request(i, HBM_BURST);
-        }
-        d_hbm_p2.write(packet_in.data(255, 0));
-        d_hbm_p3.write(packet_in.data(511, 256));
-        if (i % HBM_BURST == HBM_BURST - 1) {
-            d_hbm_p2.write_response();
-            d_hbm_p3.write_response();
-        }
-    }
-
-    save_gainG2:
-    for (int i = 0; i < modules * (RAW_MODULE_SIZE * 2 / 64); i++) {
-#pragma HLS PIPELINE II=1
-        data_in >> packet_in;
-        if (i % HBM_BURST == 0) {
-            d_hbm_p4.write_request(i, HBM_BURST);
-            d_hbm_p5.write_request(i, HBM_BURST);
-        }
-        d_hbm_p4.write(packet_in.data(255, 0));
-        d_hbm_p5.write(packet_in.data(511, 256));
-        if (i % HBM_BURST == HBM_BURST - 1) {
-            d_hbm_p4.write_response();
-            d_hbm_p5.write_response();
-        }
-    }
-
-	save_pedeG0:
-	for (int i = 0; i < modules * storage_cells * (RAW_MODULE_SIZE * 2 / 64); i++) {
-#pragma HLS PIPELINE II=1
-		data_in >> packet_in;
-		if (i % HBM_BURST == 0) {
-			d_hbm_p6.write_request(i, HBM_BURST);
-			d_hbm_p7.write_request(i, HBM_BURST);
-		}
-		d_hbm_p6.write(packet_in.data(255, 0));
-		d_hbm_p7.write(packet_in.data(511, 256));
-		if (i % HBM_BURST == HBM_BURST - 1) {
-			d_hbm_p6.write_response();
-			d_hbm_p7.write_response();
-		}
-	}
-
-	save_pedeG1:
-	for (int i = 0; i < modules * storage_cells *(RAW_MODULE_SIZE * 2 / 64); i++) {
-#pragma HLS PIPELINE II=1
-		data_in >> packet_in;
-		if (i % HBM_BURST == 0) {
-			d_hbm_p8.write_request(i, HBM_BURST);
-			d_hbm_p9.write_request(i, HBM_BURST);
-		}
-		d_hbm_p8.write(packet_in.data(255, 0));
-		d_hbm_p9.write(packet_in.data(511, 256));
-		if (i % HBM_BURST == HBM_BURST - 1) {
-			d_hbm_p8.write_response();
-			d_hbm_p9.write_response();
-		}
-	}
-
-    save_pedeG2:
-    for (int i = 0; i < modules  * storage_cells * (RAW_MODULE_SIZE * 2 / 64); i++) {
-#pragma HLS PIPELINE II=1
-        data_in >> packet_in;
-        if (i % HBM_BURST == 0) {
-            d_hbm_p10.write_request(i, HBM_BURST);
-            d_hbm_p11.write_request(i, HBM_BURST);
-        }
-        d_hbm_p10.write(packet_in.data(255, 0));
-        d_hbm_p11.write(packet_in.data(511, 256));
-        if (i % HBM_BURST == HBM_BURST - 1) {
-            d_hbm_p10.write_response();
-            d_hbm_p11.write_response();
-        }
-    }
-
-    ap_uint<7> counter = 0;
 
     addr_in >> addr;
 
-    pixel_conversion:
-	while (!addr_last_flag(addr)) {
+    if (conversion) {
+        ap_uint<6> counter = 0;
+
+        pixel_conversion:
+        while (!addr_last_flag(addr)) {
 #pragma HLS PIPELINE II=1
-		//ap_uint<17> offset = packet_in.user(16,0);
-		if (counter % 16 == 0) {
-			ap_uint<17> gain_offset = (addr_module(addr), addr_eth_packet(addr), counter);
-            ap_uint<12> pedestal_location = addr_module(addr);
+            //ap_uint<17> offset = packet_in.user(16,0);
+            if (counter % 16 == 0) {
+                ap_uint<17> gain_offset = (addr_module(addr), addr_eth_packet(addr), counter);
+                ap_uint<12> pedestal_location = addr_module(addr);
 
-            if (storage_cells > 1) {
-                ap_uint<4> storage_cell_id = (addr_frame_number(addr) - 1) % storage_cells;
-                pedestal_location += modules * storage_cell_id;
+                if (storage_cells > 1) {
+                    ap_uint<4> storage_cell_id = (addr_frame_number(addr) - 1) % storage_cells;
+                    pedestal_location += modules * storage_cell_id;
+                }
+
+                ap_uint<26> pedestal_offset = (pedestal_location, addr_eth_packet(addr), counter);
+
+                d_hbm_p0.read_request(gain_offset, 16);
+                d_hbm_p1.read_request(gain_offset, 16);
+                d_hbm_p2.read_request(gain_offset, 16);
+                d_hbm_p3.read_request(gain_offset, 16);
+                d_hbm_p4.read_request(gain_offset, 16);
+                d_hbm_p5.read_request(gain_offset, 16);
+                d_hbm_p6.read_request(pedestal_offset, 16);
+                d_hbm_p7.read_request(pedestal_offset, 16);
+                d_hbm_p8.read_request(pedestal_offset, 16);
+                d_hbm_p9.read_request(pedestal_offset, 16);
+                d_hbm_p10.read_request(pedestal_offset, 16);
+                d_hbm_p11.read_request(pedestal_offset, 16);
             }
+            ap_uint<256> packed_gainG0_1 = d_hbm_p0.read();
+            ap_uint<256> packed_gainG0_2 = d_hbm_p1.read();
+            ap_uint<256> packed_gainG1_1 = d_hbm_p2.read();
+            ap_uint<256> packed_gainG1_2 = d_hbm_p3.read();
+            ap_uint<256> packed_gainG2_1 = d_hbm_p4.read();
+            ap_uint<256> packed_gainG2_2 = d_hbm_p5.read();
+            ap_uint<256> packed_pedeG0_1 = d_hbm_p6.read();
+            ap_uint<256> packed_pedeG0_2 = d_hbm_p7.read();
+            ap_uint<256> packed_pedeG1_1 = d_hbm_p8.read();
+            ap_uint<256> packed_pedeG1_2 = d_hbm_p9.read();
+            ap_uint<256> packed_pedeG2_1 = d_hbm_p10.read();
+            ap_uint<256> packed_pedeG2_2 = d_hbm_p11.read();
 
-            ap_uint<26> pedestal_offset = (pedestal_location, addr_eth_packet(addr), counter);
+            data_in >> packet_in;
+            packet_in.data = convert(packet_in.data,
+                                     packed_gainG0_1, packed_gainG0_2,
+                                     packed_gainG1_1, packed_gainG1_2,
+                                     packed_gainG2_1, packed_gainG2_2,
+                                     packed_pedeG0_1, packed_pedeG0_2,
+                                     packed_pedeG1_1, packed_pedeG1_2,
+                                     packed_pedeG2_1, packed_pedeG2_2,
+                                     packet_in.id[0],
+                                     one_over_energy);
+            data_out << packet_in;
 
-			d_hbm_p0.read_request(gain_offset, 16);
-			d_hbm_p1.read_request(gain_offset, 16);
-			d_hbm_p2.read_request(gain_offset, 16);
-			d_hbm_p3.read_request(gain_offset, 16);
-			d_hbm_p4.read_request(gain_offset, 16);
-			d_hbm_p5.read_request(gain_offset, 16);
-			d_hbm_p6.read_request(pedestal_offset, 16);
-			d_hbm_p7.read_request(pedestal_offset, 16);
-			d_hbm_p8.read_request(pedestal_offset, 16);
-			d_hbm_p9.read_request(pedestal_offset, 16);
-            d_hbm_p10.read_request(pedestal_offset, 16);
-            d_hbm_p11.read_request(pedestal_offset, 16);
-		}
-		ap_uint<256> packed_gainG0_1 = d_hbm_p0.read();
-		ap_uint<256> packed_gainG0_2 = d_hbm_p1.read();
-		ap_uint<256> packed_gainG1_1 = d_hbm_p2.read();
-		ap_uint<256> packed_gainG1_2 = d_hbm_p3.read();
-		ap_uint<256> packed_gainG2_1 = d_hbm_p4.read();
-		ap_uint<256> packed_gainG2_2 = d_hbm_p5.read();
-		ap_uint<256> packed_pedeG0_1 = d_hbm_p6.read();
-		ap_uint<256> packed_pedeG0_2 = d_hbm_p7.read();
-		ap_uint<256> packed_pedeG1_1 = d_hbm_p8.read();
-		ap_uint<256> packed_pedeG1_2 = d_hbm_p9.read();
-        ap_uint<256> packed_pedeG2_1 = d_hbm_p10.read();
-        ap_uint<256> packed_pedeG2_2 = d_hbm_p11.read();
-
-        data_in >> packet_in;
-		packet_in.data = convert(packet_in.data,
-				packed_gainG0_1,packed_gainG0_2,
-				packed_gainG1_1,packed_gainG1_2,
-				packed_gainG2_1,packed_gainG2_2,
-                packed_pedeG0_1,packed_pedeG0_2,
-				packed_pedeG1_1,packed_pedeG1_2,
-				packed_pedeG2_1,packed_pedeG2_2,
-				save_raw || packet_in.id[0],
-				one_over_energy);
-		data_out << packet_in;
-
-		if (counter == 127) {
-			addr_out << addr;
-			addr_in >> addr;
-		}
-		counter++;
-	}
+            if (counter == 63) {
+                addr_out << addr;
+                addr_in >> addr;
+            }
+            counter++;
+        }
+    } else {
+        forward_packets:
+        while (!addr_last_flag(addr)) {
+#pragma HLS PIPELINE II=1
+            data_in >> packet_in;
+            data_out << packet_in;
+            if (packet_in.last) {
+                addr_out << addr;
+                addr_in >> addr;
+            }
+        }
+    }
 
     data_in >> packet_in;
 #ifndef __SYNTHESIS__
