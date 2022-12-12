@@ -19,10 +19,9 @@ TEST_CASE("JFJochWriterTest_ZMQ","[JFJochWriter]") {
     grpc::ServerContext grpc_context;
     JFJochProtoBuf::Empty empty;
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {2});
     x.FilePrefix("subdir/JFJochWriterTest").NumTriggers(1).ImagesPerTrigger(5)
-            .UseInternalPacketGenerator(true).DataStreamModuleSize(1, {2})
-            .Mode(DetectorMode::Raw).PedestalG0Frames(0);
+            .UseInternalPacketGenerator(true).Mode(DetectorMode::Raw).PedestalG0Frames(0);
 
     JFJochProtoBuf::ReceiverInput receiver_input;
     *receiver_input.mutable_jungfraujoch_settings() = x;
@@ -63,7 +62,7 @@ TEST_CASE("JFJochWriterTest_ZMQ","[JFJochWriter]") {
 
     // HDF5 file can be opened
     std::unique_ptr<HDF5ReadOnlyFile> file;
-    REQUIRE_NOTHROW(file = std::make_unique<HDF5ReadOnlyFile>("subdir/JFJochWriterTest_data_000001.h5"));
+    REQUIRE_NOTHROW(file = std::make_unique<HDF5ReadOnlyFile>("subdir/JFJochWriterTest_data_000.h5"));
     std::unique_ptr<HDF5DataSet> dataset;
     REQUIRE_NOTHROW(dataset = std::make_unique<HDF5DataSet>(*file, "/entry/data/data"));
     std::unique_ptr<HDF5DataSpace> dataspace;
@@ -74,7 +73,7 @@ TEST_CASE("JFJochWriterTest_ZMQ","[JFJochWriter]") {
     REQUIRE(dataspace->GetDimensions()[1] == RAW_MODULE_COLS);
     REQUIRE(dataspace->GetDimensions()[2] == 2*RAW_MODULE_LINES);
 
-    REQUIRE(std::filesystem::remove("subdir/JFJochWriterTest_data_000001.h5"));
+    REQUIRE(std::filesystem::remove("subdir/JFJochWriterTest_data_000.h5"));
     REQUIRE(std::filesystem::remove("subdir"));
 }
 
@@ -90,9 +89,9 @@ TEST_CASE("JFJochWriterServiceTest_ZMQ","[JFJochWriter]") {
     grpc::ServerContext grpc_context;
     JFJochProtoBuf::Empty empty;
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {2});
     x.FilePrefix("JFJochWriterTest").NumTriggers(1).ImagesPerTrigger(5)
-        .UseInternalPacketGenerator(true).DataStreamModuleSize(1, {2})
+        .UseInternalPacketGenerator(true)
         .Mode(DetectorMode::Raw).PedestalG0Frames(0);
 
 

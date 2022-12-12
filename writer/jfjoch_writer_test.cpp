@@ -3,8 +3,8 @@
 
 #include <cstdlib>
 #include <iostream>
+#include "HDF5Objects.h"
 #include "../common/Logger.h"
-#include "../writer/HDF5Writer.h"
 #include "../common/FrameTransformation.h"
 #include "../common/RawToConvertedGeometry.h"
 #include "../common/ZMQImagePusher.h"
@@ -25,12 +25,8 @@ int main(int argc, char **argv) {
 
     int64_t nimages_out = atoi(argv[2]);
 
-    DiffractionExperiment x;
-    x.Summation(1);
-    x.DataStreamModuleSize(2, {8}, 8, 36);
-    x.ImagesPerTrigger(nimages_out);
-    x.ImagesPerFile(500);
-    x.Mode(DetectorMode::Conversion);
+    DiffractionExperiment x(2, {8}, 8, 36, true);
+    x.Summation(1).ImagesPerTrigger(nimages_out).Mode(DetectorMode::Conversion);
 
     HDF5File data(argv[1], false, false, false);
     HDF5DataSet dataset(data, "/entry/data/data");
@@ -43,11 +39,11 @@ int main(int argc, char **argv) {
 
     if ((file_space.GetDimensions()[1] == 2164) && (file_space.GetDimensions()[2] == 2068)) {
         logger.Info("JF4M with gaps detected (2068 x 2164)");
-        x.DataStreamModuleSize(2, {8}, 8, 36);
     } else {
         logger.Error( "Unknown geometry - exiting");
         exit(EXIT_FAILURE);
     }
+
     uint64_t nimages_in_file = file_space.GetDimensions()[0];
     logger.Info("Number of images in the original dataset: " + std::to_string(nimages_in_file));
 
@@ -61,6 +57,7 @@ int main(int argc, char **argv) {
         zmq_addr.emplace_back("tcp://0.0.0.0:" + std::to_string(BASE_TCP_PORT + i));
         client.AddClient(argv[i]);
     }
+    x.DataFileCount(zmq_addr.size());
 
     ZMQImagePusher pusher(context, zmq_addr);
 
@@ -95,10 +92,10 @@ int main(int argc, char **argv) {
 
     std::vector<DiffractionSpot> empty_spot_vector;
 
-    pusher.StartDataCollection();
+    pusher.StartDataCollection(zmq_addr.size());
     for (int i = 0; i < nimages_out; i++)
-        pusher.SendData(output[i % nimages_in_file].data(), x.GetImageLocationInFile(i),
-                        output_size[i % nimages_in_file], empty_spot_vector);
+        pusher.SendData(output[i % nimages_in_file].data(),output_size[i % nimages_in_file],
+                        empty_spot_vector, i);
     pusher.EndDataCollection();
     logger.Info("Sending done");
     auto stats = client.Stop();

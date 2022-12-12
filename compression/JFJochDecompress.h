@@ -45,6 +45,7 @@ void JFJochDecompress(std::vector<Td> &output, CompressionAlgorithm algorithm, s
                                      elem_size, block_size) != source_size - 12)
                 throw JFJochException(JFJochExceptionCategory::Compression, "Decompression error");
             break;
+        case CompressionAlgorithm::BSHUF_ZSTD_RLE:
         case CompressionAlgorithm::BSHUF_ZSTD:
             if (bshuf_decompress_zstd(source + 12, output.data(), nelements,
                                       elem_size, block_size) != source_size - 12)

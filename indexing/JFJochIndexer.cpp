@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <cmath>
+#include <gemmi/symmetry.hpp>
+
 #include "JFJochIndexer.h"
 #include "XgandalfWrapper.h"
 
@@ -17,8 +19,6 @@ socket(context, ZMQSocketType::Sub), bin_size(input.bin_size()), logger(in_logge
     for (int i = 0; i < nthreads; i++)
         processing_threads.emplace_back(std::async(std::launch::async, &JFJochIndexer::Run, this, input));
     logger.Info("   ... started " + std::to_string(nthreads) + " indexing threads");
-    image_stride = input.image_stride();
-    output.reserve(input.expected_image_number());
 }
 
 JFJochIndexer::~JFJochIndexer() {
@@ -37,7 +37,7 @@ JFJochProtoBuf::IndexerOutput JFJochIndexer::End() {
     for (auto &iter: processing_threads)
         total_processing_time_ms += iter.get();
 
-    int64_t total_processed_images = output.size();
+    int64_t total_processed_images = output_analyzed;
 
     if (total_processed_images > 0) {
         ret.set_ms_per_image(
@@ -48,12 +48,7 @@ JFJochProtoBuf::IndexerOutput JFJochIndexer::End() {
         logger.Info("No images received");
     }
 
-    int64_t indexed_images = 0;
-    for (const auto &i: output) {
-        if (i.indexed())
-            indexed_images++;
-    }
-    ret.set_indexed_images(indexed_images);
+    ret.set_indexed_images(output_indexed);
 
     *ret.mutable_image_output() = {output.begin(), output.end()};
     return ret;
@@ -61,16 +56,19 @@ JFJochProtoBuf::IndexerOutput JFJochIndexer::End() {
 
 JFJochProtoBuf::IndexerStatus JFJochIndexer::GetStatus() {
     std::unique_lock<std::mutex> ul(output_mutex);
+    // locking, to ensure that analyzed and indexed are consistent
+
     JFJochProtoBuf::IndexerStatus ret;
 
-    int64_t images_indexed = 0;
-    for (const auto &i: output) {
-        if (i.indexed())
-            images_indexed++;
-    }
-    ret.set_images_analyzed(output.size());
-    ret.set_images_indexed(images_indexed);
+    ret.set_images_analyzed(output_analyzed);
+    ret.set_images_indexed(output_indexed);
 
+    return ret;
+}
+
+JFJochProtoBuf::IndexerDataProcessingPlots JFJochIndexer::GetPlots() {
+    // no need to lock, as indexed_result has built-in lock
+    JFJochProtoBuf::IndexerDataProcessingPlots ret;
     indexed_result.GetPlot(*ret.mutable_indexing_rate(), bin_size);
     return ret;
 }
@@ -87,7 +85,7 @@ int64_t JFJochIndexer::Run(const JFJochProtoBuf::IndexerInput &input) {
     if (input.has_unit_cell()) {
         settings.has_unit_cell = true;
         settings.unit_cell = input.unit_cell();
-        settings.centering = static_cast<char>(input.centering());
+        settings.centering = GetCentering(input.space_group_number());
     } else
         settings.has_unit_cell = false;
     wrapper.Setup(settings);
@@ -136,12 +134,23 @@ int64_t JFJochIndexer::Run(const JFJochProtoBuf::IndexerInput &input) {
     return total_time_ms;
 }
 
-
 void JFJochIndexer::AddIndexerImageOutput(const JFJochProtoBuf::IndexerImageOutput &image_output) {
     std::unique_lock<std::mutex> ul(output_mutex);
 
-    int64_t location = image_output.image_number() / image_stride;
-    if (location + 1 > output.size())
-        output.resize(location+1);
-    output[location] = image_output;
+    output_analyzed++;
+    if (image_output.indexed())
+        output_indexed++;
+
+    output.push_back(image_output);
+}
+
+char JFJochIndexer::GetCentering(int64_t space_group) {
+    if (space_group == 0)
+        return 'P';
+    try {
+        auto sg = gemmi::get_spacegroup_by_number(static_cast<int>(space_group));
+        return sg.centring_type();
+    } catch (...) {
+        return 'P';
+    }
 }

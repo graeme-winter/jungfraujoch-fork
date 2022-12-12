@@ -40,8 +40,8 @@ ZMQImagePusher::ZMQImagePusher(const std::vector<std::string> &addr,
     }
 }
 
-void ZMQImagePusher::SendData(void *image, const std::pair<int64_t,int64_t> &image_location_in_file, size_t image_size,
-                              const std::vector<DiffractionSpot> &spots) {
+void ZMQImagePusher::SendData(void *image, size_t image_size, const std::vector<DiffractionSpot>& spots,
+                              int64_t image_number) {
     std::unique_lock<std::mutex> ul(m);
     if (sockets.empty())
         return;
@@ -50,14 +50,20 @@ void ZMQImagePusher::SendData(void *image, const std::pair<int64_t,int64_t> &ima
     for (const auto & spot : spots)
         spots_to_save.push_back(spot);
 
-    size_t msg_size = serializer.SerializeImage(image, image_size, image_location_in_file, spots_to_save);
+    size_t msg_size = serializer.SerializeImage(image, image_size, image_number, spots_to_save);
 
-    auto socket_number = image_location_in_file.first % sockets.size();
+    auto socket_number = (image_number % file_count) % sockets.size();
     sockets[socket_number]->Send(serializer.GetBuffer().data(), msg_size);
 }
 
-void ZMQImagePusher::StartDataCollection() {
+void ZMQImagePusher::StartDataCollection(int64_t in_file_count) {
     std::unique_lock<std::mutex> ul(m);
+
+    if (in_file_count < 1)
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "File count cannot be zero or negative");
+    file_count = in_file_count;
+
     size_t msg_size = serializer.SerializeSequenceStart();
     for (const auto &s: sockets)
         s->Send(serializer.GetBuffer().data(), msg_size, true);

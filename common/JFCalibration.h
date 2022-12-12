@@ -57,6 +57,10 @@ public:
             throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
                                   "The operation makes sense only in conversion mode");
 
+        if (conv_mask.size() != experiment.GetPixelsNum())
+            throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                                  "Mismatch in size of input mask");
+
         std::vector<T> raw_mask(nmodules * RAW_MODULE_SIZE);
         ConvertedToRawGeometry(experiment, raw_mask.data(), conv_mask.data());
 

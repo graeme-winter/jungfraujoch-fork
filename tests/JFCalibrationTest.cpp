@@ -173,8 +173,8 @@ TEST_CASE("JFCalibration_MaskChipEdges","[JFCalibration]") {
 }
 
 TEST_CASE("JFCalibration_CalculateNexusMask","[JFCalibration]") {
-    DiffractionExperiment experiment(1, {4}, 8, 36);
-    experiment.UpsideDown(false).MaskModuleEdges(false).MaskChipEdges(false);
+    DiffractionExperiment experiment(1, {4}, 8, 36, false);
+    experiment.MaskModuleEdges(false).MaskChipEdges(false);
     JFCalibration calibration(4, 2);
 
     calibration.Mask(0) = 50;
@@ -208,8 +208,8 @@ TEST_CASE("JFCalibration_CalculateNexusMask","[JFCalibration]") {
 }
 
 TEST_CASE("JFCalibration_CalculateOneByteMask","[JFCalibration]") {
-    DiffractionExperiment experiment(1, {4}, 8, 36);
-    experiment.UpsideDown(false).MaskModuleEdges(false).MaskChipEdges(false);
+    DiffractionExperiment experiment(1, {4}, 8, 36, false);
+    experiment.MaskModuleEdges(false).MaskChipEdges(false);
     JFCalibration calibration(experiment);
     calibration.Mask(0) = 50;
     calibration.Mask(1) = 30;
@@ -229,9 +229,9 @@ TEST_CASE("JFCalibration_CalculateOneByteMask","[JFCalibration]") {
 }
 
 TEST_CASE("JFCalibration_LoadMask_Bitwise","[JFCalibration]") {
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2, {4, 4}, 8, 36, true);
 
-    experiment.DataStreamModuleSize(2, {4, 4}, 8, 36).UpsideDown(true).PhotonEnergy_keV(WVL_1A_IN_KEV);
+    experiment.PhotonEnergy_keV(WVL_1A_IN_KEV);
 
     std::vector<uint32_t> new_mask(experiment.GetPixelsNum());
     new_mask[experiment.GetXPixelsNum() * 323 + 567] = 1;
@@ -263,9 +263,9 @@ TEST_CASE("JFCalibration_LoadMask_Bitwise","[JFCalibration]") {
 }
 
 TEST_CASE("JFCalibration_LoadMask","[JFCalibration]") {
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2, {4, 4}, 8, 36, true);
 
-    experiment.DataStreamModuleSize(2, {4, 4}, 8, 36).UpsideDown(true).PhotonEnergy_keV(WVL_1A_IN_KEV);
+    experiment.PhotonEnergy_keV(WVL_1A_IN_KEV);
 
     std::vector<uint32_t> new_mask(experiment.GetPixelsNum());
     new_mask[experiment.GetXPixelsNum() * 323 + 567] = 1;
@@ -281,10 +281,9 @@ TEST_CASE("JFCalibration_LoadMask","[JFCalibration]") {
 }
 
 TEST_CASE("JFCalibration_MaskDetectorGaps","[JFCalibration]") {
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2, {4, 4}, 8, 36, true);
 
-    experiment.DataStreamModuleSize(2, {4, 4}, 8, 36).UpsideDown(true)
-            .PhotonEnergy_keV(WVL_1A_IN_KEV);
+    experiment.PhotonEnergy_keV(WVL_1A_IN_KEV);
     JFCalibration calibration(experiment);
 
     auto mask_export = calibration.CalculateNexusMask(experiment);
@@ -305,9 +304,9 @@ TEST_CASE("JFCalibration_Serialize","[ProtoBuf][JFCalibration]") {
     uint16_t nmodules = 2;
     uint16_t nstorage_cells = 2;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(1, {nmodules}, 0, 0, true);
 
-    experiment.DataStreamModuleSize(1, {nmodules}).UpsideDown(true).PhotonEnergy_keV(WVL_1A_IN_KEV);
+    experiment.PhotonEnergy_keV(WVL_1A_IN_KEV);
 
     JFCalibration calibration(nmodules, nstorage_cells);
 

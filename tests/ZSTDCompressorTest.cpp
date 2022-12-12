@@ -228,15 +228,15 @@ TEST_CASE("JFjochZstdCompressor_Frame_ones","[ZSTD]") {
 
 TEST_CASE("JFJochCompressor_JFJochDecompressor_ZSTD","[ZSTD]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD).CompressionBlockSize(8192).Summation(34);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD).Summation(34);
 
     std::vector<int32_t> image(x.GetPixelsNum());
 
     for (auto &i: image)
         i = 345;
 
-    JFJochBitShuffleCompressor compressor(x.GetCompressionAlgorithmEnum(), x.GetCompressionBlockSize(),
-                                          x.GetCompressionLevel());
+    JFJochBitShuffleCompressor compressor(x.GetCompressionAlgorithmEnum());
+
     std::vector<char> tmp(x.GetPixelsNum() * sizeof(int32_t) * 4 + 12);
 
     auto tmp_size = compressor.Compress(tmp.data(), image);
@@ -250,15 +250,14 @@ TEST_CASE("JFJochCompressor_JFJochDecompressor_ZSTD","[ZSTD]") {
 
 TEST_CASE("JFJochCompressor_JFJochDecompressor_LZ4","[ZSTD]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4).CompressionBlockSize(8192).Summation(45);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4).Summation(45);
 
     std::vector<int32_t> image(x.GetPixelsNum());
 
     for (auto &i: image)
         i = 5678;
 
-    JFJochBitShuffleCompressor compressor(x.GetCompressionAlgorithmEnum(), x.GetCompressionBlockSize(),
-                                          x.GetCompressionLevel());
+    JFJochBitShuffleCompressor compressor(x.GetCompressionAlgorithmEnum());
 
     std::vector<char> tmp(x.GetPixelsNum() * sizeof(int32_t) * 4 + 12);
 
@@ -273,7 +272,7 @@ TEST_CASE("JFJochCompressor_JFJochDecompressor_LZ4","[ZSTD]") {
 
 TEST_CASE("JFJochDecompressor_None","[ZSTD]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.Compression(JFJochProtoBuf::NO_COMPRESSION).CompressionBlockSize(8192).Summation(45);
+    x.Compression(JFJochProtoBuf::NO_COMPRESSION).Summation(45);
 
     std::vector<int32_t> image(x.GetPixelsNum());
     for (auto &i: image)

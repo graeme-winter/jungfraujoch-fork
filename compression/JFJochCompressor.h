@@ -13,19 +13,15 @@
 
 #include "JFJochZstdCompressor.h"
 
-#define ZSTD_USE_JFJOCH_RLE 0xFFFF
-#define LZ4_BLOCK_SIZE  4096
-#define ZSTD_BLOCK_SIZE 4096
-
 class JFJochBitShuffleCompressor {
     JFJochZstdCompressor zstd_compressor;
     CompressionAlgorithm algorithm;
-    int level;
-    size_t exp_block_size;
     std::vector<char> tmp_space;
     size_t CompressBlock(char *dest, const char * source, size_t nelements, size_t elem_size);
 public:
-    JFJochBitShuffleCompressor(CompressionAlgorithm algorithm, size_t exp_block_size, int level);
+    constexpr static const size_t DefaultBlockSize = 4096;
+
+    JFJochBitShuffleCompressor(CompressionAlgorithm algorithm);
     template<class T>
     size_t Compress(void *dest, const std::vector<T> &src) {
         return Compress((char *) dest, (char *) src.data(), src.size(), sizeof(T));

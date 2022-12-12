@@ -5,8 +5,8 @@
 #include "../fpga/host/AcquisitionOnlineCounters.h"
 
 TEST_CASE("AcquisitionDeviceCountersTest","[AcquisitionDeviceCounters]") {
-    DiffractionExperiment x;
-    x.NumTriggers(1).ImagesPerTrigger(50).DataStreamModuleSize(1,{2});
+    DiffractionExperiment x(1,{2});
+    x.NumTriggers(1).ImagesPerTrigger(50);
 
     AcquisitionOnlineCounters counters;
     counters.Reset(x, 0);
@@ -59,8 +59,8 @@ TEST_CASE("AcquisitionDeviceCountersTest","[AcquisitionDeviceCounters]") {
 }
 
 TEST_CASE("AcquisitionDeviceCountersTest_OutOfBounds","[AcquisitionDeviceCounters]") {
-    DiffractionExperiment x;
-    x.NumTriggers(1).ImagesPerTrigger(50).DataStreamModuleSize(1,{2});
+    DiffractionExperiment x(1,{2});
+    x.NumTriggers(1).ImagesPerTrigger(50);
 
     AcquisitionOnlineCounters counters;
     counters.Reset(x, 0);

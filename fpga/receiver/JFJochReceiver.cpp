@@ -85,7 +85,7 @@ int64_t JFJochReceiver::MeasurePedestalThread(uint16_t data_stream, uint16_t mod
 
 void JFJochReceiver::SendImage(void *buffer, size_t image_number, size_t image_size, const std::vector<DiffractionSpot>& spots) {
     if (push_images_to_writer)
-        image_pusher.SendData(buffer, experiment.GetImageLocationInFile(image_number), image_size, spots);
+        image_pusher.SendData(buffer, image_size, spots, image_number);
     {
         std::unique_lock<std::mutex> ul(max_image_number_sent_mutex);
         if (image_number > max_image_number_sent)
@@ -171,11 +171,11 @@ int64_t JFJochReceiver::FrameTransformationThread() {
                 size_t image_size = transformation.PackStandardOutput();
 
                 std::vector<DiffractionSpot> spots;
-
+                auto local_data_processing_settings = GetDataProcessingSettings();
 #ifdef CUDA_SPOT_FINDING
                 // Spot finding is async, so it can be sandwiched between sending image and other tasks
                 if (send_spots)
-                    spot_finder->RunSpotFinder(GetDataProcessingSettings());
+                    spot_finder->RunSpotFinder(local_data_processing_settings);
 #endif
 
                 if (send_preview)
@@ -184,10 +184,15 @@ int64_t JFJochReceiver::FrameTransformationThread() {
                                                image_number);
 
                 if (send_bkg_estimate) {
-                    rad_int->ProcessOneImage(transformation.GetPreview16BitImage(),
-                                             experiment.GetPixelsNum());
-                    bkg_estimate.AddElement(image_number,
-                                            rad_int->GetRangeValue(rad_int_min_bin, rad_int_max_bin));
+                    rad_int->ProcessOneImage(transformation.GetPreview16BitImage(),experiment.GetPixelsNum());
+
+                    uint16_t rad_int_min_bin = std::floor(
+                            rad_int_mapping->QToBin(local_data_processing_settings.bkg_estimate_low_q()));
+                    uint16_t rad_int_max_bin = std::ceil(
+                            rad_int_mapping->QToBin(local_data_processing_settings.bkg_estimate_high_q()));
+                    float bkg_estimate_val = rad_int->GetRangeValue(rad_int_min_bin, rad_int_max_bin);
+                    bkg_estimate.AddElement(image_number, bkg_estimate_val);
+
                     rad_int->GetResult(rad_int_result);
                     AddRadialIntegrationProfile(rad_int_result);
                 }
@@ -267,9 +272,6 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::ReceiverInput &settings,
             preview_publisher->Start(experiment, calib.value());
 
         rad_int_mapping = std::make_unique<RadialIntegrationMapping>(experiment, one_byte_mask.data());
-        rad_int_min_bin = std::floor(rad_int_mapping->QToBin(experiment.GetLowQLimitForBkg_recipA()));
-        rad_int_max_bin = std::ceil(rad_int_mapping->QToBin(experiment.GetHighQLimitForBkg_recipA()));
-
         spot_finder_mask = calib->CalculateOneByteMask(experiment);
     }
 
@@ -324,8 +326,9 @@ JFJochReceiver::JFJochReceiver(const JFJochProtoBuf::ReceiverInput &settings,
     }
 
     if (experiment.GetImageNum() > 0) {
+        logger.Info("Data file count {}", experiment.GetDataFileCount());
         if (push_images_to_writer)
-            image_pusher.StartDataCollection();
+            image_pusher.StartDataCollection(experiment.GetDataFileCount());
 
         for (int i = 0; i < experiment.GetImageNum(); i++)
             images_to_go.Put(i);
@@ -385,13 +388,16 @@ void JFJochReceiver::GetStatistics(JFJochProtoBuf::ReceiverOutput &ret) const {
     ret.set_end_time_ms(std::chrono::duration_cast<std::chrono::milliseconds>(end_time.time_since_epoch()).count());
     if (!pedestal_result.empty())
         *ret.mutable_pedestal_result() = {pedestal_result.begin(), pedestal_result.end()};
-    *ret.mutable_jungfraujoch_settings() = experiment;
-    ret.set_master_file_name(experiment.GenerateMasterFilename());
+
+    ret.set_master_file_name(experiment.GetFilePrefix());
+    ret.set_cancelled(cancelled);
 }
 
 void JFJochReceiver::Cancel() {
     // Remote abort: This tells FPGAs to stop, but doesn't do anything to CPU code
-    logger.Error("Cancelling on request");
+    logger.Warning("Cancelling on request");
+
+    cancelled = true;
 
     for (int d = 0; d < ndatastreams; d++)
         acquisition_device[d]->ActionAbort();
@@ -401,16 +407,18 @@ void JFJochReceiver::Abort() {
     // Remote abort: This tells FPGAs to stop, but doesn't do anything to CPU code
     logger.Error("Aborting on request");
 
+    cancelled = true;
+    abort = 1;
+
     for (int d = 0; d < ndatastreams; d++)
         acquisition_device[d]->ActionAbort();
-
-    abort = 1;
 }
 
 void JFJochReceiver::Abort(const JFJochException &e) {
     logger.Error("Aborting data collection due to exception");
     logger.ErrorException(e);
     // Error abort: This tells FPGAs to stop and also prevents deadlock in CPU code, by setting abort to 1
+    cancelled = true;
     abort = 1;
 
     for (int d = 0; d < ndatastreams; d++)
@@ -425,7 +433,7 @@ double JFJochReceiver::GetProgress() const {
     if (experiment.GetImageNum() == 0)
         return 100.0;
     else
-        return static_cast<double>(images_sent) / static_cast<double>(experiment.GetImageNum()) * 100.0;
+        return static_cast<double>(max_image_number_sent) / static_cast<double>(experiment.GetImageNum()) * 100.0;
 }
 
 void JFJochReceiver::FinalizeMeasurement() {
@@ -459,6 +467,7 @@ void JFJochReceiver::FinalizeMeasurement() {
 
 void JFJochReceiver::SetDataProcessingSettings(const JFJochProtoBuf::DataProcessingSettings &in_data_processing_settings) {
     std::unique_lock<std::mutex> ul(data_processing_settings_mutex);
+    DiffractionExperiment::CheckDataProcessingSettings(in_data_processing_settings);
     data_processing_settings = in_data_processing_settings;
 }
 
@@ -480,12 +489,6 @@ JFJochProtoBuf::DataProcessingSettings JFJochReceiver::GetDataProcessingSettings
     return data_processing_settings;
 }
 
-void JFJochReceiver::GetPlots(JFJochProtoBuf::ReceiverStatus &status) {
-    spot_count.GetPlot(*status.mutable_spot_count(), 100);
-    bkg_estimate.GetPlot(*status.mutable_bkg_estimate(), 100);
-}
-
-
 void JFJochReceiver::AddRadialIntegrationProfile(const std::vector<float> &result) {
     std::unique_lock<std::mutex> ul(rad_int_profile_mutex);
     if (rad_int_profile.empty())
@@ -499,9 +502,9 @@ void JFJochReceiver::AddRadialIntegrationProfile(const std::vector<float> &resul
     }
 }
 
-void JFJochReceiver::GetRadialIntegrationProfile(JFJochProtoBuf::ReceiverStatus &status) {
+void JFJochReceiver::GetRadialIntegrationProfile(JFJochProtoBuf::ReceiverDataProcessingPlots &plots) {
     std::unique_lock<std::mutex> ul(rad_int_profile_mutex);
-    auto plot = status.mutable_radial_int_profile();
+    auto plot = plots.mutable_radial_int_profile();
     const auto &bin_to_q = rad_int_mapping->GetBinToQ();
     if (!rad_int_profile.empty()) {
         *plot->mutable_x() = {bin_to_q.begin(), bin_to_q.end()};
@@ -509,8 +512,11 @@ void JFJochReceiver::GetRadialIntegrationProfile(JFJochProtoBuf::ReceiverStatus 
     }
 }
 
-void JFJochReceiver::GetStatus(JFJochProtoBuf::ReceiverStatus &status)  {
-    GetRadialIntegrationProfile(status);
-    GetPlots(status);
-    status.set_master_file_name(experiment.GenerateMasterFilename());
+
+JFJochProtoBuf::ReceiverDataProcessingPlots JFJochReceiver::GetPlots() {
+    JFJochProtoBuf::ReceiverDataProcessingPlots ret;
+    spot_count.GetPlot(*ret.mutable_spot_count(), 100);
+    bkg_estimate.GetPlot(*ret.mutable_bkg_estimate(), 100);
+    GetRadialIntegrationProfile(ret);
+    return ret;
 }

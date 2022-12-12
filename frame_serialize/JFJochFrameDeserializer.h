@@ -18,8 +18,7 @@ public:
 private:
     Type msg_type;
     std::vector<SpotToSave> spots;
-    size_t image_number;
-    size_t file_number;
+    int64_t image_number;
 
     std::vector<uint8_t> image;
     size_t image_size;
@@ -36,8 +35,7 @@ public:
     void Process(const std::vector<uint8_t>& buffer);
     Type GetType() const;
     const std::vector<SpotToSave>& GetSpots() const;
-    size_t GetImageNumber() const;
-    size_t GetFileNumber() const;
+    int64_t GetImageNumber() const;
     const uint8_t* GetImageData() const;
     const size_t GetImageSize() const;
 };

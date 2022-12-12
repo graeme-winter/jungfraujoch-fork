@@ -50,6 +50,8 @@ public:
                                    JFJochProtoBuf::PreviewFrame *response) override;
     grpc::Status GetNetworkConfig(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                                     JFJochProtoBuf::ReceiverNetworkConfig *response) override;
+    grpc::Status GetDataProcessingPlots(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
+                                          JFJochProtoBuf::ReceiverDataProcessingPlots *response) override;
 };
 
 

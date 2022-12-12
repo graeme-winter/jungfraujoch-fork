@@ -34,8 +34,10 @@ Instructions see [here](fpga/README.md)
 4. ZeroMQ library
 5. Google Remote Procedure Call (gRPC) - see notes below
 6. CUDA compiler version 11 or newer for GPU code (spot finding, indexing, pedestal calculation)
+7. TIFF library with C++ bindings
+8. Boost libraries (incl. asio) are necessary to build broker
 
-Additional dependencies: SLS Detector Package, OC-Accel, tinycbor (Intel) and Zstandard (Facebook) are provided as GIT submodules. 
+Additional dependencies: SLS Detector Package, OC-Accel, Pistache, tinycbor (Intel) and Zstandard (Facebook) are provided as GIT submodules. 
 
 Directly included in the repository:
 * JSON parser/writer from N. Lohmann - see [github.com/nlohmann/json](https://github.com/nlohmann/json)
@@ -46,6 +48,7 @@ Directly included in the repository:
 * Xgandalf indexer - see [stash.desy.de/users/gevorkov/repos/xgandalf](https://stash.desy.de/users/gevorkov/repos/xgandalf/browse)
 * GEMMI library to handle space group naming / numbering - see [github.com/project-gemmi/gemmi](https://github.com/project-gemmi/gemmi)
 * Spdlog logging library - see [github.com/gabime/spdlog](https://github.com/gabime/spdlog)
+
 For license check LICENSE file in respective directory
 
 ### Software components

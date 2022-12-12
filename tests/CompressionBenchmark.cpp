@@ -91,18 +91,15 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(2, {8}, 8, 36);
 
     if ((file_space.GetDimensions()[1] == 2164) && (file_space.GetDimensions()[2] == 2068)) {
         std::cout << "JF4M with gaps detected (2068 x 2164)" << std::endl;
-        x.DataStreamModuleSize(2, {8}, 8, 36);
-    } else if ((file_space.GetDimensions()[1] == 4*514) && (file_space.GetDimensions()[2] == 2*1030)) {
-        std::cout << "JF4M with no gaps detected (2060 x 2056)" << std::endl;
-        x.DataStreamModuleSize(2, {8}, 0, 0);
     } else {
         std::cout << "Unknown geometry - exiting" << std::endl;
         exit(EXIT_FAILURE);
     }
+
     uint64_t nimages = file_space.GetDimensions()[0];
     std::cout << "Number of images in the dataset: " << nimages << std::endl;
     if (nimages > 200) {
@@ -135,10 +132,6 @@ int main(int argc, char **argv) {
 
     auto image_shuffled = bitshuffle(image, 4096);
 
-    // Switch to mode with gaps
-    x.DataStreamModuleSize(2, {8}, 8, 36);
-
-    x.CompressionBlockSize(4096);
     x.MaskChipEdges(false);
 
     x.Compression(JFJochProtoBuf::NO_COMPRESSION);
@@ -147,73 +140,25 @@ int main(int argc, char **argv) {
     x.Compression(JFJochProtoBuf::BSHUF_LZ4);
     std::cout << "BSHUF/LZ4                   " << CheckCompression(x, nimages, image);
 
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 10);
-    std::cout << "BSHUF/LZ4  (10)             " << CheckCompression(x, nimages, image);
-
     x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
     std::cout << "BSHUF/ZSTD (0)              " << CheckCompression(x, nimages, image);
 
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, -10);
-    std::cout << "BSHUF/ZSTD (-10)            " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, -5);
-    std::cout << "BSHUF/ZSTD (-5)             " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 5);
-    std::cout << "BSHUF/ZSTD (5)              " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 10);
-    std::cout << "BSHUF/ZSTD (10)             " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD_RLE);
     std::cout << "BSHUF/ZSTD (RLE)            " << CheckCompression(x, nimages, image);
-
-    x.CompressionBlockSize(2*1024);
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 0);
-    std::cout << "BSHUF/LZ4 (block 4kB)       " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 0);
-    std::cout << "BSHUF/ZSTD (block 4kB)      " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
-    std::cout << "BSHUF/ZSTD (block 4kB;RLE)  " << CheckCompression(x, nimages, image);
-
-    x.CompressionBlockSize(32*1024);
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 0);
-    std::cout << "BSHUF/LZ4 (block 64kB)      " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 0);
-    std::cout << "BSHUF/ZSTD (block 64kB)     " << CheckCompression(x, nimages, image);
-
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
-    std::cout << "BSHUF/ZSTD (block 64kB;RLE) " << CheckCompression(x, nimages, image);
-
-    x.CompressionBlockSize(512*1024);
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 0);
-    std::cout << "BSHUF/LZ4 (block 1MB)       " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, 0);
-    std::cout << "BSHUF/ZSTD (block 1MB)      " << CheckCompression(x, nimages, image);
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
-    std::cout << "BSHUF/ZSTD (block 1MB;RLE)  " << CheckCompression(x, nimages, image);
 
     x.Compression(JFJochProtoBuf::NO_COMPRESSION);
     std::cout << "None (geom transform)       " << CheckCompression(x, nimages, image);
 
     std::cout << std::endl << std::endl << "Decompression" << std::endl << std::endl;
 
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4).CompressionBlockSize(4096);
+    x.Compression(JFJochProtoBuf::BSHUF_LZ4);
     std::cout << "BSHUF/LZ4                   " << CheckDecompression(x, nimages, image);
 
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD).CompressionBlockSize(4096);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
     std::cout << "BSHUF/ZSTD                  " << CheckDecompression(x, nimages, image);
 
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE).CompressionBlockSize(4096);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD_RLE);
     std::cout << "BSHUF/ZSTD (RLE)            " << CheckDecompression(x, nimages, image);
-
-    x.CompressionBlockSize(4096);
 
     std::cout << std::endl << std::endl << "EIGER-type transformation (16-bit)" << std::endl << std::endl;
     x.DetectorType(JFJochProtoBuf::EIGER);
@@ -227,8 +172,6 @@ int main(int argc, char **argv) {
     x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
     std::cout << "BSHUF/ZSTD (0)              " << CheckCompression(x, nimages, image);
 
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD_RLE);
     std::cout << "BSHUF/ZSTD (RLE)            " << CheckCompression(x, nimages, image);
-
-
 }

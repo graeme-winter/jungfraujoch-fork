@@ -48,42 +48,15 @@ ADD_CUSTOM_COMMAND(
         "${rg_proto}"
         DEPENDS "${rg_proto}")
 
-ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_SOURCE_DIR}/python/jfjoch_pb2_grpc.py  ${CMAKE_SOURCE_DIR}/python/jfjoch_pb2.py
-        COMMAND ${_PROTOBUF_PROTOC}
-        ARGS --grpc_python_out "${CMAKE_SOURCE_DIR}/python"
-        --python_out "${CMAKE_SOURCE_DIR}/python"
-        -I "${CMAKE_CURRENT_SOURCE_DIR}"
-        --plugin=protoc-gen-grpc_python="${_GRPC_PYTHON_PLUGIN_EXECUTABLE}"
-        "${rg_proto}"
-        DEPENDS "${rg_proto}")
-
-ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_SOURCE_DIR}/frontend_ui/src/protobuf/jfjoch_pb.js ${CMAKE_SOURCE_DIR}/frontend_ui/src/protobuf/jfjoch_grpc_web_pb.js
-        COMMAND ${_PROTOBUF_PROTOC}
-        ARGS --grpc_web_out=import_style=commonjs,mode=grpcweb:"${CMAKE_SOURCE_DIR}/frontend_ui/src/protobuf"
-        --js_out=import_style=commonjs,binary:"${CMAKE_SOURCE_DIR}/frontend_ui/src/protobuf"
-        -I "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${rg_proto}"
-        DEPENDS "${rg_proto}")
-
 ADD_LIBRARY(JFJochProtoBuf ${rg_grpc_srcs} ${rg_grpc_hdrs} ${rg_proto_srcs} ${rg_proto_hdrs})
 
 TARGET_INCLUDE_DIRECTORIES(JFJochProtoBuf PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 TARGET_LINK_LIBRARIES(JFJochProtoBuf ${_GRPC_GRPCPP})
 
-ADD_CUSTOM_TARGET(jfjoch-grpc-python
-        DEPENDS ${CMAKE_SOURCE_DIR}/python/jfjoch_pb2_grpc.py  ${CMAKE_SOURCE_DIR}/python/jfjoch_pb2.py)
-ADD_CUSTOM_TARGET(jfjoch-grpc-js
-        DEPENDS ${CMAKE_SOURCE_DIR}/frontend_ui/src/protobuf/jfjoch_grpc_web_pb.js
-                ${CMAKE_SOURCE_DIR}/frontend_ui/src/protobuf/jfjoch_pb.js)
-ADD_CUSTOM_TARGET(jfjoch-grpc DEPENDS jfjoch-grpc-python jfjoch-grpc-js)
-
 ADD_LIBRARY(gRPCClients STATIC
         JFJochReceiverClient.cpp JFJochReceiverClient.h
         JFJochWriterClient.cpp JFJochWriterClient.h
         JFJochDetectorClient.cpp JFJochDetectorClient.h
-        JFJochTriggerClient.cpp JFJochTriggerClient.h
         JFJochIndexerClient.cpp JFJochIndexerClient.h
         JFJochWriterGroupClient.cpp JFJochWriterGroupClient.h)
 

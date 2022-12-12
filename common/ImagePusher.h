@@ -10,10 +10,10 @@
 
 class ImagePusher {
 public:
-    virtual void StartDataCollection() = 0;
+    virtual void StartDataCollection(int64_t data_file_count) = 0;
     virtual void EndDataCollection() = 0;
-    virtual void SendData(void *image, const std::pair<int64_t,int64_t> &image_location_in_file,
-                  size_t image_size, const std::vector<DiffractionSpot>& spots) = 0;
+    virtual void SendData(void *image,size_t image_size, const std::vector<DiffractionSpot>& spots,
+                          int64_t image_number) = 0;
 };
 
 

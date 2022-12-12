@@ -75,8 +75,6 @@ JFJochProtoBuf::ReceiverStatus JFJochReceiverClient::GetStatus() {
         auto status = _stub->GetStatus(&context, empty, &ret);
         if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
                                                 "JFJochReceiver: " + status.error_message());
-    } else {
-        ret.set_progress(100.0);
     }
     return ret;
 }
@@ -117,4 +115,19 @@ JFJochProtoBuf::ReceiverNetworkConfig JFJochReceiverClient::GetNetworkConfig() {
         ret.add_fpga_mac_addr("00:00:00:00:00:01");
     }
     return ret;
+}
+
+JFJochProtoBuf::ReceiverDataProcessingPlots JFJochReceiverClient::GetPlots() {
+    JFJochProtoBuf::ReceiverDataProcessingPlots ret;
+    if (_stub) {
+        grpc::ClientContext context;
+        JFJochProtoBuf::Empty empty;
+        auto status = _stub->GetDataProcessingPlots(&context, empty, &ret);
+        if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
+                                                "JFJochReceiver: " + status.error_message());
+    } else {
+        // TODO: Write some dummy plots
+    }
+    return ret;
+
 }

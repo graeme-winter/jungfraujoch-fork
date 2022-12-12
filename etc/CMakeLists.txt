@@ -1,1 +1,1 @@
-INSTALL(FILES mgmt.json recv.json index.json writer.json envoy.yaml DESTINATION etc)
+INSTALL(FILES broker.json recv.json index.json writer.json DESTINATION etc)

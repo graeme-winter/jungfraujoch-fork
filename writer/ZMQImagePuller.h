@@ -18,7 +18,7 @@ class ZMQImagePuller {
 
     JFJochFrameDeserializer deserializer;
 
-    constexpr const static uint32_t ReceiverWaterMark = 1000;
+    constexpr const static uint32_t ReceiverWaterMark = 100;
     // ZeroMQ receive timeout allows to check for abort value from time to time
     constexpr const static auto ReceiveTimeout = std::chrono::milliseconds(100);
     size_t processed_size = 0;
@@ -36,8 +36,7 @@ public:
     void WaitForImage();
     const uint8_t *GetImage() const;
     size_t GetImageSize() const;
-    uint64_t GetImageNumber() const;
-    uint64_t GetFileNumber() const;
+    int64_t GetImageNumber() const;
     const std::vector<SpotToSave>& GetSpots() const;
     JFJochFrameDeserializer::Type GetFrameType() const;
 

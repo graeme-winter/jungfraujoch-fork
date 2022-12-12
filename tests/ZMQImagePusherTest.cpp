@@ -24,12 +24,11 @@ void test_puller(ZMQImagePuller *puller,
     while (puller->GetFrameType() != JFJochFrameDeserializer::Type::END) {
         if (puller->GetFrameType() == JFJochFrameDeserializer::Type::IMAGE) {
 
-            if ((nwriter > 1) && (puller->GetFileNumber() % nwriter != writer_id))
+            if ((nwriter > 1) && (puller->GetImageNumber() % nwriter != writer_id))
                 diff_split[writer_id]++;
             if (puller->GetImageSize() != x.GetPixelsNum() * sizeof(uint16_t))
                 diff_size[writer_id]++;
-            else if (memcmp(puller->GetImage(),image1.data() + (puller->GetFileNumber() * x.GetImagesPerFile()
-                                                           + puller->GetImageNumber()) * x.GetPixelsNum(),
+            else if (memcmp(puller->GetImage(),image1.data() + puller->GetImageNumber() * x.GetPixelsNum(),
                             x.GetPixelsNum() * sizeof(uint16_t)) != 0)
                 diff_content[writer_id]++;
             nimages[writer_id]++;
@@ -43,8 +42,8 @@ TEST_CASE("ZMQImageCommTest_1Writer","[ZeroMQ]") {
 
     ZMQContext context;
     Logger logger("test");
-    DiffractionExperiment x, x_out;
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
+    DiffractionExperiment x(1,{1});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
         .ImagesPerTrigger(nframes);
 
@@ -70,10 +69,10 @@ TEST_CASE("ZMQImageCommTest_1Writer","[ZeroMQ]") {
     puller.Connect(zmq_addr);
 
     std::thread sender_thread = std::thread([&] {
-        pusher.StartDataCollection();
+        pusher.StartDataCollection(16);
         for (int i = 0; i < nframes; i++)
-            pusher.SendData(image1.data() + i * x.GetPixelsNum(), x.GetImageLocationInFile(i),
-                            x.GetPixelsNum() * sizeof(uint16_t), empty_spot_vector);
+            pusher.SendData(image1.data() + i * x.GetPixelsNum(), x.GetPixelsNum() * sizeof(uint16_t),
+                            empty_spot_vector, i);
         pusher.EndDataCollection();
     });
 
@@ -97,10 +96,10 @@ TEST_CASE("ZMQImageCommTest_2Writers","[ZeroMQ]") {
 
     ZMQContext context;
     Logger logger("test");
-    DiffractionExperiment x, x_out;
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
+    DiffractionExperiment x(1, {1});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
-            .ImagesPerTrigger(nframes).ImagesPerFile(16);
+            .ImagesPerTrigger(nframes);
 
     REQUIRE(x.GetImageNum() == nframes);
 
@@ -132,10 +131,10 @@ TEST_CASE("ZMQImageCommTest_2Writers","[ZeroMQ]") {
     std::vector<size_t> diff_size(npullers), diff_content(npullers), diff_split(npullers), nimages(npullers);
 
     std::thread sender_thread = std::thread([&] {
-        pusher.StartDataCollection();
+        pusher.StartDataCollection(16);
         for (int i = 0; i < nframes; i++)
-            pusher.SendData(image1.data() + i * x.GetPixelsNum(), x.GetImageLocationInFile(i),
-                            x.GetPixelsNum() * sizeof(uint16_t), empty_spot_vector);
+            pusher.SendData(image1.data() + i * x.GetPixelsNum(), x.GetPixelsNum() * sizeof(uint16_t),
+                            empty_spot_vector, i);
         pusher.EndDataCollection();
     });
 
@@ -170,10 +169,10 @@ TEST_CASE("ZMQImageCommTest_4Writers","[ZeroMQ]") {
 
     ZMQContext context;
     Logger logger("test");
-    DiffractionExperiment x, x_out;
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
+    DiffractionExperiment x(1, {1});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
-            .ImagesPerTrigger(nframes).ImagesPerFile(16);
+            .ImagesPerTrigger(nframes);
 
     REQUIRE(x.GetImageNum() == nframes);
 
@@ -207,11 +206,10 @@ TEST_CASE("ZMQImageCommTest_4Writers","[ZeroMQ]") {
     std::vector<size_t> diff_size(npullers), diff_content(npullers), diff_split(npullers), nimages(npullers);
 
     std::thread sender_thread = std::thread([&] {
-        pusher.StartDataCollection();
+        pusher.StartDataCollection(16);
         for (int i = 0; i < nframes; i++)
-            pusher.SendData(image1.data() + i * x.GetPixelsNum(),
-                            x.GetImageLocationInFile(i),
-                            x.GetPixelsNum() * sizeof(uint16_t), empty_spot_vector);
+            pusher.SendData(image1.data() + i * x.GetPixelsNum(), x.GetPixelsNum() * sizeof(uint16_t),
+                            empty_spot_vector, i);
         pusher.EndDataCollection();
     });
 
@@ -246,8 +244,8 @@ TEST_CASE("ZMQImageCommTest_4Writers","[ZeroMQ]") {
 TEST_CASE("ZMQImagePuller_abort","[ZeroMQ]") {
     const size_t nframes = 256;
     std::string zmq_addr = "inproc://#1";
-    DiffractionExperiment x, x_out;
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {1});
+    DiffractionExperiment x, x_out(1, {1});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(false).PhotonEnergy_keV(12.4)
             .ImagesPerTrigger(nframes);
 

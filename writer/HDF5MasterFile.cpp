@@ -6,7 +6,7 @@
 #include "MakeDirectory.h"
 
 void WriteHDF5MasterFile(const JFJochProtoBuf::WriterMetadataInput &input) {
-    const std::string& filename = input.metadata_file_name();
+    const std::string& filename = input.file_prefix() + "_master.h5";
 
     MakeDirectory(filename);
 

@@ -11,9 +11,6 @@
 namespace HDF5Metadata {
     void NXmx(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input);
     void Time(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input);
-
-    void DataVDS(HDF5Dcpl &dcpl, const JFJochProtoBuf::WriterMetadataInput &input);
-    void DataVDS_TimeResolved(HDF5Dcpl &dcpl, const JFJochProtoBuf::WriterMetadataInput &input, hsize_t total_images);
     void LinkToData(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input);
 
     void Detector(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input);
@@ -28,6 +25,8 @@ namespace HDF5Metadata {
 
     void Mask(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &output);
     void Calibration(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &output);
+
+    std::string DataFileName(const std::string& prefix, int64_t file_number);
 }
 
 #endif //JUNGFRAUJOCH_HDF5NXMX_H

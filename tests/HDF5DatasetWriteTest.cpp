@@ -41,20 +41,16 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(2, {8}, 8, 36);
     x.Summation(1);
 
     // Set metadata for the compression_benchmark.h5 dataset
-    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).Wavelength_A(1.0);
+    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).PhotonEnergy_keV(WVL_1A_IN_KEV);
     x.MaskModuleEdges(true);
     x.MaskChipEdges(true);
 
     if ((file_space.GetDimensions()[1] == 2164) && (file_space.GetDimensions()[2] == 2068)) {
         std::cout << "JF4M with gaps detected (2068 x 2164)" << std::endl;
-        x.DataStreamModuleSize(2, {8}, 8, 36);
-    } else if ((file_space.GetDimensions()[1] == 4*514) && (file_space.GetDimensions()[2] == 2*1030)) {
-        std::cout << "JF4M with no gaps detected (2060 x 2056)" << std::endl;
-        x.DataStreamModuleSize(2, {8}, 0, 0);
     } else {
         std::cout << "Unknown geometry - exiting" << std::endl;
         exit(EXIT_FAILURE);
@@ -67,13 +63,6 @@ int main(int argc, char **argv) {
         x.FilePrefix("writing_test");
     else
         x.FilePrefix(std::getenv("HDF5DATASET_WRITE_TEST_PREFIX"));
-
-    // Set images per single data file
-    if (std::getenv("HDF5DATASET_WRITE_TEST_IMAGES_PER_FILE") == nullptr)
-        x.ImagesPerFile(100);
-    else
-        x.ImagesPerFile(atoi(std::getenv("HDF5DATASET_WRITE_TEST_IMAGES_PER_FILE")));
-
 
     x.Mode(DetectorMode::Conversion).ImagesPerTrigger(nimages);
 
@@ -88,9 +77,6 @@ int main(int argc, char **argv) {
                                image + i * RAW_MODULE_SIZE * x.GetModulesNum(),
                                image_conv.data() + i * file_space.GetDimensions()[1] * file_space.GetDimensions()[2]);
     }
-
-    // Switch to mode with gaps for transformation
-    x.DataStreamModuleSize(2, {8}, 8, 36);
 
     FrameTransformation transformation(x);
 
@@ -120,8 +106,7 @@ int main(int argc, char **argv) {
     int64_t total_image_size = 0;
     for (int i = 0; i < nimages_out; i++) {
         std::this_thread::sleep_until(start_time + i * period_us);
-        auto [file_number, image_number_in_file] = x.GetImageLocationInFile(i);
-        fileset->Write(output[i % nimages].data(), output_size[i % nimages], spots, file_number, image_number_in_file);
+        fileset->Write(output[i % nimages].data(), output_size[i % nimages], spots, i);
         total_image_size += output_size[i % nimages];
     }
 
@@ -140,7 +125,6 @@ int main(int argc, char **argv) {
     receiver_output.set_end_time_ms(1640995210000);
     receiver_output.set_images_sent(nimages);
     receiver_output.set_max_image_number_sent(nimages - 1);
-    *receiver_output.mutable_jungfraujoch_settings() = x;
 
     JFJochProtoBuf::WriterMetadataInput request;
     x.FillWriterMetadata(request);

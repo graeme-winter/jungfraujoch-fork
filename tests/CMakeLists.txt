@@ -26,7 +26,7 @@ add_executable(CatchTest
         JFCalibrationTest.cpp
         RadialIntegrationTest.cpp
         StatusVectorTest.cpp
-        CBORTest.cpp)
+        CBORTest.cpp TIFFTest.cpp)
 
 target_link_libraries(CatchTest JFJochBroker JFJochReceiver JFJochWriter DataProcessing CommonFunctions HLSSimulation -pthread -ldl -lz)
 target_include_directories(CatchTest PRIVATE .)

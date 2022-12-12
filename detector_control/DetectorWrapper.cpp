@@ -86,19 +86,11 @@ void DetectorWrapper::Start(const JFJochProtoBuf::DetectorInput &request) {
         det.setPeriod(std::chrono::microseconds(request.period_us()));
         det.setExptime(std::chrono::microseconds(request.count_time_us()));
 
-        if (request.soft_trigger()) {
-            det.setBit(0x4f, 15, {0});
-            det.setBit(0x4e, 4);
-        } else {
-            det.clearBit(0x4f, 15, {0});
-            det.clearBit(0x4e, 4);
-        }
+        // Always synchronize to master
+        det.setBit(0x4f, 15, {0});
+        det.setBit(0x4e, 4);
 
-        det.setDelayAfterTrigger(std::chrono::microseconds(request.delay_us()));
         det.startDetector();
-        if (request.soft_trigger())
-            Trigger();
-
     } catch (std::exception &e) {
         throw JFJochException(JFJochExceptionCategory::Detector, e.what());
     }
@@ -143,9 +135,9 @@ void DetectorWrapper::Trigger() {
     try {
         for (int i = 1; i < det.size(); i++)
             det.setBit(0x4f, 2, {i});
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         det.setBit(0x4f, 2, {0});
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         det.clearBit(0x4f, 2);
     } catch (std::exception &e) {
         throw JFJochException(JFJochExceptionCategory::Detector, e.what());

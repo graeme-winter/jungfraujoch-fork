@@ -117,9 +117,8 @@ TEST_CASE("HDF5File_Delete", "[HDF5][Unit]") {
 TEST_CASE("HDF5MasterFile", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
-        DiffractionExperiment x;
-        x.DataStreamModuleSize(2, {4,4}, 8, 36);
-        x.FilePrefix("test01").ImagesPerTrigger(950).ImagesPerFile(100);
+        DiffractionExperiment x(2, {4,4}, 8, 36);
+        x.FilePrefix("test01").ImagesPerTrigger(950);
 
         JFJochProtoBuf::WriterMetadataInput request;
         x.FillWriterMetadata(request);
@@ -137,25 +136,17 @@ TEST_CASE("HDF5MasterFile", "[HDF5][Full]") {
 TEST_CASE("HDF5Writer", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
-        DiffractionExperiment x;
+        DiffractionExperiment x(2, {4,4}, 8, 36);
         std::vector<SpotToSave> spots;
 
-        x.DataStreamModuleSize(2, {4,4}, 8, 36);
-        x.FilePrefix("test02_1p10").ImagesPerTrigger(5).ImagesPerFile(2).Compression(JFJochProtoBuf::NO_COMPRESSION);
+        x.FilePrefix("test02_1p10").ImagesPerTrigger(5).DataFileCount(2).Compression(JFJochProtoBuf::NO_COMPRESSION);
         HDF5Writer file_set(x);
         std::vector<uint16_t> image(x.GetPixelsNum());
 
-        REQUIRE(file_set.GetRemainingImageCount() == 5);
-
         for (int i = 0; i < x.GetImageNum(); i++) {
-
-            auto [file_number, image_number_in_file] = x.GetImageLocationInFile(i);
             REQUIRE_NOTHROW(file_set.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(),
-                                           spots, file_number, image_number_in_file));
+                                           spots, i));
         }
-        REQUIRE(file_set.GetRemainingImageCount() == 0);
-
-        REQUIRE_THROWS(file_set.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(), spots, 0, 1));
     }
     // No leftover HDF5 objects
     REQUIRE (H5Fget_obj_count(H5F_OBJ_ALL, H5F_OBJ_ALL) == 0);
@@ -164,29 +155,21 @@ TEST_CASE("HDF5Writer", "[HDF5][Full]") {
 TEST_CASE("HDF5Writer_Spots", "[HDF5][Full]") {
     {
         RegisterHDF5Filter();
-        DiffractionExperiment x;
+        DiffractionExperiment x(2, {4,4}, 8, 36);
         std::vector<SpotToSave> spots;
 
         spots.push_back({10,10,7});
         spots.push_back({20,50,12});
         spots.push_back({1000,500,3});
 
-        x.DataStreamModuleSize(2, {4,4}, 8, 36);
-        x.FilePrefix("test02_1p10_spots").ImagesPerTrigger(5).ImagesPerFile(2).Compression(JFJochProtoBuf::NO_COMPRESSION);
+        x.FilePrefix("test02_1p10_spots").ImagesPerTrigger(5).DataFileCount(2).Compression(JFJochProtoBuf::NO_COMPRESSION);
         HDF5Writer file_set(x);
         std::vector<uint16_t> image(x.GetPixelsNum());
 
-        REQUIRE(file_set.GetRemainingImageCount() == 5);
-
         for (int i = 0; i < x.GetImageNum(); i++) {
-
-            auto [file_number, image_number_in_file] = x.GetImageLocationInFile(i);
             REQUIRE_NOTHROW(file_set.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(),
-                                           spots, file_number, image_number_in_file));
+                                           spots, i));
         }
-        REQUIRE(file_set.GetRemainingImageCount() == 0);
-
-        REQUIRE_THROWS(file_set.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(), spots, 0, 1));
     }
     // No leftover HDF5 objects
     REQUIRE (H5Fget_obj_count(H5F_OBJ_ALL, H5F_OBJ_ALL) == 0);
@@ -194,7 +177,7 @@ TEST_CASE("HDF5Writer_Spots", "[HDF5][Full]") {
 
 TEST_CASE("HDF5Writer_VDS", "[HDF5][Full]") {
     DiffractionExperiment x(1, {1});
-    x.ImagesPerTrigger(5).ImagesPerFile(1)
+    x.ImagesPerTrigger(5).DataFileCount(5)
      .Compression(JFJochProtoBuf::NO_COMPRESSION).FilePrefix("vds");
 
     {
@@ -206,9 +189,8 @@ TEST_CASE("HDF5Writer_VDS", "[HDF5][Full]") {
         for (int i = 0; i < x.GetImageNum(); i++) {
             for (auto &j: image)
                 j = i;
-            auto [file_number, image_number_in_file] = x.GetImageLocationInFile(i);
             REQUIRE_NOTHROW(writer.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(),
-                                         spots, file_number, image_number_in_file));
+                                         spots, i));
         }
 
         JFJochProtoBuf::WriterMetadataInput request;
@@ -242,7 +224,7 @@ TEST_CASE("HDF5Writer_VDS", "[HDF5][Full]") {
 
 TEST_CASE("HDF5Writer_VDS_missing", "[HDF5][Full]") {
     DiffractionExperiment x(1, {1});
-    x.ImagesPerTrigger(5).ImagesPerFile(1)
+    x.ImagesPerTrigger(5).DataFileCount(5)
             .Compression(JFJochProtoBuf::NO_COMPRESSION).FilePrefix("vds_missing");
 
     {
@@ -255,9 +237,8 @@ TEST_CASE("HDF5Writer_VDS_missing", "[HDF5][Full]") {
         for (int i = 0; i < x.GetImageNum() - 1; i++) {
             for (auto &j: image)
                 j = i;
-            auto [file_number, image_number_in_file] = x.GetImageLocationInFile(i);
             REQUIRE_NOTHROW(writer.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(),
-                                         spots, file_number, image_number_in_file));
+                                         spots, i));
         }
 
         JFJochProtoBuf::WriterMetadataInput request;
@@ -288,120 +269,41 @@ TEST_CASE("HDF5Writer_VDS_missing", "[HDF5][Full]") {
     REQUIRE (H5Fget_obj_count(H5F_OBJ_ALL, H5F_OBJ_ALL) == 0);
 }
 
-TEST_CASE("HDF5Writer_Time_Resolved", "[HDF5][Full]") {
+
+TEST_CASE("HDF5Writer_VDS_zero_images", "[HDF5][Full]") {
     DiffractionExperiment x(1, {1});
-    x.ImagesPerTrigger(5).NumTriggers(3).TimeResolvedMode(true)
-            .Compression(JFJochProtoBuf::NO_COMPRESSION).FilePrefix("test_time_resolved");
+    x.ImagesPerTrigger(5).DataFileCount(5)
+            .Compression(JFJochProtoBuf::NO_COMPRESSION).FilePrefix("vds_zero");
 
     {
         RegisterHDF5Filter();
 
-        HDF5Writer writer(x);
-        std::vector<uint16_t> image(x.GetPixelsNum());
-        std::vector<SpotToSave> spots;
-
-        for (int i = 0; i < x.GetImageNum(); i++) {
-            auto [file_number, image_number_in_file] = x.GetImageLocationInFile(i);
-            for (auto &j: image)
-                j = i;
-            REQUIRE_NOTHROW(writer.Write((const char *) image.data(), x.GetPixelsNum() * x.GetPixelDepth(),
-                                         spots, file_number, image_number_in_file));
-        }
         JFJochProtoBuf::WriterMetadataInput request;
         x.FillWriterMetadata(request);
-        request.set_image_number(x.GetImageNum());
+        request.set_image_number(0);
         REQUIRE_NOTHROW(WriteHDF5MasterFile(request));
     }
     {
-        HDF5File file("test_time_resolved_master.h5", false, true, false);
+        std::unique_ptr<HDF5ReadOnlyFile> file;
         std::unique_ptr<HDF5DataSet> dataset;
-        REQUIRE_NOTHROW(dataset = std::make_unique<HDF5DataSet>(file,"/entry/data/data"));
-        HDF5DataSpace file_space(*dataset);
-        REQUIRE(file_space.GetNumOfDimensions() == 3);
-        REQUIRE(file_space.GetDimensions()[0] == x.GetImageNum());
-        REQUIRE(file_space.GetDimensions()[1] == x.GetYPixelsNum());
-        REQUIRE(file_space.GetDimensions()[2] == x.GetXPixelsNum());
-
-        std::vector<int16_t> v(x.GetImageNum() * x.GetYPixelsNum() * x.GetXPixelsNum());
-        std::vector<hsize_t> start = {0, 0, 0};
-        dataset->ReadVector(v, start, file_space.GetDimensions());
-
-        for (int i = 0; i < x.GetImageNum(); i++)
-        REQUIRE(v[i * x.GetYPixelsNum() * x.GetXPixelsNum()] == i);
+        REQUIRE_NOTHROW(file = std::make_unique<HDF5ReadOnlyFile>("vds_zero_master.h5"));
+        REQUIRE_THROWS(dataset = std::make_unique<HDF5DataSet>(*file,"/entry/data/data"));
     }
     // No leftover HDF5 objects
     REQUIRE (H5Fget_obj_count(H5F_OBJ_ALL, H5F_OBJ_ALL) == 0);
 }
 
-TEST_CASE("HDF5NXmx_LinkToData", "[HDF5]") {
-    DiffractionExperiment x;
-    x.TimeResolvedMode(true).ImagesPerTrigger(100).NumTriggers(100).ImagesPerFile(10);
-
-    HDF5File file("test_link_to_data.h5", true, true, false);
-
-    JFJochProtoBuf::WriterMetadataInput request;
-    x.FillWriterMetadata(request);
-    request.set_image_number(10000);
-
-    HDF5Metadata::NXmx(&file, request);
-
-    HDF5DataSet data_dataset(file,"/entry/data/data");
-    HDF5DataSpace file_space(data_dataset);
-    REQUIRE(file_space.GetNumOfDimensions() == 3);
-    REQUIRE(file_space.GetDimensions()[0] == 100*100);
-
-    remove("test_link_to_data.h5");
-}
-
-TEST_CASE("HDF5NXmx_LinkToData_ActualImages", "[HDF5]") {
-    DiffractionExperiment x;
-    x.TimeResolvedMode(true).ImagesPerTrigger(100).NumTriggers(100).ImagesPerFile(10);
-
-    HDF5File file("test_link_to_data.h5", true, true, false);
-
-    JFJochProtoBuf::WriterMetadataInput request;
-    x.FillWriterMetadata(request);
-    request.set_image_number(5034-1);
-
-    HDF5Metadata::NXmx(&file, request);
-
-    HDF5DataSet data_dataset(file,"/entry/data/data");
-    HDF5DataSpace file_space(data_dataset);
-    REQUIRE(file_space.GetNumOfDimensions() == 3);
-    REQUIRE(file_space.GetDimensions()[0] == (5034 / 100) * 100); // only fully collected triggers are reflected in master
-
-    remove("test_link_to_data.h5");
-}
-
-TEST_CASE("HDF5NXmx_LinkToData_ZeroActualImages", "[HDF5]") {
-    DiffractionExperiment x;
-    x.TimeResolvedMode(true).ImagesPerTrigger(100).NumTriggers(100).ImagesPerFile(10);
-
-    HDF5File file("test_link_to_data.h5", true, true, false);
-
-    JFJochProtoBuf::WriterMetadataInput request;
-    x.FillWriterMetadata(request);
-    request.set_image_number(0);
-    HDF5Metadata::NXmx(&file, request);
-    std::unique_ptr<HDF5DataSet> dataset;
-
-    // "data" Datasets should not be created at all
-    REQUIRE_THROWS(dataset = std::make_unique<HDF5DataSet>(file, "/entry/data/data"));
-
-    remove("test_link_to_data.h5");
+TEST_CASE("HDF5NXmx_DataFileName", "[HDF5]") {
+    REQUIRE(HDF5Metadata::DataFileName("z/x", 34) == "z/x_data_034.h5");
+    REQUIRE(HDF5Metadata::DataFileName("z/x", 0) == "z/x_data_000.h5");
+    REQUIRE_THROWS(HDF5Metadata::DataFileName("z/x", 1000));
+    REQUIRE_THROWS(HDF5Metadata::DataFileName("z/x", -1));
 }
 
 TEST_CASE("HDF5Objects_ExtractFilename", "[HDF5]") {
-    DiffractionExperiment x;
-    x.FilePrefix("filename");
-
-    REQUIRE(ExtractFilename(x.GenerateDataFilename(0)) == "filename_data_000001.h5");
-
-    x.FilePrefix("dir1/filename");
-    REQUIRE(ExtractFilename(x.GenerateDataFilename(0)) == "filename_data_000001.h5");
-
-    x.FilePrefix("dir1/dir2/filename");
-    REQUIRE(ExtractFilename(x.GenerateDataFilename(0)) == "filename_data_000001.h5");
+    REQUIRE(ExtractFilename("filename_data_000001.h5") == "filename_data_000001.h5");
+    REQUIRE(ExtractFilename("dir1/filename_data_000001.h5") == "filename_data_000001.h5");
+    REQUIRE(ExtractFilename("dir1/dir2/filename_data_000001.h5") == "filename_data_000001.h5");
 }
 
 

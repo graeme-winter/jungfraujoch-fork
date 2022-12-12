@@ -38,11 +38,6 @@
 #define SENSOR_THICKNESS_IN_UM 320.0
 #define PIXEL_SIZE_IN_UM        75.0
 #define PIXEL_SIZE_IN_MM       (PIXEL_SIZE_IN_UM/1000.0)
-#define DETECTOR_NAME          "JF4M"
-#define SOURCE_NAME_SHORT      "SLS"
-#define SOURCE_NAME            "Swiss Light Source"
-#define INSTRUMENT_NAME        "X06SA VESPA"
-#define INSTRUMENT_NAME_SHORT  "VESPA"
 #define SENSOR_MATERIAL        "Si"
 
 #define GAIN_G0_MULTIPLIER 32

@@ -5,6 +5,7 @@
 #include "HDF5NXmx.h"
 
 #include "../common/GitInfo.h"
+#include "../include/spdlog/fmt/fmt.h"
 
 #define WVL_1A_IN_KEV           12.39854
 
@@ -113,8 +114,13 @@ void HDF5Metadata::Detector(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMet
     SaveScalar(det_specific, "software_git_commit", jfjoch_git_sha1());
     SaveScalar(det_specific, "software_git_date", jfjoch_git_date());
     SaveScalar(det_specific, "storage_cell_number", det.storage_cell_number());
-    SaveScalar(det_specific, "time_resolved_mode", det.time_resolved_mode());
-    SaveScalar(det_specific, "delay_after_trigger", det.delay_after_trigger_us())->Units("us");
+
+    if (det.has_efficiency())
+        SaveScalar(det_specific, "data_collection_efficiency", det.efficiency());
+    if (det.has_collection_cancelled())
+        SaveScalar(det_specific, "data_collection_cancelled", det.collection_cancelled());
+    if (det.has_max_receiver_delay())
+        SaveScalar(det_specific, "max_receiver_delay", det.max_receiver_delay());
 }
 
 void HDF5Metadata::Beam(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
@@ -254,28 +260,34 @@ void HDF5Metadata::Calibration(HDF5File *hdf5_file, const JFJochProtoBuf::Writer
 }
 
 void HDF5Metadata::LinkToData(HDF5File *hdf5_file, const JFJochProtoBuf::WriterMetadataInput &input) {
-    hsize_t total_images = input.image_number();
     const auto& det = input.detector_metadata();
 
-    HDF5Dcpl dcpl;
+    hsize_t total_images = input.image_number();
+    hsize_t width = det.width_pxl();
+    hsize_t height = det.height_pxl();
+    hsize_t stride = input.file_count();
+    hsize_t file_count = std::min<hsize_t>(stride, total_images);
 
-    if (det.time_resolved_mode()) {
-        total_images -= total_images % input.images_per_trigger();
-        // For TR data at least one full trigger sequence must be collected
-        if (total_images < input.images_per_trigger())
-            return;
-        DataVDS_TimeResolved(dcpl, input, total_images);
-    } else {
-        // For standard data collecting one image is fine
-        if (input.image_number() == 0)
-            return;
-        DataVDS(dcpl, input);
-    }
+    if (total_images == 0)
+        return;
 
     HDF5Group(*hdf5_file, "/entry/data").NXClass("NXdata");
 
     HDF5DataType data_type(det.pixel_depth_byte(), det.signed_pxl());
-    HDF5DataSpace full_data_space({(hsize_t) total_images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
+    HDF5DataSpace full_data_space({total_images, height, width});
+    HDF5Dcpl dcpl;
+
+    for (hsize_t file_id = 0; file_id < file_count; file_id++) {
+        hsize_t images_in_file = total_images / stride;
+        if (total_images % stride > file_id)
+            images_in_file++;
+
+        HDF5DataSpace src_data_space({images_in_file, height, width});
+        HDF5DataSpace virtual_data_space({total_images, height, width});
+        virtual_data_space.SelectHyperslabWithStride({file_id, 0, 0},{images_in_file, height, width},{stride,1,1});
+        dcpl.SetVirtual(DataFileName(input.file_prefix(), file_id),
+                        "/entry/data/data",src_data_space, virtual_data_space);
+    }
 
     if (det.pixel_depth_byte() == 2)
         dcpl.SetFillValue16(INT16_MIN);
@@ -293,49 +305,13 @@ void HDF5Metadata::LinkToData(HDF5File *hdf5_file, const JFJochProtoBuf::WriterM
         */
 }
 
-void HDF5Metadata::DataVDS(HDF5Dcpl &dcpl, const JFJochProtoBuf::WriterMetadataInput &input) {
-    const auto& det = input.detector_metadata();
-    hsize_t total_images = input.image_number();
-    hsize_t images_per_file = input.images_per_file();
-
-    hsize_t file_count = total_images / images_per_file;
-    if (total_images % images_per_file > 0)
-        file_count++;
-
-    for (uint32_t file_id = 0; file_id < file_count; file_id++) {
-        hsize_t image0 = file_id * input.images_per_file();
-        hsize_t images = std::min(images_per_file, total_images - image0);
-
-        HDF5DataSpace src_data_space({images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
-
-        HDF5DataSpace virtual_data_space({total_images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
-        virtual_data_space.SelectHyperslabWithStride({image0, 0, 0},
-                                                     {images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()},
-                                                     {1,1,1});
-        dcpl.SetVirtual(input.data_files(file_id).filename(), "/entry/data/data",
-                        src_data_space, virtual_data_space);
-    }
-
-}
-
-void HDF5Metadata::DataVDS_TimeResolved(HDF5Dcpl &dcpl, const JFJochProtoBuf::WriterMetadataInput &input, hsize_t total_images) {
-    const auto& det = input.detector_metadata();
-    hsize_t images = total_images / input.images_per_trigger();
-    hsize_t stride = input.images_per_trigger();
-
-    if (input.data_files_size() != stride)
+std::string HDF5Metadata::DataFileName(const std::string &prefix, int64_t file_number) {
+    if (file_number < 0)
         throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
-                              "Mismatch between number of images/trigger and number of data files in time resolved mode");
-    for (uint32_t file_id = 0; file_id < input.data_files_size(); file_id++) {
-        hsize_t image0 = file_id;
-
-        HDF5DataSpace src_data_space({images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
-
-        HDF5DataSpace virtual_data_space({total_images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()});
-        virtual_data_space.SelectHyperslabWithStride({image0, 0, 0},
-                                                     {images, (hsize_t) det.height_pxl(), (hsize_t) det.width_pxl()},
-                                                     {stride, 1, 1});
-        dcpl.SetVirtual(input.data_files(file_id).filename(), "/entry/data/data",
-                        src_data_space, virtual_data_space);
-    }
+                              "File number cannot be negative");
+    else if (file_number >= 1000)
+        throw JFJochException(JFJochExceptionCategory::InputParameterInvalid,
+                              "Format doesn't allow for more than 1 thousand files");
+    else
+        return fmt::format("{:s}_data_{:03d}.h5", prefix, file_number);
 }

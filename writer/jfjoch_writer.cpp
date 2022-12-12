@@ -1,6 +1,7 @@
 // Copyright (2019-2022) Paul Scherrer Institute
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <sys/wait.h>
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -13,8 +14,13 @@ int main(int argc, char **argv) {
 
     Logger logger("jfjoch_writer");
 
-    nlohmann::json input;
-    if (argc > 1) {
+    if (argc == 1)
+        logger.Error("Usage ./jfjoch_writer <json config file>");
+
+    std::vector<std::string> grpc_addr;
+    std::string base_directory;
+    {
+        nlohmann::json input;
         std::ifstream file(argv[1]);
         try {
             input = nlohmann::json::parse(file);
@@ -22,20 +28,47 @@ int main(int argc, char **argv) {
             logger.Error("JSON Parsing exception: " + std::string(e.what()));
             exit(EXIT_FAILURE);
         }
+        if (input.contains("base_directory"))
+            base_directory = input["base_directory"];
+
+        if (!input.contains("grpc_addr"))
+            logger.Error("Input file needs writer services gRPC addresses");
+        if (!input["grpc_addr"].is_array())
+            logger.Error("grpc_addr must be array");
+
+        for (const auto &j: input["grpc_addr"]) {
+            if (j.is_number()) {
+                int64_t tcp_port = j.get<int64_t>();
+                if ((tcp_port <= 0) || (tcp_port >= UINT16_MAX))
+                    logger.Error("tcp port {} invalid", tcp_port);
+                grpc_addr.push_back("0.0.0.0:" + std::to_string(tcp_port));
+            } else if (j.is_string()) {
+                grpc_addr.push_back(j.get<std::string>());
+            } else
+                logger.Error("grpc_addr array element must be string");
+
+        }
     }
 
-    uint16_t tcp_port = 5234;
-    if (argc >= 3) tcp_port = atoi(argv[2]);
+    std::vector<pid_t> child_pids;
 
-    std::string grpc_addr = "0.0.0.0:" + std::to_string(tcp_port);
-    ZMQContext context;
+    for (const auto &addr: grpc_addr) {
+        Logger logger_local(addr);
 
-    JFJochWriterService service(context, logger);
+        pid_t pid = fork();
+        if (pid == 0) {
+            ZMQContext context;
+            JFJochWriterService service(context, logger_local);
+            if (!base_directory.empty())
+                service.BaseDirectory(base_directory);
 
-    if (input.contains("base_directory"))
-        service.BaseDirectory(input["base_directory"]);
-
-    auto server = gRPCServer(grpc_addr, service);
-    logger.Info("gRPC configuration listening on address " + grpc_addr);
-    server->Wait();
+            auto server = gRPCServer(addr, service);
+            logger_local.Info("gRPC configuration listening on address " + addr);
+            server->Wait();
+        } else
+            child_pids.push_back(pid);
+    }
+    int status;
+    for (const auto &p: child_pids)
+        wait(&status);
 }

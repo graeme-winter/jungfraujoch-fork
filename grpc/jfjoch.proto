@@ -8,7 +8,8 @@ package JFJochProtoBuf;
 enum Compression {
   BSHUF_LZ4 = 0;
   BSHUF_ZSTD = 1;
-  NO_COMPRESSION = 2;
+  BSHUF_ZSTD_RLE = 2;
+  NO_COMPRESSION = 3;
 }
 
 enum DetectorType {
@@ -36,11 +37,13 @@ enum WriterFrameType {
   IMAGE = 2;
 }
 
-enum DetectorStatusEnum {
-  IDLE = 0;
-  ERROR = 1;
+enum State {
+  NOT_INITIALIZED = 0;
+  IDLE = 1;
   BUSY = 2;
-  NO_DETECTOR = 3;
+  PEDESTAL = 3;
+  DATA_COLLECTION = 4;
+  ERROR = 5;
 }
 
 // Utilities
@@ -62,130 +65,108 @@ message Vector {
   double z = 3;
 }
 
-// DiffractionExperiment
-
-message FrameCountSettings {
-  int64 images_per_trigger = 1;
-  int64 ntrigger = 2;
-}
-
-message TimingSettings {
-  int64 frame_time_pedestalG1G2_us = 1;
-  //   uint64 frame_time_pedestalG2_us = 2; reserved
-  int64 frame_time_us = 3;
-  int64 count_time_us = 4;
-  int64 summation = 5;
-  bool time_resolved_mode = 13;
-}
-
-message DiffractionGeometrySettings {
-  double   beam_x_pxl = 1;
-  double   beam_y_pxl = 2;
-  double   detector_distance_mm = 3;
-
-  int64 detector_size_x_pxl = 6;
-  int64 detector_size_y_pxl = 7;
-
-  int64 gap_x_pxl = 8;
-  int64 gap_y_pxl = 9;
-
-  repeated int64 data_stream_modules = 10;
-  repeated int64 first_pixel_of_module = 11;
-  // Number of modules that are stacked horizontally in a single line
-  int64 horizontal_module_stacking = 12;
-
-  Vector scattering_vector = 14;
-
-  double   photon_energy_keV = 16; // Not strictly geometry, but connected
-}
-
 message RotationSettings {
   double start_angle_deg = 1;
   double angle_incr_per_image_deg = 2;
   Vector rotation_axis = 3;
 }
 
-// Metadata not affecting data acquisition
-message BeamlineMetadataSettings {
-  string   detector_name = 9;
+message Plot {
+  repeated float x = 1;
+  repeated float y = 2;
 }
 
-message CompressionSettings {
-  Compression algorithm = 1;
-  int64 level = 2;
-  int64 block_size = 3;
-}
+// DiffractionExperiment
 
-message ImageSavingSettings {
-  string file_prefix = 1;
-  int64 images_per_file = 2;
+message DatasetSettings {
+  int64    images_per_trigger = 1;
+  int64    ntrigger = 2;
+
+  oneof timing {
+    int64  summation = 3;
+    int64  image_time_us = 4;
+  }
+
+  double   beam_x_pxl = 5;
+  double   beam_y_pxl = 6;
+  double   detector_distance_mm = 7;
+  double   photon_energy_keV = 8;
+
+  string   file_prefix = 9;
+  int64    data_file_count = 10;
+
+  Compression compression = 11;
+
+  string   sample_name = 12;
+  optional UnitCell unit_cell = 13;
+  int64    space_group_number = 14;
+
+  optional Vector scattering_vector = 15;
 }
 
 message DetectorSettings {
-  bool force_full_speed = 1;
-  bool internal_fpga_packet_generator = 2;
-  int64 storage_cells = 3;
-  int64 storage_cell_start = 4;
-  int64 delay_after_trigger_us = 5;
-  bool  soft_trigger = 6;
+  int64 frame_time_us = 1;
+  optional int64 count_time_us = 2;
+
+  bool use_storage_cells = 3;
+  bool use_internal_packet_generator = 4;
+  bool collect_raw_data = 5;
+
+  optional int64 pedestal_g0_frames = 6;
+  optional int64 pedestal_g1_frames = 7;
+  optional int64 pedestal_g2_frames = 8;
 }
 
-message PreviewSettings {
-  int64 preview_period_us = 1;
-  int64 spot_finding_period_us = 2;
-  int64 bkg_estimation_period_us = 3;
+message DetectorGeometry {
+  int64 width_pxl = 1;
+  int64 height_pxl = 2;
+  repeated int64 pixel0_of_module = 3;
+  bool mirror_modules_in_y = 4;
 }
 
-message PedestalSettings {
-  int64 g0_frames = 1;
-  int64 g1_frames = 2;
-  int64 g2_frames = 3;
+message InternalSettings {
+  int64 frame_time_pedestalG1G2_us = 1;
+  //   uint64 frame_time_pedestalG2_us = 2; reserved
+  int64 frame_time_us = 3;
+  int64 count_time_us = 4;
+
+  repeated int64 data_stream_modules = 5;
+  DetectorGeometry geometry = 6;
+  DetectorGeometry raw_geometry = 7;
+  DetectorGeometry conv_geometry = 8;
+
+  bool internal_fpga_packet_generator = 9;
+  int64 storage_cells = 10;
+  int64 storage_cell_start = 11;
+
+  int64 pedestal_g0_frames = 12;
+  int64 pedestal_g1_frames = 13;
+  int64 pedestal_g2_frames = 14;
+
+  int64 preview_period_us = 15;
+  int64 spot_finding_period_us = 16;
+  int64 bkg_estimation_period_us = 17;
+
+  DetectorType type = 18;
+  DetectorMode mode = 19;
+  bool mask_module_edges = 20;
+  bool mask_chip_edges = 21;
+
+  int64 base_ipv4_address = 22;
+  int64 base_udp_port = 23;
+
+  double low_q = 26;
+  double high_q = 27;
+  double q_spacing = 28;
+
+  string git_sha1 = 29;
+  string git_date = 30;
 }
 
-message ConversionSettings {
-  DetectorType type = 5;
-  DetectorMode mode = 1;
-  bool upside_down = 2;  // Turn modules upside down
-  bool mask_module_edges = 3;
-  bool mask_chip_edges = 4;
-}
-
-message JungfraujochInternalSettings {
-  // Settings in this group should be considered fixed from user point of view
-  int64 base_ipv4_address = 6;
-  int64 base_udp_port = 7;
-  string git_sha1 = 8;
-  string git_date = 9;
-}
-
-message SampleSettings {
-  optional UnitCell unit_cell = 2;
-  int64 space_group_number = 3;
-  int64 run_number = 4;
-}
-
-message RadialIntegrationSettings {
-  double low_q = 1;
-  double high_q = 2;
-  double q_spacing = 3;
-  double bkg_estimate_low_q = 4;
-  double bkg_estimate_high_q = 5;
-}
 
 message JungfraujochSettings {
-  FrameCountSettings frame_count = 1;
-  TimingSettings timing = 2;
-  DiffractionGeometrySettings diffraction_geometry = 3;
-  BeamlineMetadataSettings beamline_metadata = 4;
-  ImageSavingSettings image_saving = 5;
-  DetectorSettings detector = 6;
-  PreviewSettings preview = 7;
-  PedestalSettings pedestal = 8;
-  ConversionSettings conv = 9;
-  CompressionSettings compr = 10;
-  JungfraujochInternalSettings internal = 11;
-  SampleSettings sample = 12;
-  RadialIntegrationSettings radial_int = 13;
+  DatasetSettings dataset = 1;
+  InternalSettings internal = 2;
 }
 
 // Calibration
@@ -243,39 +224,39 @@ message ReceiverOutput {
   uint64 images_sent = 5;
   uint64 start_time_ms = 6;
   uint64 end_time_ms = 7;
-  reserved 8;
-  double efficiency = 9;
-  uint64 max_image_number_sent = 10;
-  reserved 14;
-
-  JungfraujochSettings jungfraujoch_settings = 15;
-  optional IndexerOutput indexer_output = 16;
-  repeated JFPedestal pedestal_result = 17;
-  string master_file_name = 18;
+  double efficiency = 8;
+  uint64 max_image_number_sent = 9;
+  bool cancelled = 10;
+  string master_file_name = 11;
+  repeated JFPedestal pedestal_result = 12;
 }
 
 message ReceiverNetworkConfig {
   repeated string fpga_mac_addr = 1;
 }
 
-message DataFile {
-  string filename = 1;
-  int64 image_count = 2;
-  int64 image0 = 3;
+message ReceiverStatus {
+  optional double progress = 1;
+  repeated FPGAStatus fpga_status = 2;
+}
+
+message ReceiverDataProcessingPlots {
+  Plot bkg_estimate = 1;
+  Plot radial_int_profile = 2;
+  Plot spot_count = 3;
 }
 
 // Writer
 
 message WriterInput {
   string zmq_receiver_address = 1;
-  repeated DataFile data_files = 2;
-  int64 width = 3;
-  int64 height = 4;
-  int64 images_per_file = 5;
-  int64 pixel_depth_bytes = 6;
-  bool signed_pxl = 7;
-  Compression compression_algorithm = 8;
-  int64 compression_block_size = 9;
+  string file_prefix = 2;
+  int64 file_count = 3;
+  int64 width = 4;
+  int64 height = 5;
+  int64 pixel_depth_bytes = 7;
+  bool signed_pxl = 8;
+  Compression compression = 9;
   string image_units = 10;
   int64 max_spot_count = 11;
 }
@@ -306,18 +287,20 @@ message DetectorMetadata {
   int64 height_pxl = 3;
   int64 pixel_depth_byte = 4;
   bool signed_pxl = 5;
-  CompressionSettings compression = 6;
+  Compression compression = 6;
   int64 image_time_us = 7;
   int64 count_time_us = 8;
   int64 overload = 9;
   optional int64 underload = 10;
-  double delay_after_trigger_us = 11;
-  int64 ntrigger = 12;
-  bool time_resolved_mode = 13;
-  int64 storage_cell_number = 14;
-  double pixel_size_mm = 15;
-  double sensor_thickness_um = 16;
-  string sensor_material = 17;
+  int64 ntrigger = 11;
+  int64 storage_cell_number = 12;
+  double pixel_size_mm = 13;
+  double sensor_thickness_um = 14;
+  string sensor_material = 15;
+
+  optional double efficiency = 18;
+  optional bool collection_cancelled = 19;
+  optional int64 max_receiver_delay = 20;
 }
 
 message BeamMetadata {
@@ -347,6 +330,10 @@ message CalibrationMetadata {
   repeated CalibrationMetadataEntry calibration = 2;
 }
 
+message DataProcessingResults {
+  repeated IndexerImageOutput image_output = 1;
+}
+
 message WriterMetadataInput {
   FacilityMetadata facility_metadata = 1;
   DetectorMetadata detector_metadata = 2;
@@ -354,28 +341,14 @@ message WriterMetadataInput {
   SampleMetadata sample_metadata = 4;
   CalibrationMetadata calibration_metadata = 5;
   ExperimentGeometryMetadata geometry_metadata = 6;
+  DataProcessingResults processing_results = 7;
 
-  int64 image_number = 7;
-  int64 images_per_trigger = 8;
-  uint64 start_time_ms = 9;
-  optional uint64 end_time_ms = 10;
-  string metadata_file_name = 11;
-  repeated DataFile data_files = 12;
-  int64 images_per_file = 13;
-}
-
-message WriterSpot {
-  float x = 1;
-  float y = 2;
-  float intensity = 3;
-}
-
-message WriterFrame {
-  WriterFrameType type = 1;
-  optional int64 file_number = 2;
-  optional int64 image_number = 3;
-  repeated WriterSpot spot_coord = 4;
-  optional bytes data = 5;
+  int64 image_number = 8;
+  int64 images_per_trigger = 9;
+  uint64 start_time_ms = 10;
+  optional uint64 end_time_ms = 11;
+  string file_prefix = 12;
+  int64 file_count = 13;
 }
 
 // Detector
@@ -404,8 +377,6 @@ message DetectorInput {
   int64 storage_cell_delay = 7;
   int64 period_us = 9;
   int64 count_time_us = 10;
-  int64 delay_us = 11;
-  bool soft_trigger = 12;
 }
 
 message DetectorOutput {
@@ -413,7 +384,7 @@ message DetectorOutput {
 }
 
 message DetectorStatus {
-  DetectorStatusEnum status = 1;
+  State state = 1;
   int64 fw_version = 2;
   int64 server_version = 3;
 }
@@ -459,19 +430,8 @@ message FPGAStatus {
   uint64 pcie_c2h_status      = 36;
 }
 
-message Plot {
-  repeated float x = 1;
-  repeated float y = 2;
-}
-
-message ReceiverStatus {
-  double progress = 1;
-  repeated FPGAStatus fpga_status = 2;
-  bool idle = 3;
-  Plot bkg_estimate = 4;
-  Plot radial_int_profile = 5;
-  Plot spot_count = 6;
-  string master_file_name = 7;
+message IndexerDataProcessingPlots {
+  Plot indexing_rate = 1;
 }
 
 message DataProcessingSettings {
@@ -482,21 +442,23 @@ message DataProcessingSettings {
   int64 local_bkg_size = 5;              // NBX/NBY parameter
   optional double high_resolution_limit = 6;
   optional double low_resolution_limit = 7;
+  double bkg_estimate_low_q = 8;
+  double bkg_estimate_high_q = 9;
 }
 
 message PreviewFrame {
   int64 image_number = 1;
   int64 total_images = 2;
   double wavelength_A = 3;
-  double beam_center_x = 4;
-  double beam_center_y = 5;
+  double beam_x_pxl = 4;
+  double beam_y_pxl = 5;
   double detector_distance_mm = 6;
   int64 saturation_value = 7;
   string file_prefix = 8;
   int64 width = 9;
   int64 height = 10;
   int64 pixel_depth = 11;
-  CompressionSettings compression = 12;
+  reserved 12;
   bytes data = 13;
 }
 
@@ -507,18 +469,15 @@ message SpotFinderImageOutput {
 }
 
 message IndexerStatus {
-  Plot indexing_rate = 1;
-  int64 images_analyzed = 3;
-  int64 images_indexed = 4;
+  int64 images_analyzed = 1;
+  int64 images_indexed = 2;
 }
 
 message IndexerInput {
-  int64 expected_image_number = 1;
-  int64 image_stride = 2;
-  optional UnitCell unit_cell = 3;
-  int64 centering = 4;
-  string zmq_recv_pub_addr = 5;
-  int64 bin_size = 6;
+  optional UnitCell unit_cell = 1;
+  int64 space_group_number = 2;
+  string zmq_recv_pub_addr = 3;
+  int64 bin_size = 4;
 }
 
 message IndexerImageOutput {
@@ -555,6 +514,7 @@ message Image {
   bytes data = 1;
   int64 width = 2;
   int64 height = 3;
+  int64 pixel_depth = 4;
 }
 
 message MaskToLoad {
@@ -562,77 +522,38 @@ message MaskToLoad {
   int32 bit_to_set = 2;
 }
 
-message BrokerSetup {
-  int64 images_per_trigger = 1;
-  optional int64 summation = 2;
-  double beam_center_x_pxl = 3;
-  double beam_center_y_pxl = 4;
-  double detector_distance_mm = 5;
-  double photon_energy_kev = 6;
-  optional string name_pattern = 7;
-  string sample_name = 8;
-
-  optional bool soft_trigger = 14;
-  optional int64 ntrigger = 15;
-
-  optional int64 images_per_file = 16;
-  optional string compression = 17;
-
-  optional double omega_start_deg = 18;
-  optional double omega_increment_deg = 19;
-
-  optional bool time_resolved_mode = 20;
-
-  optional string data_collection_mode = 23;
-  optional int64 preview_rate_ms = 27;
-  UnitCell unit_cell = 29;
-  optional int64 spot_finding_rate_ms = 30;
-  optional int64 bkg_estimate_rate_ms = 31;
-  optional int64 space_group_number = 33;
-  optional int64 detector_delay_after_trigger_us = 35;
-}
-
-message BrokerPersistentTimingSettings {
-  int64 frame_time_us = 1;
-  optional int64 count_time_us = 2;
-}
-
-message BrokerPersistentSettings {
-  optional bool use_storage_cells = 1;
-  optional BrokerPersistentTimingSettings timing = 2;
-  optional int64 pedestal_g0_frames = 3;
-  optional int64 pedestal_g1_frames = 4;
-  optional int64 pedestal_g2_frames = 5;
-  optional bool use_internal_packet_generator = 6;
-  optional int64 run_number = 7;
-}
-
 message MeasurementStatistics {
-  uint64 images_collected = 1;
-  double collection_efficiency = 2;
-  double compression_ratio = 3;
-  optional int64 run_number = 4;
-  string file_name = 5;
-  double writer_performance_MBs = 6;
-  uint64 images_written = 7;
+  string file_prefix = 1;
+  int64 images_collected = 2;
+  int64 max_image_number_sent = 3;
+  double collection_efficiency = 4;
+  double compression_ratio = 5;
+
+  bool cancelled = 6;
+  int64 max_receive_delay = 7;
+
+  optional double writer_performance_MBs = 8;
+  optional int64 images_written = 9;
+
+  optional double indexing_rate = 10;
+  optional double indexing_performance_ms = 11;
+
+  int64 detector_width = 12;
+  int64 detector_height = 13;
+  int64 detector_pixel_depth = 14;
 }
 
 message BrokerStatus {
-  enum State {
-    NOT_INITIALIZED = 0;
-    IDLE = 1;
-    BUSY = 2;
-    PEDESTAL = 3;
-    DATA_COLLECTION = 4;
-    ERROR = 5;
-  }
-  State current_state = 1;
-  optional ReceiverStatus receiver_status = 2;
-  optional IndexerStatus indexer_status = 3;
-  optional MeasurementStatistics measurement_statistics = 4;
+  State broker_state = 1;
+  optional double progress = 2;
+  optional double indexing_rate = 3;
+}
 
-  JFCalibrationStatistics calibration_statistics = 10;
-  DetectorStatus detector_state = 11;
+message BrokerPlots {
+  Plot bkg_estimate = 1;
+  Plot radial_int_profile = 2;
+  Plot spot_count = 3;
+  Plot indexing_rate = 4;
 }
 
 message BrokerFullStatus {
@@ -642,30 +563,6 @@ message BrokerFullStatus {
   IndexerOutput indexer = 4;
 }
 
-service gRPC_JFJochBroker {
-  rpc Start (BrokerSetup) returns (Empty) {}
-  rpc Stop (Empty)        returns (Empty) {}
-  rpc Abort (Empty)       returns (Empty) {}
-  rpc Cancel (Empty)      returns (Empty) {}
-  rpc Pedestal (Empty)    returns (Empty) {}
-  rpc Initialize (Empty)  returns (Empty) {}
-  rpc Deactivate (Empty)  returns (Empty) {}
-  rpc Setup(BrokerPersistentSettings) returns (Empty) {}
-  rpc GetSetup (Empty)       returns (BrokerPersistentSettings) {}
-  rpc GetStatus (Empty)      returns (BrokerStatus)     {}
-  rpc GetCalibration (Empty) returns (JFCalibration)    {}
-  rpc GetFullStatus (Empty)  returns (BrokerFullStatus) {}
-  rpc GetDataProcessingSettings (Empty) returns (DataProcessingSettings) {}
-  rpc SetDataProcessingSettings (DataProcessingSettings) returns (Empty) {}
-  rpc LoadMask (MaskToLoad) returns (Empty) {}
-  rpc GetMask (Empty) returns (Image) {}
-  rpc GetMaskRawCoord (Empty) returns (Image) {}
-  rpc GetPedestalG0 (Empty) returns (Image) {}
-  rpc GetPedestalG1 (Empty) returns (Image) {}
-  rpc GetPedestalG2 (Empty) returns (Image) {}
-  rpc GetPreviewFrame (Empty) returns (PreviewFrame) {}
-}
-
 service gRPC_JFJochReceiver {
   rpc Start (ReceiverInput) returns (Empty) {}
   rpc Abort (Empty) returns (Empty) {}
@@ -673,6 +570,7 @@ service gRPC_JFJochReceiver {
   rpc Stop (Empty) returns (ReceiverOutput) {}
   rpc GetStatus (Empty) returns (ReceiverStatus) {}
   rpc SetDataProcessingSettings(DataProcessingSettings) returns (Empty) {}
+  rpc GetDataProcessingPlots(Empty) returns (ReceiverDataProcessingPlots) {}
   rpc GetPreviewFrame (Empty) returns (PreviewFrame) {}
   rpc GetNetworkConfig (Empty) returns (ReceiverNetworkConfig) {}
 }
@@ -693,12 +591,9 @@ service gRPC_JFJochDetector {
   rpc Trigger (Empty) returns (Empty) {}
 }
 
-service gRPC_JFJochTrigger {
-  rpc Trigger (Empty) returns (Empty) {}
-}
-
 service gRPC_JFJochIndexer {
   rpc Start (IndexerInput) returns (Empty) {}
   rpc Stop (Empty) returns (IndexerOutput) {}
   rpc GetStatus (Empty) returns (IndexerStatus) {}
+  rpc GetDataProcessingPlots(Empty) returns (IndexerDataProcessingPlots) {}
 }

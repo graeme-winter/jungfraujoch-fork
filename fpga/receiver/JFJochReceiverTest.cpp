@@ -113,7 +113,7 @@ bool JFJochReceiverTest(JFJochProtoBuf::ReceiverOutput &output, Logger &logger,
     if (image_number < 0)
         image_number = 0;
 
-    TestImagePusher pusher(x.GetImageLocationInFile(image_number));
+    TestImagePusher pusher(image_number);
 
     output = RunJFJochReceiverTest(aq_devices, pusher, x, logger, calib,  nthreads, abort,
                                    in_preview_writer);

@@ -18,8 +18,6 @@ class HDF5DataFile {
     std::unique_ptr<HDF5File> data_file = nullptr;
     std::unique_ptr<HDF5DataSet> data_set = nullptr;
 
-    size_t nimages;
-    size_t image0;
     size_t xpixel;
     size_t ypixel;
     size_t max_image_number;
@@ -33,12 +31,16 @@ class HDF5DataFile {
     std::vector<float> spot_intensity;
     std::vector<uint32_t> spot_count;
     const size_t max_spots;
+
+    void CreateFile();
+    void WriteImage(const void *data, size_t data_size, uint64_t image_number );
+    void WriteSpots(const std::vector<SpotToSave> & spots, uint64_t image_number);
 public:
-    HDF5DataFile(const std::string& name, int64_t image0, int64_t nimages, int64_t width, int64_t height, int64_t pixel_depth_byte,
-                 bool is_signed, CompressionAlgorithm compression = CompressionAlgorithm::BSHUF_LZ4, int64_t compression_block_size = 0, size_t max_spots = 0);
+    HDF5DataFile(const std::string& name, int64_t width, int64_t height, int64_t pixel_depth_byte,
+                 bool is_signed, CompressionAlgorithm compression = CompressionAlgorithm::BSHUF_LZ4,
+                 size_t max_spots = 0);
     ~HDF5DataFile();
-    void Write(const void *data, size_t data_size, size_t image_number);
-    void WriteSpots(size_t image_number, const std::vector<SpotToSave> & spots);
+    void Write(const void *data, size_t data_size, const std::vector<SpotToSave> & spots, uint64_t image_number);
 };
 
 #endif //HDF5DATAFILE_H

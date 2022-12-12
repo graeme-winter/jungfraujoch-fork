@@ -11,9 +11,7 @@
 
 FrameTransformation::FrameTransformation(const DiffractionExperiment &in_experiment) :
         experiment(in_experiment), summation(experiment.GetSummation()),
-        pixel_depth(experiment.GetPixelDepth()), compressor(in_experiment.GetCompressionAlgorithmEnum(),
-                                                            in_experiment.GetCompressionBlockSize(),
-                                                            in_experiment.GetCompressionLevel()),
+        pixel_depth(experiment.GetPixelDepth()), compressor(in_experiment.GetCompressionAlgorithmEnum()),
         compression_algorithm(in_experiment.GetCompressionAlgorithmEnum()),
         line_shift((experiment.IsUpsideDown() ? -1 : 1) * experiment.GetXPixelsNum()) {
 
@@ -88,18 +86,9 @@ void FrameTransformation::PackSummation() {
 size_t FrameTransformation::PackStandardOutput() {
     if (summation > 1)
         PackSummation();
-    switch (compression_algorithm) {
-        case CompressionAlgorithm::BSHUF_LZ4:
-        case CompressionAlgorithm::BSHUF_ZSTD:
-            return compressor.Compress(standard_output, precompression_buffer.data(),
-                                       experiment.GetPixelsNum(), pixel_depth);
 
-        case CompressionAlgorithm::NO_COMPRESSION:
-            memcpy(standard_output, precompression_buffer.data(), experiment.GetPixelsNum() * pixel_depth);
-            return experiment.GetPixelsNum() * pixel_depth;
-        default:
-            throw JFJochException(JFJochExceptionCategory::Compression, "Not implemented compression algorithm");
-    }
+    return compressor.Compress(standard_output, precompression_buffer.data(),
+                               experiment.GetPixelsNum(), pixel_depth);
 }
 
 void FrameTransformation::ProcessModule(const int16_t *input, size_t frame_number, uint16_t module_number,

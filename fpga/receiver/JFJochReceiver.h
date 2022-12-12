@@ -42,8 +42,6 @@ class JFJochReceiver {
     std::vector<std::future<int64_t>> data_acquisition_futures;
 
     std::unique_ptr<RadialIntegrationMapping> rad_int_mapping;
-    uint16_t rad_int_min_bin;
-    uint16_t rad_int_max_bin;
 
     std::vector<float> rad_int_profile;
     constexpr static const size_t rad_int_profile_window = 100;
@@ -62,6 +60,7 @@ class JFJochReceiver {
     bool push_images_to_writer;
 
     volatile int abort{0};
+    volatile bool cancelled{0};
 
     std::vector<AcquisitionDevice *> &acquisition_device;
     uint16_t ndatastreams{0};
@@ -101,9 +100,7 @@ class JFJochReceiver {
     JFJochProtoBuf::DataProcessingSettings GetDataProcessingSettings();
 
     void AddRadialIntegrationProfile(const std::vector<float> &result);
-
-    void GetPlots(JFJochProtoBuf::ReceiverStatus &status);
-    void GetRadialIntegrationProfile(JFJochProtoBuf::ReceiverStatus &status);
+    void GetRadialIntegrationProfile(JFJochProtoBuf::ReceiverDataProcessingPlots &plots);
 public:
     JFJochReceiver(const JFJochProtoBuf::ReceiverInput &settings,
                    std::vector<AcquisitionDevice *> &open_capi_device,
@@ -122,7 +119,7 @@ public:
     double GetProgress() const;
     void SetDataProcessingSettings(const JFJochProtoBuf::DataProcessingSettings &data_processing_settings);
 
-    void GetStatus(JFJochProtoBuf::ReceiverStatus &status);
+    JFJochProtoBuf::ReceiverDataProcessingPlots GetPlots();
 
 };
 

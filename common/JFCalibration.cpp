@@ -236,7 +236,7 @@ JFCalibration::operator JFJochProtoBuf::JFCalibrationStatistics() const {
 template <class T>
 std::vector<uint8_t> CompressCalibration(const std::vector<T> &c) {
     std::vector<uint8_t> compressed_output(bshuf_compress_lz4_bound(c.size(), sizeof(T),0) + 12);
-    JFJochBitShuffleCompressor compressor(CompressionAlgorithm::BSHUF_LZ4, 0, 0);
+    JFJochBitShuffleCompressor compressor(CompressionAlgorithm::BSHUF_LZ4);
     compressor.Compress(compressed_output.data(), c);
     return compressed_output;
 }

@@ -16,6 +16,7 @@ public:
     void Start(const DiffractionExperiment &x);
     JFJochProtoBuf::IndexerOutput Stop();
     JFJochProtoBuf::IndexerStatus GetStatus();
+    JFJochProtoBuf::IndexerDataProcessingPlots GetPlots();
 };
 
 

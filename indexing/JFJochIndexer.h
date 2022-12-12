@@ -20,17 +20,20 @@ class JFJochIndexer {
     Logger &logger;
 
     std::vector<JFJochProtoBuf::IndexerImageOutput> output;
+    int64_t output_indexed = 0;
+    int64_t output_analyzed = 0;
     std::mutex output_mutex;
 
     std::vector<std::future<int64_t>> processing_threads;
     int64_t Run(const JFJochProtoBuf::IndexerInput &input);
-    int64_t image_stride;
     StatusVector<uint8_t> indexed_result;
     void AddIndexerImageOutput(const JFJochProtoBuf::IndexerImageOutput &output);
 public:
+    static char GetCentering(int64_t space_group);
     JFJochIndexer(ZMQContext &context, const JFJochProtoBuf::IndexerInput &input, Logger &logger, int64_t nthreads);
     JFJochProtoBuf::IndexerOutput End();
     JFJochProtoBuf::IndexerStatus GetStatus();
+    JFJochProtoBuf::IndexerDataProcessingPlots GetPlots();
     ~JFJochIndexer();
 };
 

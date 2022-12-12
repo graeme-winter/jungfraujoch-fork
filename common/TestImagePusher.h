@@ -15,16 +15,16 @@
 class TestImagePusher : public ImagePusher {
     mutable std::mutex m;
     std::vector<uint8_t> receiver_generated_image;
-    std::pair<int64_t, int64_t> image_id;
+    int64_t image_id;
     bool correct_sequence = true;
     bool is_running = false;
     size_t frame_counter = 0;
 public:
-    explicit TestImagePusher(const std::pair<int64_t, int64_t> &image_location_in_file);
-    void StartDataCollection() override;
+    explicit TestImagePusher(int64_t image_number);
+    void StartDataCollection(int64_t file_count) override;
     void EndDataCollection() override;
-    void SendData(void *image, const std::pair<int64_t, int64_t> &image_location_in_file,
-                  size_t image_size, const std::vector<DiffractionSpot> &spots) override;
+    void SendData(void *image, size_t image_size, const std::vector<DiffractionSpot> &spots,
+                  int64_t image_number) override;
     bool CheckImage(const DiffractionExperiment &x,
                          const std::vector<uint16_t> &raw_reference_image,
                          const JFCalibration &calibration,

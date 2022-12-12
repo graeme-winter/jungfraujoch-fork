@@ -89,9 +89,9 @@ TEST_CASE("RawToConvertedGeometry_LineCopyAndAddMultipixelMiddleRow","[RawToConv
 }
 
 TEST_CASE("RawToConvertedGeometry_Transform","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(2, {4,4,6,6}, 0,0, false);
 
-    x.DataStreamModuleSize(2,{4,4,6,6}).Mode(DetectorMode::Conversion).UpsideDown(false);
+    x.Mode(DetectorMode::Conversion);
     REQUIRE(x.GetModulesNum(2) == 6);
     REQUIRE(x.GetPixelsNum() == CONVERTED_MODULE_SIZE * x.GetModulesNum());
 
@@ -147,9 +147,9 @@ TEST_CASE("RawToConvertedGeometry_Transform","[RawToConvertedGeometry]") {
 }
 
 TEST_CASE("RawToConvertedGeometry_Transform_AdjustMultipixels","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(2, {4,4,6,6}, 0, 0, false);
 
-    x.DataStreamModuleSize(2,{4,4,6,6}).Mode(DetectorMode::Conversion).UpsideDown(false);
+    x.Mode(DetectorMode::Conversion);
     x.Summation(2); // Ensure the image is 32-bit
     REQUIRE(x.GetPixelDepth() == 4);
 
@@ -209,9 +209,9 @@ TEST_CASE("RawToConvertedGeometry_Transform_AdjustMultipixels","[RawToConvertedG
 }
 
 TEST_CASE("RawToConvertedGeometry_Transform_upside_down","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(2,{4,4,6,6}, 0, 0, true);
 
-    x.DataStreamModuleSize(2,{4,4,6,6}).Mode(DetectorMode::Conversion).UpsideDown(true);
+    x.Mode(DetectorMode::Conversion);
     REQUIRE(x.GetModulesNum(3) == 6);
     REQUIRE(x.GetPixelsNum() == CONVERTED_MODULE_SIZE * x.GetModulesNum());
 
@@ -269,9 +269,9 @@ TEST_CASE("RawToConvertedGeometry_Transform_upside_down","[RawToConvertedGeometr
 }
 
 TEST_CASE("RawToConvertedGeometry","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(2,{4,4,6,6}, 0, 0, true);
 
-    x.DataStreamModuleSize(2,{4,4,6,6}).Mode(DetectorMode::Conversion).UpsideDown(true);
+    x.Mode(DetectorMode::Conversion);
     REQUIRE(x.GetModulesNum(2) == 6);
     REQUIRE(x.GetPixelsNum() == CONVERTED_MODULE_SIZE * x.GetModulesNum());
 
@@ -298,9 +298,9 @@ TEST_CASE("RawToConvertedGeometry","[RawToConvertedGeometry]") {
 }
 
 TEST_CASE("RawToConvertedGeometry_int64","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(2,{4,4,6,6}, 0, 0, true);
 
-    x.DataStreamModuleSize(2,{4,4,6,6}).Mode(DetectorMode::Conversion).UpsideDown(true);
+    x.Mode(DetectorMode::Conversion);
     REQUIRE(x.GetModulesNum(2) == 6);
     REQUIRE(x.GetPixelsNum() == CONVERTED_MODULE_SIZE * x.GetModulesNum());
 
@@ -322,9 +322,9 @@ TEST_CASE("RawToConvertedGeometry_int64","[RawToConvertedGeometry]") {
 }
 
 TEST_CASE("RawToConvertedGeometry_FP","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(2,{4,4,6,6}, 0, 0, true);
 
-    x.DataStreamModuleSize(2,{4,4,6,6}).Mode(DetectorMode::Conversion).UpsideDown(true);
+    x.Mode(DetectorMode::Conversion);
     REQUIRE(x.GetModulesNum(2) == 6);
     REQUIRE(x.GetPixelsNum() == CONVERTED_MODULE_SIZE * x.GetModulesNum());
 
@@ -346,9 +346,9 @@ TEST_CASE("RawToConvertedGeometry_FP","[RawToConvertedGeometry]") {
 }
 
 TEST_CASE("RawToConvertedGeometry_Gaps","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(2,{4,4}, 8, 36, true);
 
-    x.DataStreamModuleSize(2,{4,4}, 8, 36).Mode(DetectorMode::Conversion).UpsideDown(true);
+    x.Mode(DetectorMode::Conversion);
     REQUIRE(x.GetModulesNum(1) == 4);
     REQUIRE(x.GetXPixelsNum() == 2 * CONVERTED_MODULE_COLS + 8);
     REQUIRE(x.GetYPixelsNum() == 4 * CONVERTED_MODULE_LINES + 3*36);
@@ -377,8 +377,9 @@ TEST_CASE("RawToConvertedGeometry_Gaps","[RawToConvertedGeometry]") {
 }
 
 TEST_CASE("RawToConvertedGeometry_Coordinates","[RawToConvertedGeometry]") {
-    DiffractionExperiment x;
-    x.DataStreamModuleSize(2,{4,4}, 8, 36).Mode(DetectorMode::Conversion).UpsideDown(true);
+    DiffractionExperiment x(2,{4,4}, 8, 36, true);
+
+    x.Mode(DetectorMode::Conversion);
 
     Coord x1_raw(0,0,0);
     Coord x1_conv = RawToConvertedCoordinate(x, 0, x1_raw);

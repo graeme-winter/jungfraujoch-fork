@@ -4,13 +4,16 @@
 #include <catch2/catch.hpp>
 
 #include "../grpc/gRPCServer_Template.h"
-#include "../broker/JFJochBrokerService.h"
+#include "../broker/JFJochStateMachine.h"
 #include "../writer/JFJochWriterService.h"
 #include "../fpga/receiver/JFJochReceiverService.h"
 #include "FPGAUnitTest.h"
 #include "../fpga/host/MockAcquisitionDevice.h"
 #include "../indexing/JFJochIndexerService.h"
 #include "../common/ZMQImagePusher.h"
+#include "../common/jsonToGrpc.h"
+
+using namespace std::literals::chrono_literals;
 
 TEST_CASE("JFJochIntegrationTest_ZMQ", "[JFJochReceiver]") {
     Logger logger("JFJochIntegrationTest_ZMQ");
@@ -22,10 +25,15 @@ TEST_CASE("JFJochIntegrationTest_ZMQ", "[JFJochReceiver]") {
     int64_t ndatastream = 2;
     std::vector<int64_t> nmodules = {4, 4};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+
+    REQUIRE(!state_machine.GetMeasurementStatistics().has_value());
+
+
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
 
     logger.Verbose(true);
 
@@ -38,7 +46,7 @@ TEST_CASE("JFJochIntegrationTest_ZMQ", "[JFJochReceiver]") {
     for (int i = 0; i < ndatastream; i++) {
         auto *test = new MockAcquisitionDevice(i , 256);
 
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++)
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++)
             test->LoadModuleGain(gain_from_file, m);
 
         aq_devices.emplace_back(test);
@@ -56,45 +64,53 @@ TEST_CASE("JFJochIntegrationTest_ZMQ", "[JFJochReceiver]") {
     auto fpga_receiver_server = gRPCServer("unix:fpga_receiver_test", fpga_receiver);
     auto writer_server = gRPCServer("unix:writer_test",  writer);
 
-    REQUIRE_NOTHROW(broker.Initialize(nullptr, nullptr, nullptr));
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
-    setup.set_detector_distance_mm(100);
-    setup.set_name_pattern("integration_test");
     setup.set_images_per_trigger(5);
+    setup.set_detector_distance_mm(100);
+    setup.set_file_prefix("integration_test");
     setup.set_photon_energy_kev(12.4);
+    setup.set_data_file_count(2);
+    setup.set_summation(1);
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
     JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
-    REQUIRE(status.receiver_status().progress() == Approx(0.0));
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus_State_DATA_COLLECTION);
+    status = state_machine.GetStatus();
+    REQUIRE(status.progress() == Approx(0.0));
+    REQUIRE(status.broker_state() == JFJochProtoBuf::DATA_COLLECTION);
 
     for (int i = 0; i < ndatastream; i++) {
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++) {
             for (int image_num = 1; image_num <= nimages; image_num++)
                 aq_devices[i]->AddModule(image_num, m, image.data());
         }
         aq_devices[i]->Terminate();
     }
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::ReceiverStatus progress;
-    REQUIRE(fpga_receiver.GetStatus(nullptr, nullptr, &progress).ok());
-    REQUIRE(progress.progress() == Approx(100.0));
+    status = state_machine.GetStatus();
+    REQUIRE(status.broker_state() == JFJochProtoBuf::IDLE);
 
-    broker.GetStatus(nullptr, nullptr, &status);
-    REQUIRE(status.receiver_status().progress() == Approx(100.0));
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus_State_IDLE);
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == 5);
-    REQUIRE(status.measurement_statistics().images_written() == 5);
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
+
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == 5);
+    REQUIRE(statistics.images_written() == 5);
+    REQUIRE(statistics.max_image_number_sent() == 4);
+    REQUIRE(!statistics.cancelled());
+    REQUIRE(statistics.file_prefix() == "integration_test");
+    REQUIRE(statistics.detector_width() == 2068);
+    REQUIRE(statistics.detector_height() == 2164);
+    REQUIRE(statistics.detector_pixel_depth() == 2);
 
     fpga_receiver_server->Shutdown();
     writer_server->Shutdown();
@@ -110,10 +126,14 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_RAW", "[JFJochReceiver]") {
     int64_t ndatastream = 2;
     std::vector<int64_t> nmodules = {4, 4};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0).Mode(DetectorMode::Conversion);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+
+    REQUIRE(!state_machine.GetMeasurementStatistics().has_value());
+
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().Mode(DetectorMode::Conversion);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
 
     logger.Verbose(true);
 
@@ -126,7 +146,7 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_RAW", "[JFJochReceiver]") {
     for (int i = 0; i < ndatastream; i++) {
         auto *test = new MockAcquisitionDevice(i , 256);
 
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++)
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++)
             test->LoadModuleGain(gain_from_file, m);
 
         aq_devices.emplace_back(test);
@@ -143,46 +163,55 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_RAW", "[JFJochReceiver]") {
     auto fpga_receiver_server = gRPCServer("unix:fpga_receiver_test", fpga_receiver);
     auto writer_server = gRPCServer("unix:writer_test",  writer);
 
-    REQUIRE_NOTHROW(broker.Initialize(nullptr, nullptr, nullptr));
+    JFJochProtoBuf::DetectorSettings detector_settings;
+    detector_settings.set_frame_time_us(500);
+    detector_settings.set_collect_raw_data(true);
+    REQUIRE_NOTHROW(state_machine.SetDetectorSettings(detector_settings));
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(100);
-    setup.set_name_pattern("integration_test");
+    setup.set_file_prefix("integration_raw_test");
     setup.set_images_per_trigger(5);
     setup.set_photon_energy_kev(12.4);
-    setup.set_data_collection_mode("raw");
+    setup.set_data_file_count(5);
+    setup.set_summation(1);
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
     JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
-    REQUIRE(status.receiver_status().progress() == Approx(0.0));
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus_State_DATA_COLLECTION);
+    status = state_machine.GetStatus();
+    REQUIRE(status.progress() == Approx(0.0));
+    REQUIRE(status.broker_state() == JFJochProtoBuf::DATA_COLLECTION);
 
     for (int i = 0; i < ndatastream; i++) {
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++) {
             for (int image_num = 1; image_num <= nimages; image_num++)
                 aq_devices[i]->AddModule(image_num, m, image.data());
         }
         aq_devices[i]->Terminate();
     }
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::ReceiverStatus progress;
-    REQUIRE(fpga_receiver.GetStatus(nullptr, nullptr, &progress).ok());
-    REQUIRE(progress.progress() == Approx(100.0));
+    status = state_machine.GetStatus();
+    REQUIRE(status.broker_state() == JFJochProtoBuf::IDLE);
 
-    broker.GetStatus(nullptr, nullptr, &status);
-    REQUIRE(status.receiver_status().progress() == Approx(100.0));
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus_State_IDLE);
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == 5);
-    REQUIRE(status.measurement_statistics().images_written() == 5);
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
+
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == 5);
+    REQUIRE(statistics.images_written() == 5);
+    REQUIRE(statistics.file_prefix() == "integration_raw_test");
+    REQUIRE(statistics.detector_width() == 1024);
+    REQUIRE(statistics.detector_height() == 8*512);
+    REQUIRE(statistics.detector_pixel_depth() == 2);
 
     fpga_receiver_server->Shutdown();
     writer_server->Shutdown();
@@ -198,10 +227,11 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_3Writers", "[JFJochReceiver]") {
     int64_t ndatastream = 2;
     std::vector<int64_t> nmodules = {4, 4};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0).ImagesPerFile(8);
-    broker.Services()
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
+    services
             .Writer("unix:writer_test_0", "inproc://#0")
             .Writer("unix:writer_test_1", "inproc://#1")
             .Writer("unix:writer_test_2", "inproc://#2")
@@ -218,7 +248,7 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_3Writers", "[JFJochReceiver]") {
     for (int i = 0; i < ndatastream; i++) {
         auto *test = new MockAcquisitionDevice(i , 256);
 
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++)
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++)
             test->LoadModuleGain(gain_from_file, m);
 
         aq_devices.emplace_back(test);
@@ -240,45 +270,47 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_3Writers", "[JFJochReceiver]") {
     auto writer_server_1 = gRPCServer("unix:writer_test_1",  writer_1);
     auto writer_server_2 = gRPCServer("unix:writer_test_2",  writer_2);
 
-    REQUIRE_NOTHROW(broker.Initialize(nullptr, nullptr, nullptr));
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(100);
-    setup.set_name_pattern("integration_test_3writers");
+    setup.set_file_prefix("integration_test_3writers");
     setup.set_images_per_trigger(nimages);
     setup.set_photon_energy_kev(12.4);
+    setup.set_data_file_count(5);
+    setup.set_summation(1);
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
     JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
-    REQUIRE(status.receiver_status().progress() == Approx(0.0));
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus_State_DATA_COLLECTION);
+    status = state_machine.GetStatus();
+    REQUIRE(status.progress() == Approx(0.0));
+    REQUIRE(status.broker_state() == JFJochProtoBuf::DATA_COLLECTION);
 
     for (int i = 0; i < ndatastream; i++) {
         for (int image_num = 1; image_num <= nimages; image_num++) {
-            for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++)
+            for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++)
                 aq_devices[i]->AddModule(image_num, m, image.data());
         }
         aq_devices[i]->Terminate();
     }
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::ReceiverStatus progress;
-    REQUIRE(fpga_receiver.GetStatus(nullptr, nullptr, &progress).ok());
-    REQUIRE(progress.progress() == Approx(100.0));
+    status = state_machine.GetStatus();
+    REQUIRE(status.broker_state() == JFJochProtoBuf::IDLE);
 
-    broker.GetStatus(nullptr, nullptr, &status);
-    REQUIRE(status.receiver_status().progress() == Approx(100.0));
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus_State_IDLE);
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == nimages);
-    REQUIRE(status.measurement_statistics().images_written() == nimages);
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
+
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == nimages);
+    REQUIRE(statistics.images_written() == nimages);
 
     // REQUIRE(imagePuller_0.GetImageCount() == 16);
     // REQUIRE(imagePuller_1.GetImageCount() == 13);
@@ -300,10 +332,11 @@ TEST_CASE("JFJochIntegrationTest_Cancel", "[JFJochReceiver]") {
     int64_t ndatastream = 2;
     std::vector<int64_t> nmodules = {4, 4};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
 
     logger.Verbose(true);
 
@@ -316,7 +349,7 @@ TEST_CASE("JFJochIntegrationTest_Cancel", "[JFJochReceiver]") {
     for (int i = 0; i < ndatastream; i++) {
         auto *test = new MockAcquisitionDevice(i , 256);
         test->EnableLogging(&logger);
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++) {
             test->LoadModuleGain(gain_from_file, m);
             for (int frame = 1; frame <= nimages; frame ++)
                 test->AddModule(frame, m, image.data());
@@ -335,36 +368,37 @@ TEST_CASE("JFJochIntegrationTest_Cancel", "[JFJochReceiver]") {
     auto fpga_receiver_server = gRPCServer("unix:fpga_receiver_test", fpga_receiver);
     auto writer_server = gRPCServer("unix:writer_test",  writer);
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(100);
-    setup.set_name_pattern("integration_test");
+    setup.set_file_prefix("integration_test");
     setup.set_images_per_trigger(2 * nimages);
     setup.set_photon_energy_kev(12.4);
+    setup.set_summation(1);
+    setup.set_data_file_count(1);
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
     logger.Info("Cancelling");
-    REQUIRE(broker.Cancel(nullptr, nullptr, nullptr).ok());
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Cancel());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::BrokerStatus status;
-    REQUIRE(broker.GetStatus(nullptr, nullptr, &status).ok());
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
 
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 0.5);
-    REQUIRE(status.measurement_statistics().images_collected() == 5);
-    REQUIRE(status.measurement_statistics().images_written() == 5);
-
-    JFJochProtoBuf::BrokerFullStatus output;
-    REQUIRE(broker.GetFullStatus(nullptr, nullptr, &output).ok());
-
-    REQUIRE(output.receiver().max_image_number_sent() == 4);
-    REQUIRE(output.receiver().images_sent() == 5);
+    REQUIRE(statistics.collection_efficiency() == 0.5);
+    REQUIRE(statistics.images_collected() == 5);
+    REQUIRE(statistics.has_images_written());
+    REQUIRE(statistics.images_written() == 5);
+    REQUIRE(statistics.max_image_number_sent() == 4);
+    REQUIRE(statistics.cancelled());
+    REQUIRE(!statistics.has_indexing_rate());
 
     fpga_receiver_server->Shutdown();
     writer_server->Shutdown();
@@ -379,10 +413,11 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview", "[JFJochReceiver]") {
     int64_t ndatastream = 2;
     std::vector<int64_t> nmodules = {4, 4};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0).PreviewPeriod(5ms);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
 
     logger.Verbose(true);
 
@@ -394,7 +429,7 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview", "[JFJochReceiver]") {
 
     for (int i = 0; i < ndatastream; i++) {
         auto *test = new MockAcquisitionDevice(i , 256);
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++) {
             test->LoadModuleGain(gain_from_file, m);
             for (int image_num = 1; image_num <= nimages; image_num++)
                 test->AddModule(image_num, m, image.data());
@@ -422,22 +457,23 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview", "[JFJochReceiver]") {
     auto fpga_receiver_server = gRPCServer("unix:fpga_receiver_test", fpga_receiver);
     auto writer_server = gRPCServer("unix:writer_test",  writer);
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(100);
-    setup.set_name_pattern("integration_test_preview");
+    setup.set_file_prefix("integration_test_preview");
     setup.set_images_per_trigger(5);
     setup.set_photon_energy_kev(12.4);
-    setup.set_beam_center_x_pxl(123.0);
-    setup.set_preview_rate_ms(5);
+    setup.set_beam_x_pxl(123.0);
+    setup.set_summation(1);
+    setup.set_data_file_count(1);
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
     std::string s;
@@ -445,43 +481,44 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview", "[JFJochReceiver]") {
     // Pixel mask
     REQUIRE(rcv_preview_socket.Receive(s, false) > 0);
     JFJochProtoBuf::PreviewFrame frame;
-    REQUIRE_NOTHROW(frame.ParseFromString(s));
+    REQUIRE_NOTHROW(frame = jsonToGrpc<JFJochProtoBuf::PreviewFrame>(s));
 
     // Check header
     REQUIRE(frame.image_number() == -1);
-    REQUIRE(frame.width() == broker.Experiment().GetXPixelsNum());
-    REQUIRE(frame.height() == broker.Experiment().GetYPixelsNum());
+    REQUIRE(frame.width() == state_machine.NotThreadSafe_Experiment().GetXPixelsNum());
+    REQUIRE(frame.height() == state_machine.NotThreadSafe_Experiment().GetYPixelsNum());
     REQUIRE(frame.pixel_depth() == 4);
 
     // First frame
     REQUIRE(rcv_preview_socket.Receive(s, false) > 0);
 
-    REQUIRE_NOTHROW(frame.ParseFromString(s));
+    REQUIRE_NOTHROW(frame = jsonToGrpc<JFJochProtoBuf::PreviewFrame>(s));
 
     // Check header
     REQUIRE(frame.image_number() == 0);
-    REQUIRE(frame.beam_center_x() == Approx(setup.beam_center_x_pxl()));
-    REQUIRE(frame.beam_center_y() == Approx(setup.beam_center_y_pxl()));
-    REQUIRE(frame.width() == broker.Experiment().GetXPixelsNum());
-    REQUIRE(frame.height() == broker.Experiment().GetYPixelsNum());
+    REQUIRE(frame.beam_x_pxl() == Approx(setup.beam_x_pxl()));
+    REQUIRE(frame.beam_y_pxl() == Approx(setup.beam_y_pxl()));
+    REQUIRE(frame.width() == state_machine.NotThreadSafe_Experiment().GetXPixelsNum());
+    REQUIRE(frame.height() == state_machine.NotThreadSafe_Experiment().GetYPixelsNum());
     REQUIRE(frame.pixel_depth() == 2);
 
     // Check compressed image
-    size_t npixel = broker.Experiment().GetPixelsNum();
+    size_t npixel = state_machine.NotThreadSafe_Experiment().GetPixelsNum();
 
     std::vector<char> rcv_image(frame.data().size());
     rcv_image = {frame.data().begin(), frame.data().end()};
-    REQUIRE(rcv_image.size() == broker.Experiment().GetPixelsNum() * sizeof(int16_t));
+    REQUIRE(rcv_image.size() == state_machine.NotThreadSafe_Experiment().GetPixelsNum() * sizeof(int16_t));
 
     // Check no more frames waiting
     REQUIRE(rcv_preview_socket.Receive(s, false) == -1);
 
-    JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
 
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == 5);
-    REQUIRE(status.measurement_statistics().images_written() == 5);
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == 5);
+    REQUIRE(statistics.images_written() == 5);
 
     fpga_receiver_server->Shutdown();
     writer_server->Shutdown();
@@ -497,10 +534,11 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview_no_writer", "[JFJochReceiver]"
     int64_t ndatastream = 2;
     std::vector<int64_t> nmodules = {4, 4};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0).PreviewPeriod(5ms);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
 
     logger.Verbose(true);
 
@@ -512,7 +550,7 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview_no_writer", "[JFJochReceiver]"
 
     for (int i = 0; i < ndatastream; i++) {
         auto *test = new MockAcquisitionDevice(i , 256);
-        for (int m = 0; m < broker.Experiment().GetModulesNum(i); m++) {
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(i); m++) {
             test->LoadModuleGain(gain_from_file, m);
             for (int image_num = 1; image_num <= nimages; image_num++)
                 test->AddModule(image_num, m, image.data());
@@ -540,22 +578,23 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview_no_writer", "[JFJochReceiver]"
     auto fpga_receiver_server = gRPCServer("unix:fpga_receiver_test", fpga_receiver);
     auto writer_server = gRPCServer("unix:writer_test",  writer);
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(100);
     setup.set_images_per_trigger(5);
     setup.set_photon_energy_kev(12.4);
-    setup.set_beam_center_x_pxl(123.0);
-    setup.set_beam_center_x_pxl(878.0);
-    setup.set_preview_rate_ms(5);
+    setup.set_beam_x_pxl(123.0);
+    setup.set_beam_y_pxl(878.0);
+    setup.set_summation(1);
+    setup.set_data_file_count(1);
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
     std::string s;
@@ -563,43 +602,44 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_with_preview_no_writer", "[JFJochReceiver]"
     // Pixel mask
     REQUIRE(rcv_preview_socket.Receive(s, false) > 0);
     JFJochProtoBuf::PreviewFrame frame;
-    REQUIRE_NOTHROW(frame.ParseFromString(s));
+    REQUIRE_NOTHROW(frame = jsonToGrpc<JFJochProtoBuf::PreviewFrame>(s));
 
     // Check header
     REQUIRE(frame.image_number() == -1);
-    REQUIRE(frame.width() == broker.Experiment().GetXPixelsNum());
-    REQUIRE(frame.height() == broker.Experiment().GetYPixelsNum());
+    REQUIRE(frame.width() == state_machine.NotThreadSafe_Experiment().GetXPixelsNum());
+    REQUIRE(frame.height() == state_machine.NotThreadSafe_Experiment().GetYPixelsNum());
     REQUIRE(frame.pixel_depth() == 4);
 
     // First frame
     REQUIRE(rcv_preview_socket.Receive(s, false) > 0);
 
-    REQUIRE_NOTHROW(frame.ParseFromString(s));
+    REQUIRE_NOTHROW(frame = jsonToGrpc<JFJochProtoBuf::PreviewFrame>(s));
 
     // Check header
     REQUIRE(frame.image_number() == 0);
-    REQUIRE(frame.beam_center_x() == Approx(setup.beam_center_x_pxl()));
-    REQUIRE(frame.beam_center_y() == Approx(setup.beam_center_y_pxl()));
-    REQUIRE(frame.width() == broker.Experiment().GetXPixelsNum());
-    REQUIRE(frame.height() == broker.Experiment().GetYPixelsNum());
+    REQUIRE(frame.beam_x_pxl() == Approx(setup.beam_x_pxl()));
+    REQUIRE(frame.beam_y_pxl() == Approx(setup.beam_y_pxl()));
+    REQUIRE(frame.width() == state_machine.NotThreadSafe_Experiment().GetXPixelsNum());
+    REQUIRE(frame.height() == state_machine.NotThreadSafe_Experiment().GetYPixelsNum());
     REQUIRE(frame.pixel_depth() == 2);
 
     // Check compressed image
-    size_t npixel = broker.Experiment().GetPixelsNum();
+    size_t npixel = state_machine.NotThreadSafe_Experiment().GetPixelsNum();
 
     std::vector<char> rcv_image(frame.data().size());
     rcv_image = {frame.data().begin(), frame.data().end()};
-    REQUIRE(rcv_image.size() == broker.Experiment().GetPixelsNum() * sizeof(int16_t));
+    REQUIRE(rcv_image.size() == state_machine.NotThreadSafe_Experiment().GetPixelsNum() * sizeof(int16_t));
 
     // Check no more frames waiting
     REQUIRE(rcv_preview_socket.Receive(s, false) == -1);
 
-    JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
 
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == 5);
-    REQUIRE(status.measurement_statistics().images_written() == 0);
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == 5);
+    REQUIRE(statistics.images_written() == 0);
     fpga_receiver_server->Shutdown();
     writer_server->Shutdown();
 }
@@ -613,10 +653,12 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_background_estimation", "[JFJochReceiver]")
     int64_t ndatastream = 1;
     std::vector<int64_t> nmodules = {8};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0).MaskChipEdges(true).MaskModuleEdges(true);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0)
+            .MaskChipEdges(true).MaskModuleEdges(true).BackgroundEstimationPeriod(1ms).FrameTime(1ms);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
 
     logger.Verbose(true);
 
@@ -628,13 +670,13 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_background_estimation", "[JFJochReceiver]")
 
     auto gain_from_file = GainCalibrationFromTestFile();
 
-    for (int m = 0; m < broker.Experiment().GetModulesNum(); m++)
+    for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(); m++)
         test->LoadModuleGain(gain_from_file, m);
 
     for (int i = 0; i < nimages; i++) {
         for (auto & j: image_raw_geom)
             j = 2 * i + 5;
-        for (int m = 0; m < broker.Experiment().GetModulesNum(); m++)
+        for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(); m++)
             test->AddModule(i + 1, m, image_raw_geom.data());
     }
 
@@ -663,45 +705,58 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_background_estimation", "[JFJochReceiver]")
     auto fpga_receiver_server = gRPCServer("unix:fpga_receiver_test", fpga_receiver);
     auto writer_server = gRPCServer("unix:writer_test",  writer);
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(75);
     setup.set_summation(1);
-    setup.set_name_pattern("bkg_estimate_test");
+    setup.set_file_prefix("bkg_estimate_test");
     setup.set_images_per_trigger(nimages);
     setup.set_photon_energy_kev(12.4);
-    setup.set_beam_center_x_pxl(1090);
-    setup.set_beam_center_y_pxl(1136);
+    setup.set_beam_x_pxl(1090);
+    setup.set_beam_y_pxl(1136);
     setup.mutable_unit_cell()->set_a(36.9);
     setup.mutable_unit_cell()->set_b(78.95);
     setup.mutable_unit_cell()->set_c(78.95);
     setup.mutable_unit_cell()->set_alpha(90.0);
     setup.mutable_unit_cell()->set_beta(90.0);
     setup.mutable_unit_cell()->set_gamma(90.0);
-    setup.set_bkg_estimate_rate_ms(1);
+    setup.set_data_file_count(1);
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    JFJochProtoBuf::DataProcessingSettings settings;
+    settings.set_signal_to_noise_threshold(4);
+    settings.set_photon_count_threshold(5);
+    settings.set_min_pix_per_spot(3);
+    settings.set_max_pix_per_spot(200);
+    settings.set_low_resolution_limit(80.0);
+    settings.set_high_resolution_limit(2.5);
+    settings.set_local_bkg_size(5);
+
+    settings.set_bkg_estimate_low_q(2 * M_PI / 4.0);
+    settings.set_bkg_estimate_high_q(2 * M_PI / 3.0);
+
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::ReceiverStatus progress;
-    REQUIRE(fpga_receiver.GetStatus(nullptr, nullptr, &progress).ok());
-    REQUIRE(progress.progress() == Approx(100.0));
-    REQUIRE(progress.bkg_estimate().x_size() == 1);
-    REQUIRE(progress.bkg_estimate().y_size() == 1);
-    REQUIRE(progress.bkg_estimate().x(0) == Approx(4.5));
-    REQUIRE(progress.bkg_estimate().y(0) == Approx((5+23) / 2.0));
+    JFJochProtoBuf::ReceiverDataProcessingPlots plots;
+    REQUIRE(fpga_receiver.GetDataProcessingPlots(nullptr, nullptr, &plots).ok());
 
-    JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
+    REQUIRE(plots.bkg_estimate().x_size() == 1);
+    REQUIRE(plots.bkg_estimate().y_size() == 1);
+    REQUIRE(plots.bkg_estimate().x(0) == Approx(4.5));
+    REQUIRE(plots.bkg_estimate().y(0) == Approx((5+23) / 2.0));
 
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == 10);
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
+
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == 10);
 
     fpga_receiver_server->Shutdown();
     writer_server->Shutdown();
@@ -716,10 +771,11 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot", "[JFJochReceiver]") {
     int64_t ndatastream = 1;
     std::vector<int64_t> nmodules = {8};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test");
 
     logger.Verbose(true);
 
@@ -735,10 +791,10 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot", "[JFJochReceiver]") {
     std::vector<hsize_t> file_size = {nimages, file_space.GetDimensions()[1], file_space.GetDimensions()[2]};
     dataset.ReadVector(image_conv, start, file_size);
 
-    std::vector<int16_t> image_raw_geom(nimages * broker.Experiment().GetModulesNum() * RAW_MODULE_SIZE * sizeof(int16_t));
+    std::vector<int16_t> image_raw_geom(nimages * state_machine.NotThreadSafe_Experiment().GetModulesNum() * RAW_MODULE_SIZE * sizeof(int16_t));
     for (int i = 0; i < nimages; i++)
-        ConvertedToRawGeometry(broker.Experiment(),
-                               image_raw_geom.data() + i * RAW_MODULE_SIZE * broker.Experiment().GetModulesNum(),
+        ConvertedToRawGeometry(state_machine.NotThreadSafe_Experiment(),
+                               image_raw_geom.data() + i * RAW_MODULE_SIZE * state_machine.NotThreadSafe_Experiment().GetModulesNum(),
                                image_conv.data() + i * file_space.GetDimensions()[1] * file_space.GetDimensions()[2]);
 
 
@@ -748,7 +804,7 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot", "[JFJochReceiver]") {
 
     auto gain_from_file = GainCalibrationFromTestFile();
 
-    for (int m = 0; m < broker.Experiment().GetModulesNum(0); m++) {
+    for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(0); m++) {
         test->LoadModuleGain(gain_from_file, m);
         test->AddModule(1, m, (uint16_t *) (image_raw_geom.data() + m * RAW_MODULE_SIZE));
     }
@@ -777,24 +833,25 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot", "[JFJochReceiver]") {
     auto fpga_receiver_server = gRPCServer("unix:fpga_receiver_test", fpga_receiver);
     auto writer_server = gRPCServer("unix:writer_test",  writer);
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(75);
     setup.set_summation(1);
-    setup.set_name_pattern("spot_finding_test");
+    setup.set_file_prefix("spot_finding_test");
     setup.set_images_per_trigger(nimages);
     setup.set_photon_energy_kev(12.4);
-    setup.set_beam_center_x_pxl(1090);
-    setup.set_beam_center_y_pxl(1136);
+    setup.set_beam_x_pxl(1090);
+    setup.set_beam_y_pxl(1136);
     setup.mutable_unit_cell()->set_a(36.9);
     setup.mutable_unit_cell()->set_b(78.95);
     setup.mutable_unit_cell()->set_c(78.95);
     setup.mutable_unit_cell()->set_alpha(90.0);
     setup.mutable_unit_cell()->set_beta(90.0);
     setup.mutable_unit_cell()->set_gamma(90.0);
+    setup.set_data_file_count(1);
 
     JFJochProtoBuf::DataProcessingSettings settings;
     settings.set_signal_to_noise_threshold(4);
@@ -805,24 +862,20 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot", "[JFJochReceiver]") {
     settings.set_high_resolution_limit(2.5);
     settings.set_local_bkg_size(5);
 
-    broker.SetDataProcessingSettings(nullptr, &settings, nullptr);
+    REQUIRE_NOTHROW(state_machine.SetDataProcessingSettings(settings));
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::ReceiverStatus progress;
-    REQUIRE(fpga_receiver.GetStatus(nullptr, nullptr, &progress).ok());
-    REQUIRE(progress.progress() == Approx(100.0));
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
 
-
-    JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
-
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == 1);
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == 1);
 
     JFJochProtoBuf::SpotFinderImageOutput spot_finder_out;
     std::string s;
@@ -853,10 +906,11 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index", "[JFJochReceiver]
     int64_t ndatastream = 1;
     std::vector<int64_t> nmodules = {8};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test")
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0).SpotFindingPeriod(10ms);
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test")
             .Indexer("unix:indexer_test","inproc://#2");
 
     logger.Verbose(true);
@@ -873,10 +927,10 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index", "[JFJochReceiver]
     std::vector<hsize_t> file_size = {nimages, file_space.GetDimensions()[1], file_space.GetDimensions()[2]};
     dataset.ReadVector(image_conv, start, file_size);
 
-    std::vector<int16_t> image_raw_geom(nimages * broker.Experiment().GetModulesNum() * RAW_MODULE_SIZE * sizeof(int16_t));
+    std::vector<int16_t> image_raw_geom(nimages * state_machine.NotThreadSafe_Experiment().GetModulesNum() * RAW_MODULE_SIZE * sizeof(int16_t));
     for (int i = 0; i < nimages; i++)
-        ConvertedToRawGeometry(broker.Experiment(),
-                               image_raw_geom.data() + i * RAW_MODULE_SIZE * broker.Experiment().GetModulesNum(),
+        ConvertedToRawGeometry(state_machine.NotThreadSafe_Experiment(),
+                               image_raw_geom.data() + i * RAW_MODULE_SIZE * state_machine.NotThreadSafe_Experiment().GetModulesNum(),
                                image_conv.data() + i * file_space.GetDimensions()[1] * file_space.GetDimensions()[2]);
 
 
@@ -888,12 +942,12 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index", "[JFJochReceiver]
 
     auto gain_from_file = GainCalibrationFromTestFile();
 
-    for (int m = 0; m < broker.Experiment().GetModulesNum(0); m++) {
+    for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(0); m++) {
         test->LoadModuleGain(gain_from_file, m);
         for (int image_num = 1; image_num <= nimages; image_num++)
             test->AddModule(image_num, m, (uint16_t *) (image_raw_geom.data()
-                                                        + (m + (image_num-1) * broker.Experiment().GetModulesNum(0))
-                                                        * RAW_MODULE_SIZE));
+                                                        + (m + (image_num-1) * state_machine.NotThreadSafe_Experiment().GetModulesNum(0))
+                                                          * RAW_MODULE_SIZE));
     }
     test->Terminate();
 
@@ -919,25 +973,25 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index", "[JFJochReceiver]
     auto writer_server = gRPCServer("unix:writer_test",  writer);
     auto indexer_server = gRPCServer("unix:indexer_test", indexer);
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(75);
     setup.set_summation(1);
-    setup.set_name_pattern("spot_finding_test");
+    setup.set_file_prefix("spot_finding_test");
     setup.set_images_per_trigger(nimages);
     setup.set_photon_energy_kev(12.4);
-    setup.set_beam_center_x_pxl(1090);
-    setup.set_beam_center_y_pxl(1136);
-    setup.set_spot_finding_rate_ms(10);
+    setup.set_beam_x_pxl(1090);
+    setup.set_beam_y_pxl(1136);
     setup.mutable_unit_cell()->set_a(36.9);
     setup.mutable_unit_cell()->set_b(78.95);
     setup.mutable_unit_cell()->set_c(78.95);
     setup.mutable_unit_cell()->set_alpha(90.0);
     setup.mutable_unit_cell()->set_beta(90.0);
     setup.mutable_unit_cell()->set_gamma(90.0);
+    setup.set_data_file_count(1);
 
     JFJochProtoBuf::DataProcessingSettings settings;
     settings.set_signal_to_noise_threshold(4);
@@ -948,25 +1002,22 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index", "[JFJochReceiver]
     settings.set_high_resolution_limit(2.5);
     settings.set_local_bkg_size(5);
 
-    broker.SetDataProcessingSettings(nullptr, &settings, nullptr);
+    REQUIRE_NOTHROW(state_machine.SetDataProcessingSettings(settings));
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::ReceiverStatus progress;
-    REQUIRE(fpga_receiver.GetStatus(nullptr, nullptr, &progress).ok());
-    REQUIRE(progress.progress() == Approx(100.0));
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
 
-    JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
-
-    CHECK(status.indexer_status().images_analyzed() == 3);
-    CHECK(status.indexer_status().images_indexed() == 3);
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == nimages);
+    REQUIRE(statistics.has_indexing_rate());
+    REQUIRE(statistics.indexing_rate() == 1.0);
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == nimages);
 
     JFJochProtoBuf::SpotFinderImageOutput spot_finder_out;
     std::string s;
@@ -986,10 +1037,11 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index_sum", "[JFJochRecei
     int64_t ndatastream = 1;
     std::vector<int64_t> nmodules = {8};
 
-    JFJochBrokerService broker(logger);
-    broker.Experiment().DataStreamModuleSize(2, nmodules, 8, 36)
-            .PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0);
-    broker.Services().Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test")
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+    state_machine.NotThreadSafe_Experiment() = DiffractionExperiment(2, nmodules, 8, 36);
+    state_machine.NotThreadSafe_Experiment().PedestalG0Frames(0).PedestalG1Frames(0).PedestalG2Frames(0).SpotFindingPeriod(std::chrono::milliseconds(10));
+    services.Writer("unix:writer_test", "inproc://#1").Receiver("unix:fpga_receiver_test")
             .Indexer("unix:indexer_test","inproc://#2");
 
     logger.Verbose(true);
@@ -1006,10 +1058,10 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index_sum", "[JFJochRecei
     std::vector<hsize_t> file_size = {nimages, file_space.GetDimensions()[1], file_space.GetDimensions()[2]};
     dataset.ReadVector(image_conv, start, file_size);
 
-    std::vector<int16_t> image_raw_geom(nimages * broker.Experiment().GetModulesNum() * RAW_MODULE_SIZE * sizeof(int16_t));
+    std::vector<int16_t> image_raw_geom(nimages * state_machine.NotThreadSafe_Experiment().GetModulesNum() * RAW_MODULE_SIZE * sizeof(int16_t));
     for (int i = 0; i < nimages; i++)
-        ConvertedToRawGeometry(broker.Experiment(),
-                               image_raw_geom.data() + i * RAW_MODULE_SIZE * broker.Experiment().GetModulesNum(),
+        ConvertedToRawGeometry(state_machine.NotThreadSafe_Experiment(),
+                               image_raw_geom.data() + i * RAW_MODULE_SIZE * state_machine.NotThreadSafe_Experiment().GetModulesNum(),
                                image_conv.data() + i * file_space.GetDimensions()[1] * file_space.GetDimensions()[2]);
 
 
@@ -1021,11 +1073,11 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index_sum", "[JFJochRecei
 
     auto gain_from_file = GainCalibrationFromTestFile();
 
-    for (int m = 0; m < broker.Experiment().GetModulesNum(0); m++) {
+    for (int m = 0; m < state_machine.NotThreadSafe_Experiment().GetModulesNum(0); m++) {
         test->LoadModuleGain(gain_from_file, m);
         for (int image_num = 1; image_num <= nimages; image_num++)
             test->AddModule(image_num, m, (uint16_t *) (image_raw_geom.data()
-                                                        + (m + (image_num-1) * broker.Experiment().GetModulesNum(0))
+                                                        + (m + (image_num-1) * state_machine.NotThreadSafe_Experiment().GetModulesNum(0))
                                                           * RAW_MODULE_SIZE));
     }
     test->Terminate();
@@ -1051,25 +1103,25 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index_sum", "[JFJochRecei
     auto writer_server = gRPCServer("unix:writer_test",  writer);
     auto indexer_server = gRPCServer("unix:indexer_test", indexer);
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Initialize());
     logger.Info("Initialized");
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
     setup.set_ntrigger(1);
     setup.set_detector_distance_mm(75);
     setup.set_summation(3);
-    setup.set_name_pattern("spot_finding_test");
+    setup.set_file_prefix("spot_finding_test");
     setup.set_images_per_trigger(nimages/3);
     setup.set_photon_energy_kev(12.4);
-    setup.set_beam_center_x_pxl(1090);
-    setup.set_beam_center_y_pxl(1136);
-    setup.set_spot_finding_rate_ms(10);
+    setup.set_beam_x_pxl(1090);
+    setup.set_beam_y_pxl(1136);
     setup.mutable_unit_cell()->set_a(36.9);
     setup.mutable_unit_cell()->set_b(78.95);
     setup.mutable_unit_cell()->set_c(78.95);
     setup.mutable_unit_cell()->set_alpha(90.0);
     setup.mutable_unit_cell()->set_beta(90.0);
     setup.mutable_unit_cell()->set_gamma(90.0);
+    setup.set_data_file_count(1);
 
     JFJochProtoBuf::DataProcessingSettings settings;
     settings.set_signal_to_noise_threshold(4);
@@ -1080,25 +1132,23 @@ TEST_CASE("JFJochIntegrationTest_ZMQ_lysozyme_spot_and_index_sum", "[JFJochRecei
     settings.set_high_resolution_limit(2.5);
     settings.set_local_bkg_size(5);
 
-    broker.SetDataProcessingSettings(nullptr, &settings, nullptr);
+    REQUIRE_NOTHROW(state_machine.SetDataProcessingSettings(settings));
 
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Start(setup));
     logger.Info("Started measurement");
 
-    REQUIRE(broker.Stop(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.Stop());
     logger.Info("Stopped measurement");
 
-    JFJochProtoBuf::ReceiverStatus progress;
-    REQUIRE(fpga_receiver.GetStatus(nullptr, nullptr, &progress).ok());
-    REQUIRE(progress.progress() == Approx(100.0));
+    auto tmp = state_machine.GetMeasurementStatistics();
+    REQUIRE(tmp.has_value());
+    auto statistics = tmp.value();
 
-    JFJochProtoBuf::BrokerStatus status;
-    broker.GetStatus(nullptr, nullptr, &status);
+    REQUIRE(statistics.collection_efficiency() == 1.0);
+    REQUIRE(statistics.images_collected() == nimages/3);
+    REQUIRE(statistics.has_indexing_rate());
+    REQUIRE(statistics.indexing_rate() == 1.0);
 
-    CHECK(status.indexer_status().images_analyzed() == 3);
-    CHECK(status.indexer_status().images_indexed() == 3);
-    REQUIRE(status.measurement_statistics().collection_efficiency() == 1.0);
-    REQUIRE(status.measurement_statistics().images_collected() == nimages/3);
     JFJochProtoBuf::SpotFinderImageOutput spot_finder_out;
     std::string s;
 

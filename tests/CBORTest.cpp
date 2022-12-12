@@ -47,8 +47,7 @@ TEST_CASE("CBORSerialize_Image", "[CBOR]") {
         test[i] = (i * 253 + 56) % 256;
 
     size_t serialized_size = 0;
-    REQUIRE_NOTHROW(serialized_size = serializer.SerializeImage(test.data(), test.size(),
-                                                           std::make_pair<uint64_t, uint64_t>(456,789),
+    REQUIRE_NOTHROW(serialized_size = serializer.SerializeImage(test.data(), test.size(),456,
                                                                    spots));
     REQUIRE (serialized_size > 0);
 
@@ -58,8 +57,7 @@ TEST_CASE("CBORSerialize_Image", "[CBOR]") {
     JFJochFrameDeserializer deserializer;
     REQUIRE_NOTHROW(deserializer.Process(serialized));
     REQUIRE(deserializer.GetType() == JFJochFrameDeserializer::Type::IMAGE);
-    REQUIRE(deserializer.GetFileNumber() == 456);
-    REQUIRE(deserializer.GetImageNumber() == 789);
+    REQUIRE(deserializer.GetImageNumber() == 456);
     REQUIRE(deserializer.GetImageSize() == test.size());
     REQUIRE(memcmp(deserializer.GetImageData(), test.data(), test.size()) == 0);
 }
@@ -76,8 +74,7 @@ TEST_CASE("CBORSerialize_Image_Spots", "[CBOR]") {
         test[i] = (i * 253 + 56) % 256;
 
     size_t serialized_size = 0;
-    REQUIRE_NOTHROW(serialized_size = serializer.SerializeImage(test.data(), test.size(),
-                                                                std::make_pair<uint64_t, uint64_t>(456,789),
+    REQUIRE_NOTHROW(serialized_size = serializer.SerializeImage(test.data(), test.size(),789,
                                                                 spots));
     REQUIRE (serialized_size > 0);
 
@@ -87,7 +84,6 @@ TEST_CASE("CBORSerialize_Image_Spots", "[CBOR]") {
     JFJochFrameDeserializer deserializer;
     REQUIRE_NOTHROW(deserializer.Process(serialized));
     REQUIRE(deserializer.GetType() == JFJochFrameDeserializer::Type::IMAGE);
-    REQUIRE(deserializer.GetFileNumber() == 456);
     REQUIRE(deserializer.GetImageNumber() == 789);
     REQUIRE(deserializer.GetImageSize() == test.size());
     REQUIRE(memcmp(deserializer.GetImageData(), test.data(), test.size()) == 0);
@@ -112,9 +108,7 @@ TEST_CASE("CBORSerialize_Image_Spots_NLohmann", "[CBOR]") {
         test[i] = (i * 253 + 56) % 256;
 
     size_t serialized_size = 0;
-    REQUIRE_NOTHROW(serialized_size = serializer.SerializeImage(test.data(), test.size(),
-                                                                std::make_pair<uint64_t, uint64_t>(456,789),
-                                                                spots));
+    REQUIRE_NOTHROW(serialized_size = serializer.SerializeImage(test.data(), test.size(),789, spots));
     REQUIRE (serialized_size > 0);
 
     auto serialized = serializer.GetBuffer();
@@ -123,7 +117,6 @@ TEST_CASE("CBORSerialize_Image_Spots_NLohmann", "[CBOR]") {
     nlohmann::json j ;
     REQUIRE_NOTHROW(j = nlohmann::json::from_cbor(serialized));
     REQUIRE(j["image_number"] == 789);
-    REQUIRE(j["file_number"] == 456);
     REQUIRE(j["type"] == "image");
     REQUIRE(j["spots"].is_array());
     REQUIRE(j["spots"].size() == 6);

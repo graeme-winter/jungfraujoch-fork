@@ -6,11 +6,11 @@
 #include "JFJochCompressor.h"
 #include "../compression/JFJochDecompress.h"
 
-TestImagePusher::TestImagePusher(const std::pair<int64_t, int64_t> &image_location_in_file) {
-    image_id = image_location_in_file;
+TestImagePusher::TestImagePusher(int64_t image_number) {
+    image_id = image_number;
 }
 
-void TestImagePusher::StartDataCollection() {
+void TestImagePusher::StartDataCollection(int64_t data_file_count) {
     std::unique_lock<std::mutex> ul(m);
 
     if (is_running)
@@ -28,12 +28,12 @@ void TestImagePusher::EndDataCollection() {
         is_running = false;
 }
 
-void TestImagePusher::SendData(void *image, const std::pair<int64_t, int64_t> &image_location_in_file, size_t image_size,
-                          const std::vector<DiffractionSpot> &spots) {
+void TestImagePusher::SendData(void *image, size_t image_size, const std::vector<DiffractionSpot> &spots,
+                               int64_t image_number) {
     std::unique_lock<std::mutex> ul(m);
 
     frame_counter++;
-    if (image_location_in_file == image_id) {
+    if (image_number == image_id) {
         receiver_generated_image.resize(image_size);
         memcpy(receiver_generated_image.data(), image, image_size);
     }
@@ -78,7 +78,7 @@ bool TestImagePusher::CheckImage(const DiffractionExperiment &x, const std::vect
             if (x.GetDetectorMode() == DetectorMode::Conversion) {
                 size_t storage_cell = 0;
                 if (x.GetStorageCellNumber() > 1)
-                    storage_cell = image_id.first;
+                    storage_cell = image_id % x.GetStorageCellNumber();
 
                 double result = CheckConversionWithGeomTransform(x, calibration, gain_calibration,
                                                                  raw_reference_image.data(),

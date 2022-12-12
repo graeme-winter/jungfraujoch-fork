@@ -106,8 +106,6 @@ bool JFJochFrameDeserializer::ProcessImageMapElement(CborValue &value) {
             DecodeType(value);
         else if (key == "image_number")
             image_number = GetCBORInt(value);
-        else if (key == "file_number")
-            file_number = GetCBORInt(value);
         else if (key == "data")
             GetCBORBinaryImage(value);
         else if (key == "spots")
@@ -141,12 +139,8 @@ const size_t JFJochFrameDeserializer::GetImageSize() const {
     return image_size;
 }
 
-size_t JFJochFrameDeserializer::GetImageNumber() const {
+int64_t JFJochFrameDeserializer::GetImageNumber() const {
     return image_number;
-}
-
-size_t JFJochFrameDeserializer::GetFileNumber() const {
-    return file_number;
 }
 
 JFJochFrameDeserializer::Type JFJochFrameDeserializer::GetType() const {

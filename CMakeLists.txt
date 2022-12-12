@@ -48,7 +48,7 @@ ADD_SUBDIRECTORY(broker)
 ADD_SUBDIRECTORY(etc)
 ADD_SUBDIRECTORY(tools)
 
-SET(jfjoch_executables jfjoch_broker)
+SET(jfjoch_executables jfjoch_broker_http)
 
 IF (JFJOCH_COMPILE_TESTS OR JFJOCH_COMPILE_FPGA)
     ADD_SUBDIRECTORY(fpga)

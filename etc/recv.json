@@ -29,7 +29,7 @@
     }
   ],
   "tcp_send_buffer_size": 256000000,
-  "zmq_send_high_watermark": 5000,
+  "zmq_send_high_watermark": 500,
   "preview_zmq_addr": "tcp://0.0.0.0:5400",
   "spot_zmq_addr": "tcp://0.0.0.0:5401",
   "grpc_addr": "unix:jfjoch-fpga-receiver"

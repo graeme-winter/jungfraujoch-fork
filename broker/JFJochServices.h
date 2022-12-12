@@ -9,7 +9,6 @@
 #include "../common/Logger.h"
 #include "../grpc/JFJochReceiverClient.h"
 #include "../grpc/JFJochWriterGroupClient.h"
-#include "../grpc/JFJochTriggerClient.h"
 #include "../grpc/JFJochDetectorClient.h"
 #include "../grpc/JFJochIndexerClient.h"
 
@@ -19,7 +18,7 @@ class JFJochServices {
     JFJochDetectorClient detector;
     JFJochIndexerClient indexer;
 
-    JFJochProtoBuf::FacilityMetadata facility_metadata;
+    JFJochProtoBuf::WriterMetadataInput request;
 
     Logger &logger;
     bool indexer_running = false;
@@ -33,10 +32,12 @@ public:
     JFJochProtoBuf::BrokerFullStatus Stop(const JFCalibration &calibration);
     void Abort();
     void Cancel();
+    void Trigger();
 
     JFJochProtoBuf::ReceiverStatus GetReceiverStatus();
     JFJochProtoBuf::IndexerStatus GetIndexerStatus();
     JFJochProtoBuf::PreviewFrame GetPreviewFrame();
+    JFJochProtoBuf::BrokerPlots GetPlots();
 
     void SetDataProcessingSettings(const JFJochProtoBuf::DataProcessingSettings &settings);
     JFJochServices& Receiver(const std::string &addr);
@@ -44,6 +45,8 @@ public:
     JFJochServices& Detector(const std::string &addr);
     JFJochServices& Indexer(const std::string &addr, const std::string &zmq_sub_addr);
     JFJochServices& FacilityMetadata(const JFJochProtoBuf::FacilityMetadata &input);
+
+    size_t WriterZMQCount() const;
 };
 
 

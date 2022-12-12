@@ -171,8 +171,8 @@ TEST_CASE("JFJochIndexerService_Operation","[Indexing]") {
     REQUIRE(output.image_output_size() == 20);
     REQUIRE(output.indexed_images() == 20);
 
-    JFJochProtoBuf::IndexerStatus simpl_output;
-    REQUIRE(service.GetStatus(nullptr, nullptr, &simpl_output).ok());
+    JFJochProtoBuf::IndexerDataProcessingPlots simpl_output;
+    REQUIRE(service.GetDataProcessingPlots(nullptr, nullptr, &simpl_output).ok());
     REQUIRE(simpl_output.indexing_rate().y_size() == 2);
     REQUIRE(simpl_output.indexing_rate().y(0) == 1.0);
     REQUIRE(simpl_output.indexing_rate().y(1) == 1.0);

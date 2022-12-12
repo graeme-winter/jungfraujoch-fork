@@ -116,13 +116,24 @@ class JFJochException : public std::exception {
         }
     }
 public:
-    JFJochException(JFJochExceptionCategory in_val, const std::string &description, int optional = 0) :
+    JFJochException() = default;
+
+    JFJochException(JFJochExceptionCategory in_val, const std::string &description, int optional = 0) noexcept :
             category(in_val) {
-        msg = DecodeCategory(category) + " (" + description + ")";
+        try {
+            msg = DecodeCategory(category) + " (" + description + ")";
+        } catch (...) {}
+    }
+
+    JFJochException(const JFJochException &e) noexcept {
+        try {
+            category = e.category;
+            msg = e.msg;
+        } catch (...) {}
     }
 
     [[nodiscard]] const char *what() const noexcept override {
-        return msg.c_str();
+            return msg.c_str();
     }
 };
 

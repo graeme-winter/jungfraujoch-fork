@@ -23,6 +23,7 @@ public:
     JFJochProtoBuf::ReceiverStatus GetStatus();
     JFJochProtoBuf::PreviewFrame GetPreviewFrame();
     JFJochProtoBuf::ReceiverNetworkConfig GetNetworkConfig();
+    JFJochProtoBuf::ReceiverDataProcessingPlots GetPlots();
 };
 
 

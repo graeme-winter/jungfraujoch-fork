@@ -15,9 +15,9 @@ using namespace std::literals::chrono_literals;
 TEST_CASE("HLS_C_Simulation_internal_packet_generator", "[FPGA][Full]") {
     const uint16_t nmodules = 4;
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {nmodules});
 
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {nmodules});
+    x.Mode(DetectorMode::Raw);
     x.UseInternalPacketGenerator(true).ImagesPerTrigger(4).PedestalG0Frames(0);
 
     HLSSimulatedDevice test(0, 64);
@@ -54,9 +54,9 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator", "[FPGA][Full]") {
 TEST_CASE("HLS_C_Simulation_internal_packet_generator_4KB", "[FPGA][Full]") {
     const uint16_t nmodules = 4;
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {nmodules});
 
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {nmodules}).DetectorType(JFJochProtoBuf::EIGER);
+    x.Mode(DetectorMode::Raw).DetectorType(JFJochProtoBuf::EIGER);
     x.UseInternalPacketGenerator(true).ImagesPerTrigger(4).PedestalG0Frames(0);
 
     HLSSimulatedDevice test(0, 64);
@@ -93,7 +93,7 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_4KB", "[FPGA][Full]") {
 TEST_CASE("HLS_C_Simulation_internal_packet_generator_custom_frame", "[FPGA][Full]") {
     const uint16_t nmodules = 4;
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {nmodules});
 
     std::vector<uint16_t> test_frame(MODULES_INTERNAL_PACKET_GEN * RAW_MODULE_SIZE);
 
@@ -103,7 +103,7 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_custom_frame", "[FPGA][Ful
     for (auto &i: test_frame)
         i = dist(g1);
 
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1, {nmodules});
+    x.Mode(DetectorMode::Raw);
     x.UseInternalPacketGenerator(true).ImagesPerTrigger(4).PedestalG0Frames(0);
 
     HLSSimulatedDevice test(0, 64);
@@ -135,10 +135,10 @@ TEST_CASE("HLS_C_Simulation_check_raw", "[FPGA][Full]") {
         LoadBinaryFile("../../tests/test_data/mod5_raw" + std::to_string(i)+".bin", raw_frames.data() + i * RAW_MODULE_SIZE, RAW_MODULE_SIZE);
     }
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
@@ -175,10 +175,10 @@ TEST_CASE("HLS_C_Simulation_check_raw", "[FPGA][Full]") {
 }
 
 TEST_CASE("HLS_C_Simulation_check_cancel", "[FPGA][Full]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
@@ -198,10 +198,10 @@ TEST_CASE("HLS_C_Simulation_check_cancel", "[FPGA][Full]") {
 
 
 TEST_CASE("HLS_C_Simulation_check_cancel_conversion", "[FPGA][Full]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Conversion);
     x.PedestalG0Frames(0).ImagesPerTrigger(5).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
@@ -228,10 +228,10 @@ TEST_CASE("HLS_C_Simulation_check_delay", "[FPGA][Full]") {
     std::vector<uint16_t> raw_frames(RAW_MODULE_SIZE*20);
 
     Completion c;
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
@@ -270,11 +270,11 @@ TEST_CASE("HLS_C_Simulation_check_delay", "[FPGA][Full]") {
 TEST_CASE("HLS_C_Simulation_check_lost_frame_raw", "[FPGA][Full]") {
     std::vector<uint16_t> raw_frames(RAW_MODULE_SIZE*20);
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
     for (int i = 0; i < 4096; i++) data[i] = i;
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
@@ -300,11 +300,11 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_raw", "[FPGA][Full]") {
 TEST_CASE("HLS_C_Simulation_check_lost_frame_conversion", "[FPGA][Full]") {
     std::vector<uint16_t> raw_frames(RAW_MODULE_SIZE*20);
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
     for (int i = 0; i < 4096; i++) data[i] = i;
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Conversion);
     x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
 
     HLSSimulatedDevice test(0, 64);
@@ -333,10 +333,10 @@ TEST_CASE("HLS_C_Simulation_check_lost_frame_conversion", "[FPGA][Full]") {
 TEST_CASE("HLS_C_Simulation_check_single_packet", "[FPGA][Full]") {
     std::vector<uint16_t> raw_frames(RAW_MODULE_SIZE*20);
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
-    x.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Raw);
     x.PedestalG0Frames(0).ImagesPerTrigger(3).NumTriggers(1);
     HLSSimulatedDevice test(0, 64);
 
@@ -414,8 +414,8 @@ TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
 
     std::vector<double> energy_values = {6.0, 12.4, 17.7, 5, 4.5, 3.7};
 
-    DiffractionExperiment x;
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {4});
+    DiffractionExperiment x(1, {4});
+    x.Mode(DetectorMode::Conversion);
     HLSSimulatedDevice test(0, 64);
 
     auto gain_from_file = GainCalibrationFromTestFile();
@@ -457,7 +457,7 @@ TEST_CASE("HLS_C_Simulation_check_convert_full_range", "[FPGA][Full]") {
 TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPGA][Full]") {
     double energy = 6.0;
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {1});
     std::vector<uint16_t> data(RAW_MODULE_SIZE);
     JFPedestal pedestal_g0, pedestal_g1, pedestal_g2;
     std::vector<double> gain(3 * RAW_MODULE_SIZE);
@@ -472,7 +472,7 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_convert_full_range", "[FPG
         data[i] = i % RAW_MODULE_SIZE;
     }
 
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {1});
+    x.Mode(DetectorMode::Conversion);
     x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(1).UseInternalPacketGenerator(true).PhotonEnergy_keV(energy);
     REQUIRE(x.GetPhotonEnergy_keV() == Approx(energy));
 
@@ -517,10 +517,10 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
         LoadBinaryFile("../../tests/test_data/mod5_conv" + std::to_string(i)+".bin", conv_frames.data() + i * RAW_MODULE_SIZE, RAW_MODULE_SIZE);
     }
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{4});
     uint16_t data[4096];
 
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{4});
+    x.Mode(DetectorMode::Conversion);
     x.PedestalG0Frames(0).NumTriggers(2).ImagesPerTrigger(5);
 
     HLSSimulatedDevice test(0, 64);
@@ -592,10 +592,10 @@ TEST_CASE("HLS_C_Simulation_check_2_trigger_convert", "[FPGA][Full]") {
 }
 
 TEST_CASE("HLS_C_Simulation_check_wrong_packet_size", "[FPGA][Full]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1,{1});
     uint16_t data[8192];
 
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{1});
+    x.Mode(DetectorMode::Conversion);
     x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(5);
 
     HLSSimulatedDevice test(0, 64);
@@ -826,9 +826,9 @@ TEST_CASE("OpenCAPIDevice_GenerateOpenCAPIDevice","[OpenCAPI]") {
 }
 
 TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G0", "[FPGA][Full]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {2});
 
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {2});
+    x.Mode(DetectorMode::Conversion);
     x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(16).UseInternalPacketGenerator(true)
     .PhotonEnergy_keV(10.0).StorageCells(16);
 
@@ -868,9 +868,9 @@ TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G0", 
 }
 
 TEST_CASE("HLS_C_Simulation_internal_packet_generator_storage_cell_convert_G1", "[FPGA][Full]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {2});
 
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, {2});
+    x.Mode(DetectorMode::Conversion);
     x.PedestalG0Frames(0).NumTriggers(1).ImagesPerTrigger(16).UseInternalPacketGenerator(true)
             .PhotonEnergy_keV(10.0).StorageCells(16);
 

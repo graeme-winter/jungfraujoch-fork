@@ -42,7 +42,8 @@ ADD_LIBRARY( CommonFunctions STATIC
         PedestalCalcCPU.cpp PedestalCalcCPU.h
         Latch.cpp Latch.h
         JFPedestal.cpp JFPedestal.h
-        JFCalibration.cpp JFCalibration.h RadialIntegrationMapping.cpp RadialIntegrationMapping.h StatusVector.h JFModuleGainCalibration.cpp JFModuleGainCalibration.h ImagePusher.cpp ImagePusher.h TestImagePusher.cpp TestImagePusher.h SpotToSave.h)
+        JFCalibration.cpp JFCalibration.h RadialIntegrationMapping.cpp RadialIntegrationMapping.h StatusVector.h JFModuleGainCalibration.cpp JFModuleGainCalibration.h ImagePusher.cpp ImagePusher.h TestImagePusher.cpp TestImagePusher.h SpotToSave.h NetworkAddressConvert.h NetworkAddressConvert.cpp WriteTIFF.cpp WriteTIFF.h
+        grpcToJson.h jsonToGrpc.h)
 
 IF (CMAKE_CUDA_COMPILER)
     TARGET_SOURCES(CommonFunctions PUBLIC SpotFinder.h PedestalCalcGPU.h)
@@ -68,3 +69,7 @@ IF(HAS_NUMAIF AND NUMA_LIBRARY)
 ENDIF()
 
 SET_SOURCE_FILES_PROPERTIES(PedestalCalc.cpp PROPERTIES COMPILE_FLAGS -Ofast)
+
+FIND_PACKAGE(TIFF REQUIRED)
+FIND_LIBRARY(TIFFXX NAMES tiffxx REQUIRED DOC "Tiff C++ library")
+TARGET_LINK_LIBRARIES(CommonFunctions TIFF::TIFF ${TIFFXX})

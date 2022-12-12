@@ -2,105 +2,176 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <catch2/catch.hpp>
-#include "../broker/JFJochBrokerService.h"
+#include "../broker/JFJochStateMachine.h"
 #include "../common/JFJochException.h"
 
-TEST_CASE("JFJochBrokerService_States") {
-    Logger logger("JFJochBrokerService_States");
-    JFJochBrokerService broker(logger);
+TEST_CASE("JFJochStateMachine_States") {
+    Logger logger("JFJochStateMachine_States");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
 
-    JFJochProtoBuf::BrokerSetup setup;
+    JFJochProtoBuf::DatasetSettings setup;
+    setup.set_ntrigger(1);
+    setup.set_detector_distance_mm(100);
+    setup.set_file_prefix("integration_test");
+    setup.set_images_per_trigger(5);
+    setup.set_photon_energy_kev(12.4);
+    setup.set_data_file_count(5);
+    setup.set_summation(1);
 
-    JFJochProtoBuf::BrokerStatus status;
-    REQUIRE(broker.GetStatus(nullptr, nullptr, &status).ok());
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus::NOT_INITIALIZED);
+    JFJochState state;
+    REQUIRE_NOTHROW(state = state_machine.GetState());
+    REQUIRE(state == JFJochState::Inactive);
 
-    REQUIRE(!broker.Start(nullptr, &setup, nullptr).ok());
+    REQUIRE_THROWS(state_machine.Start(setup));
+    REQUIRE_THROWS(state_machine.Pedestal());
 
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
-    REQUIRE(broker.GetStatus(nullptr, nullptr, &status).ok());
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus::IDLE);
+    REQUIRE_NOTHROW(state_machine.Initialize());
+    REQUIRE_NOTHROW(state = state_machine.GetState());
+    REQUIRE(state == JFJochState::Idle);
 
-    REQUIRE(broker.Deactivate(nullptr, nullptr, nullptr).ok());
-    REQUIRE(broker.GetStatus(nullptr, nullptr, &status).ok());
-    REQUIRE(status.current_state() == JFJochProtoBuf::BrokerStatus::NOT_INITIALIZED);
+    REQUIRE_NOTHROW(state_machine.Deactivate());
+    REQUIRE_NOTHROW(state = state_machine.GetState());
+    REQUIRE(state == JFJochState::Inactive);
 }
 
-TEST_CASE("JFJochBrokerService_Setup") {
-    Logger logger("JFJochBrokerService_Setup");
-    JFJochBrokerService broker(logger);
+TEST_CASE("JFJochStateMachine_State_Pedestal") {
+    Logger logger("JFJochStateMachine_State_Pedestal");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
 
-    JFJochProtoBuf::BrokerPersistentSettings settings, settings_save;
+    JFJochProtoBuf::DatasetSettings setup;
+    setup.set_ntrigger(1);
+    setup.set_detector_distance_mm(100);
+    setup.set_file_prefix("integration_test");
+    setup.set_images_per_trigger(5);
+    setup.set_photon_energy_kev(12.4);
+    setup.set_data_file_count(5);
+    setup.set_summation(1);
+
+    state_machine.DebugOnly_SetState(JFJochState::Pedestal);
+
+    JFJochState state;
+    REQUIRE_NOTHROW(state = state_machine.GetState());
+    REQUIRE(state == JFJochState::Pedestal);
+
+    REQUIRE_THROWS(state_machine.Start(setup));
+    REQUIRE_THROWS(state_machine.Pedestal());
+    REQUIRE_THROWS(state_machine.Initialize());
+
+    JFJochProtoBuf::DetectorSettings settings;
+    settings.set_frame_time_us(500);
+    settings.set_use_storage_cells(true);
+    REQUIRE_THROWS(state_machine.SetDetectorSettings(settings));
+}
+
+TEST_CASE("JFJochStateMachine_State_Measure") {
+    Logger logger("JFJochStateMachine_State_Measure");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+
+    JFJochProtoBuf::DatasetSettings setup;
+    setup.set_ntrigger(1);
+    setup.set_detector_distance_mm(100);
+    setup.set_file_prefix("integration_test");
+    setup.set_images_per_trigger(5);
+    setup.set_photon_energy_kev(12.4);
+    setup.set_data_file_count(5);
+    setup.set_summation(1);
+
+    state_machine.DebugOnly_SetState(JFJochState::Measuring);
+
+    JFJochState state;
+    REQUIRE_NOTHROW(state = state_machine.GetState());
+    REQUIRE(state == JFJochState::Measuring);
+
+    REQUIRE_THROWS(state_machine.Start(setup));
+    REQUIRE_THROWS(state_machine.Pedestal());
+    REQUIRE_THROWS(state_machine.Initialize());
+
+    JFJochProtoBuf::DetectorSettings settings;
+    settings.set_frame_time_us(500);
+    settings.set_use_storage_cells(true);
+    REQUIRE_THROWS(state_machine.SetDetectorSettings(settings));
+}
+
+TEST_CASE("JFJochStateMachine_State_Error") {
+    Logger logger("JFJochStateMachine_State_Error");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+
+    JFJochProtoBuf::DatasetSettings setup;
+    setup.set_ntrigger(1);
+    setup.set_detector_distance_mm(100);
+    setup.set_file_prefix("integration_test");
+    setup.set_images_per_trigger(5);
+    setup.set_photon_energy_kev(12.4);
+    setup.set_data_file_count(5);
+    setup.set_summation(1);
+
+    state_machine.DebugOnly_SetState(JFJochState::Error);
+
+    JFJochState state;
+    REQUIRE_NOTHROW(state = state_machine.GetState());
+    REQUIRE(state == JFJochState::Error);
+
+    REQUIRE_THROWS(state_machine.Start(setup));
+    REQUIRE_THROWS(state_machine.Pedestal());
+
+    JFJochProtoBuf::DetectorSettings settings;
+    settings.set_frame_time_us(500);
+    settings.set_use_storage_cells(true);
+    REQUIRE_NOTHROW(state_machine.SetDetectorSettings(settings));
+
+    REQUIRE_NOTHROW(state_machine.Initialize());
+    REQUIRE_NOTHROW(state = state_machine.GetState());
+    REQUIRE(state == JFJochState::Idle);
+}
+
+
+TEST_CASE("JFJochStateMachine_Setup") {
+    Logger logger("JJFJochStateMachine_Setup");
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
+
+    JFJochProtoBuf::DetectorSettings settings, settings_save;
     settings.set_pedestal_g1_frames(-15);
     settings.set_pedestal_g0_frames(2378);
-    REQUIRE(!broker.Setup(nullptr, &settings, nullptr).ok());
-    REQUIRE(broker.Experiment().GetPedestalG0Frames() != 2378);
+    REQUIRE_THROWS(state_machine.SetDetectorSettings(settings));
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetPedestalG0Frames() != 2378);
 
     settings.set_pedestal_g2_frames(2800);
     settings.set_pedestal_g1_frames(3000);
     settings.set_pedestal_g0_frames(2378);
     settings.set_use_storage_cells(true);
-    settings.mutable_timing()->set_frame_time_us(600);
-    settings.mutable_timing()->set_count_time_us(247);
-    REQUIRE(broker.Setup(nullptr, &settings, nullptr).ok());
-    REQUIRE(broker.Experiment().GetPedestalG0Frames() == 2378);
-    REQUIRE(broker.Experiment().GetPedestalG1Frames() == 3000);
-    REQUIRE(broker.Experiment().GetPedestalG2Frames() == 2800);
-    REQUIRE(broker.Experiment().GetStorageCellNumber() == 16);
-    REQUIRE(broker.Experiment().GetFrameTime() == std::chrono::microseconds(600));
-    REQUIRE(broker.Experiment().GetFrameCountTime() == std::chrono::microseconds(247));
+    settings.set_frame_time_us(600);
+    settings.set_count_time_us(247);
+    REQUIRE_NOTHROW(state_machine.SetDetectorSettings(settings));
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetPedestalG0Frames() == 2378);
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetPedestalG1Frames() == 3000);
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetPedestalG2Frames() == 2800);
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetStorageCellNumber() == 16);
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetFrameTime() == std::chrono::microseconds(600));
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetFrameCountTime() == std::chrono::microseconds(247));
 
-    REQUIRE(broker.GetSetup(nullptr, nullptr, &settings_save).ok());
+    REQUIRE_NOTHROW(settings_save = state_machine.GetDetectorSettings());
     REQUIRE(settings_save.use_storage_cells());
-    REQUIRE(!settings_save.has_run_number());
-    REQUIRE(settings_save.mutable_timing()->count_time_us() == 247);
+    REQUIRE(settings_save.count_time_us() == 247);
 }
 
-
-TEST_CASE("JFJochBrokerService_RunNumber") {
-    Logger logger("JFJochBrokerService_Setup");
-    JFJochBrokerService broker(logger);
-
-    JFJochProtoBuf::BrokerPersistentSettings settings, settings_save;
-    settings.set_run_number(30);
-    REQUIRE(broker.Setup(nullptr, &settings, nullptr).ok());
-    REQUIRE(broker.Experiment().GetRunNumber() == 30);
-
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
-
-    JFJochProtoBuf::BrokerSetup setup;
-    setup.set_summation(3);
-    setup.set_name_pattern("run_number_test");
-    setup.set_images_per_trigger(1);
-    setup.set_photon_energy_kev(15.0);
-    REQUIRE(broker.Start(nullptr, &setup, nullptr).ok());
-
-    REQUIRE(broker.GetSetup(nullptr, nullptr, &settings_save).ok());
-    REQUIRE(settings_save.has_run_number());
-    REQUIRE(settings_save.run_number() == 31);
-
-    setup.set_summation(-1);
-    setup.set_name_pattern("run_number_test");
-    setup.set_images_per_trigger(1);
-    REQUIRE(!broker.Start(nullptr, &setup, nullptr).ok());
-
-    REQUIRE(broker.GetSetup(nullptr, nullptr, &settings_save).ok());
-    REQUIRE(settings_save.has_run_number());
-    REQUIRE(settings_save.run_number() == 31);
-
-}
-
-TEST_CASE("JFJochBrokerService_StorageCells") {
+TEST_CASE("JFJochStateMachine_StorageCells") {
     Logger logger("JFJochBrokerService_StorageCells");
-    JFJochBrokerService broker(logger);
+    JFJochServices services(logger);
+    JFJochStateMachine state_machine(services);
 
-    JFJochProtoBuf::BrokerPersistentSettings settings;
+    JFJochProtoBuf::DetectorSettings settings;
+    settings.set_frame_time_us(500);
     settings.set_use_storage_cells(true);
-    REQUIRE(broker.Setup(nullptr, &settings, nullptr).ok());
-    REQUIRE(broker.Experiment().GetStorageCellNumber() == 16);
-    REQUIRE(broker.Initialize(nullptr, nullptr, nullptr).ok());
+    REQUIRE_NOTHROW(state_machine.SetDetectorSettings(settings));
+    REQUIRE(state_machine.NotThreadSafe_Experiment().GetStorageCellNumber() == 16);
+    REQUIRE_NOTHROW(state_machine.Initialize());
 
     JFJochProtoBuf::JFCalibration calibration_pbuf;
-    REQUIRE(broker.GetCalibration(nullptr, nullptr, &calibration_pbuf).ok());
+    REQUIRE_NOTHROW(calibration_pbuf = state_machine.GetCalibration());
     REQUIRE(calibration_pbuf.nstorage_cells() == 16);
 }

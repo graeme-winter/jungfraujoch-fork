@@ -406,7 +406,7 @@ HDF5File::HDF5File(const std::string& filename, bool create, bool hdf5_latest, b
     } else
         id = H5Fopen(filename.c_str(), H5F_ACC_RDWR | (swmr ? H5F_ACC_SWMR_WRITE : 0), H5P_DEFAULT);
     if (id < 0)
-        throw JFJochException(JFJochExceptionCategory::HDF5, "Cannot open/create data HDF5 file");
+        throw JFJochException(JFJochExceptionCategory::HDF5, "Cannot open/create data HDF5 file " + filename);
 }
 
 HDF5File::~HDF5File() {
@@ -529,6 +529,7 @@ void HDF5Dcpl::SetCompression(CompressionAlgorithm c, size_t elem_size, size_t b
                 throw JFJochException(JFJochExceptionCategory::HDF5, "Cannot set bshuf/lz4 filter");
             break;
         case CompressionAlgorithm::BSHUF_ZSTD:
+        case CompressionAlgorithm::BSHUF_ZSTD_RLE:
 #ifdef USE_ZSTD
             params[0] = block_size;
             params[1] = BSHUF_H5_COMPRESS_ZSTD;
@@ -540,6 +541,8 @@ void HDF5Dcpl::SetCompression(CompressionAlgorithm c, size_t elem_size, size_t b
 #endif
         case CompressionAlgorithm::NO_COMPRESSION:
             break;
+        default:
+            throw JFJochException(JFJochExceptionCategory::HDF5, "SetCompression: algorithm not supported");
     }
 
 }

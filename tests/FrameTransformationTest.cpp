@@ -18,9 +18,9 @@ TEST_CASE("Bshuf_SSE", "[bitshuffle]") {
 TEST_CASE("FrameTransformation_Raw_NoCompression" ,"") {
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(1,{nmodules, nmodules});
 
-    experiment.Mode(DetectorMode::Raw).DataStreamModuleSize(1,{nmodules, nmodules});
+    experiment.Mode(DetectorMode::Raw);
     experiment.Compression(JFJochProtoBuf::NO_COMPRESSION);
 
     FrameTransformation transformation(experiment);
@@ -61,10 +61,8 @@ TEST_CASE("FrameTransformation_Raw_NoCompression" ,"") {
 TEST_CASE("FrameTransformation_Converted_NoCompression" ,"") {
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
-
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(2,{nmodules, nmodules}, 0, 0)
-            .UpsideDown(true).Compression(JFJochProtoBuf::NO_COMPRESSION);
+    DiffractionExperiment experiment(2,{nmodules, nmodules}, 0, 0, true);
+    experiment.Mode(DetectorMode::Conversion).Compression(JFJochProtoBuf::NO_COMPRESSION);
 
     FrameTransformation transformation(experiment);
 
@@ -113,10 +111,9 @@ TEST_CASE("FrameTransformation_Converted_NoCompression" ,"") {
 TEST_CASE("FrameTransformation_Converted_bshuf_lz4" ,"") {
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2,{nmodules, nmodules}, 0, 0, true);
 
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(2,{nmodules, nmodules}, 0, 0)
-            .UpsideDown(true).Compression(JFJochProtoBuf::BSHUF_LZ4);
+    experiment.Mode(DetectorMode::Conversion).Compression(JFJochProtoBuf::BSHUF_LZ4);
 
     FrameTransformation transformation(experiment);
 
@@ -146,7 +143,7 @@ TEST_CASE("FrameTransformation_Converted_bshuf_lz4" ,"") {
     output_compressed.resize(compressed_size);
 
     REQUIRE(bshuf_read_uint64_BE(output_compressed.data()) == experiment.GetPixelsNum() * experiment.GetPixelDepth());
-    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == experiment.GetCompressionBlockSize() * experiment.GetPixelDepth());
+    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == JFJochBitShuffleCompressor::DefaultBlockSize * experiment.GetPixelDepth());
 
     std::vector<int16_t> output;
     REQUIRE_NOTHROW(JFJochDecompress(output, experiment.GetCompressionAlgorithmEnum(), output_compressed,
@@ -175,10 +172,9 @@ TEST_CASE("FrameTransformation_Converted_bshuf_lz4" ,"") {
 TEST_CASE("FrameTransformation_Converted_bshuf_zstd" ,"") {
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2,{nmodules, nmodules}, 0, 0, true);
 
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(2,{nmodules, nmodules}, 0, 0)
-            .UpsideDown(true).Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    experiment.Mode(DetectorMode::Conversion).Compression(JFJochProtoBuf::BSHUF_ZSTD);
 
     FrameTransformation transformation(experiment);
 
@@ -207,7 +203,7 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd" ,"") {
     REQUIRE_NOTHROW(compressed_size = transformation.PackStandardOutput());
 
     REQUIRE(bshuf_read_uint64_BE(output_compressed.data()) == experiment.GetPixelsNum() * experiment.GetPixelDepth());
-    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == experiment.GetCompressionBlockSize() * experiment.GetPixelDepth());
+    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == JFJochBitShuffleCompressor::DefaultBlockSize * experiment.GetPixelDepth());
 
     output_compressed.resize(compressed_size);
     std::vector<int16_t> output;
@@ -237,10 +233,9 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd" ,"") {
 TEST_CASE("FrameTransformation_Converted_bshuf_zstd_EIGER" ,"") {
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2,{nmodules, nmodules}, 0, 0, false);
 
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(2,{nmodules, nmodules}, 0, 0)
-            .UpsideDown(false).Compression(JFJochProtoBuf::BSHUF_ZSTD).DetectorType(JFJochProtoBuf::EIGER);
+    experiment.Mode(DetectorMode::Conversion).Compression(JFJochProtoBuf::BSHUF_ZSTD).DetectorType(JFJochProtoBuf::EIGER);
 
     FrameTransformation transformation(experiment);
 
@@ -267,7 +262,7 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_EIGER" ,"") {
     REQUIRE_NOTHROW(compressed_size = transformation.PackStandardOutput());
 
     REQUIRE(bshuf_read_uint64_BE(output_compressed.data()) == experiment.GetPixelsNum() * experiment.GetPixelDepth());
-    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == experiment.GetCompressionBlockSize() * experiment.GetPixelDepth());
+    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == JFJochBitShuffleCompressor::DefaultBlockSize * experiment.GetPixelDepth());
 
     output_compressed.resize(compressed_size);
     std::vector<uint16_t> output;
@@ -288,10 +283,9 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_EIGER" ,"") {
 TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation" ,"") {
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2,{nmodules, nmodules}, 0, 0, true);
 
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(2,{nmodules, nmodules}, 0, 0)
-            .UpsideDown(true).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    experiment.Mode(DetectorMode::Conversion).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
 
     REQUIRE(experiment.GetSummation() == 4);
 
@@ -336,7 +330,7 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation" ,"") {
     REQUIRE_NOTHROW(compressed_size = transformation.PackStandardOutput());
 
     REQUIRE(bshuf_read_uint64_BE(output_compressed.data()) == experiment.GetPixelsNum() * experiment.GetPixelDepth());
-    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == experiment.GetCompressionBlockSize() * experiment.GetPixelDepth());
+    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == JFJochBitShuffleCompressor::DefaultBlockSize * experiment.GetPixelDepth());
 
     output_compressed.resize(compressed_size);
     std::vector<int32_t> output;
@@ -359,10 +353,9 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation" ,"") {
 TEST_CASE("FrameTransformation_Converted_16bit_preview_summation" ,"") {
     uint16_t nmodules = 1;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(1,{nmodules}, 0, 0, false);
 
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(1,{nmodules}, 0, 0)
-            .UpsideDown(false).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    experiment.Mode(DetectorMode::Conversion).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
 
     REQUIRE(experiment.GetSummation() == 4);
 
@@ -393,7 +386,7 @@ TEST_CASE("FrameTransformation_Converted_16bit_preview_summation" ,"") {
     REQUIRE_NOTHROW(compressed_size = transformation.PackStandardOutput());
 
     REQUIRE(bshuf_read_uint64_BE(output_compressed.data()) == experiment.GetPixelsNum() * experiment.GetPixelDepth());
-    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == experiment.GetCompressionBlockSize() * experiment.GetPixelDepth());
+    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == JFJochBitShuffleCompressor::DefaultBlockSize * experiment.GetPixelDepth());
 
     output_compressed.resize(compressed_size);
     std::vector<int32_t> output;
@@ -428,10 +421,9 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation_2frames" ,"") {
     // Ensure that previous frame is properly cleaned with PackStandardOutput()
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2,{nmodules, nmodules}, 0, 0, true);
 
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(2,{nmodules, nmodules}, 0, 0)
-            .UpsideDown(true).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    experiment.Mode(DetectorMode::Conversion).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
 
     REQUIRE(experiment.GetSummation() == 4);
 
@@ -488,7 +480,7 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation_2frames" ,"") {
     REQUIRE_NOTHROW(compressed_size = transformation.PackStandardOutput());
 
     REQUIRE(bshuf_read_uint64_BE(output_compressed.data()) == experiment.GetPixelsNum() * experiment.GetPixelDepth());
-    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == experiment.GetCompressionBlockSize() * experiment.GetPixelDepth());
+    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == JFJochBitShuffleCompressor::DefaultBlockSize * experiment.GetPixelDepth());
 
     output_compressed.resize(compressed_size);
     std::vector<int32_t> output;
@@ -511,10 +503,9 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation_2frames" ,"") {
 TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation_negatives" ,"") {
     uint16_t nmodules = 4;
 
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2,{nmodules, nmodules}, 0, 0, true);
 
-    experiment.Mode(DetectorMode::Conversion).DataStreamModuleSize(2,{nmodules, nmodules}, 0, 0)
-            .UpsideDown(true).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    experiment.Mode(DetectorMode::Conversion).Summation(4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
 
     REQUIRE(experiment.GetSummation() == 4);
 
@@ -558,7 +549,7 @@ TEST_CASE("FrameTransformation_Converted_bshuf_zstd_summation_negatives" ,"") {
     REQUIRE_NOTHROW(compressed_size = transformation.PackStandardOutput());
 
     REQUIRE(bshuf_read_uint64_BE(output_compressed.data()) == experiment.GetPixelsNum() * experiment.GetPixelDepth());
-    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == experiment.GetCompressionBlockSize() * experiment.GetPixelDepth());
+    REQUIRE(bshuf_read_uint32_BE(output_compressed.data()+8) == JFJochBitShuffleCompressor::DefaultBlockSize * experiment.GetPixelDepth());
 
     output_compressed.resize(compressed_size);
     std::vector<int32_t> output;

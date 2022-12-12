@@ -3,6 +3,7 @@
 
 #include <catch2/catch.hpp>
 #include "../common/ZMQPreviewPublisher.h"
+#include "../common/jsonToGrpc.h"
 
 TEST_CASE("ZMQPreviewPublisher","[ZSTD]") {
     ZMQContext context;
@@ -12,8 +13,7 @@ TEST_CASE("ZMQPreviewPublisher","[ZSTD]") {
     socket.Connect("inproc://#5");
     socket.SubscribeAll();
 
-    DiffractionExperiment experiment(1,{1});
-    experiment.UpsideDown(false);
+    DiffractionExperiment experiment(1,{1}, 0, 0, false);
 
     JFCalibration calibration(experiment);
     publisher.Start(experiment, calibration);
@@ -33,14 +33,14 @@ TEST_CASE("ZMQPreviewPublisher","[ZSTD]") {
     // Pixel mask
     REQUIRE(socket.Receive(s, false) > 0);
     JFJochProtoBuf::PreviewFrame frame;
-    REQUIRE_NOTHROW(frame.ParseFromString(s));
+    REQUIRE_NOTHROW(frame = jsonToGrpc<JFJochProtoBuf::PreviewFrame>(s));
     REQUIRE(frame.pixel_depth() == 4);
     REQUIRE(frame.image_number() == -1);
 
     // Frame
     REQUIRE(socket.Receive(s, false) > 0);
 
-    REQUIRE_NOTHROW(frame.ParseFromString(s));
+    REQUIRE_NOTHROW(frame = jsonToGrpc<JFJochProtoBuf::PreviewFrame>(s));
 
     REQUIRE(frame.pixel_depth() == 2);
     REQUIRE(frame.image_number() == 546);
@@ -54,8 +54,7 @@ TEST_CASE("ZMQPreviewPublisher_GetPreviewImage","[ZSTD]") {
     ZMQContext context;
     ZMQPreviewPublisher publisher(context, "inproc://#5");
 
-    DiffractionExperiment experiment(1,{1});
-    experiment.UpsideDown(false);
+    DiffractionExperiment experiment(1,{1}, 0, 0, false);
 
     JFCalibration calibration(experiment);
     publisher.Start(experiment, calibration);

@@ -56,3 +56,20 @@ JFJochProtoBuf::IndexerStatus JFJochIndexerClient::GetStatus() {
     }
     return ret;
 }
+
+JFJochProtoBuf::IndexerDataProcessingPlots JFJochIndexerClient::GetPlots() {
+    JFJochProtoBuf::IndexerDataProcessingPlots ret;
+    if (_stub) {
+        grpc::ClientContext context;
+        JFJochProtoBuf::Empty empty;
+        auto status = _stub->GetDataProcessingPlots(&context, empty, &ret);
+        if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
+                                                "JFJochIndexer: " + status.error_message());
+    } else {
+        for (int i = 0; i < 10; i++) {
+            ret.mutable_indexing_rate()->add_x(i*100.0f);
+            ret.mutable_indexing_rate()->add_y((i % 3) / 12.0f);
+        }
+    }
+    return ret;
+}

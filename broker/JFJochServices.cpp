@@ -21,14 +21,11 @@ void JFJochServices::Start(const DiffractionExperiment& experiment, const JFCali
     } else
         indexer_running = false;
 
-    if ((experiment.GetImageNum() > 0) && (!experiment.GetFilePrefix().empty())){
-        logger.Info("   ... write HDF5 master file");
+    if ((experiment.GetImageNum() > 0) && (!experiment.GetFilePrefix().empty())) {
 
-        JFJochProtoBuf::WriterMetadataInput request;
         experiment.FillWriterMetadata(request);
         calibration.Export(experiment, request);
         request.set_start_time_ms(current_time_ms());
-        writer.WriteMasterFile(request);
 
         logger.Info("   ... writer start");
         writer.Start(experiment, writer_zmq_addr);
@@ -64,6 +61,9 @@ void JFJochServices::On(const DiffractionExperiment &x) {
 
 JFJochProtoBuf::BrokerFullStatus JFJochServices::Stop(const JFCalibration &calibration) {
     JFJochProtoBuf::BrokerFullStatus ret;
+
+    std::unique_ptr<JFJochException> exception;
+
     try {
         logger.Info("Wait for receiver done");
         *ret.mutable_receiver() = receiver.Stop();
@@ -74,16 +74,8 @@ JFJochProtoBuf::BrokerFullStatus JFJochServices::Stop(const JFCalibration &calib
                     static_cast<int>(std::round(ret.receiver().compressed_ratio())));
 
     } catch (const JFJochException &e) {
-        logger.Error("Receiver finished with error {}",e.what());
-        try {
-            // If receiver failed with error, then need to stop writer
-            if (writer_running)
-                writer.Stop();
-            if (indexer_running)
-                indexer.Stop();
-            detector.Stop();
-        } catch (...) {}
-        throw;
+        logger.Error("   ... finished with error {}",e.what());
+        exception = std::make_unique<JFJochException>(e);
     }
     logger.Info("Receiver finished with success");
 
@@ -92,19 +84,14 @@ JFJochProtoBuf::BrokerFullStatus JFJochServices::Stop(const JFCalibration &calib
         try {
             *ret.mutable_indexer() = indexer.Stop();
         } catch (JFJochException &e) {
-
             logger.Error("   ... finished with error {}",e.what());
-            try {
-                if (writer_running)
-                    writer.Stop();
-                detector.Stop();
-            } catch (...) {}
-            throw;
+            exception = std::make_unique<JFJochException>(e);
         }
         logger.Info("   ... finished with success.");
         logger.Info("   ... indexed {} out of {}", ret.indexer().indexed_images(),
                     ret.indexer().image_output_size());
     }
+
     if (writer_running) {
         logger.Info("Stopping writer");
         try {
@@ -115,21 +102,40 @@ JFJochProtoBuf::BrokerFullStatus JFJochServices::Stop(const JFCalibration &calib
                 logger.Info("Writer {}: Images = {} Throughput = {:.0f} MB/s Frame rate = {:.0f} Hz",
                             i, stats[i].nimages(), stats[i].performance_mbs(), stats[i].performance_hz());
             }
+            logger.Info("   ... write HDF5 master file");
+
+            request.set_end_time_ms(current_time_ms());
+
+            if (ret.has_receiver()) {
+                request.set_image_number(static_cast<int64_t>(ret.receiver().max_image_number_sent()) + 1);
+                request.mutable_detector_metadata()->set_efficiency(ret.receiver().efficiency());
+                request.mutable_detector_metadata()->set_collection_cancelled(ret.receiver().cancelled());
+                request.mutable_detector_metadata()->set_max_receiver_delay(ret.receiver().max_receive_delay());
+            }
+
+            if (ret.has_indexer()) {
+                *request.mutable_processing_results()->mutable_image_output() = ret.indexer().image_output();
+            }
+
+            writer.WriteMasterFile(request);
+            logger.Info("   ... done");
         } catch (JFJochException &e) {
-            logger.Error("   ... writer finished with error {}", e.what());
-            try {
-                detector.Stop();
-            } catch (...) {}
-            throw;
+            logger.Error("   ... finished with error {}",e.what());
+            exception = std::make_unique<JFJochException>(e);
         }
     }
 
+    logger.Info("Stopping detector");
     try {
         detector.Stop();
+        logger.Info("   ... done");
     } catch (JFJochException &e) {
-        logger.Error("Detector failed with error {} ", e.what());
-        throw;
+        logger.Error("   ... finished with error {}",e.what());
+        exception = std::make_unique<JFJochException>(e);
     }
+
+    if (exception)
+        throw JFJochException(*exception);
 
     return ret;
 }
@@ -181,6 +187,22 @@ JFJochProtoBuf::IndexerStatus JFJochServices::GetIndexerStatus() {
     return indexer.GetStatus();
 }
 
+JFJochProtoBuf::BrokerPlots JFJochServices::GetPlots() {
+    JFJochProtoBuf::BrokerPlots plots;
+    // This is a best-effort function
+    try {
+        auto tmp = indexer.GetPlots();
+        *plots.mutable_indexing_rate() = tmp.indexing_rate();
+    } catch (...) {}
+    try {
+        auto tmp = receiver.GetPlots();
+        *plots.mutable_bkg_estimate() = tmp.bkg_estimate();
+        *plots.mutable_spot_count() = tmp.spot_count();
+        *plots.mutable_radial_int_profile() = tmp.radial_int_profile();
+    } catch (...) {}
+    return plots;
+}
+
 void JFJochServices::SetDataProcessingSettings(const JFJochProtoBuf::DataProcessingSettings &settings) {
     receiver.SetDataProcessingSettings(settings);
 }
@@ -196,6 +218,14 @@ JFJochProtoBuf::PreviewFrame JFJochServices::GetPreviewFrame() {
 }
 
 JFJochServices &JFJochServices::FacilityMetadata(const JFJochProtoBuf::FacilityMetadata &input) {
-    facility_metadata = input;
+    *request.mutable_facility_metadata() = input;
     return *this;
+}
+
+void JFJochServices::Trigger() {
+    detector.Trigger();
+}
+
+size_t JFJochServices::WriterZMQCount() const {
+    return writer_zmq_addr.size();
 }

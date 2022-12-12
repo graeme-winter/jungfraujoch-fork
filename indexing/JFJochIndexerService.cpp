@@ -42,3 +42,13 @@ grpc::Status JFJochIndexerService::GetStatus(grpc::ServerContext *context, const
         *response = indexer->GetStatus();
     return grpc::Status::OK;
 }
+
+grpc::Status JFJochIndexerService::GetDataProcessingPlots(grpc::ServerContext *context,
+                                                          const JFJochProtoBuf::Empty *request,
+                                             JFJochProtoBuf::IndexerDataProcessingPlots *response) {
+    std::shared_lock<std::shared_mutex> sl(indexer_mutex);
+    if (indexer)
+        *response = indexer->GetPlots();
+    return grpc::Status::OK;
+
+}

@@ -17,7 +17,7 @@ public:
     size_t SerializeSequenceStart();
     size_t SerializeSequenceEnd();
     size_t SerializeImage(void *image, size_t image_size,
-                          const std::pair<int64_t,int64_t> &image_location_in_file,
+                          const int64_t image_number,
                           const std::vector<SpotToSave>& spots);
 };
 

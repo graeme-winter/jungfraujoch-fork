@@ -55,6 +55,16 @@ void JFJochDetectorClient::Off() {
     }
 }
 
+void JFJochDetectorClient::Trigger() {
+    if (_stub) {
+        grpc::ClientContext context;
+        JFJochProtoBuf::Empty empty;
+        auto status = _stub->Trigger(&context, empty, &empty);
+        if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
+                                                "JFJochDetector: " + status.error_message());
+    }
+}
+
 JFJochProtoBuf::DetectorStatus JFJochDetectorClient::GetStatus() {
     JFJochProtoBuf::DetectorStatus ret;
     if (_stub) {
@@ -64,7 +74,7 @@ JFJochProtoBuf::DetectorStatus JFJochDetectorClient::GetStatus() {
         if (!status.ok()) throw JFJochException(JFJochExceptionCategory::gRPCError,
                                                 "JFJochDetector: " + status.error_message());
     } else {
-        ret.set_status(JFJochProtoBuf::NO_DETECTOR);
+        ret.set_state(JFJochProtoBuf::NOT_INITIALIZED);
     }
     return ret;
 }

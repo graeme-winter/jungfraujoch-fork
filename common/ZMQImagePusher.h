@@ -17,16 +17,17 @@ class ZMQImagePusher : public ImagePusher {
     std::vector<std::unique_ptr<ZMQContext>> contexts;
     std::vector<std::unique_ptr<ZMQSocket>> sockets;
     JFJochFrameSerializer serializer{16*1024*1024};
+    int64_t file_count = 1;
 public:
     ZMQImagePusher(ZMQContext &context, const std::vector<std::string>& addr,
                    int32_t send_buffer_high_watermark = -1, int32_t send_buffer_size = -1);
     // High performance implementation, where each socket has dedicated ZMQ context
     explicit ZMQImagePusher(const std::vector<std::string>& addr,
                    int32_t send_buffer_high_watermark = -1, int32_t send_buffer_size = -1);
-    void StartDataCollection() override;
+    void StartDataCollection(int64_t file_count) override;
     void EndDataCollection() override;
-    void SendData(void *image, const std::pair<int64_t,int64_t> &image_location_in_file,
-                  size_t image_size, const std::vector<DiffractionSpot>& spots) override;
+    void SendData(void *image, size_t image_size, const std::vector<DiffractionSpot>& spots,
+                  int64_t image_number) override;
 };
 
 #endif //JUNGFRAUJOCH_ZMQIMAGEPUSHER_H

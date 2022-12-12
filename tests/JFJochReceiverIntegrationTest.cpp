@@ -11,13 +11,12 @@
 using namespace std::literals::chrono_literals;
 
 TEST_CASE("JFJochReceiverTest_Raw", "[JFJochReceiver]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {4});
     const uint16_t nthreads = 4;
 
     x.Mode(DetectorMode::Raw);
-    x.DataStreamModuleSize(1, {4});
     x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(true)
-            .ImagesPerTrigger(100).ImagesPerFile(10).PhotonEnergy_keV(12.4).Compression(JFJochProtoBuf::NO_COMPRESSION);
+            .ImagesPerTrigger(100).DataFileCount(16).PhotonEnergy_keV(12.4).Compression(JFJochProtoBuf::NO_COMPRESSION);
 
     std::vector<std::unique_ptr<AcquisitionDevice>> aq_devices;
     for (int i = 0; i < x.GetDataStreamsNum(); i++) {
@@ -37,18 +36,18 @@ TEST_CASE("JFJochReceiverTest_Raw", "[JFJochReceiver]") {
     REQUIRE(output.compressed_ratio() == 1.0);
     REQUIRE(output.compressed_size() == x.GetImageNum() * x.GetPixelDepth() * x.GetPixelsNum());
     REQUIRE(output.max_image_number_sent() == x.GetImageNum() - 1);
+    REQUIRE(!output.cancelled());
 }
 
 TEST_CASE("JFJochReceiverTest_Conversion", "[JFJochReceiver]") {
     Logger logger("JFJochReceiverTest_Conversion");
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {2});
     const uint16_t nthreads = 4;
 
     x.Mode(DetectorMode::Conversion);
-    x.DataStreamModuleSize(1, {2});
     x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(true)
-            .ImagesPerTrigger(32).PhotonEnergy_keV(12.4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
+            .ImagesPerTrigger(32).DataFileCount(16).PhotonEnergy_keV(12.4).Compression(JFJochProtoBuf::BSHUF_ZSTD);
 
     std::vector<std::unique_ptr<AcquisitionDevice>> aq_devices;
     for (int i = 0; i < x.GetDataStreamsNum(); i++) {
@@ -67,18 +66,18 @@ TEST_CASE("JFJochReceiverTest_Conversion", "[JFJochReceiver]") {
 
     REQUIRE(output.device_statistics(0).timestamp_size() == 32 * 2);
     REQUIRE(output.device_statistics(0).timestamp(30 * 2) == 0xABCDEF);
+    REQUIRE(!output.cancelled());
 }
 
 TEST_CASE("JFJochReceiverTest_Conversion_StorageCell", "[JFJochReceiver]") {
     Logger logger("JFJochReceiverTest_Conversion_StorageCell");
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {2});
     const uint16_t nthreads = 4;
 
     x.Mode(DetectorMode::Conversion);
-    x.DataStreamModuleSize(1, {2});
     x.PedestalG0Frames(0).NumTriggers(1).UseInternalPacketGenerator(true)
-            .ImagesPerTrigger(32).PhotonEnergy_keV(12.4).Compression(JFJochProtoBuf::BSHUF_ZSTD).StorageCells(16);
+            .ImagesPerTrigger(32).DataFileCount(16).PhotonEnergy_keV(12.4).Compression(JFJochProtoBuf::BSHUF_ZSTD).StorageCells(16);
 
     REQUIRE(x.GetImageNum() == 16);
     REQUIRE(x.GetStorageCellNumber() == 16);
@@ -100,10 +99,11 @@ TEST_CASE("JFJochReceiverTest_Conversion_StorageCell", "[JFJochReceiver]") {
 
     REQUIRE(output.device_statistics(0).timestamp_size() == 16 * 2);
     REQUIRE(output.device_statistics(0).timestamp(15 * 2) == 0xABCDEF);
+    REQUIRE(!output.cancelled());
 }
 
 TEST_CASE("JFJochReceiverTest_PedestalG1", "[JFJochReceiver]") {
-    DiffractionExperiment x;
+
     const uint16_t nthreads = 4;
     size_t nframes = 256;
 
@@ -122,9 +122,8 @@ TEST_CASE("JFJochReceiverTest_PedestalG1", "[JFJochReceiver]") {
         i = 16384 | number;
     }
 
-    x.Mode(DetectorMode::PedestalG1);
-    x.DataStreamModuleSize(1, {1});
-    x.DataStreamModuleSize(1, {1}).Mode(DetectorMode::PedestalG1).PedestalG0Frames(0)
+    DiffractionExperiment x(1, {1});
+    x.Mode(DetectorMode::PedestalG1).PedestalG0Frames(0)
             .PedestalG1Frames(nframes).NumTriggers(1).UseInternalPacketGenerator(false)
             .ImagesPerTrigger(0).PhotonEnergy_keV(12.4);
 
@@ -156,10 +155,11 @@ TEST_CASE("JFJochReceiverTest_PedestalG1", "[JFJochReceiver]") {
     REQUIRE(abs(ref_pedestal.Mean() - out_pedestal.Mean()) < 0.1);
     REQUIRE(abs(ref_pedestal.MeanRMS() - out_pedestal.MeanRMS()) < 0.1);
     REQUIRE(out_pedestal.CountMaskedPixels() == 0);
+    REQUIRE(!output.cancelled());
 }
 
 TEST_CASE("JFJochReceiverTest_PedestalG2_storage_cell", "[JFJochReceiver]") {
-    DiffractionExperiment x;
+
     const uint16_t nthreads = 4;
     size_t nframes = 150;
 
@@ -183,8 +183,8 @@ TEST_CASE("JFJochReceiverTest_PedestalG2_storage_cell", "[JFJochReceiver]") {
         if (number > 16300) number = 16300;
         i = 32768 | 16384 | number;
     }
-
-    x.DataStreamModuleSize(1, {1}).Mode(DetectorMode::PedestalG2).PedestalG0Frames(0)
+    DiffractionExperiment x(1, {1});
+    x.Mode(DetectorMode::PedestalG2).PedestalG0Frames(0)
             .PedestalG2Frames(nframes).NumTriggers(1).UseInternalPacketGenerator(false)
             .ImagesPerTrigger(0).PhotonEnergy_keV(12.4).StorageCells(16);
 
@@ -227,7 +227,7 @@ TEST_CASE("JFJochReceiverTest_PedestalG2_storage_cell", "[JFJochReceiver]") {
 }
 
 TEST_CASE("JFJochReceiverTest_PedestalG0", "[JFJochReceiver]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {1});
     const uint16_t nthreads = 4;
     size_t nframes = 500;
 
@@ -247,7 +247,7 @@ TEST_CASE("JFJochReceiverTest_PedestalG0", "[JFJochReceiver]") {
     }
 
     x.Mode(DetectorMode::PedestalG0);
-    x.DataStreamModuleSize(1, {1}).PedestalG0Frames(nframes)
+    x.PedestalG0Frames(nframes)
             .NumTriggers(1).UseInternalPacketGenerator(false)
             .ImagesPerTrigger(0).PhotonEnergy_keV(12.4);
 
@@ -281,7 +281,7 @@ TEST_CASE("JFJochReceiverTest_PedestalG0", "[JFJochReceiver]") {
 }
 
 TEST_CASE("JFJochReceiverTest_PedestalG0_StorageCell", "[JFJochReceiver]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {1});
     const uint16_t nthreads = 4;
     size_t nframes = 140;
 
@@ -296,7 +296,7 @@ TEST_CASE("JFJochReceiverTest_PedestalG0_StorageCell", "[JFJochReceiver]") {
     for (auto &i: pedestal_in_3) i = 2000;
 
     x.Mode(DetectorMode::PedestalG0).StorageCells(4);
-    x.DataStreamModuleSize(1, {1}).PedestalG0Frames(nframes)
+    x.PedestalG0Frames(nframes)
             .NumTriggers(1).UseInternalPacketGenerator(false)
             .ImagesPerTrigger(0).PhotonEnergy_keV(12.4);
 
@@ -333,7 +333,7 @@ TEST_CASE("JFJochReceiverTest_PedestalG0_StorageCell", "[JFJochReceiver]") {
 }
 
 TEST_CASE("JFJochReceiverTest_PedestalG1_NoFrames", "[JFJochReceiver]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {1});
     const uint16_t nthreads = 4;
     size_t nframes = 256;
 
@@ -341,7 +341,6 @@ TEST_CASE("JFJochReceiverTest_PedestalG1_NoFrames", "[JFJochReceiver]") {
 
     for (auto &i: pedestal_in) i = 16384 | 14000;
 
-    x.DataStreamModuleSize(1, {1});
     x.Mode(DetectorMode::PedestalG1);
     x.PedestalG0Frames(0).PedestalG1Frames(256).NumTriggers(1)
             .UseInternalPacketGenerator(false).ImagesPerTrigger(0).PhotonEnergy_keV(12.4);
@@ -368,14 +367,13 @@ TEST_CASE("JFJochReceiverTest_PedestalG1_NoFrames", "[JFJochReceiver]") {
 }
 
 TEST_CASE("JFJochReceiverTest_PacketLost_Raw", "[JFJochReceiver]") {
-    DiffractionExperiment x;
+    DiffractionExperiment x(1, {2});
     const uint16_t nthreads = 4;
 
     std::vector<uint16_t> frame_in(RAW_MODULE_SIZE);
     for (auto &i: frame_in) i = 776;
 
     x.Mode(DetectorMode::Raw);
-    x.DataStreamModuleSize(1, {2});
     x.PedestalG0Frames(0).NumTriggers(1)
             .UseInternalPacketGenerator(false).ImagesPerTrigger(4).PhotonEnergy_keV(12.4);
 
@@ -409,7 +407,7 @@ TEST_CASE("JFJochReceiverTest_PacketLost_Raw", "[JFJochReceiver]") {
     for (const auto &i: aq_devices)
         tmp_devices.emplace_back(i.get());
 
-    TestImagePusher pusher(x.GetImageLocationInFile(x.GetImageNum() - 1));
+    TestImagePusher pusher(x.GetImageNum() - 1);
     auto receiver_out = RunJFJochReceiverTest(tmp_devices, pusher, x, logger, calib, nthreads, false);
 
     const auto image = pusher.GetImage();
@@ -430,58 +428,4 @@ TEST_CASE("JFJochReceiverTest_PacketLost_Raw", "[JFJochReceiver]") {
 
     REQUIRE(receiver_out.efficiency() < 1.0);
     REQUIRE(receiver_out.images_sent() == x.GetImageNum());
-}
-
-TEST_CASE("JFJochReceiverTest_Raw_TimeResolved", "[JFJochReceiver]") {
-    DiffractionExperiment x;
-    const uint16_t nthreads = 4;
-
-    x.Mode(DetectorMode::Raw);
-    x.DataStreamModuleSize(1, {1});
-    x.NumTriggers(5)
-            .UseInternalPacketGenerator(false).ImagesPerTrigger(25).PhotonEnergy_keV(12.4)
-            .TimeResolvedMode(true).PedestalG0Frames(0);
-
-    std::mt19937 g1(9999);
-    std::uniform_int_distribution<uint16_t> dist(0, 65535);
-
-    std::vector<uint16_t> frame_in(RAW_MODULE_SIZE * x.GetImageNum());
-    for (auto &i: frame_in) i = dist(g1);
-
-    auto gain_from_file = GainCalibrationFromTestFile();
-
-    std::vector<std::unique_ptr<AcquisitionDevice>>  aq_devices;
-    for (int i = 0; i < x.GetDataStreamsNum(); i++) {
-        auto test = new HLSSimulatedDevice(i, 64);
-        test->CreatePackets(x, 1, x.GetImageNum(), 0, frame_in.data(), false);
-        test->CreateFinalPacket(x);
-
-        for (int m = 0; m < x.GetModulesNum(i); m++)
-            test->LoadModuleGain(gain_from_file, m);
-
-        aq_devices.emplace_back(test);
-    }
-    Logger logger("JFJochReceiverTest_Raw_TimeResolved");
-
-    JFCalibration calib(x);
-
-    std::vector<AcquisitionDevice *>  tmp_devices;
-    for (const auto &i: aq_devices)
-        tmp_devices.emplace_back(i.get());
-
-    TestImagePusher pusher(x.GetImageLocationInFile(x.GetImageNum() - 1));
-    auto receiver_output = RunJFJochReceiverTest(tmp_devices, pusher, x, logger, calib, nthreads, false);
-
-    const auto image = pusher.GetImage();
-
-    REQUIRE(pusher.GetCounter() == x.GetImageNum());
-
-    REQUIRE(image.size() == RAW_MODULE_SIZE * sizeof(uint16_t));
-    REQUIRE(memcmp(image.data(),
-                   frame_in.data() + RAW_MODULE_SIZE * (x.GetImageNum() - 1),
-                   RAW_MODULE_SIZE * sizeof(uint16_t)) == 0);
-
-    REQUIRE(receiver_output.efficiency() == 1.0);
-    REQUIRE(receiver_output.images_sent() == x.GetImageNum());
-    REQUIRE(receiver_output.device_statistics(0).good_packets() == x.GetImageNum()*128);
 }

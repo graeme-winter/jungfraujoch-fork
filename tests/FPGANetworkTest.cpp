@@ -32,9 +32,7 @@ struct RAW_ARP_Packet
 TEST_CASE("HLS_Network_ARP_Gratuitous") {
     HLSSimulatedDevice device(0, 64);
 
-    DiffractionExperiment x;
-
-    x.DataStreamModuleSize(2, {4});
+    DiffractionExperiment x(2, {4});
 
     auto gain_from_file = GainCalibrationFromTestFile();
 

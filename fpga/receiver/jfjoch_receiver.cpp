@@ -6,6 +6,8 @@
 
 #include "../../grpc/gRPCServer_Template.h"
 #include "../../common/ZMQImagePusher.h"
+#include "../../common/NetworkAddressConvert.h"
+
 #include "JFJochReceiverService.h"
 #ifdef JFJOCH_USE_OPENCAPI
 #include "OpenCAPIDevice.h"
@@ -31,7 +33,7 @@ AcquisitionDevice *SetupAcquisitionDevice(const nlohmann::json &input, uint16_t 
         auto oc = new OpenCAPIDevice(input["pci_slot"].get<uint16_t>(), data_stream,
                                  frame_buffer_size, numa_node);
         if (input.contains("fpga_mac_addr"))
-            oc->SetMACAddress(DiffractionExperiment::MacAddressFromStr(input["fpga_mac_addr"].get<std::string>()));
+            oc->SetMACAddress(MacAddressFromStr(input["fpga_mac_addr"].get<std::string>()));
         ret = oc;
     }
 #else

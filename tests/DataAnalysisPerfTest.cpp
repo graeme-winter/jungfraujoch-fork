@@ -138,11 +138,10 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    DiffractionExperiment x;
+    DiffractionExperiment x(2, {8}, 8, 36);
 
     if ((file_space.GetDimensions()[1] == 2164) && (file_space.GetDimensions()[2] == 2068)) {
         logger.Info("JF4M with gaps detected (2068 x 2164)");
-        x.DataStreamModuleSize(2, {8}, 8, 36);
     } else {
         logger.Error("Unknown geometry - exiting");
         exit(EXIT_FAILURE);
@@ -161,7 +160,7 @@ int main(int argc, char **argv) {
 
     logger.Info("Images loaded");
 
-    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).Wavelength_A(1.0);
+    x.BeamX_pxl(1090).BeamY_pxl(1136).DetectorDistance_mm(75).PhotonEnergy_keV(WVL_1A_IN_KEV);
 
     JFJochProtoBuf::DataProcessingSettings settings;
     settings.set_signal_to_noise_threshold(2.5);

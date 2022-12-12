@@ -18,6 +18,7 @@ public:
     JFJochProtoBuf::DetectorStatus GetStatus();
     void On(const JFJochProtoBuf::DetectorConfig &request);
     void Off();
+    void Trigger();
 };
 
 

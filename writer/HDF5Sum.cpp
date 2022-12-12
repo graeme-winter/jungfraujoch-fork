@@ -44,14 +44,14 @@ int main(int argc, char **argv) {
 
         std::cout << "Summing dataset of " << nimages_in << " to " << nimages_out << " images" << std::endl;
 
-        HDF5DataFile dataFile(argv[2], 0, nimages_out, width, height, 4, true);
+        HDF5DataFile dataFile(std::string(argv[2]), 0, nimages_out, width, height, 4, true);
 
         std::vector<hsize_t> dim = {summation_factor, height, width};
 
         constexpr const int32_t underload_sum = INT32_MIN;
         constexpr const int32_t overload_sum = INT32_MAX;
 
-        JFJochBitShuffleCompressor compressor(CompressionAlgorithm::BSHUF_LZ4, 4096, 0);
+        JFJochBitShuffleCompressor compressor(CompressionAlgorithm::BSHUF_LZ4);
         std::vector<uint8_t> output(bshuf_compress_lz4_bound(height*width, 4, 4096) + 12);
 
         for (int i = 0; i < nimages_out; i++) {

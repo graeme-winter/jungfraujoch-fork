@@ -24,8 +24,7 @@ TEST_CASE("DiffractionSpot_AddOperator","[StrongPixelSet]") {
 
 TEST_CASE("DiffractionSpot_LabCoord","[StrongPixelSet]") {
     DiffractionSpot spot(212, 2047, 12, 45);
-    DiffractionExperiment experiment;
-    experiment.DataStreamModuleSize(2, {4, 4}, 8, 36).UpsideDown(true);
+    DiffractionExperiment experiment(2, {4, 4}, 8, 36, true);
     experiment.DetectorDistance_mm(30).BeamX_pxl(120)
     .BeamY_pxl(150.0).ScatteringVector(Coord(0,0,1));
 
@@ -51,10 +50,9 @@ TEST_CASE("DiffractionSpot_ReciprocalCoord","[StrongPixelSet]") {
     double detector_distance = 75.0 / sqrt(3);
 
     DiffractionSpot spot(31, 99, 180, 45);
-    DiffractionExperiment experiment;
+    DiffractionExperiment experiment(2, {4, 4}, 8, 36, true);
 
-    experiment.DataStreamModuleSize(2, {4, 4}, 8, 36).UpsideDown(true)
-    .BeamX_pxl(beam_center_x).BeamY_pxl(beam_center_y).DetectorDistance_mm(detector_distance)
+    experiment.BeamX_pxl(beam_center_x).BeamY_pxl(beam_center_y).DetectorDistance_mm(detector_distance)
     .PhotonEnergy_keV(WVL_1A_IN_KEV/2.4).ScatteringVector(Coord(0,0,1));
 
     auto spot_transformed_0 = spot.TransformCoordinates(experiment, 0);

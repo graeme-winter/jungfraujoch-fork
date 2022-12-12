@@ -10,8 +10,8 @@ TEST_CASE("PedestalCalc", "[PedestalCalc]") {
         uint16_t base_value;
         uint16_t wrong_value;
         uint16_t mask_value;
-        DiffractionExperiment x;
-        x.DataStreamModuleSize(1, {1});
+        DiffractionExperiment x(1, {1});
+
         switch (gain_level) {
             case 1:
                 base_value = 0x4000;
@@ -95,8 +95,8 @@ TEST_CASE("PedestalCalc", "[PedestalCalc]") {
 }
 
 TEST_CASE("PedestalCalc_ImagesLessThanWindow", "[PedestalCalc]") {
-    DiffractionExperiment x;
-    x.DataStreamModuleSize(1, {1}).Mode(DetectorMode::PedestalG2);
+    DiffractionExperiment x(1, {1});
+    x.Mode(DetectorMode::PedestalG2);
     JFPedestal calib;
     PedestalCalcCPU calc(x, RAW_MODULE_LINES);
 
@@ -134,8 +134,8 @@ TEST_CASE("PedestalCalcGPU", "[PedestalCalcGPU]") {
         uint16_t base_value;
         uint16_t wrong_value;
         uint16_t mask_value;
-        DiffractionExperiment x;
-        x.DataStreamModuleSize(1, {1});
+        DiffractionExperiment x(1, {1});
+
         switch (gain_level) {
             case 1:
                 base_value = 0x4000;
@@ -219,8 +219,8 @@ TEST_CASE("PedestalCalcGPU", "[PedestalCalcGPU]") {
 }
 
 TEST_CASE("PedestalCalcGPU_ImagesLessThanWindow", "[PedestalCalcGPU]") {
-    DiffractionExperiment x;
-    x.DataStreamModuleSize(1, {1}).Mode(DetectorMode::PedestalG2);
+    DiffractionExperiment x(1, {1});
+    x.Mode(DetectorMode::PedestalG2);
     JFPedestal calib;
     PedestalCalcGPU calc(x, RAW_MODULE_LINES);
 

@@ -25,6 +25,8 @@ public:
                       JFJochProtoBuf::IndexerOutput *response) override;
     grpc::Status GetStatus(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
                            JFJochProtoBuf::IndexerStatus *response) override;
+    grpc::Status GetDataProcessingPlots(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
+                                          JFJochProtoBuf::IndexerDataProcessingPlots *response) override;
 };
 
 

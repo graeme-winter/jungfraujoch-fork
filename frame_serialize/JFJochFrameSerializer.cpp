@@ -33,19 +33,17 @@ size_t JFJochFrameSerializer::SerializeSequenceEnd() {
 }
 
 size_t JFJochFrameSerializer::SerializeImage(void *image, size_t image_size,
-                    const std::pair<int64_t,int64_t> &image_location_in_file,
+                                             const int64_t image_number,
                     const std::vector<SpotToSave>& spots) {
     CborEncoder encoder, mapEncoder, arrayEncoder;
     cbor_encoder_init(&encoder, buffer.data(), buffer.size(), 0);
-    cborErr(cbor_encoder_create_map(&encoder, &mapEncoder, 5));
+    cborErr(cbor_encoder_create_map(&encoder, &mapEncoder, 4));
     cborErr(cbor_encode_text_stringz(&mapEncoder, "type"));
     cborErr(cbor_encode_text_stringz(&mapEncoder, "image"));
     cborErr(cbor_encode_text_stringz(&mapEncoder, "data"));
     cborErr(cbor_encode_byte_string(&mapEncoder, (uint8_t *) image, image_size));
-    cborErr(cbor_encode_text_stringz(&mapEncoder, "file_number"));
-    cborErr(cbor_encode_int(&mapEncoder, image_location_in_file.first));
     cborErr(cbor_encode_text_stringz(&mapEncoder, "image_number"));
-    cborErr(cbor_encode_int(&mapEncoder, image_location_in_file.second));
+    cborErr(cbor_encode_int(&mapEncoder, image_number));
     cborErr(cbor_encode_text_stringz(&mapEncoder, "spots"));
     cborErr(cbor_encoder_create_array(&mapEncoder, &arrayEncoder, spots.size() * 3));
     for (int i = 0; i < spots.size(); i++) {

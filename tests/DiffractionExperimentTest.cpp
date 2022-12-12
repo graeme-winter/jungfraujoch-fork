@@ -8,6 +8,7 @@
 
 #include "../common/DiffractionExperiment.h"
 #include "../compression/JFJochCompressor.h"
+#include "../common/NetworkAddressConvert.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -17,29 +18,17 @@ TEST_CASE("DiffractionExperiment_FilePath","[DiffractionExperiment]") {
     REQUIRE_NOTHROW(x.FilePrefix("x"));
     REQUIRE(x.GetFilePrefix() == "x");
 
-    REQUIRE(x.GenerateMasterFilename() == "x_master.h5");
-    REQUIRE(x.GenerateDataFilename(5) == "x_data_000006.h5");
-
     // trailing / needs to be ignored
     REQUIRE_THROWS(x.FilePrefix("/x"));
     REQUIRE_THROWS(x.FilePrefix("../x"));
     REQUIRE_THROWS(x.FilePrefix("x/../y"));
 
     x.Mode(DetectorMode::PedestalG0);
-    REQUIRE(x.GenerateMasterFilename() == "x_pedestalG0_master.h5");
+    REQUIRE(x.GetFilePrefix() == "x");
     x.Mode(DetectorMode::PedestalG1);
-    REQUIRE(x.GenerateMasterFilename() == "x_pedestalG1_master.h5");
+    REQUIRE(x.GetFilePrefix() == "x");
     x.Mode(DetectorMode::PedestalG2);
-    REQUIRE(x.GenerateMasterFilename() == "x_pedestalG2_master.h5");
-
-    x.Mode(DetectorMode::Conversion).RunNumber(57);
-    REQUIRE(x.GenerateDataFilename(5) == "x_00057_data_000006.h5");
-
-    x.ImagesPerFile(0);
-    REQUIRE(x.GenerateDataFilename(5) == "x_00057_data.h5");
-
-    x.Mode(DetectorMode::Conversion).RunNumber(DiffractionExperiment::RunNumberNotSet).ImagesPerFile(0);
-    REQUIRE(x.GenerateDataFilename(0) == "x_data.h5");
+    REQUIRE(x.GetFilePrefix() == "x");
 
     REQUIRE_NOTHROW(x.FilePrefix("x6_master.h5"));
     REQUIRE(x.GetFilePrefix() == "x6");
@@ -51,114 +40,11 @@ TEST_CASE("DiffractionExperiment_FilePath","[DiffractionExperiment]") {
     REQUIRE(x.GetFilePrefix() == "_master.h5");
 }
 
-TEST_CASE("DiffractionExperiment_ModeTxt","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-
-    REQUIRE_NOTHROW(x.Mode_Text("pedestalG0"));
-    REQUIRE(x.GetDetectorMode() == DetectorMode::PedestalG0);
-    REQUIRE(x.GetDetectorModeTxt() == "pedestalG0");
-
-    REQUIRE_NOTHROW(x.Mode_Text("pedestalG1"));
-    REQUIRE(x.GetDetectorMode() == DetectorMode::PedestalG1);
-    REQUIRE(x.GetDetectorModeTxt() == "pedestalG1");
-
-    REQUIRE_NOTHROW(x.Mode_Text("pedestalG2"));
-    REQUIRE(x.GetDetectorMode() == DetectorMode::PedestalG2);
-    REQUIRE(x.GetDetectorModeTxt() == "pedestalG2");
-
-    REQUIRE_NOTHROW(x.Mode_Text("conversion"));
-    REQUIRE(x.GetDetectorMode() == DetectorMode::Conversion);
-    REQUIRE(x.GetDetectorModeTxt() == "conversion");
-
-    REQUIRE_NOTHROW(x.Mode_Text("raw"));
-    REQUIRE(x.GetDetectorMode() == DetectorMode::Raw);
-    REQUIRE(x.GetDetectorModeTxt() == "raw");
-
-    REQUIRE_THROWS(x.Mode_Text("Conversion"));
-    REQUIRE_THROWS(x.Mode_Text(""));
-    REQUIRE_THROWS(x.Mode_Text("6"));
-}
-
-TEST_CASE("DiffractionExperiment_ImageAndFileNumber","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-
-    x.ImagesPerTrigger(134).ImagesPerFile(100);
-    REQUIRE(x.GetImageNum() == 134);
-    REQUIRE(x.GetImagesPerFile() == 100);
-    REQUIRE(x.GetImagesInFile(0) == 100);
-    REQUIRE(x.GetImagesInFile(1) == 34);
-    REQUIRE_THROWS(x.GetImagesInFile(2));
-    REQUIRE_THROWS(x.GetImagesInFile(-1));
-    REQUIRE(x.GetFilesNum() == 2);
-
-    REQUIRE(x.GetImageLocationInFile(31).first == 0);
-    REQUIRE(x.GetImageLocationInFile(31).second == 31);
-
-    REQUIRE(x.GetImageLocationInFile(100).first == 1);
-    REQUIRE(x.GetImageLocationInFile(100).second == 0);
-
-    x.ImagesPerTrigger(78).ImagesPerFile(100);
-    REQUIRE(x.GetImageNum() == 78);
-    REQUIRE(x.GetImagesPerFile() == 100);
-    REQUIRE(x.GetImagesInFile(0) == 78);
-    REQUIRE(x.GetFilesNum() == 1);
-
-    x.ImagesPerTrigger(78).ImagesPerFile(0);
-    REQUIRE(x.GetImageNum() == 78);
-    REQUIRE(x.GetImagesPerFile() == 78);
-    REQUIRE(x.GetImagesInFile(0) == 78);
-    REQUIRE(x.GetFilesNum() == 1);
-    REQUIRE(x.GetImageLocationInFile(0).first == 0);
-    REQUIRE(x.GetImageLocationInFile(0).second == 0);
-    REQUIRE(x.GetImageLocationInFile(77).first == 0);
-    REQUIRE(x.GetImageLocationInFile(77).second == 77);
-}
-
-TEST_CASE("DiffractionExperiment_ImageAndFileNumber_ActualImages","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-
-    x.ImagesPerTrigger(134).ImagesPerFile(100);
-
-    // with actual image number
-    REQUIRE(x.GetFilesNum(100) == 1);
-    REQUIRE(x.GetFilesNum(101) == 2);
-    REQUIRE(x.GetImagesInFile(0, 91) == 91);
-    REQUIRE_THROWS(x.GetImagesInFile(1, 91));
-    REQUIRE(x.GetImagesInFile(0, 101) == 100);
-    REQUIRE(x.GetImagesInFile(1, 101) == 1);
-}
-
-TEST_CASE("DiffractionExperiment_SequenceNumber","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-
-    // Default is not set
-    REQUIRE(x.GetRunNumber() == DiffractionExperiment::RunNumberNotSet);
-
-    // if run number is not set, it is not changed with increment
-    REQUIRE_NOTHROW(x.RunNumber(DiffractionExperiment::RunNumberNotSet));
-    x.IncrementRunNumber();
-    REQUIRE(x.GetRunNumber() == DiffractionExperiment::RunNumberNotSet);
-
-    REQUIRE_THROWS(x.RunNumber(100000));
-
-    REQUIRE_NOTHROW(x.RunNumber(345));
-    REQUIRE(x.GetRunNumber() == 345);
-    x.IncrementRunNumber();
-    REQUIRE(x.GetRunNumber() == 346);
-
-
-    REQUIRE_NOTHROW(x.RunNumber(99999));
-    REQUIRE(x.GetRunNumber() == 99999);
-    x.IncrementRunNumber();
-    REQUIRE(x.GetRunNumber() == 0);
-}
-
 TEST_CASE("DiffractionExperiment_Compression_Raw","[DiffractionExperiment]") {
     DiffractionExperiment x;
     for (auto i: {DetectorMode::Raw, DetectorMode::PedestalG0, DetectorMode::PedestalG1, DetectorMode::PedestalG2}) {
-        x.Mode(i).Compression(JFJochProtoBuf::BSHUF_ZSTD, 5);
+        x.Mode(i).Compression(JFJochProtoBuf::BSHUF_ZSTD);
         REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::NO_COMPRESSION);
-        REQUIRE(x.GetCompressionAlgorithmText() == "off");
     }
 }
 
@@ -168,60 +54,19 @@ TEST_CASE("DiffractionExperiment_Compression","[DiffractionExperiment]") {
     // Compression
     x.Compression(JFJochProtoBuf::BSHUF_LZ4);
     REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
-    REQUIRE(x.GetCompressionBlockSize() == LZ4_BLOCK_SIZE);
-    REQUIRE(x.GetCompressionLevel() == 0);
-    REQUIRE(x.GetCompressionAlgorithmText() == "bslz4");
+    REQUIRE(x.GetCompressionAlgorithmEnum() == CompressionAlgorithm::BSHUF_LZ4);
 
     x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
     REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionBlockSize() == ZSTD_BLOCK_SIZE);
-    REQUIRE(x.GetCompressionLevel() == 0);
-    REQUIRE(x.GetCompressionAlgorithmText() == "bszstd");
+    REQUIRE(x.GetCompressionAlgorithmEnum() == CompressionAlgorithm::BSHUF_ZSTD);
 
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4);
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD_RLE);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD_RLE);
+    REQUIRE(x.GetCompressionAlgorithmEnum() == CompressionAlgorithm::BSHUF_ZSTD_RLE);
 
     x.Compression(JFJochProtoBuf::NO_COMPRESSION);
     REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::NO_COMPRESSION);
-    REQUIRE(x.GetCompressionAlgorithmText() == "off");
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD, ZSTD_USE_JFJOCH_RLE);
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionLevel() == ZSTD_USE_JFJOCH_RLE);
-    REQUIRE(x.GetCompressionAlgorithmText() == "bszstd_rle");
-
-    x.CompressionBlockSize(512);
-    REQUIRE(x.GetCompressionBlockSize() == 512);
-
-    REQUIRE_THROWS(x.CompressionBlockSize(513));
-    REQUIRE_THROWS(x.CompressionBlockSize(0));
-
-    x.Compression(JFJochProtoBuf::BSHUF_LZ4, 3);
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
-    REQUIRE(x.GetCompressionLevel() == 3);
-    REQUIRE(x.GetCompressionAlgorithmText() == "bslz4:3");
-
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionLevel() == 0);
-
-    REQUIRE(x.GetCompressionBlockSize() == 512);
-
-    x.Compression_Text("off");
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::NO_COMPRESSION);
-
-    x.Compression_Text("bslz4:5");
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
-    REQUIRE(x.GetCompressionLevel() == 5);
-
-    x.Compression_Text("bszstd:-1");
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionLevel() == -1);
-
-    x.Compression_Text("bszstd_rle");
-    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_ZSTD);
-    REQUIRE(x.GetCompressionLevel() == ZSTD_USE_JFJOCH_RLE);
-
+    REQUIRE(x.GetCompressionAlgorithmEnum() == CompressionAlgorithm::NO_COMPRESSION);
 }
 
 TEST_CASE("DiffractionExperiment_Timing","[DiffractionExperiment]") {
@@ -305,10 +150,13 @@ TEST_CASE("DiffractionExperiment_UnitCell","[DiffractionExperiment]") {
     cell.set_alpha(90);
     cell.set_beta(90);
     cell.set_gamma(90);
-    x.SetUnitCell(cell);
+    REQUIRE_NOTHROW(x.SetUnitCell(cell));
 
     REQUIRE(x.HasUnitCell());
     REQUIRE(x.GetUnitCell().c() == 30);
+    REQUIRE_NOTHROW(x.SetUnitCell());
+    REQUIRE(!x.HasUnitCell());
+    REQUIRE_NOTHROW(x.SetUnitCell(cell));
 
     JFJochProtoBuf::JungfraujochSettings settings = x;
 
@@ -317,55 +165,9 @@ TEST_CASE("DiffractionExperiment_UnitCell","[DiffractionExperiment]") {
     REQUIRE(google::protobuf::util::MessageDifferencer::Equivalent(y.GetUnitCell(), x.GetUnitCell()));
 }
 
-TEST_CASE("DiffractionExperiment_SpaceGroup","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-    REQUIRE_THROWS(x.SpaceGroupNumber(999));
-    REQUIRE_THROWS(x.SpaceGroup("P898"));
-
-    REQUIRE_NOTHROW(x.SpaceGroup("P43212"));
-    REQUIRE(x.GetSpaceGroupNumber() == 96);
-    REQUIRE(x.GetCentering() == 'P');
-
-    REQUIRE_NOTHROW(x.SpaceGroupNumber(21));
-    REQUIRE(x.GetSpaceGroupNumber() == 21);
-    REQUIRE(x.GetCentering() == 'C');
-    REQUIRE(x.GetSpaceGroupName() == "C222");
-}
-
-/*
-TEST_CASE("DiffractionExperiment_TimeUnits","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-
-    REQUIRE_NOTHROW(x.Import(R"( {"shutter_delay":425} )"_json));
-    REQUIRE(x.GetShutterDelay().count() == 425);
-
-    REQUIRE_NOTHROW(x.Import(R"( {"shutter_delay":425.1} )"_json));
-    REQUIRE(x.GetShutterDelay().count() == 425);
-
-    REQUIRE_NOTHROW(x.Import(R"( {"shutter_delay":"425us"} )"_json));
-    REQUIRE(x.GetShutterDelay().count() == 425);
-
-    REQUIRE_NOTHROW(x.Import(R"( {"shutter_delay":"1ms"} )"_json));
-    REQUIRE(x.GetShutterDelay().count() == 1000);
-
-    REQUIRE_NOTHROW(x.Import(R"( {"shutter_delay":"1.0ms"} )"_json));
-    REQUIRE(x.GetShutterDelay().count() == 1000);
-
-    REQUIRE_NOTHROW(x.Import(R"( {"shutter_delay":"1.0 s"} )"_json));
-    REQUIRE(x.GetShutterDelay().count() == 1000000);
-
-    REQUIRE_NOTHROW(x.Import(R"( {"shutter_delay":"1.0   sec"} )"_json));
-    REQUIRE(x.GetShutterDelay().count() == 1000000);
-
-    REQUIRE_THROWS(x.Import(R"( {"shutter_delay":"1.0 day"} )"_json));
-    REQUIRE_THROWS(x.Import(R"( {"shutter_delay":""} )"_json));
-    REQUIRE_THROWS(x.Import(R"( {"shutter_delay":"us"} )"_json));
-    REQUIRE_THROWS(x.Import(R"( {"shutter_delay":"ms"} )"_json));
-} */
-
 TEST_CASE("DiffractionExperiment_IPv4Address","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-    x.DataStreamModuleSize(1, {4, 4, 4}).Mode(DetectorMode::Conversion);
+    DiffractionExperiment x(1, {4, 4, 4});
+    x.Mode(DetectorMode::Conversion);
 
     uint32_t ndatastreams = 3;
 
@@ -388,26 +190,36 @@ TEST_CASE("DiffractionExperiment_IPv4Address","[DiffractionExperiment]") {
     REQUIRE(x.GetDestIPv4Address(2) == 0x717c0140u);
     REQUIRE(x.GetSrcIPv4Address(12) == 0x6f7c0140u + ((ndatastreams+2+12) << 24));
 
-    REQUIRE(x.IPv4AddressToStr(x.GetDestIPv4Address(2)) == "64.1.124.113");
+    REQUIRE(IPv4AddressToStr(x.GetDestIPv4Address(2)) == "64.1.124.113");
 }
 
-TEST_CASE("DiffractionExperiment_MacAddressToStr","[DiffractionExperiment]") {
-    REQUIRE(DiffractionExperiment::MacAddressToStr(0xF1EEDDCCBBAA) == "aa:bb:cc:dd:ee:f1");
-    REQUIRE(DiffractionExperiment::MacAddressToStr(0x0000DDCCBB00) == "00:bb:cc:dd:00:00");
+TEST_CASE("IPv4AddressToStr","") {
+    REQUIRE(IPv4AddressToStr(0x0f32010a) == "10.1.50.15");
 }
 
-TEST_CASE("DiffractionExperiment_MacAddressFromStr","[DiffractionExperiment]") {
-    REQUIRE(DiffractionExperiment::MacAddressFromStr("aa:bb:cc:dd:ee:f1") == 0xF1EEDDCCBBAA);
-    REQUIRE(DiffractionExperiment::MacAddressFromStr("11:22:33:44:55:66") == 0x665544332211);
-    REQUIRE_THROWS(DiffractionExperiment::MacAddressFromStr("11:22:33:44:55:66:77"));
-    REQUIRE_THROWS(DiffractionExperiment::MacAddressFromStr("11:22:33:44:55"));
-    REQUIRE_THROWS(DiffractionExperiment::MacAddressFromStr("456:22:33:44:55"));
-    REQUIRE_THROWS(DiffractionExperiment::MacAddressFromStr("xy:22:33:44:55"));
+TEST_CASE("IPv4AddressFromStr","") {
+    REQUIRE(IPv4AddressFromStr("10.1.50.15") == 0x0f32010a);
+    REQUIRE_THROWS(IPv4AddressFromStr("256.257.0.1"));
+    REQUIRE_THROWS(IPv4AddressFromStr("ff.ff.ff.1"));
+}
+
+TEST_CASE("MacAddressToStr","") {
+    REQUIRE(MacAddressToStr(0xF1EEDDCCBBAA) == "aa:bb:cc:dd:ee:f1");
+    REQUIRE(MacAddressToStr(0x0000DDCCBB00) == "00:bb:cc:dd:00:00");
+}
+
+TEST_CASE("MacAddressFromStr","") {
+    REQUIRE(MacAddressFromStr("aa:bb:cc:dd:ee:f1") == 0xF1EEDDCCBBAA);
+    REQUIRE(MacAddressFromStr("11:22:33:44:55:66") == 0x665544332211);
+    REQUIRE_THROWS(MacAddressFromStr("11:22:33:44:55:66:77"));
+    REQUIRE_THROWS(MacAddressFromStr("11:22:33:44:55"));
+    REQUIRE_THROWS(MacAddressFromStr("456:22:33:44:55"));
+    REQUIRE_THROWS(MacAddressFromStr("xy:22:33:44:55"));
 }
 
 TEST_CASE("DiffractionExperiment_UDPAddress","[DiffractionExperiment]") {
-    DiffractionExperiment x;
-    x.DataStreamModuleSize(1, {4, 4, 4}).Mode(DetectorMode::Conversion);
+    DiffractionExperiment x(1, {4, 4, 4});
+    x.Mode(DetectorMode::Conversion);
 
     REQUIRE(x.GetDestUDPPort(0, 0) % 64 == 0);
     REQUIRE(x.GetDestUDPPort(0, 1) % 64 == 2);
@@ -431,55 +243,11 @@ TEST_CASE("DiffractionExperiment_UDPAddress","[DiffractionExperiment]") {
 
 }
 
-TEST_CASE("DiffractionExperiment_GetCol0OfModule","[DiffractionExperiment]") {
-    int64_t gap_x = 8;
-    DiffractionExperiment x(2, {4, 4}, gap_x, 36);
-    x.UpsideDown(true);
-
-    x.Mode(DetectorMode::Conversion);
-    REQUIRE(x.GetCol0OfModule(0) == 0);
-    REQUIRE(x.GetCol0OfModule(1) == CONVERTED_MODULE_COLS + gap_x);
-
-    REQUIRE(x.GetCol0OfModule(4) == 0);
-    REQUIRE(x.GetCol0OfModule(5) == CONVERTED_MODULE_COLS + gap_x);
-
-    x.Mode(DetectorMode::Raw);
-    REQUIRE(x.GetCol0OfModule(0) == 0);
-    REQUIRE(x.GetCol0OfModule(1) == 0);
-
-    REQUIRE(x.GetCol0OfModule(4) == 0);
-    REQUIRE(x.GetCol0OfModule(5) == 0);
-}
-
-
-TEST_CASE("DiffractionExperiment_GetLine0OfModule","[DiffractionExperiment]") {
-    int64_t gap_y = 36;
-    DiffractionExperiment x(2, {4, 4}, 8, gap_y);
-    x.UpsideDown(true);
-
-    x.Mode(DetectorMode::Conversion);
-    REQUIRE(x.GetLine0OfModule(0) == 4 * CONVERTED_MODULE_LINES - 1 + 3 * gap_y);
-    REQUIRE(x.GetLine0OfModule(1) == 4 * CONVERTED_MODULE_LINES - 1 + 3 * gap_y);
-
-    REQUIRE(x.GetLine0OfModule(4) == 2 * CONVERTED_MODULE_LINES - 1 + gap_y);
-    REQUIRE(x.GetLine0OfModule(5) == 2 * CONVERTED_MODULE_LINES - 1 + gap_y);
-
-    REQUIRE(x.GetLine0OfModule(6) == CONVERTED_MODULE_LINES - 1);
-    REQUIRE(x.GetLine0OfModule(7) == CONVERTED_MODULE_LINES - 1);
-
-    x.Mode(DetectorMode::Raw);
-    REQUIRE(x.GetLine0OfModule(0) == 0);
-    REQUIRE(x.GetLine0OfModule(1) == RAW_MODULE_LINES * 1);
-    REQUIRE(x.GetLine0OfModule(4) == RAW_MODULE_LINES * 4);
-    REQUIRE(x.GetLine0OfModule(5) == RAW_MODULE_LINES * 5);
-}
-
 TEST_CASE("DiffractionExperiment_DetectorGeometry","[DiffractionExperiment]") {
     DiffractionExperiment x(1, {4, 4, 6, 6}); // 10M configuration #1 - via constructor
 
     x.Mode(DetectorMode::Conversion);
 
-    REQUIRE(x.GetHorizontalStacking() == 1);
     REQUIRE(x.GetDataStreamsNum() == 4);
 
     REQUIRE(x.GetXPixelsNum() == 1030);
@@ -506,8 +274,7 @@ TEST_CASE("DiffractionExperiment_DetectorGeometry","[DiffractionExperiment]") {
 
     x.Mode(DetectorMode::Conversion);
 
-    x.DataStreamModuleSize(2, {4, 4, 6, 6}).UpsideDown(true); // 10M configuration #2
-    REQUIRE(x.GetHorizontalStacking() == 2);
+    x = DiffractionExperiment(2, {4, 4, 6, 6}, 0, 0, true); // 10M configuration #2
 
     REQUIRE(x.GetPixelsNum() == 1030 * 514 * 20);
     REQUIRE(x.GetXPixelsNum() == 1030 * 2);
@@ -537,14 +304,11 @@ TEST_CASE("DiffractionExperiment_DetectorGeometry","[DiffractionExperiment]") {
 }
 
 TEST_CASE("DiffractionExperiment_DetectorGeometry_gaps","[DiffractionExperiment]") {
-
-    DiffractionExperiment x;
-
     const size_t gap_x = 8;
     const size_t gap_y = 36;
 
-    x.DataStreamModuleSize(2, {4, 4, 6, 6}, gap_x,gap_y).Mode(DetectorMode::Conversion)
-        .UpsideDown(false); // 10M configuration #1
+    DiffractionExperiment x(2, {4, 4, 6, 6}, gap_x,gap_y, false);
+    x.Mode(DetectorMode::Conversion);
 
     REQUIRE(x.GetDataStreamsNum() == 4);
     REQUIRE(x.GetPixelsNum() == (1030 * 2 + gap_x) * (514 * 10 + (10-1) * gap_y) );
@@ -571,11 +335,14 @@ TEST_CASE("DiffractionExperiment_DetectorGeometry_gaps","[DiffractionExperiment]
     REQUIRE(x.GetPixel0OfModule(18) == (2*1030 + gap_x) * 9 * (514 + gap_y));
     REQUIRE(x.GetPixel0OfModule(19) == (2*1030 + gap_x) * 9 * (514 + gap_y)  + 1030 + gap_x);
 
-    x.UpsideDown(true);
-    //REQUIRE(x.GetPixel0OfModule(0) == (2*1030 + gap_x) * (514 + gap_y) * (18/2));
-    //REQUIRE(x.GetPixel0OfModule(4) == (2*1030 + gap_x) * (514 + gap_y) * (16/2));
-    //REQUIRE(x.GetPixel0OfModule(8) == (2*1030 + gap_x) * (514 + gap_y) * (12/2));
-    //REQUIRE(x.GetPixel0OfModule(14) == (2*1030 + gap_x) * (514 + gap_y) * (6/2));
+
+}
+TEST_CASE("DiffractionExperiment_DetectorGeometry_gaps_mirror_y","[DiffractionExperiment]") {
+    const size_t gap_x = 8;
+    const size_t gap_y = 36;
+
+    DiffractionExperiment x(2, {4, 4, 6, 6}, gap_x,gap_y, true);
+    x.Mode(DetectorMode::Conversion);
 
     REQUIRE(x.GetPixel0OfModule(0) == (2*1030+gap_x) * 513 + (2*1030 + gap_x) * 9 * (514 + gap_y));
     REQUIRE(x.GetPixel0OfModule(1) == (2*1030+gap_x) * 513 + (2*1030 + gap_x) * 9 * (514 + gap_y)  + 1030 + gap_x);
@@ -590,7 +357,6 @@ TEST_CASE("DiffractionExperiment_DetectorGeometry_gaps","[DiffractionExperiment]
     REQUIRE(x.GetPixel0OfModule(19) == (2*1030+gap_x) * 513 + (2*1030 + gap_x) * 0 * (514 + gap_y)  + 1030 + gap_x);
     REQUIRE_THROWS(x.GetPixel0OfModule(20));
 }
-
 
 TEST_CASE("DiffractionExperiment_Metadata","[DiffractionExperiment]") {
     DiffractionExperiment x;
@@ -610,43 +376,9 @@ TEST_CASE("DiffractionExperiment_Metadata","[DiffractionExperiment]") {
     REQUIRE(x.GetScatteringVector().y == Approx(2.0/sqrt(14.0) / x.GetWavelength_A()));
     REQUIRE(x.GetScatteringVector().z == Approx(3.0/sqrt(14.0) / x.GetWavelength_A()));
 
-    x.DetectorName("det1");
-    REQUIRE(x.GetDetectorName() == "det1");
-
     REQUIRE_THROWS(x.PedestalG0Frames(-1));
     REQUIRE_THROWS(x.PedestalG1Frames(-1));
     REQUIRE_THROWS(x.PedestalG2Frames(-1));
-}
-
-TEST_CASE("DiffractionExperiment_TimeResolvedMode", "[DiffractionExperiment]") {
-    DiffractionExperiment x;
-    x.ImagesPerTrigger(20).ImagesPerFile(50).NumTriggers(10).PedestalG0Frames(500).Summation(10).FrameTime(1ms);
-    x.TimeResolvedMode(true);
-
-    REQUIRE(x.GetNumTriggers() == 10);
-    REQUIRE(x.GetImageNumPerTrigger() == 20);
-    REQUIRE(x.GetFrameNumPerTrigger() == 20 * 10);
-
-    REQUIRE(x.GetFilesNum() == x.GetImageNumPerTrigger());
-    REQUIRE(x.GetImagesPerFile() == x.GetNumTriggers());
-    
-    REQUIRE(x.GetFrameNum() == 20 * 10 * 10);
-    REQUIRE(x.GetImageNum() == 20 * 10);
-    REQUIRE(x.GetImagesInFile(0) == 10);
-    REQUIRE(x.GetImagesInFile(1) == 10);
-    REQUIRE(x.GetImagesInFile(9) == 10);
-
-    REQUIRE(x.GetImageLocationInFile(0).first == 0);
-    REQUIRE(x.GetImageLocationInFile(0).second == 0);
-
-    REQUIRE(x.GetImageLocationInFile(19).first == 19);
-    REQUIRE(x.GetImageLocationInFile(19).second == 0);
-
-    REQUIRE(x.GetImageLocationInFile(39).first == 19);
-    REQUIRE(x.GetImageLocationInFile(39).second == 1);
-
-    REQUIRE(x.GetImageLocationInFile(80).first == 0);
-    REQUIRE(x.GetImageLocationInFile(80).second == 4);
 }
 
 TEST_CASE("DiffractionExperiment_Preview", "[DiffractionExperiment]") {
@@ -682,6 +414,24 @@ TEST_CASE("DiffractionExperiment_Preview", "[DiffractionExperiment]") {
     REQUIRE(x.GetPreviewStride() == 0);
 }
 
+TEST_CASE("DiffractionExperiment_SpaceGroup", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    REQUIRE_THROWS(x.SpaceGroupNumber(-1));
+    REQUIRE_THROWS(x.SpaceGroupNumber(500));
+    REQUIRE_NOTHROW(x.SpaceGroupNumber(0));
+    REQUIRE_NOTHROW(x.SpaceGroupNumber(200));
+    REQUIRE(x.GetSpaceGroupNumber() == 200);
+}
+
+TEST_CASE("DiffractionExperiment_SampleName", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+
+    REQUIRE_NOTHROW(x.SampleName(""));
+    REQUIRE(x.GetSampleName().empty());
+
+    REQUIRE_NOTHROW(x.SampleName("lyso1"));
+    REQUIRE(x.GetSampleName() == "lyso1");
+}
 
 TEST_CASE("DiffractionExperiment_SpotFinding", "[DiffractionExperiment]") {
     DiffractionExperiment x;
@@ -744,24 +494,23 @@ TEST_CASE("DiffractionExperiment_FrameCountTime","[DiffractionExperiment]") {
 }
 
 TEST_CASE("DiffractionExperiment_ExportProtobuf","[DiffractionExperiment]") {
-    DiffractionExperiment x,y;
+    DiffractionExperiment x(4, {4, 4, 8}, 0, 0, false),y;
 
     std::vector<DetectorMode> v = {DetectorMode::Raw, DetectorMode::Conversion,
                                    DetectorMode::PedestalG0, DetectorMode::PedestalG1, DetectorMode::PedestalG2};
     for (auto &i : v) {
-        x.UpsideDown(false).DataStreamModuleSize(4, {4, 4, 8}).
-                        Mode(i).FilePrefix("z").ImagesPerTrigger(20).NumTriggers(5).PedestalG0Frames(1345).
-                        PedestalG1Frames(1876).PedestalG2Frames(654).
-                        PhotonEnergy_keV(16.0).BeamX_pxl(566).BeamY_pxl(1234).DetectorDistance_mm(145).
-                        FrameTime(std::chrono::microseconds(765),std::chrono::microseconds(10)).
-                        PedestalG1G2FrameTime(std::chrono::milliseconds(10))
-                .BaseIPv4Address("2.2.2.2").BaseUDPPort(64*76).TimeResolvedMode(true).MaskModuleEdges(true);
+        x.Mode(i).FilePrefix("z").ImagesPerTrigger(20).NumTriggers(5).PedestalG0Frames(1345)
+                .PedestalG1Frames(1876).PedestalG2Frames(654)
+                .PhotonEnergy_keV(16.0).BeamX_pxl(566).BeamY_pxl(1234).DetectorDistance_mm(145)
+                .FrameTime(std::chrono::microseconds(765),std::chrono::microseconds(10))
+                .PedestalG1G2FrameTime(std::chrono::milliseconds(10))
+                .BaseIPv4Address("2.2.2.2").BaseUDPPort(64*76).MaskModuleEdges(true);
 
         JFJochProtoBuf::JungfraujochSettings settings_in_protobuf = x;
         REQUIRE_NOTHROW(y.Import(settings_in_protobuf));
 
         REQUIRE(! y.IsUpsideDown());
-        REQUIRE(y.GenerateMasterFilename() == x.GenerateMasterFilename());
+        REQUIRE(y.GetFilePrefix() == x.GetFilePrefix());
         REQUIRE(x.GetDataStreamsNum() == y.GetDataStreamsNum());
         REQUIRE(x.GetXPixelsNum() == y.GetXPixelsNum());
         REQUIRE(x.GetModulesNum(2) == y.GetModulesNum(2));
@@ -779,7 +528,6 @@ TEST_CASE("DiffractionExperiment_ExportProtobuf","[DiffractionExperiment]") {
         REQUIRE(y.GetFrameCountTime().count() == x.GetFrameCountTime().count());
         REQUIRE(y.GetDestUDPPort(0,0) == 64*76);
         REQUIRE(y.GetDestIPv4Address(0) == 0x02020202);
-        REQUIRE(y.GetTimeResolvedMode() == x.GetTimeResolvedMode());
         REQUIRE(y.GetPedestalG0Frames() == x.GetPedestalG0Frames());
         REQUIRE(y.GetMaskModuleEdges() == x.GetMaskModuleEdges());
         REQUIRE(y.GetMaskChipEdges() == x.GetMaskChipEdges());
@@ -822,7 +570,7 @@ TEST_CASE("DiffractionExperiment_CopyConstructor", "[DiffractionExperiment]") {
 
 TEST_CASE("DiffractionExperiment_ResToPxl","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.DetectorDistance_mm(75).Wavelength_A(1.0);
+    x.DetectorDistance_mm(75).PhotonEnergy_keV(WVL_1A_IN_KEV);
 
     // sin(theta) = 1/2
     // theta = 30 deg
@@ -886,23 +634,9 @@ TEST_CASE("DiffractionExperiment_RadialIntegration_QSpacing","[DiffractionExperi
     REQUIRE(y.GetQSpacingForRadialInt_recipA() == Approx(0.456));
 }
 
-TEST_CASE("DiffractionExperiment_RadialIntegration_BkgEstimate","[DiffractionExperiment]") {
-    DiffractionExperiment x(2, {4,4}, 8, 36);
-
-    x.LowResForBkgEstimation_A(32.0);
-    x.HighResForBkgEstimation_A(14.0);
-
-    REQUIRE(x.GetHighQLimitForBkg_recipA() == Approx(2 * M_PI / 14.0));
-    REQUIRE(x.GetLowQLimitForBkg_recipA() == Approx(2 * M_PI / 32.0));
-
-    DiffractionExperiment y(x);
-    REQUIRE(y.GetHighQLimitForBkg_recipA() == Approx(2 * M_PI / 14.0));
-    REQUIRE(y.GetLowQLimitForBkg_recipA() == Approx(2 * M_PI / 32.0));
-}
-
 TEST_CASE("DiffractionExperiment_BkgEstPeriod","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.DetectorDistance_mm(75).Wavelength_A(1.0);
+    x.DetectorDistance_mm(75).PhotonEnergy_keV(WVL_1A_IN_KEV);
     x.FrameTime(1ms).Summation(3);
     x.BackgroundEstimationPeriod(9ms);
     REQUIRE(x.GetBackgroundEstimationPeriod() == std::chrono::milliseconds(9));
@@ -912,11 +646,10 @@ TEST_CASE("DiffractionExperiment_BkgEstPeriod","[DiffractionExperiment]") {
 TEST_CASE("DiffractionExperiment_StorageCells","[DiffractionExperiment]") {
     const int64_t num_triggers = 20;
     DiffractionExperiment x;
-    x.FrameTime(std::chrono::milliseconds(1)).Summation(10).ImagesPerTrigger(5).NumTriggers(num_triggers);
-    REQUIRE(x.GetSummation() > 1);
+    x.FrameTime(std::chrono::milliseconds(1)).Summation(1).ImagesPerTrigger(5).NumTriggers(num_triggers);
+    REQUIRE(x.GetSummation() == 1);
     REQUIRE(x.GetImageNumPerTrigger() == 5);
     REQUIRE(x.GetNumTriggers() == num_triggers);
-    REQUIRE(!x.GetTimeResolvedMode());
 
     x.StorageCells(3);
     REQUIRE(x.GetStorageCellNumber() == 3);
@@ -930,9 +663,6 @@ TEST_CASE("DiffractionExperiment_StorageCells","[DiffractionExperiment]") {
     REQUIRE(x.GetFrameNumPerTrigger() == x.GetStorageCellNumber());
     REQUIRE(x.GetImageNum() == x.GetStorageCellNumber() * num_triggers);
     REQUIRE(x.GetFrameNum() == x.GetStorageCellNumber() * num_triggers);
-    REQUIRE(x.GetTimeResolvedMode());
-    REQUIRE(x.GetImagesPerFile() == num_triggers);
-    REQUIRE(x.GetFilesNum() == 16);
 
     x.UseInternalPacketGenerator(true);
     REQUIRE(x.GetImageNumPerTrigger() == x.GetStorageCellNumber());
@@ -984,59 +714,205 @@ TEST_CASE("DiffractionExperiment_DetectorType","[DiffractionExperiment]") {
 
 TEST_CASE("DiffractionExperiment_DetectorInput_MultiTriggger","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.FrameTime(700us).Summation(1).ImagesPerTrigger(350).NumTriggers(7).DetectorDelayAfterTrigger(1ms).SoftTrigger(false);
+    x.FrameTime(700us).Summation(1).ImagesPerTrigger(350).NumTriggers(7);
     JFJochProtoBuf::DetectorInput ret = x;
     REQUIRE(ret.modules_num() == 8);
     REQUIRE(ret.period_us() == x.GetFrameTime().count());
     REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
-    REQUIRE(!ret.soft_trigger());
     REQUIRE(ret.num_triggers() == 8);
     REQUIRE(ret.num_frames() == 350);
     REQUIRE(ret.storage_cell_number() == 1);
-    REQUIRE(ret.delay_us() == 1000);
     REQUIRE(ret.mode() == JFJochProtoBuf::CONVERSION);
 }
 
 TEST_CASE("DiffractionExperiment_DetectorInput_NoTriggger","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.FrameTime(1200us).Summation(1).ImagesPerTrigger(350).NumTriggers(1).DetectorDelayAfterTrigger(1ms).SoftTrigger(true);
+    x.FrameTime(1200us).Summation(1).ImagesPerTrigger(350).NumTriggers(1);
     JFJochProtoBuf::DetectorInput ret = x;
     REQUIRE(ret.modules_num() == 8);
     REQUIRE(ret.period_us() == x.GetFrameTime().count());
     REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
-    REQUIRE(ret.soft_trigger());
     REQUIRE(ret.num_triggers() == 1);
     REQUIRE(ret.num_frames() == 350 + DELAY_FRAMES_STOP_AND_QUIT);
     REQUIRE(ret.storage_cell_number() == 1);
-    REQUIRE(ret.delay_us() == 1000);
     REQUIRE(ret.mode() == JFJochProtoBuf::CONVERSION);
 }
 
 TEST_CASE("DiffractionExperiment_DetectorInput_PedestalG2","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.FrameTime(1200us).Summation(1).PedestalG2Frames(4560).NumTriggers(1).DetectorDelayAfterTrigger(1ms).Mode(DetectorMode::PedestalG2);
+    x.FrameTime(1200us).Summation(1).PedestalG2Frames(4560).NumTriggers(1).Mode(DetectorMode::PedestalG2);
     JFJochProtoBuf::DetectorInput ret = x;
     REQUIRE(ret.modules_num() == 8);
     REQUIRE(ret.period_us() == x.GetFrameTime().count());
     REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
-    REQUIRE(ret.soft_trigger());
     REQUIRE(ret.num_triggers() == 1);
     REQUIRE(ret.num_frames() == 4560 + DELAY_FRAMES_STOP_AND_QUIT);
     REQUIRE(ret.storage_cell_number() == 1);
-    REQUIRE(ret.delay_us() == 1000);
 }
 
 TEST_CASE("DiffractionExperiment_DetectorInput_StorageCell","[DiffractionExperiment]") {
     DiffractionExperiment x(2, {4,4}, 8, 36);
-    x.FrameTime(1200us).Summation(1).NumTriggers(4560).StorageCells(7).SoftTrigger(false);
+    x.FrameTime(1200us).Summation(1).NumTriggers(4560).StorageCells(7);
     JFJochProtoBuf::DetectorInput ret = x;
     REQUIRE(ret.modules_num() == 8);
     REQUIRE(ret.period_us() == 7 * (x.GetFrameTime().count() + 10));
     REQUIRE(ret.count_time_us() == x.GetFrameCountTime().count());
-    REQUIRE(!ret.soft_trigger());
     REQUIRE(ret.num_triggers() == 4560 + 1);
     REQUIRE(ret.num_frames() == 1);
     REQUIRE(ret.storage_cell_number() == 7);
     REQUIRE(ret.storage_cell_delay() == 5);
     REQUIRE(ret.storage_cell_start() == x.GetStorageCellStart());
+}
+
+TEST_CASE("DiffractionExperiment_LoadDatasetSettings", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.ImagesPerTrigger(567).BeamY_pxl(324).ScatteringVector({1,0,0})
+            .Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    JFJochProtoBuf::DatasetSettings settings;
+    settings.set_images_per_trigger(234);
+    settings.set_ntrigger(56);
+    settings.set_summation(4);
+    settings.set_beam_x_pxl(23.4);
+    settings.set_beam_y_pxl(123.4);
+    settings.set_photon_energy_kev(WVL_1A_IN_KEV);
+    settings.set_detector_distance_mm(57.6);
+    settings.set_data_file_count(5);
+    settings.set_space_group_number(45);
+    settings.set_sample_name("lyso1");
+
+    REQUIRE_NOTHROW(x.LoadDatasetSettings(settings));
+
+    REQUIRE(x.GetScatteringVector().x == 0);
+    REQUIRE(x.GetImageNumPerTrigger() == 234);
+    REQUIRE(x.GetBeamY_pxl() == Approx(123.4));
+    REQUIRE(x.GetSpaceGroupNumber() == 45);
+    REQUIRE(x.GetCompressionAlgorithm() == JFJochProtoBuf::BSHUF_LZ4);
+}
+
+TEST_CASE("DiffractionExperiment_ImageTimeUs", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.FrameTime(500us);
+
+    JFJochProtoBuf::DatasetSettings settings;
+    settings.set_images_per_trigger(234);
+    settings.set_ntrigger(56);
+    settings.set_image_time_us(2500);
+    settings.set_beam_x_pxl(23.4);
+    settings.set_beam_y_pxl(123.4);
+    settings.set_photon_energy_kev(WVL_1A_IN_KEV);
+    settings.set_detector_distance_mm(57.6);
+    settings.set_data_file_count(5);
+    settings.set_space_group_number(45);
+    settings.set_sample_name("lyso1");
+
+    REQUIRE_NOTHROW(x.LoadDatasetSettings(settings));
+    REQUIRE(x.GetSummation() == 5);
+
+    settings.set_image_time_us(2501);
+    REQUIRE_THROWS(x.LoadDatasetSettings(settings));
+
+    settings.set_image_time_us(0);
+    REQUIRE_THROWS(x.LoadDatasetSettings(settings));
+
+    settings.set_image_time_us(-2500);
+    REQUIRE_THROWS(x.LoadDatasetSettings(settings));
+
+}
+
+TEST_CASE("DiffractionExperiment_LoadDatasetSettings_Invalid", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.ImagesPerTrigger(567).BeamY_pxl(324).ScatteringVector({1,0,0})
+            .Compression(JFJochProtoBuf::BSHUF_ZSTD);
+    JFJochProtoBuf::DatasetSettings settings;
+    settings.set_images_per_trigger(-1);
+    settings.set_ntrigger(56);
+    settings.set_summation(4);
+    settings.set_beam_x_pxl(23.4);
+    settings.set_beam_y_pxl(123.4);
+    settings.set_photon_energy_kev(WVL_1A_IN_KEV);
+    settings.set_detector_distance_mm(57.6);
+    settings.set_data_file_count(5);
+    settings.set_space_group_number(45);
+    settings.set_sample_name("lyso1");
+
+    REQUIRE_THROWS(x.LoadDatasetSettings(settings));
+
+    REQUIRE(x.GetScatteringVector().x == Approx(1));
+    REQUIRE(x.GetImageNumPerTrigger() == 567);
+    REQUIRE(x.GetBeamY_pxl() == Approx(324));
+    REQUIRE(x.GetSpaceGroupNumber() == 0);
+}
+
+TEST_CASE("DiffractionExperiment_LoadDetectorSettings", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.PedestalG0Frames(456).PedestalG1Frames(1234).PedestalG2Frames(123);
+
+    JFJochProtoBuf::DetectorSettings settings;
+    settings.set_frame_time_us(600);
+    settings.set_count_time_us(400);
+    settings.set_use_storage_cells(true);
+    settings.set_use_internal_packet_generator(true);
+    settings.set_collect_raw_data(true);
+    settings.set_pedestal_g0_frames(5000);
+    settings.set_pedestal_g1_frames(100);
+    settings.set_pedestal_g2_frames(150);
+    REQUIRE_NOTHROW(x.LoadDetectorSettings(settings));
+
+    REQUIRE(x.GetFrameTime().count() == 600);
+    REQUIRE(x.GetFrameCountTime().count() == 400);
+    REQUIRE(x.IsUsingInternalPacketGen());
+    REQUIRE(x.GetStorageCellNumber() == 16);
+    REQUIRE(x.GetDetectorMode() == DetectorMode::Raw);
+    REQUIRE(x.GetPedestalG0Frames() == 5000);
+    REQUIRE(x.GetPedestalG1Frames() == 100);
+    REQUIRE(x.GetPedestalG2Frames() == 150);
+}
+
+TEST_CASE("DiffractionExperiment_LoadDetectorSettings_invalid", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.PedestalG0Frames(456).PedestalG1Frames(1234).PedestalG2Frames(123);
+    x.FrameTime(525us).Mode(DetectorMode::Conversion);
+    JFJochProtoBuf::DetectorSettings settings;
+    settings.set_frame_time_us(600);
+    settings.set_count_time_us(800);
+    settings.set_use_storage_cells(true);
+    settings.set_use_internal_packet_generator(true);
+    settings.set_collect_raw_data(true);
+    settings.set_pedestal_g0_frames(5000);
+    settings.set_pedestal_g1_frames(100);
+    settings.set_pedestal_g2_frames(150);
+    REQUIRE_THROWS(x.LoadDetectorSettings(settings));
+
+    REQUIRE(x.GetFrameTime().count() == 525);
+    REQUIRE(x.GetFrameCountTime().count() == 525 - READOUT_TIME_IN_US);
+    REQUIRE(!x.IsUsingInternalPacketGen());
+    REQUIRE(x.GetStorageCellNumber() == 1);
+    REQUIRE(x.GetDetectorMode() == DetectorMode::Conversion);
+    REQUIRE(x.GetPedestalG0Frames() == 456);
+    REQUIRE(x.GetPedestalG1Frames() == 1234);
+    REQUIRE(x.GetPedestalG2Frames() == 123);
+}
+
+TEST_CASE("DiffractionExperiment_LoadDetectorSettings_inferred", "[DiffractionExperiment]") {
+    DiffractionExperiment x;
+    x.PedestalG0Frames(456).PedestalG1Frames(1234).PedestalG2Frames(123);
+
+    JFJochProtoBuf::DetectorSettings settings;
+    settings.set_frame_time_us(600);
+
+    REQUIRE_NOTHROW(x.LoadDetectorSettings(settings));
+
+    REQUIRE(x.GetFrameTime().count() == 600);
+    REQUIRE(x.GetFrameCountTime().count() == 600 - READOUT_TIME_IN_US);
+    REQUIRE(!x.IsUsingInternalPacketGen());
+    REQUIRE(x.GetStorageCellNumber() == 1);
+    REQUIRE(x.GetDetectorMode() == DetectorMode::Conversion);
+    REQUIRE(x.GetPedestalG0Frames() == 456);
+    REQUIRE(x.GetPedestalG1Frames() == 1234);
+    REQUIRE(x.GetPedestalG2Frames() == 123);
+}
+
+TEST_CASE("DiffractionExperiment_DefaultDataProcessingSettings","[DiffractionExperiment]") {
+    REQUIRE_NOTHROW(DiffractionExperiment::CheckDataProcessingSettings(
+            DiffractionExperiment::DefaultDataProcessingSettings()));
 }

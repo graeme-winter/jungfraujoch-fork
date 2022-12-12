@@ -6,7 +6,7 @@
 JFJochReceiverService::JFJochReceiverService(std::vector<AcquisitionDevice *> &open_capi_device,
                                              Logger &in_logger, ImagePusher &pusher) :
         logger(in_logger), aq_devices(open_capi_device),
-        image_pusher(pusher) {}
+        image_pusher(pusher), data_processing_settings(DiffractionExperiment::DefaultDataProcessingSettings()) {}
 
 grpc::Status JFJochReceiverService::Start(grpc::ServerContext *context, const JFJochProtoBuf::ReceiverInput *request,
                                           JFJochProtoBuf::Empty *response) {
@@ -119,16 +119,19 @@ grpc::Status JFJochReceiverService::GetStatus(grpc::ServerContext *context, cons
         // Need to hold mutex, as receiver might not exist here, if state is idle
         std::unique_lock<std::mutex> ul(state_mutex);
 
-        if (state == ReceiverState::Idle) {
-            response->set_idle(true);
-            response->set_progress(100.0);
-        } else {
-            response->set_idle(false);
+        if (state == ReceiverState::Running)
             response->set_progress(receiver->GetProgress());
-        }
-        if (receiver)
-            receiver->GetStatus(*response);
     }
+    return grpc::Status::OK;
+}
+
+grpc::Status
+JFJochReceiverService::GetDataProcessingPlots(grpc::ServerContext *context, const JFJochProtoBuf::Empty *request,
+                                              JFJochProtoBuf::ReceiverDataProcessingPlots *response) {
+    // Need to hold mutex, as receiver might not exist here, if state is idle
+    std::unique_lock<std::mutex> ul(state_mutex);
+    if (receiver)
+        *response = receiver->GetPlots();
     return grpc::Status::OK;
 }
 

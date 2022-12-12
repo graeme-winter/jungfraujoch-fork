@@ -15,8 +15,7 @@
 #include "../../common/ZMQImagePusher.h"
 
 TEST_CASE("JFJochReceiver_gRPC_server", "[gRPC]") {
-    DiffractionExperiment x;
-    x.DataStreamModuleSize(2, {4});
+    DiffractionExperiment x(2, {4});
 
     std::vector<std::unique_ptr<AcquisitionDevice>> aq_devices;
     AcquisitionDevice *test = new HLSSimulatedDevice(0, 64);

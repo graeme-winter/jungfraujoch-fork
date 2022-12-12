@@ -54,12 +54,8 @@ size_t ZMQImagePuller::GetImageSize() const {
     return deserializer.GetImageSize();
 }
 
-uint64_t ZMQImagePuller::GetImageNumber() const {
+int64_t ZMQImagePuller::GetImageNumber() const {
     return deserializer.GetImageNumber();
-}
-
-uint64_t ZMQImagePuller::GetFileNumber() const {
-    return deserializer.GetFileNumber();
 }
 
 const std::vector<SpotToSave>& ZMQImagePuller::GetSpots() const {

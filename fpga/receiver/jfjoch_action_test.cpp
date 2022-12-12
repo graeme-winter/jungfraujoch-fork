@@ -28,18 +28,18 @@ int main(int argc, char **argv) {
     if (argc >= 5) nstreams = atoi(argv[4]);
     if (argc >= 6) processing_period = atoi(argv[5]);
 
-    DiffractionExperiment x;
+
 
     std::vector<int64_t> detector_geom;
     for (int i = 0; i < nstreams; i++)
         detector_geom.push_back(nmodules);
 
-    x.Mode(DetectorMode::Conversion).DataStreamModuleSize(1, detector_geom);
+    DiffractionExperiment x(1, detector_geom);
+    x.Mode(DetectorMode::Conversion);
     x.ImagesPerTrigger(nimages).PedestalG0Frames(0).UseInternalPacketGenerator(true).PhotonEnergy_keV(12.4).NumTriggers(1);
     x.SpotFindingPeriod(std::chrono::milliseconds(processing_period))
-            .BackgroundEstimationPeriod(std::chrono::milliseconds(processing_period))
-            .ImagesPerFile(100);
-    x.Compression(JFJochProtoBuf::BSHUF_ZSTD,ZSTD_USE_JFJOCH_RLE);
+            .BackgroundEstimationPeriod(std::chrono::milliseconds(processing_period));
+    x.Compression(JFJochProtoBuf::BSHUF_ZSTD);
 
 #ifdef __PPC__
     std::vector<uint16_t> pci_slot_number = {4, 5};

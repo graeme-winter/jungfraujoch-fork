@@ -56,13 +56,13 @@ grpc::Status JFJochDetector::Status(grpc::ServerContext *context, const JFJochPr
     try {
         switch(detector.GetState()) {
             case DetectorWrapper::DetectorState::IDLE:
-                response->set_status(JFJochProtoBuf::IDLE);
+                response->set_state(JFJochProtoBuf::IDLE);
                 break;
             case DetectorWrapper::DetectorState::ERROR:
-                response->set_status(JFJochProtoBuf::ERROR);
+                response->set_state(JFJochProtoBuf::ERROR);
                 break;
             case DetectorWrapper::DetectorState::BUSY:
-                response->set_status(JFJochProtoBuf::BUSY);
+                response->set_state(JFJochProtoBuf::BUSY);
                 break;
         }
         response->set_fw_version(detector.GetFirmwareVersion());

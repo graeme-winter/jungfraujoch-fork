@@ -6,9 +6,9 @@
 #include <nlohmann/json.hpp>
 
 #include "../common/Logger.h"
-#include "../grpc/gRPCServer_Template.h"
 
-#include "JFJochBrokerService.h"
+#include "JFJochBrokerHttp.h"
+#include "../common/NetworkAddressConvert.h"
 
 int main (int argc, char **argv) {
     if (argc > 4) {
@@ -51,9 +51,9 @@ int main (int argc, char **argv) {
         base_ipv4_addr_net = ipv4_subnet_distribution(generator);
     experiment.BaseIPv4Address("10.1." + std::to_string(base_ipv4_addr_net) + ".1");
     logger.Info("Base IPv4 address for FPGA and detector modules: "
-                + DiffractionExperiment::IPv4AddressToStr(experiment.GetDestIPv4Address(0)));
+                + IPv4AddressToStr(experiment.GetDestIPv4Address(0)));
 
-    JFJochBrokerService broker(logger);
+    JFJochBrokerHttp broker(logger, tcp_port);
     broker.Experiment() = experiment;
 
     if (input.contains("receiver_addr"))
@@ -68,19 +68,27 @@ int main (int argc, char **argv) {
     }
     if (input.contains("detector_addr"))
         broker.Services().Detector(input["detector_addr"]);
-     if (input.contains("indexer"))
+    if (input.contains("indexer"))
         broker.Services().Indexer(input["indexer"]["addr_grpc"], input["indexer"]["addr_zmq"]);
 
-    JFJochProtoBuf::FacilityMetadata facility_metadata;
-    facility_metadata.set_source_name(SOURCE_NAME);
-    facility_metadata.set_source_name_short(SOURCE_NAME_SHORT);
-    facility_metadata.set_instrument_name(INSTRUMENT_NAME);
-    facility_metadata.set_instrument_name_short(INSTRUMENT_NAME_SHORT);
-    broker.Services().FacilityMetadata(facility_metadata);
+    try {
+        JFJochProtoBuf::FacilityMetadata facility_metadata;
+        facility_metadata.set_source_name(input.at("source_name").get<std::string>());
+        facility_metadata.set_source_name_short(input.at("source_name_short").get<std::string>());
+        facility_metadata.set_instrument_name(input.at("instrument_name").get<std::string>());
+        facility_metadata.set_instrument_name_short(input.at("instrument_name_short").get<std::string>());
+        broker.Services().FacilityMetadata(facility_metadata);
+    } catch (std::exception &e) {
+        logger.Error("Facility metadata error: {}", e.what() );
+        exit(EXIT_FAILURE);
+    }
 
-    auto server = gRPCServer("0.0.0.0:" + std::to_string(tcp_port), broker);
+    if (input.contains("frontend_directory"))
+        broker.FrontendDirectory(input["frontend_directory"]);
+
     logger.Info("Detector module number: {}", broker.Experiment().GetModulesNum());
-    logger.Info("gRPC configuration listening on port {}", tcp_port);
-    logger.Info("Started");
-    server->Wait();
+    logger.Info("HTTP configuration listening on port {}", tcp_port);
+    logger.Info("Starting");
+
+    broker.Run();
 }

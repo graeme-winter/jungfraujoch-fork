@@ -8,10 +8,10 @@
 JFJochWriter::JFJochWriter(const JFJochProtoBuf::WriterInput &request, ZMQContext& context, Logger &in_logger) :
        logger(in_logger), image_puller(context) {
 
-    logger.Info("Write request for dataset: " + request.data_files(0).filename() + " ...");
+    logger.Info("Write request for dataset: " + request.file_prefix() + " ...");
 
     logger.Info("   ... creating subdirectory");
-    MakeDirectory(request.data_files(0).filename());
+    MakeDirectory(request.file_prefix());
 
     logger.Info("   ... creating HDF5 files");
     data_file_set = std::make_unique<HDF5Writer>(request);
@@ -40,7 +40,6 @@ JFJochProtoBuf::WriterOutput JFJochWriter::MeasurementThread() {
                 data_file_set->Write(image_puller.GetImage(),
                                  image_puller.GetImageSize(),
                                      image_puller.GetSpots(),
-                                 image_puller.GetFileNumber(),
                                  image_puller.GetImageNumber());
             image_puller.WaitForImage();
         }

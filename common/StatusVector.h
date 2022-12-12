@@ -57,6 +57,7 @@ public:
     }
 
     void GetPlot(JFJochProtoBuf::Plot& plot, int32_t bin_size) const {
+        // GetStatus has mutex, no need to lock again
         auto status = GetStatus(bin_size);
         if (status.size() == 1) {
             plot.add_x(max_id / 2.0);
